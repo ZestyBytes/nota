@@ -1,0 +1,20 @@
+-- Nota v1 schema. Run once in Supabase > SQL Editor.
+create extension if not exists pgcrypto;
+create table if not exists public.topics (slug text not null,user_id uuid not null references auth.users(id) on delete cascade,name text not null,color text not null default '#777777',soft text not null default '#eeeeee',description text not null default '',mode text,created_at timestamptz not null default now(),primary key(user_id,slug));
+create table if not exists public.entries (id text primary key,user_id uuid not null references auth.users(id) on delete cascade,type text not null check(type in ('Journal','Note','Event','Reading','Quote','Journey','Collection','Recipe')),title text not null,body text,author text,topic_slugs text[] not null default '{}',occurred_at date,published_at date,image_url text,image_alt text,attachments jsonb not null default '[]'::jsonb,recipe jsonb,created_at timestamptz not null default now(),updated_at timestamptz not null default now());
+create table if not exists public.tasks (id text primary key,user_id uuid not null references auth.users(id) on delete cascade,title text not null,topic_slugs text[] not null default '{}',due_at date,completed_at date,created_at timestamptz not null default now());
+create table if not exists public.books (id text primary key,user_id uuid not null references auth.users(id) on delete cascade,title text not null,author text,status text not null default 'want-to-read',progress integer not null default 0 check(progress between 0 and 100),cover_url text,topic_slugs text[] not null default '{}',created_at timestamptz not null default now());
+create table if not exists public.book_clippings (id text primary key,user_id uuid not null references auth.users(id) on delete cascade,book_id text not null references public.books(id) on delete cascade,kind text not null check(kind in ('note','quote')),text text not null,location text,created_at timestamptz not null default now());
+alter table public.topics enable row level security; alter table public.entries enable row level security; alter table public.tasks enable row level security; alter table public.books enable row level security; alter table public.book_clippings enable row level security;
+create policy "owners manage topics" on public.topics for all using(auth.uid()=user_id) with check(auth.uid()=user_id);
+create policy "owners manage entries" on public.entries for all using(auth.uid()=user_id) with check(auth.uid()=user_id);
+create policy "public reads published entries" on public.entries for select using(published_at is not null);
+create policy "owners manage tasks" on public.tasks for all using(auth.uid()=user_id) with check(auth.uid()=user_id);
+create policy "owners manage books" on public.books for all using(auth.uid()=user_id) with check(auth.uid()=user_id);
+create policy "owners manage clippings" on public.book_clippings for all using(auth.uid()=user_id) with check(auth.uid()=user_id);
+insert into storage.buckets(id,name,public,file_size_limit) values('attachments','attachments',false,52428800) on conflict(id) do nothing;
+create policy "owners upload attachments" on storage.objects for insert to authenticated with check(bucket_id='attachments' and (storage.foldername(name))[1]=auth.uid()::text);
+create policy "owners read attachments" on storage.objects for select to authenticated using(bucket_id='attachments' and (storage.foldername(name))[1]=auth.uid()::text);
+create policy "owners delete attachments" on storage.objects for delete to authenticated using(bucket_id='attachments' and (storage.foldername(name))[1]=auth.uid()::text);
+create or replace function public.set_updated_at() returns trigger language plpgsql as $$ begin new.updated_at=now(); return new; end $$;
+drop trigger if exists entries_updated_at on public.entries; create trigger entries_updated_at before update on public.entries for each row execute function public.set_updated_at();
