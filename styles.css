@@ -190,10 +190,10 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px}
 .topic-card{
   --topic:#555;position:relative;background:var(--surface);min-height:214px;padding:26px;
   display:flex;flex-direction:column;overflow:hidden;
-  border:1px solid var(--line);border-left:4px solid var(--topic);cursor:pointer;text-align:left;
+  border:1px solid var(--line);cursor:pointer;text-align:left;
   transition:transform .16s ease,box-shadow .16s ease;
 }
-.topic-card:before,.topic-card:after{content:"";position:absolute;width:34px;height:14px;top:-6px;background:var(--tape);z-index:1;box-shadow:0 1px 1px rgba(0,0,0,.08)}
+.topic-card:before,.topic-card:after{content:"";position:absolute;width:34px;height:14px;top:-6px;background:color-mix(in srgb,var(--topic) 30%,transparent);z-index:1;box-shadow:0 1px 1px rgba(0,0,0,.08)}
 .topic-card:before{left:22px;transform:rotate(-7deg)}
 .topic-card:after{right:22px;transform:rotate(6deg)}
 .topic-card:hover{transform:translateY(-3px);box-shadow:0 10px 22px -12px rgba(34,38,30,.35)}
