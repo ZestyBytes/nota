@@ -1,12 +1,12 @@
 window.NOTA_DATA = {
   topics: {
-    gardening: { name: "Gardening", color: "#6a913b", soft: "#e8f0dc", description: "Seasons, seedlings and life outdoors" },
-    music: { name: "Music", color: "#c55a35", soft: "#f8e7df", description: "Practice, listening and the guitar journey" },
-    technology: { name: "Technology", mode:"tech", color: "#168b78", soft: "#dff2ed", description: "Tools, code and thoughtful technology" },
-    adhd: { name: "ADHD", color: "#7264c9", soft: "#ebe9fb", description: "Understanding attention and living well" },
-    books: { name: "Books", color: "#b47716", soft: "#f5ead6", description: "Reading, marginalia and ideas worth keeping" },
-    family: { name: "Family", color: "#b35472", soft: "#f6e5eb", description: "Home life and shared memories" },
-    food: { name: "Food", mode:"recipes", color: "#a96320", soft: "#f5e8d5", description: "Recipes, experiments and things made for the table" }
+    gardening: { name: "Gardening", color: "#3f6b2e", soft: "#e4ead9", description: "Seasons, seedlings and life outdoors" },
+    music: { name: "Music", color: "#a13a2e", soft: "#f0e1dd", description: "Practice, listening and the guitar journey" },
+    technology: { name: "Technology", mode:"tech", color: "#1c6e63", soft: "#dbe9e6", description: "Tools, code and thoughtful technology" },
+    adhd: { name: "ADHD", color: "#5b4a9e", soft: "#e5e1f2", description: "Understanding attention and living well" },
+    books: { name: "Books", color: "#8a5a12", soft: "#ece0cb", description: "Reading, marginalia and ideas worth keeping" },
+    family: { name: "Family", color: "#96355a", soft: "#eddce3", description: "Home life and shared memories" },
+    food: { name: "Food", mode:"recipes", color: "#8a4a1a", soft: "#ecddcb", description: "Recipes, experiments and things made for the table" }
   },
   entries: [
     { id:"j1", type:"Journal", title:"Staked the runner beans", excerpt:"The plants had finally reached the top of their canes. A quiet hour outside before the rain came.", image:"https://images.pexels.com/photos/7728082/pexels-photo-7728082.jpeg?auto=compress&cs=tinysrgb&w=1200", imageAlt:"Runner bean plants growing around garden canes", attachments:[{name:"garden-plan-august.pdf",kind:"PDF",size:"1.2 MB"}], topics:["gardening"], occurredAt:"2026-08-31", createdAt:"2026-08-31", publishedAt:"2026-08-31" },

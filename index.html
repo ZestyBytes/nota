@@ -3,25 +3,48 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#f7f5f0">
+  <meta name="theme-color" content="#eef0e7">
   <meta name="description" content="Nota — a record of days, thoughts, things learnt and things worth keeping.">
   <title>nota</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Space+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <!--
+    THESIS: Nota is a private archive of specimens to browse, not a feed and
+    not a form — everything here is written in Obsidian; this app only reads
+    and searches it, mobile-first.
+    OWN-WORLD: sage-paper ground, graphite ink, saturated specimen-label inks
+    per topic; Space Mono for labels, accession numbers and ink stamps,
+    Spectral serif for prose; mounted corner-tape cards, pinned topic tags,
+    rubber-stamp status marks, fading ink for older entries.
+    STORY: Jamie reads each entry as a collected, catalogued specimen — status
+    read from a stamp, topic from a pinned tag, recency from fading ink; no
+    control anywhere creates, edits, or deletes a record.
+    FIRST VIEWPORT: Today, phone width — a compact rail masthead, an oversized
+    specimen-sheet "Today" title, a postmark-style date badge, specimen entry
+    cards stacked full width, a field checklist and a pressed quote below.
+    FORM: candidate 4 of the grounded list (Naturalist Field Notebook /
+    Herbarium Archive), inherited from the desktop build and re-cut for a
+    read/search-only mobile surface; seed key df5200b8.
+    FINISH: unreviewed and undocumented is unfinished; this build ends with
+    the finish review, the verdict, DESIGN.md, and every shipping raster
+    carrying its provenance.
+  -->
   <header class="site-header">
-    <a class="wordmark" href="#today" aria-label="Nota home">nota<span>.</span></a>
+    <a class="wordmark" href="#today" aria-label="Nota home"><span class="wordmark-mark">nota<i>.</i></span><span class="wordmark-sub">field archive</span></a>
     <button class="menu-button" aria-label="Open navigation" aria-expanded="false"><span></span><span></span></button>
     <nav class="main-nav" aria-label="Main navigation">
-      <a href="#today">Today</a><a href="#calendar">Calendar</a><a href="#library">Library</a><a href="#topics">Topics</a><a href="#writing">Writing</a><a href="#search">Search</a>
+      <a href="#today"><i>01</i>Today</a><a href="#calendar"><i>02</i>Calendar</a><a href="#library"><i>03</i>Library</a><a href="#topics"><i>04</i>Topics</a><a href="#writing"><i>05</i>Writing</a><a href="#search"><i>06</i>Search</a>
     </nav>
-    <button class="add-button" data-action="capture">New entry</button>
   </header>
   <main id="app" tabindex="-1"></main>
   <nav class="mobile-nav" aria-label="Mobile navigation">
-    <a href="#today">Today</a><a href="#calendar">Calendar</a><button data-action="capture" aria-label="Create a new entry">New</button><a href="#library">Library</a><a href="#search">Search</a>
+    <a href="#today">Today</a><a href="#calendar">Calendar</a><a href="#library">Library</a><a href="#topics">Topics</a><a href="#search">Search</a>
   </nav>
   <div id="modal-root"></div>
   <div id="toast" role="status" aria-live="polite"></div>
