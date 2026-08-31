@@ -18,10 +18,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: quartz/package-lock.json
+      - name: Install Quartz
+        working-directory: quartz
+        run: npm ci --ignore-scripts
+      - name: Build Nota
+        working-directory: quartz
+        run: npx quartz build
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: quartz/public
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
