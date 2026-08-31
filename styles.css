@@ -71,7 +71,7 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px}
   position:relative;flex:none;
 }
 .date-large:before{content:"";position:absolute;inset:6px;border:1px solid var(--ink);border-radius:50%}
-.date-large b{display:block;font:700 26px/1 var(--mono);margin:4px 0 2px;letter-spacing:0}
+.date-large b{display:block;font:700 clamp(15px,3.4vw,20px)/1.15 var(--mono);margin:4px 0 2px;letter-spacing:-.03em;padding:0 4px;word-break:break-word}
 
 .memory{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:13px 0;color:var(--muted);margin-bottom:52px;font:14px var(--mono)}
 .memory a{text-decoration:underline;text-underline-offset:4px;color:var(--ink)}

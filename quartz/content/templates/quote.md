@@ -4,7 +4,7 @@ type: quote
 author: ""
 book: ""
 page: ""
-topics: []
+tags: []
 createdAt: "{{date}}"
 publish: false
 ---

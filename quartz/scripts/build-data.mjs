@@ -93,15 +93,29 @@ function unwikilink(v) {
   return m ? m[1] : v;
 }
 
+// Accept either `tags:` (what real content and quartz's own tag pages use)
+// or `topics:` (an older template field) so a note made from either
+// template still gets filed under its topic.
+function topicsOf(data) {
+  const raw = Array.isArray(data.tags) ? data.tags : Array.isArray(data.topics) ? data.topics : [];
+  return raw.filter(t => TOPICS[t]);
+}
+
 const files = walk(CONTENT_DIR);
-const entries = [], books = [], quoteFiles = [];
+const entries = [], books = [], quoteFiles = [], tasks = [];
 
 for (const file of files) {
   const raw = readFileSync(file, "utf8");
   const { data, body } = splitFrontmatter(raw);
   if (!data.publish || data.draft) continue;
   const slug = relative(CONTENT_DIR, file).replace(/\.md$/, "").replace(/\\/g, "/");
-  const topics = Array.isArray(data.tags) ? data.tags.filter(t => TOPICS[t]) : [];
+  const topics = topicsOf(data);
+
+  if (data.type === "task") {
+    tasks.push({ id: slug, title: data.title, topics: topics.length ? topics : ["books"],
+      dueAt: data.dueAt || "", completedAt: data.completedAt || null });
+    continue;
+  }
 
   if (data.type === "reading") {
     books.push({
@@ -144,7 +158,7 @@ for (const file of files) {
 for (const { slug, data, body } of quoteFiles) {
   const text = blockquote(body) || data.title;
   const q = { id: slug, type: "Quote", title: text, author: data.author || "", excerpt: "",
-    topics: Array.isArray(data.tags) ? data.tags.filter(t => TOPICS[t]) : [],
+    topics: topicsOf(data),
     occurredAt: data.createdAt || "", createdAt: data.createdAt || "", publishedAt: data.publishedAt || data.createdAt || "",
     image: "", imageAlt: "", attachments: [] };
   const bookTitle = unwikilink(data.book);
@@ -159,10 +173,11 @@ for (const { slug, data, body } of quoteFiles) {
 entries.sort((a, b) => (b.occurredAt || b.createdAt || "").localeCompare(a.occurredAt || a.createdAt || ""));
 
 const payload = {
-  topics: Object.fromEntries(Object.entries(TOPICS).filter(([slug]) => entries.some(e => e.topics.includes(slug)) || books.some(b => b.topics.includes(slug)))),
-  entries, tasks: [], books
+  topics: Object.fromEntries(Object.entries(TOPICS).filter(([slug]) =>
+    entries.some(e => e.topics.includes(slug)) || books.some(b => b.topics.includes(slug)) || tasks.some(t => t.topics.includes(slug)))),
+  entries, tasks, books
 };
 
 mkdirSync(dirname(OUT_PATH), { recursive: true });
 writeFileSync(OUT_PATH, `window.NOTA_DATA = ${JSON.stringify(payload, null, 2)};\n`);
-console.log(`Wrote ${entries.length} entries, ${books.length} books, ${Object.keys(payload.topics).length} topics -> ${OUT_PATH}`);
+console.log(`Wrote ${entries.length} entries, ${tasks.length} tasks, ${books.length} books, ${Object.keys(payload.topics).length} topics -> ${OUT_PATH}`);
