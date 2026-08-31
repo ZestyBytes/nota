@@ -29,6 +29,11 @@ body { background: var(--nota-paper); color: var(--nota-ink); }
 .page-title a::first-letter { text-transform: lowercase; }
 .article-title { font: 500 clamp(3.2rem, 7vw, 5.8rem)/0.97 var(--nota-serif); letter-spacing: -0.055em; color: var(--nota-ink); }
 h1, h2, h3, h4 { color: var(--nota-ink); font-family: var(--nota-serif); font-weight: 500; }
+article h1, article h2, article h3, article h4,
+article h1 a, article h2 a, article h3 a, article h4 a {
+  font-family: var(--nota-serif) !important;
+  font-weight: 500 !important;
+}
 h2 { margin-top: 3.5rem; font-size: 1.75rem; border-bottom: 1px solid var(--nota-line); padding-bottom: 0.75rem; }
 article p, article li { line-height: 1.72; }
 article img { width: 100%; max-height: 540px; object-fit: cover; border-radius: 0; }
@@ -36,6 +41,8 @@ article blockquote { border-left: 1px solid var(--nota-ink); margin: 2rem 0; pad
 article a.internal { border-radius: 0; background: transparent; padding: 0; border-bottom: 1px solid currentColor; }
 .content-meta { color: var(--nota-muted); font-size: 0.78rem; }
 .note-properties { display: none; }
+.content-meta { display: none; }
+h1 > a[href^="#"], h2 > a[href^="#"], h3 > a[href^="#"] { display: none; }
 .breadcrumb-container { color: var(--nota-muted); }
 .explorer { font-size: 0.88rem; }
 .explorer .folder-container div > a { font-weight: 500; }
@@ -104,3 +111,36 @@ article pre { background: #20231f !important; border: 0 !important; border-radiu
   .topic-card { min-height: 175px; }
   article table { font-size: 0.78rem; }
 }
+
+// Quartz remains the engine, but its documentation chrome should not define Nota.
+@media (min-width: 801px) {
+  .page { max-width: 1180px; padding: 0 2rem; }
+  .page > #quartz-body {
+    display: block !important;
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+  .sidebar.left {
+    position: static !important;
+    width: 100%;
+    height: 86px !important;
+    padding: 0 !important;
+    border-right: 0;
+    border-bottom: 1px solid var(--nota-line);
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .sidebar.left .page-title { margin: 0; }
+  .sidebar.left .explorer, .sidebar.left .mobile-only { display: none !important; }
+  .sidebar.left .flex-component { flex: 0 0 210px; }
+  .sidebar.left .search { width: 100%; }
+  .sidebar.left .search-button { border: 0; border-bottom: 1px solid var(--nota-line); border-radius: 0; background: transparent; }
+  .center { width: min(100%, 900px); min-width: 0 !important; margin: 0 auto !important; }
+  .page-header { margin-top: 4.5rem !important; }
+  .article-title { margin-bottom: 1.25rem; }
+}
+
+.center > hr, .page-footer, footer { display: none; }
+.nota-nav { margin-top: 0.5rem; }
