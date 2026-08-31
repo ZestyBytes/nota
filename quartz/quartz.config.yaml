@@ -15,30 +15,30 @@ configuration:
     fontOrigin: googleFonts
     cdnCaching: true
     typography:
-      header: Source Sans Pro
-      body: Source Sans Pro
-      code: IBM Plex Mono
+      header: Space Mono
+      body: Spectral
+      code: Space Mono
     colors:
       lightMode:
-        light: "#f7f5f0"
-        lightgray: "#ddd9d0"
-        gray: "#9b978e"
-        darkgray: "#77746d"
-        dark: "#24231f"
-        secondary: "#168b78"
-        tertiary: "#b35472"
-        highlight: rgba(22, 139, 120, 0.12)
-        textHighlight: "#fff23688"
+        light: "#eef0e7"
+        lightgray: "#cdd1bf"
+        gray: "#9aa08c"
+        darkgray: "#6d7360"
+        dark: "#22261e"
+        secondary: "#3f6b2e"
+        tertiary: "#a13a2e"
+        highlight: rgba(63, 107, 46, 0.12)
+        textHighlight: "#e8d78d88"
       darkMode:
-        light: "#161618"
-        lightgray: "#393639"
-        gray: "#646464"
-        darkgray: "#d4d4d4"
-        dark: "#ebebec"
-        secondary: "#7b97aa"
-        tertiary: "#84a59d"
-        highlight: rgba(143, 159, 169, 0.15)
-        textHighlight: "#b3aa0288"
+        light: "#1c1f18"
+        lightgray: "#33372c"
+        gray: "#7c8170"
+        darkgray: "#c7cbb9"
+        dark: "#f0f1e8"
+        secondary: "#7fae5f"
+        tertiary: "#d97a67"
+        highlight: rgba(127, 174, 95, 0.15)
+        textHighlight: "#e8d78d55"
 plugins:
   - source: "@quartz-community/created-modified-date"
     enabled: true
