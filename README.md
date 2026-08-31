@@ -1,21 +1,50 @@
 # nota
 
-A private-first record of days, thoughts, books, quotations and things worth keeping.
+A private-first, read/search-only record of days, thoughts, books, quotations
+and things worth keeping — written in Obsidian, published as a static PWA.
 
-Nota is a dependency-free progressive web app. It can run as a local demo using browser storage, or as a private multi-device app backed by Supabase Auth, Postgres and Storage.
+**Live:** <https://zestybytes.github.io/nota/>
 
-## What v1 includes
+## How this repo is put together
 
-- Email/password authentication with persistent sessions
-- Journals, notes, journeys, events, quotations, recipes and tasks
-- Calendar and full-archive search
-- Reusable topics with optional recipe/technology layouts
-- Books with reading status, progress, notes and quotations
-- Private attachments using short-lived signed URLs
-- Private-by-default records with an explicit published state
-- A public `#writing` view containing only published entries
-- JSON export for portable backups
-- Installable, responsive PWA layout
+Two parts, and it's important to know which is which before changing either:
+
+1. **The app** (repo root: `index.html`, `app.js`, `styles.css`, `data.js`,
+   `config.js`, `backend.js`, `manifest.webmanifest`, `sw.js`) — a
+   dependency-free, installable PWA. This is what actually gets deployed and
+   what you see at the live URL. It is **read/search only**: there is no
+   capture, edit, or delete UI. `data.js` at the repo root is demo/dev data
+   only (used when you run it locally without building); the deployed site
+   gets a real `data.js` generated from Obsidian content at build time (see
+   below), not this file.
+
+2. **The content pipeline** (`quartz/`) — an Obsidian vault
+   (`quartz/content/`) plus `quartz/scripts/build-data.mjs`, a script that
+   reads every published note in that vault and emits a `data.js` in the
+   exact shape `app.js` expects. `quartz/` also still contains a full Quartz
+   static-site setup (inherited from an earlier iteration) that can render
+   the vault as a traditional linked-notes site for your own reading/preview
+   — see "Alternate preview" below — but **that Quartz build is not what's
+   deployed**; only its content-reading script is used in production.
+
+The design system (palette, type, the specimen-archive motifs — mounting
+tape, pinned topic tags, ink stamps, accession numbers) is recorded in
+[`DESIGN.md`](DESIGN.md). Product intent and constraints are in
+[`PRODUCT.md`](PRODUCT.md). Read both before making visual or structural
+changes — they're the "why," this file is the "how."
+
+## Publishing content
+
+You write and manage everything in Obsidian (open `quartz/content` as your
+vault). **[`OBSIDIAN.md`](OBSIDIAN.md) is the full guide** — frontmatter
+reference for every content type (journal, note, journey, quote, book,
+recipe, task), the publish cycle, and what AI assistance can and can't do in
+this pipeline. Read that before adding content.
+
+The short version: write a note with `publish: true` in its frontmatter,
+commit, push to `main`. A GitHub Actions workflow (`.github/workflows/pages.yml`)
+then rebuilds `data.js` from your vault and deploys the app — no manual
+build step, no live editor on the site itself.
 
 ## Run locally
 
@@ -23,25 +52,71 @@ Nota is a dependency-free progressive web app. It can run as a local demo using 
 python3 -m http.server 8787
 ```
 
-Open <http://localhost:8787>. With blank values in `config.js`, Nota remains in demo mode and saves to `localStorage`.
+Open <http://localhost:8787>. This serves the app with the demo `data.js` at
+the repo root — fine for design/UI work, but it is **not** your real content.
 
-## Connect Supabase
+To preview with your actual published content (what the live site will
+actually show once you push):
 
-1. Create a Supabase project.
-2. Open **SQL Editor**, paste `supabase/schema.sql`, and run it once.
-3. In **Project Settings → API**, copy the project URL and publishable/anon key into `config.js`.
-4. In **Authentication → URL Configuration**, add the deployed Nota URL as an allowed redirect URL.
-5. Create the owner account from Nota and confirm the email.
-6. Set `allowSignUp: false` in `config.js` and disable new-user signups in Supabase once the owner account exists.
+```sh
+node quartz/scripts/build-data.mjs --out /tmp/nota-preview/data.js
+cp index.html app.js styles.css config.js backend.js manifest.webmanifest icon.svg sw.js /tmp/nota-preview/
+cd /tmp/nota-preview && python3 -m http.server 8787
+```
 
-The browser anon key is intentionally public. Database protection comes from the Row Level Security policies in `supabase/schema.sql`. Never place the Supabase service-role key in this repository.
+## Alternate preview (Quartz's own rendered view)
+
+`quartz/` can still build a traditional Quartz site from the same vault —
+individual article pages, backlinks, full-text search over prose — useful
+for reading back through the archive, but it is a separate reading view,
+not the deployed app:
+
+```sh
+cd quartz
+npm install
+npx quartz build --serve
+```
+
+Open <http://localhost:8080>.
 
 ## Deploy
 
-Push `main` to `ZestyBytes/Nota`. The GitHub Actions workflow publishes the repository to GitHub Pages and supports the `/Nota/` project path.
+Push to `main` (or merge into it). `.github/workflows/pages.yml`:
 
-## Backups and AI capture
+1. Installs `quartz/`'s dependencies (needed for the `yaml` package
+   `build-data.mjs` uses to parse frontmatter).
+2. Copies the app files into `dist/`.
+3. Runs `node quartz/scripts/build-data.mjs --out dist/data.js` to generate
+   real data from `quartz/content`.
+4. Deploys `dist/` to GitHub Pages.
 
-Use **Export archive** regularly; Supabase's free plan does not include automatic database backups.
+Takes about 30–40 seconds end to end. Watch it with `gh run list --workflow=pages.yml`
+or at `github.com/ZestyBytes/nota/actions`.
 
-The normalized tables are suitable for a future authenticated capture endpoint for ChatGPT or Claude. Do not give an AI tool the service-role key. Use a narrowly scoped server-side function that validates the owner and accepts only the required record fields.
+## Optional: Supabase-backed private mode
+
+The app still supports an authenticated, multi-device mode via Supabase
+(`backend.js`, `supabase/schema.sql`) — sign-in, private attachments, sync.
+It is **not configured or used** in the current deployment (`config.js` is
+blank, so the live site runs in demo/static mode against the generated
+`data.js`). To use it instead of (or alongside) the Obsidian pipeline:
+
+1. Create a Supabase project, run `supabase/schema.sql` once in the SQL
+   Editor.
+2. Copy the project URL and anon key into `config.js`.
+3. Add the deployed URL as an allowed redirect URL in Supabase Auth settings.
+4. Set `allowSignUp: false` in `config.js` once the owner account exists.
+
+The anon key is intentionally public in the client; protection comes from
+the Row Level Security policies in `supabase/schema.sql`. Never put the
+service-role key in this repository. Note that turning this on re-introduces
+write paths the current read-only UI doesn't expose — you'd need to restore
+capture/edit UI in `app.js` to actually use it for writing.
+
+## Safety notes
+
+- Nothing in `quartz/content` reaches the live site unless it has
+  `publish: true` — see `OBSIDIAN.md` for the full rule set (including
+  `private/`, `drafts/`, and `templates/`, which are never scanned).
+- Don't put genuinely sensitive writing in this repository at all, even with
+  `publish: false` — it's still in Git history to anyone with repo access.

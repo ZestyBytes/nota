@@ -3,7 +3,7 @@
 Open `quartz/content` as an Obsidian vault. Everything you write there is
 private by default; nothing reaches the live site until you explicitly
 publish it, and publishing requires a Git push — there is no live editor,
-upload form, or database behind `https://zestybytes.github.io/Nota/`. It is
+upload form, or database behind `https://zestybytes.github.io/nota/`. It is
 a static site, rebuilt fresh from your vault on every push to `main`.
 
 ## The publish cycle, end to end

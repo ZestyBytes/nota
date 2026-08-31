@@ -26,7 +26,7 @@ A unified daily record: one dependency-free PWA covering journaling, notes, quot
 - Views: Today, Calendar, Library, Topics, Writing (public, published-only), Search (full-archive).
 - Private attachments served via short-lived signed URLs.
 - JSON export for portable backups (Supabase free plan has no automatic DB backups — export is the backup path).
-- Deployed via GitHub Actions to GitHub Pages under the `/Nota/` project path from `main`.
+- Deployed via GitHub Actions to GitHub Pages under the `/nota/` project path from `main`.
 - A separate Quartz/Obsidian-based static site (`quartz/`) exists alongside the app — a different, content-publishing surface, not the Nota app UI itself.
 
 ## Capabilities and Constraints

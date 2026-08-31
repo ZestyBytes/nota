@@ -6,7 +6,7 @@ configuration:
   enablePopovers: true
   analytics: null
   locale: en-GB
-  baseUrl: zestybytes.github.io/Nota
+  baseUrl: zestybytes.github.io/nota
   ignorePatterns:
     - private
     - templates
@@ -229,8 +229,8 @@ plugins:
     enabled: true
     options:
       links:
-        About Nota: /Nota/about
-        GitHub: https://github.com/ZestyBytes/Nota
+        About Nota: /nota/about
+        GitHub: https://github.com/ZestyBytes/nota
     layout:
       position: footer
       priority: 50
