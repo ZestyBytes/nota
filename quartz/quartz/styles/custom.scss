@@ -1,6 +1,6 @@
 @use "./variables.scss" as *;
 
-// nota — search-first, read-only archive. Never introduce <em> elements.
+// nota — search-first, read-only archive.
 :root {
   --nota-ground: #eef0eb;
   --nota-rail: #1d211d;
@@ -106,13 +106,32 @@ article pre { background: var(--nota-rail) !important; border: 0 !important; bor
 @media (min-width: 801px) {
   .page { padding: 0; }
   .page > #quartz-body { display: grid !important; grid-template-columns: 92px minmax(0, 1fr) !important; max-width: none; }
-  .sidebar.left { align-items: center; background: var(--nota-rail); border: 0; display: flex !important; flex-direction: column !important; height: 100vh !important; padding: 2rem 1rem !important; position: sticky !important; top: 0; width: 92px; z-index: 3; }
+  .sidebar.left { align-items: center; background: var(--nota-rail); border: 0; display: flex !important; flex-direction: column !important; height: 100vh !important; overflow: visible !important; padding: 2rem 1rem !important; position: sticky !important; top: 0; width: 92px; z-index: 10; }
   .page-title a { font-size: 1.55rem; }
-  .sidebar.left .flex-component { margin-top: 4rem; width: 48px; }
-  .sidebar.left .search-button { border: 0; border-radius: 50%; height: 48px; justify-content: center; padding: 0; width: 48px; }
-  .sidebar.left .search-button p { display: none; }
+  .sidebar.left .flex-component { margin: 0; width: 48px; }
+  .sidebar.left .flex-component > div { left: 152px; max-width: none; position: fixed; right: auto; top: 28px; width: calc(100vw - 194px); z-index: 12; }
+  .sidebar.left .search { max-width: none !important; width: 100% !important; }
+  .sidebar.left .search-button { background: var(--nota-paper); border: 1px solid var(--nota-line); border-radius: 14px; color: var(--nota-muted); height: 58px; justify-content: flex-start; padding: 0 1rem; width: 100%; }
+  .sidebar.left .search-button svg { height: 18px; margin-right: .65rem; width: 18px; }
+  .sidebar.left .search-button p { font-size: 0; margin: 0; }
+  .sidebar.left .search-button p::after { content: "Search everything"; font-size: .9rem; }
+  .sidebar.left .search-button::after { background: #eceee8; border: 1px solid #d2d6ce; border-radius: 5px; color: var(--nota-muted); content: "Ctrl K"; font: 500 .7rem/1 var(--nota-sans); margin-left: auto; padding: .35rem .5rem; }
   .center { margin: 0 auto !important; max-width: 1080px; min-width: 0 !important; padding: 0 3.5rem 6rem; width: 100%; }
-  .page-header { margin-top: 4.6rem !important; }
+  .page-header { margin-top: 10.5rem !important; }
+  .nota-nav { border: 0; bottom: auto; flex-direction: column; gap: .9rem; left: 22px; margin: 0; overflow: visible; padding: 0; position: fixed; top: 190px; width: 48px; z-index: 11; }
+  .nota-nav a, .nota-nav button { align-items: center; border: 0 !important; display: flex; font-size: 0; height: 48px; justify-content: center; margin: 0 !important; padding: 0 !important; position: relative; width: 48px; }
+  .nota-nav a::before, .nota-nav button::before { background: #939991; border-radius: 50%; content: ""; height: 8px; transition: background 160ms ease, transform 160ms ease; width: 8px; }
+  .nota-nav a:hover::before, .nota-nav button:hover::before { background: white; transform: scale(1.25); }
+  .nota-nav a.active::before { background: var(--nota-rail); border: 7px solid white; box-sizing: content-box; height: 8px; width: 8px; }
+  .nota-nav button { display: none; }
+  .nota-nav a::after { background: var(--nota-paper); border: 1px solid var(--nota-line); color: var(--nota-ink); font: 600 .68rem/1 var(--nota-sans); left: 54px; opacity: 0; padding: .45rem .6rem; pointer-events: none; position: absolute; text-transform: none; transform: translateX(-4px); transition: opacity 140ms ease, transform 140ms ease; white-space: nowrap; }
+  .nota-nav a:nth-child(1)::after { content: "Home"; }
+  .nota-nav a:nth-child(2)::after { content: "Calendar"; }
+  .nota-nav a:nth-child(3)::after { content: "Library"; }
+  .nota-nav a:nth-child(4)::after { content: "Topics"; }
+  .nota-nav a:nth-child(5)::after { content: "About"; }
+  .nota-nav a:hover::after, .nota-nav button:hover::after, .nota-nav a:focus-visible::after, .nota-nav button:focus-visible::after { opacity: 1; transform: translateX(0); }
+  body[data-slug="index"] .page-header { grid-template-columns: minmax(0, 1fr) 320px; }
 }
 
 @media (max-width: 800px) {
