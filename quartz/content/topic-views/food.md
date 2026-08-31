@@ -6,7 +6,9 @@ tags: [food]
 publish: true
 ---
 
-<div class="topic-intro food"><span>◇</span><p>Recipes, experiments and things made for the table.</p></div>
+<nav class="nota-nav"><a href="../">Today</a><a href="../calendar">Calendar</a><a href="../library">Library</a><a class="active" href="../topics">Topics</a><a href="../about">About</a></nav>
+
+<div class="topic-intro food"><p>Recipes, experiments and things made for the table.</p></div>
 
 ## Recipes
 

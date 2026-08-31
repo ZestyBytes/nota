@@ -6,14 +6,14 @@ date: 2026-08-31
 tags: [nota]
 ---
 
-<nav class="nota-nav"><a href="./">Today</a><a href="calendar">Calendar</a><a class="active" href="library">Library</a><a href="topics">Topics</a></nav>
+<nav class="nota-nav"><a href="./">Today</a><a href="calendar">Calendar</a><a class="active" href="library">Library</a><a href="topics">Topics</a><a href="about">About</a></nav>
 
-Books can contain reading notes and link to first-class quotations. The same quotation can appear here, inside its book and under any relevant topic.
+<p class="page-deck">The books I am reading, the notes they leave behind, and words worth returning to.</p>
 
 <div class="library-grid">
-  <a class="book-card" href="books/the-anxious-generation"><span>Reading · 42%</span><h3>The Anxious Generation</h3><p>Jonathan Haidt</p><small>1 note · 1 quote</small></a>
-  <a class="book-card" href="books/meditations"><span>Finished</span><h3>Meditations</h3><p>Marcus Aurelius</p><small>1 note · 1 quote</small></a>
-  <a class="book-card" href="books/tomorrow-and-tomorrow-and-tomorrow"><span>Want to read</span><h3>Tomorrow, and Tomorrow, and Tomorrow</h3><p>Gabrielle Zevin</p><small>No notes yet</small></a>
+  <div class="book-card book-sage"><span class="book-status">Reading · 42%</span><h3><a href="books/the-anxious-generation">The Anxious Generation</a></h3><p>Jonathan Haidt</p><small>1 note · 1 quote</small></div>
+  <div class="book-card book-clay"><span class="book-status">Finished</span><h3><a href="books/meditations">Meditations</a></h3><p>Marcus Aurelius</p><small>1 note · 1 quote</small></div>
+  <div class="book-card book-blue"><span class="book-status">Want to read</span><h3><a href="books/tomorrow-and-tomorrow-and-tomorrow">Tomorrow, and Tomorrow, and Tomorrow</a></h3><p>Gabrielle Zevin</p><small>No notes yet</small></div>
 </div>
 
 ## Quotations

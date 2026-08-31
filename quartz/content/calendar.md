@@ -6,9 +6,9 @@ date: 2026-08-31
 tags: [nota]
 ---
 
-<nav class="nota-nav"><a href="./">Today</a><a class="active" href="calendar">Calendar</a><a href="library">Library</a><a href="topics">Topics</a></nav>
+<nav class="nota-nav"><a href="./">Today</a><a class="active" href="calendar">Calendar</a><a href="library">Library</a><a href="topics">Topics</a><a href="about">About</a></nav>
 
-Every record keeps its own dates. Daily notes provide the journal view while properties distinguish when something happened, was created, published, completed or became due.
+<p class="page-deck">A quieter way to move through the archive: by the days things happened, not only when they were written down.</p>
 
 ## August 2026
 
@@ -26,4 +26,4 @@ Every record keeps its own dates. Daily notes provide the journal view while pro
 - [[Staked the runner beans]] — Journal · Gardening
 - [[Day 12 — the chord change]] — Journey · Music
 
-Obsidian's Daily Notes and Calendar plugins can create and navigate these dated notes privately. The public site only renders entries explicitly approved for publication.
+<p class="quiet-note">Writing and planning stay private in Obsidian. Only entries explicitly marked for publication appear here.</p>

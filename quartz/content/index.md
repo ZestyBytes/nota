@@ -6,7 +6,7 @@ date: 2026-08-31
 tags: [nota]
 ---
 
-<nav class="nota-nav"><a href="./">Today</a><a href="calendar">Calendar</a><a href="library">Library</a><a href="topics">Topics</a><a href="about">About</a></nav>
+<nav class="nota-nav"><a class="active" href="./">Today</a><a href="calendar">Calendar</a><a href="library">Library</a><a href="topics">Topics</a><a href="about">About</a></nav>
 
 <p class="nota-intro">A record of days, thoughts,<br>things learnt and things worth keeping.</p>
 

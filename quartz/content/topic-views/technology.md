@@ -6,7 +6,9 @@ tags: [technology]
 publish: true
 ---
 
-<div class="topic-intro tech"><span>⌘</span><p>Tools, code and thoughtful technology. This topic uses a technical-log presentation without changing the underlying notes.</p></div>
+<nav class="nota-nav"><a href="../">Today</a><a href="../calendar">Calendar</a><a href="../library">Library</a><a class="active" href="../topics">Topics</a><a href="../about">About</a></nav>
+
+<div class="topic-intro tech"><p>Tools, code and thoughtful technology. Presented as a working log, while every item remains an ordinary note underneath.</p></div>
 
 ```text
 2026-08-27  a-week-living-with-omarchy.md          #technology
