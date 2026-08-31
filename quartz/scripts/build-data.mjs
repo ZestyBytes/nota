@@ -27,7 +27,8 @@ const TOPICS = {
   adhd: { name: "ADHD", color: "#5b4a9e", soft: "#e5e1f2", description: "Understanding attention and living well" },
   books: { name: "Books", color: "#8a5a12", soft: "#ece0cb", description: "Reading, marginalia and ideas worth keeping" },
   family: { name: "Family", color: "#96355a", soft: "#eddce3", description: "Home life and shared memories" },
-  food: { name: "Food", mode: "recipes", color: "#8a4a1a", soft: "#ecddcb", description: "Recipes, experiments and things made for the table" }
+  food: { name: "Food", mode: "recipes", color: "#8a4a1a", soft: "#ecddcb", description: "Recipes, experiments and things made for the table" },
+  lifestyle: { name: "Lifestyle", color: "#2f5d8a", soft: "#dde5ee", description: "Everyday life, plans and the practical things" }
 };
 const TYPE_MAP = { journal: "Journal", journey: "Journey", note: "Note", quote: "Quote" };
 
