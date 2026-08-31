@@ -1,37 +1,25 @@
 ---
-title: Today
-description: A record of days, thoughts, things learnt and things worth keeping.
+title: Find anything.
+description: Search and browse a record of days, books, quotations and things worth keeping.
 publish: true
 date: 2026-08-31
 tags: [nota]
 ---
 
-<nav class="nota-nav"><a class="active" href="./">Today</a><a href="calendar">Calendar</a><a href="library">Library</a><a href="topics">Topics</a><a href="about">About</a></nav>
+<nav class="nota-nav"><a class="active" href="./">Archive</a><a href="calendar">Calendar</a><a href="library">Library</a><a href="topics">Topics</a><a href="about">About</a><button onclick="document.querySelector('.search-button')?.click()">Search</button></nav>
 
-<p class="nota-intro">A record of days, thoughts,<br>things learnt and things worth keeping.</p>
+<p class="archive-deck">Every day, book, quotation and thought in one searchable personal archive.</p>
 
-<div class="nota-date"><span>Monday</span><strong>31 August 2026</strong></div>
+<button class="archive-search" onclick="document.querySelector('.search-button')?.click()"><span>Search Nota</span><strong>Try “garden”, “Mary Oliver” or a date</strong></button>
 
-> [!memory] On this day last year
-> [[First seedlings potted]]
+<div class="archive-tabs"><span>Everything</span><a href="#recently-opened">Journal</a><a href="library">Books</a><a href="library#quotations">Quotes</a><a href="topics">Topics</a></div>
 
-## Entries
+## Recently opened
 
-<div class="nota-entry garden"><span class="nota-type">Journal · Gardening</span><h3><a href="journal/staked-the-runner-beans">Staked the runner beans</a></h3><p>The plants had finally reached the top of their canes. A quiet hour outside before the rain came.</p></div>
+<div class="archive-result"><span>Journal · Gardening · 31 Aug</span><h3><a href="journal/staked-the-runner-beans">Staked the runner beans</a></h3><p>A quiet hour outside before the rain came.</p></div>
 
-<div class="nota-entry music"><span class="nota-type">Journey · Music</span><h3><a href="journeys/day-12-the-chord-change">Day 12 — the chord change</a></h3><p>For the first time, the movement from G to C felt less like calculation and more like music.</p></div>
+<div class="archive-result"><span>Book · Reading · 42%</span><h3><a href="books/the-anxious-generation">The Anxious Generation</a></h3><p>Jonathan Haidt · reading notes and quotations</p></div>
 
-## To-do
+<div class="archive-result"><span>Quotation · Mary Oliver</span><h3><a href="quotes/attention-is-the-beginning-of-devotion">Attention is the beginning of devotion.</a></h3></div>
 
-- [ ] Order more twine #gardening
-- [ ] Ring NHS about follow-up #adhd
-- [ ] Try the new Waybar module #technology
-- [x] Water the greenhouse #gardening
-
-## From the library
-
-> Attention is the beginning of devotion.
->
-> Mary Oliver
-
-Browse [[Library|books, notes and quotations]] or follow a path through [[Topics]].
+<aside class="return-to"><h2>Return to</h2><a href="calendar">On this day</a><a href="library">Currently reading</a><a href="tags/music">Unfinished journeys</a><a href="library#quotations">Saved quotations</a></aside>
