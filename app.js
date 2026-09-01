@@ -164,7 +164,7 @@ document.addEventListener("submit",async e=>{
 });
 async function loadRemoteArchive(){const remote=await NotaBackend.loadData();state.data=Object.keys(remote.topics).length?remote:clone(BASE)}
 async function boot(){try{const session=await NotaBackend.init();state.user=session.user;if(state.user)await loadRemoteArchive();else if(NotaBackend.configured&&location.hash==="#writing")state.data={...emptyArchive(),entries:await NotaBackend.loadPublished()};NotaBackend.onAuthChange(user=>{state.user=user;if(!user)render()})}catch(error){console.error(error);toast("Could not connect to storage")}finally{state.booting=false;render()}}
-window.addEventListener("hashchange",async()=>{if(NotaBackend.configured&&!state.user&&location.hash==="#writing")state.data={...emptyArchive(),entries:await NotaBackend.loadPublished()};render()});document.querySelector(".header-date").textContent=now.toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"});
+window.addEventListener("hashchange",async()=>{if(NotaBackend.configured&&!state.user&&location.hash==="#writing")state.data={...emptyArchive(),entries:await NotaBackend.loadPublished()};render()});document.querySelector(".hd-day").textContent=now.toLocaleDateString("en-GB",{weekday:"long"});document.querySelector(".hd-date").textContent=`${now.getDate()} ${now.toLocaleDateString("en-GB",{month:"long"})}`;
 boot();
 // The shell is served cache-first, so a deployed change would otherwise only
 // appear on the launch after next. When a new worker takes over, reload once
