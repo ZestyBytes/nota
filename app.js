@@ -68,7 +68,7 @@ const MONTHS=["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV",
 function fmtDate(iso){if(!iso)return"";const d=new Date(String(iso).slice(0,10)+"T12:00:00");return isNaN(d)?"":`${String(d.getDate()).padStart(2,"0")} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`}
 function accNo(id){let h=0;for(const c of String(id))h=(h*31+c.charCodeAt(0))>>>0;return String(1000+h%9000)}
 function ageTier(dateStr){if(!dateStr)return"";const days=(now-new Date(dateStr+"T12:00:00"))/864e5;return days>180?"archive":days>30?"aged":""}
-function entryCard(e){const t=topic(e.topics?.[0]),attachment=e.attachments?.[0],age=ageTier(e.occurredAt),date=fmtDate(e.occurredAt||e.createdAt||e.dueAt);return `<article class="entry ${e.image?"has-thumb":""} ${age}" data-entry="${e.id}" style="--topic:${t.color}"><span class="acc-no">No. ${accNo(e.id)}</span><span class="mount-tag" style="background:${t.color}">${esc(t.name)}</span>${e.image?`<span class="thumb-wrap"><img class="entry-thumb" src="${e.image}" alt="${esc(e.imageAlt||"")}" loading="lazy">${e.images?.length>1?`<span class="thumb-count">${icon("photos")}${e.images.length}</span>`:""}</span>`:""}<div class="entry-copy"><div class="entry-meta"><span class="type-label">${esc(e.type)}</span>${date?`<span class="entry-date">${date}</span>`:""}${e.publishedAt||e.type==="Task"?"":`<span class="stamp stamp-private">private</span>`}</div><h3>${e.type==="Quote"?`“${esc(e.title)}”`:esc(e.title)}</h3>${e.author?`<p>${esc(e.author)}</p>`:e.excerpt?`<p>${esc(e.excerpt)}</p>`:""}${attachment?`<span class="attachment-inline">${icon("paperclip")}${esc(attachment.name)}</span>`:""}</div></article>`}
+function entryCard(e,snippet=""){const t=topic(e.topics?.[0]),attachment=e.attachments?.[0],age=ageTier(e.occurredAt),date=fmtDate(e.occurredAt||e.createdAt||e.dueAt);return `<article class="entry ${e.image?"has-thumb":""} ${age}" data-entry="${e.id}" style="--topic:${t.color}"><span class="acc-no">No. ${accNo(e.id)}</span><span class="mount-tag" style="background:${t.color}">${esc(t.name)}</span>${e.image?`<span class="thumb-wrap"><img class="entry-thumb" src="${e.image}" alt="${esc(e.imageAlt||"")}" loading="lazy">${e.images?.length>1?`<span class="thumb-count">${icon("photos")}${e.images.length}</span>`:""}</span>`:""}<div class="entry-copy"><div class="entry-meta"><span class="type-label">${esc(e.type)}</span>${date?`<span class="entry-date">${date}</span>`:""}${e.publishedAt||e.type==="Task"?"":`<span class="stamp stamp-private">private</span>`}</div><h3>${e.type==="Quote"?`“${esc(e.title)}”`:esc(e.title)}</h3>${snippet?`<p class="snippet">${snippet}</p>`:e.author?`<p>${esc(e.author)}</p>`:e.excerpt?`<p>${esc(e.excerpt)}</p>`:""}${attachment?`<span class="attachment-inline">${icon("paperclip")}${esc(attachment.name)}</span>`:""}</div></article>`}
 // A page-shaped placeholder rather than a spinner: same title block, same
 // card metrics, so the real content lands in the space already held for it.
 function skeletonEntry(){return `<div class="entry skeleton-entry"><div class="skeleton skeleton-line" style="width:34%;height:10px"></div><div class="skeleton skeleton-line" style="width:78%;height:26px;margin:14px 0 12px"></div><div class="skeleton skeleton-line"></div><div class="skeleton skeleton-line"></div></div>`}
@@ -244,7 +244,43 @@ function topics(){
     :b.count-a.count||a.t.name.localeCompare(b.t.name));
   return `<section>${pageHead("Paths through the archive","Topics","Each topic has a quiet default appearance, or an optional view shaped around its material, without changing the underlying taxonomy.")}<div class="search-filters topic-sort">${Object.entries(sorts).map(([k,label])=>`<button class="filter ${state.topicSort===k?"active":""}" data-topicsort="${k}">${label}</button>`).join("")}</div><div class="topic-grid">${list.map(({id,t,count,latest,kids})=>`<button class="topic-card" data-topic="${id}" style="--topic:${t.color};--soft:${t.soft}">${t.icon?`<span class="topic-motif" aria-hidden="true">${icon(t.icon)}</span>`:`<span class="topic-mark" aria-hidden="true">${esc(t.name[0])}</span>`}<span class="topic-count">${count} ${count===1?"item":"items"}</span><h2>${esc(t.name)}</h2><p>${esc(t.description)}</p>${kids.length?`<span class="topic-kids">${kids.map(k=>`<span class="kid" data-topic="${k}" style="--topic:${state.data.topics[k].color}">${esc(state.data.topics[k].name)}</span>`).join("")}</span>`:""}<span class="topic-foot">${t.mode?"Tailored view":latest?fmtDate(latest):"&nbsp;"}</span></button>`).join("")}</div></section>`;
 }
-function search(){const q=state.search.toLowerCase(),pool=[...state.data.entries,...state.data.tasks.map(t=>({...t,type:"Task",excerpt:""}))],present=new Set(pool.map(x=>x.type)),types=["all",...["Journal","Note","Reading","Quote","Journey","Task","Event"].filter(t=>present.has(t))],items=pool.filter(e=>(state.filter==="all"||e.type===state.filter)&&(!q||[e.title,e.excerpt,e.author,...(e.topics||[]).map(x=>topic(x).name)].join(" ").toLowerCase().includes(q)));return `<section>${pageHead("Find anything","Search","Search across titles, words, types and topics.")}<input class="search-box" type="search" value="${esc(state.search)}" placeholder="Search nota…" autofocus><div class="search-filters">${types.map(t=>`<button class="filter ${state.filter===t?"active":""}" data-filter="${t}">${t}</button>`).join("")}</div><div class="entry-list search-results">${items.length?items.map(entryCard).join(""):`<p class="empty">No matching records.</p>`}</div></section>`}
+// Search reads the whole note, not just its first paragraph. Everything the
+// archive is for is finding a thing again later, and the words that identify
+// an entry are usually well past the excerpt.
+function searchPool(){return [...state.data.entries,...state.data.tasks.map(t=>({...t,type:"Task",excerpt:t.note||""}))]}
+function haystack(e){return [e.title,e.excerpt,e.author,e.body,...(e.topics||[]).map(x=>topic(x).name)].filter(Boolean).join(" ").toLowerCase()}
+function searchResults(q){
+  const term=q.trim().toLowerCase();
+  return searchPool().filter(e=>(state.filter==="all"||e.type===state.filter)&&(!term||haystack(e).includes(term)));
+}
+// Show why a result matched: the line the term appears on, trimmed around it,
+// with the term marked. Falls back to the excerpt when the match is already
+// visible in the title or the excerpt itself.
+function matchSnippet(e,q){
+  const term=q.trim();
+  if(!term)return "";
+  const low=term.toLowerCase();
+  if((e.title||"").toLowerCase().includes(low)||(e.excerpt||"").toLowerCase().includes(low))return "";
+  // strip the markdown so the snippet reads as prose rather than as source
+  const text=String(e.body||"")
+    .replace(/```[\s\S]*?```/g," ")
+    .replace(/^!\[[^\]]*\]\([^)]*\)$/gm," ")
+    .replace(/^#{1,6}\s*/gm,"")
+    .replace(/^\s*[-*]\s+/gm,"")
+    .replace(/\[\[([^\]|]+)\|?[^\]]*\]\]/g,"$1")
+    .replace(/\[([^\]]+)\]\([^)]*\)/g,"$1")
+    .replace(/[*`>]/g,"")
+    .replace(/\s+/g," ").trim();
+  const i=text.toLowerCase().indexOf(low);
+  if(i<0)return "";
+  const from=Math.max(0,i-70),to=Math.min(text.length,i+term.length+90);
+  // start and end on whole words, or the snippet opens mid-word
+  let head=text.slice(from,i); if(from>0)head=head.replace(/^\S*\s+/,"");
+  let tail=text.slice(i+term.length,to); if(to<text.length)tail=tail.replace(/\s+\S*$/,"");
+  const hit=text.slice(i,i+term.length);
+  return `${from>0?"&hellip; ":""}${esc(head)}<mark>${esc(hit)}</mark>${esc(tail)}${to<text.length?" &hellip;":""}`;
+}
+function search(){const q=state.search,pool=searchPool(),present=new Set(pool.map(x=>x.type)),types=["all",...["Journal","Note","Reading","Quote","Journey","Task","Event"].filter(t=>present.has(t))],items=searchResults(q);return `<section>${pageHead("Find anything","Search","Search across titles, words, types and topics.")}<input class="search-box" type="search" value="${esc(state.search)}" placeholder="Search nota…" autofocus><div class="search-filters">${types.map(t=>`<button class="filter ${state.filter===t?"active":""}" data-filter="${t}">${t}</button>`).join("")}</div><div class="entry-list search-results">${items.length?items.map(e=>entryCard(e,matchSnippet(e,q))).join(""):`<p class="empty">No matching records.</p>`}</div></section>`}
 function writing(){const items=state.data.entries.filter(e=>e.publishedAt);return `<section class="writing-page">${pageHead("Selected writing","Writing","Notes and journal entries deliberately shared from the private archive.")}<div class="entry-list">${items.map(entryCard).join("")||`<p class="empty">Nothing has been published yet.</p>`}</div></section>`}
 function topicView(id){const t=topic(id),kids=childTopics(id),items=state.data.entries.filter(e=>inTopic(e,id)),books=state.data.books.filter(b=>inTopic(b,id));let body=`<div class="entry-list">${items.map(entryCard).join("")||(books.length?"":`<p class="empty">Nothing in this topic yet.</p>`)}</div>`;if(t.mode==="listen"){
     const groups=items.map(e=>({e,rows:bulletsOf(e.body)})).filter(g=>g.rows.length);
@@ -328,7 +364,7 @@ document.addEventListener("click",async e=>{
   const tp=e.target.closest("[data-topic]");if(tp){state.returnTo=location.hash||"#topics";state.returnScroll=window.scrollY;location.hash=`topics/${tp.dataset.topic}`;return}
   if(e.target.closest(".main-nav a"))document.querySelector(".main-nav").classList.remove("open");
 });
-document.addEventListener("input",e=>{if(e.target.matches(".search-box")){state.search=e.target.value;const pos=e.target.selectionStart;document.querySelector(".search-results").innerHTML=(()=>{const q=state.search.toLowerCase(),items=[...state.data.entries,...state.data.tasks.map(t=>({...t,type:"Task"}))].filter(x=>(state.filter==="all"||x.type===state.filter)&&[x.title,x.excerpt,x.author,...(x.topics||[]).map(y=>topic(y).name)].join(" ").toLowerCase().includes(q));return items.length?items.map(entryCard).join(""):`<p class="empty">No matching records.</p>`})();e.target.setSelectionRange(pos,pos)}});
+document.addEventListener("input",e=>{if(e.target.matches(".search-box")){state.search=e.target.value;const pos=e.target.selectionStart;document.querySelector(".search-results").innerHTML=(()=>{const items=searchResults(state.search);return items.length?items.map(e=>entryCard(e,matchSnippet(e,state.search))).join(""):`<p class="empty">No matching records.</p>`})();e.target.setSelectionRange(pos,pos)}});
 document.addEventListener("submit",async e=>{
   e.preventDefault();const f=new FormData(e.target),submit=e.submitter;e.target.classList.add("working");if(submit)submit.disabled=true;
   try{

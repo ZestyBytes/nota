@@ -93,6 +93,7 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px}
 .entry:hover{transform:translateY(-3px);border-color:var(--ink);box-shadow:0 10px 22px -12px rgba(34,38,30,.35)}
 .entry:hover .mount-tag{transform:rotate(0deg) translateY(-1px)}
 .acc-no{position:absolute;top:14px;right:16px;font:11px var(--mono);color:var(--faint);letter-spacing:.04em;z-index:3}
+.entry.has-thumb .acc-no{color:#f2f4ea;text-shadow:0 1px 3px rgba(0,0,0,.8)}
 .book .acc-no{color:#f7f8f2;text-shadow:0 1px 3px rgba(0,0,0,.7)}
 .mount-tag{
   position:absolute;top:-11px;left:20px;color:#fff;font:10px/1 var(--mono);text-transform:uppercase;
@@ -677,3 +678,41 @@ body.modal-open{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .task.has-note{cursor:pointer}
 .task.has-note:hover .task-title{text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--line)}
 .task.done .task-note,.task.done .task-due{color:var(--faint)}
+
+/* ---------- search result snippets ---------- */
+.entry p.snippet{font-style:normal;font-size:15px;color:var(--ink-soft)}
+.entry p.snippet mark{background:color-mix(in srgb,var(--stamp-red) 22%,transparent);color:var(--ink);padding:0 2px;border-radius:2px}
+
+/* ============================================================
+   Dark: the same herbarium at night. Ground and ink swap, the
+   topic inks lift enough to stay legible, and the paper texture
+   becomes a dim board rather than a bright sheet.
+   ============================================================ */
+@media(prefers-color-scheme:dark){
+  :root{
+    --paper:#14160f;
+    --paper-alt:#1c1f16;
+    --surface:#1a1d14;
+    --ink:#e6e9dc;
+    --ink-soft:#c7cbba;
+    --muted:#949a85;
+    --faint:#6f7563;
+    --line:#333a2b;
+    --line-strong:#e6e9dc;
+    --stamp-red:#d4705f;
+    --stamp-green:#84b168;
+    --tape:rgba(214,180,110,.13);
+  }
+  /* shadows read as depth on paper and as murk on a dark ground */
+  .entry:hover,.book:hover,.topic-card:hover,.side-widget:hover,.shot:hover{box-shadow:0 10px 22px -12px rgba(0,0,0,.7)}
+  .modal-backdrop{background:rgba(0,0,0,.66)}
+  .mount-tag{color:#14160f;box-shadow:0 3px 6px -2px rgba(0,0,0,.6)}
+  .book .acc-no{color:#e6e9dc;text-shadow:0 1px 3px rgba(0,0,0,.85)}
+  .thumb-count,.gallery-no,.shot-count{background:rgba(0,0,0,.7)}
+  /* photographs are lit for daylight; take the glare off after dark */
+  .entry-thumb,.book-cover,.detail-image,.gallery-shot img,.shot img,.body-figure img{filter:saturate(.82) brightness(.86)}
+  .detail-body pre.code{background:#0d0f09;color:#d4d8c8}
+  .detail-body code{background:var(--paper-alt)}
+  .detail-actions .danger:hover{color:#14160f}
+  .entry p.snippet mark{background:color-mix(in srgb,var(--stamp-red) 34%,transparent)}
+}
