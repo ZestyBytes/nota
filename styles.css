@@ -540,3 +540,12 @@ body.modal-open{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .gallery-dots i{width:6px;height:6px;border-radius:50%;background:var(--line);transition:background .18s ease,transform .18s ease}
 .gallery-dots i.on{background:var(--stamp-red);transform:scale(1.25)}
 .gallery-caption{margin:10px 0 0;font:11px var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);min-height:14px}
+
+/* ---------- listening topic (mode: listen) ---------- */
+.listen-group{margin-bottom:42px}
+.listen-head{display:flex;align-items:baseline;gap:14px;justify-content:space-between;border-bottom:1.5px solid var(--ink);padding-bottom:9px}
+.listen-head h3{margin:0;font:600 22px/1.2 var(--serif)}
+.listen-head h3 a:hover{color:var(--topic)}
+.listen-head span{font:10px var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--muted);flex:none}
+.listen-group .tracklist{margin-top:0;border-top:0}
+.listen-rest{margin-top:10px}
