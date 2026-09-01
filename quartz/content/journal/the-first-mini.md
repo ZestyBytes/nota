@@ -26,3 +26,7 @@ The second photograph is my dad's first Mini, registered the same year as
 mine: both K reg.
 
 ![Dad's first Mini, a K reg, from the Bognor Mini Centre](assets/journal/dads-first-mini.jpg)
+
+![An illustration of a Mini in a workshop, drawn in pen and watercolour](assets/journal/mini-garage-watercolour.jpg)
+
+![The same workshop scene, painted](assets/journal/mini-garage-painting.jpg)

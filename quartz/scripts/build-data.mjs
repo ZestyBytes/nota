@@ -24,7 +24,8 @@ const TOPICS = {
   gardening: { name: "Gardening", color: "#3f6b2e", soft: "#e4ead9", description: "Seasons, seedlings and life outdoors" },
   music: { name: "Music", color: "#a13a2e", soft: "#f0e1dd", description: "Practice, listening and the guitar journey" },
   technology: { name: "Technology", mode: "tech", color: "#1c6e63", soft: "#dbe9e6", description: "Tools, code and thoughtful technology" },
-  adhd: { name: "ADHD", color: "#5b4a9e", soft: "#e5e1f2", description: "Understanding attention and living well" },
+  selfcare: { name: "Self care", color: "#3f6470", soft: "#dde7ea", description: "Looking after the machine: health, mind and upkeep" },
+  adhd: { name: "ADHD", parent: "selfcare", color: "#5b4a9e", soft: "#e5e1f2", description: "Understanding attention and living well" },
   books: { name: "Books", color: "#8a5a12", soft: "#ece0cb", description: "Reading, marginalia and ideas worth keeping" },
   family: { name: "Family", color: "#96355a", soft: "#eddce3", description: "Home life and shared memories" },
   food: { name: "Food", mode: "recipes", color: "#8a4a1a", soft: "#ecddcb", description: "Recipes, experiments and things made for the table" },
@@ -187,8 +188,12 @@ for (const { slug, data, body } of quoteFiles) {
 entries.sort((a, b) => (b.occurredAt || b.createdAt || "").localeCompare(a.occurredAt || a.createdAt || ""));
 
 const payload = {
-  topics: Object.fromEntries(Object.entries(TOPICS).filter(([slug]) =>
-    entries.some(e => e.topics.includes(slug)) || books.some(b => b.topics.includes(slug)) || tasks.some(t => t.topics.includes(slug)))),
+  topics: (() => {
+    const used = slug => entries.some(e => e.topics.includes(slug)) || books.some(b => b.topics.includes(slug)) || tasks.some(t => t.topics.includes(slug));
+    // a parent earns its place if it is tagged directly or any child is
+    const shown = slug => used(slug) || Object.entries(TOPICS).some(([child, t]) => t.parent === slug && used(child));
+    return Object.fromEntries(Object.entries(TOPICS).filter(([slug]) => shown(slug)));
+  })(),
   entries, tasks, books
 };
 

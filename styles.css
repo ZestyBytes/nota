@@ -568,3 +568,22 @@ body.modal-open{position:fixed;left:0;right:0;width:100%;overflow:hidden}
   .topic-card:before{left:14px}
   .topic-card:after{right:14px}
 }
+
+/* ---------- sub-topics ---------- */
+.topic-kids{position:relative;display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.kid{display:inline-flex;align-items:center;border:1px solid var(--topic);border-radius:2px;padding:2px 7px;color:var(--topic);font:9px var(--mono);text-transform:uppercase;letter-spacing:.08em;background:var(--surface)}
+.kid:hover{background:var(--topic);color:var(--surface)}
+.topic-kids-page{margin:16px 0 0;gap:8px}
+.topic-kids-page .kid{font-size:10px;padding:4px 10px}
+.topic-parent{margin:14px 0 0;display:flex;align-items:center;gap:8px;font:10px var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+
+/* ---------- book plate ----------
+   Stands in for cover art: the archive setting its own title page. */
+.book-plate{position:relative;display:grid;place-content:center;padding:18px 16px;overflow:hidden;background:var(--paper-alt);border-bottom:3px solid var(--topic,var(--ink))}
+.plate-rule{position:absolute;inset:9px;border:1px solid color-mix(in srgb,var(--topic) 30%,transparent);pointer-events:none}
+.plate-title{position:relative;text-align:center;font:600 18px/1.2 var(--serif);color:var(--ink);max-height:4.8em;overflow:hidden}
+.plate-mark{position:absolute;right:-.08em;bottom:-.3em;font:700 96px/1 var(--mono);color:var(--topic);opacity:.13;pointer-events:none;user-select:none}
+/* the accession number is set light for photographic covers; a plate is
+   pale, so it needs ink instead */
+.book.has-plate .acc-no{color:var(--muted);text-shadow:none}
+.book-detail-head .book-plate{width:120px;height:160px;flex:none}
