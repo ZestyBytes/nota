@@ -144,7 +144,7 @@ for (const file of files) {
   const { image, imageAlt } = firstImage(body);
   const entry = {
     id: slug, type: TYPE_MAP[data.type], title: data.title,
-    excerpt: firstParagraph(body), body: body.trim(), topics,
+    excerpt: firstParagraph(body), body: body.trim(), view: data.view || "", topics,
     occurredAt: data.occurredAt || "", createdAt: data.createdAt || data.occurredAt || "",
     publishedAt: data.publishedAt || "", image, imageAlt, attachments: []
   };

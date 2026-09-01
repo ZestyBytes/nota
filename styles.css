@@ -436,3 +436,39 @@ body.modal-open{position:fixed;left:0;right:0;width:100%;overflow:hidden}
    stamp used to sit. The stamp is now kept for the exception only. */
 .entry-date{color:var(--faint);font:10px var(--mono);letter-spacing:.12em}
 .modal-head .stamp{margin-left:10px}
+
+/* ---------- entry page ----------
+   Long-form entries get a real route rather than a modal: the back gesture
+   works, the URL is shareable, and there is no scroll inside a scroll. */
+.back-link{margin:0 0 26px;font:11px var(--mono);text-transform:uppercase;letter-spacing:.14em;color:var(--muted)}
+.back-link a{display:inline-flex;align-items:center;gap:8px}
+.back-link a:before{content:"";width:16px;height:1.5px;background:currentColor}
+.back-link a:hover{color:var(--ink)}
+.entry-page-meta{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.acc-no-page{position:static;margin-left:auto}
+.entry-page .chips{margin-bottom:14px}
+.entry-page-title{font:600 clamp(32px,7vw,52px)/1.08 var(--serif);margin:0 0 10px;max-width:16ch}
+.entry-page-author{margin:0 0 22px;color:var(--muted);font-style:italic}
+.entry-page .detail-image{margin-bottom:22px}
+.entry-page .detail-body{font:19px/1.75 var(--serif);max-width:60ch}
+.entry-page .detail-body p{margin:0 0 18px}
+.entry-page .detail-body h3{font:700 12px/1 var(--mono);text-transform:uppercase;letter-spacing:.14em;color:var(--muted);margin:30px 0 14px}
+.entry-page .detail-body blockquote{margin:0 0 18px;padding-left:16px;border-left:2px solid var(--line);font-style:italic;color:var(--ink-soft)}
+.entry-page .detail-body ul{margin:0 0 18px;padding-left:20px}
+
+/* ---------- swipe deck (view: cards) ---------- */
+.deck-wrap{margin:0 -18px}
+.deck{display:grid;grid-auto-flow:column;grid-auto-columns:88%;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 18px 6px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.deck::-webkit-scrollbar{display:none}
+.deck:focus-visible{outline:2px solid var(--stamp-red);outline-offset:4px}
+.deck-card{position:relative;scroll-snap-align:center;background:var(--surface);border:1px solid var(--line);border-top:3px solid var(--topic,var(--ink));padding:44px 22px 26px;min-height:300px;display:flex;flex-direction:column;justify-content:center}
+.deck-no{position:absolute;top:16px;left:22px;font:10px var(--mono);letter-spacing:.14em;color:var(--faint)}
+.deck-copy{font:18px/1.62 var(--serif)}
+.deck-copy p{margin:0 0 14px}
+.deck-copy p:last-child{margin-bottom:0}
+.deck-copy strong{font-weight:600}
+.deck-copy h3{font:700 12px/1 var(--mono);text-transform:uppercase;letter-spacing:.14em;color:var(--muted);margin:0 0 12px}
+.deck-dots{display:flex;justify-content:center;gap:7px;margin:16px 18px 0}
+.deck-dots i{width:6px;height:6px;border-radius:50%;background:var(--line);transition:background .18s ease,transform .18s ease}
+.deck-dots i.on{background:var(--stamp-red);transform:scale(1.25)}
+@media(min-width:760px){.deck-wrap{margin:0}.deck{grid-auto-columns:minmax(0,420px);padding:4px 0 6px}}

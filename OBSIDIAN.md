@@ -77,6 +77,11 @@ publish: true
 Body: first paragraph becomes the card excerpt everywhere. A leading
 `![alt](url)` image becomes the entry's photo.
 
+Add `view: cards` to a Journal, Note or Journey and its page becomes a
+swipeable deck instead of flowing prose: one card per paragraph, or one per
+`##` heading if the note uses them. Good for a numbered list of points,
+wrong for ordinary writing, so it is opt-in.
+
 **Note** (`type: note`): same shape as Journal, for things that aren't a
 dated diary entry. Same fields.
 

@@ -1,6 +1,7 @@
 ---
 title: Eight Japanese principles for building habits
 type: note
+view: cards
 tags: [habits, adhd]
 occurredAt: "2026-09-01"
 createdAt: "2026-09-01"
