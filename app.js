@@ -58,6 +58,12 @@ function detail(id){const e=[...state.data.entries,...state.data.tasks].find(x=>
 function bookDetail(id){const b=state.data.books.find(x=>x.id===id);if(!b)return;modal(`<article class="book-detail"><div class="modal-head"><span class="type-label">Reading</span><button class="close" data-close>×</button></div><div class="book-detail-head"><img src="${b.cover}" alt="Decorative reading image"><div><h2>${esc(b.title)}</h2><p>${esc(b.author)}</p><span class="status">${esc(b.status.replaceAll("-"," "))} · ${b.progress}%</span></div></div><div class="reading-columns"><section><div class="subhead"><h3>Notes</h3></div>${b.notes?.length?b.notes.map(n=>`<div class="reading-note"><p>${esc(n.text)}</p><small>${esc(n.createdAt)}</small></div>`).join(""):`<p class="empty">No notes yet.</p>`}</section><section><div class="subhead"><h3>Quotes</h3></div>${b.quotes?.length?b.quotes.map(q=>`<blockquote class="reading-quote">“${esc(q.text)}”<cite>${esc(q.page||"")}</cite></blockquote>`).join(""):`<p class="empty">No quotes yet.</p>`}</section></div></article>`)}
 function toast(msg){const el=document.getElementById("toast");el.textContent=msg;el.classList.add("show");setTimeout(()=>el.classList.remove("show"),1800)}
 document.addEventListener("click",async e=>{
+  // Tapping the tab you are already on takes you back to the top of it —
+  // a same-hash link fires no hashchange, so handle it here.
+  const nav=e.target.closest(".main-nav a,.mobile-nav a");
+  // Compare the whole hash, not just the route: on topics/gardening the
+  // Topics tab should still take you back up to the topic index.
+  if(nav&&nav.getAttribute("href")===(location.hash||"#today")){e.preventDefault();window.scrollTo({top:0,behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});return}
   const action=e.target.closest("[data-action]")?.dataset.action;
   if(action==="logout"){await NotaBackend.signOut();state.user=null;render()}
   const close=e.target.closest("[data-close]");if(close&&e.target===close)closeModal();
