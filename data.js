@@ -10,7 +10,7 @@ window.NOTA_DATA = {
   },
   entries: [
     { id:"j1", type:"Journal", title:"Staked the runner beans", excerpt:"The plants had finally reached the top of their canes. A quiet hour outside before the rain came.", image:"https://images.pexels.com/photos/7728082/pexels-photo-7728082.jpeg?auto=compress&cs=tinysrgb&w=1200", imageAlt:"Runner bean plants growing around garden canes", attachments:[{name:"garden-plan-august.pdf",kind:"PDF",size:"1.2 MB"}], topics:["gardening"], occurredAt:"2026-08-31", createdAt:"2026-08-31", publishedAt:"2026-08-31" },
-    { id:"j2", type:"Journey", title:"Day 12 — the chord change", excerpt:"For the first time, the movement from G to C felt less like a calculation and more like music.", topics:["music"], occurredAt:"2026-08-31", createdAt:"2026-08-31", publishedAt:"2026-08-31" },
+    { id:"j2", type:"Journey", title:"Day 12: the chord change", excerpt:"For the first time, the movement from G to C felt less like a calculation and more like music.", topics:["music"], occurredAt:"2026-08-31", createdAt:"2026-08-31", publishedAt:"2026-08-31" },
     { id:"n1", type:"Note", title:"A week living with Omarchy", excerpt:"Small, deliberate defaults have changed how the computer feels to use.", topics:["technology"], occurredAt:"2026-08-27", createdAt:"2026-08-27", publishedAt:"2026-08-28" },
     { id:"j3", type:"Journal", title:"The assessment letter arrived", excerpt:"Relief, recognition, and more questions than I expected.", topics:["adhd"], occurredAt:"2026-08-27", createdAt:"2026-08-27", publishedAt:"2026-08-29" },
     { id:"q1", type:"Quote", title:"Attention is the beginning of devotion.", author:"Mary Oliver", topics:["books"], occurredAt:"2026-08-24", createdAt:"2026-08-24", publishedAt:"2026-08-24" },
@@ -26,7 +26,7 @@ window.NOTA_DATA = {
   ],
   books: [
     { id:"b1", title:"The Anxious Generation", author:"Jonathan Haidt", status:"reading", progress:42, cover:"https://images.pexels.com/photos/159711/books-bookstore-book-reading-159711.jpeg?auto=compress&cs=tinysrgb&w=700", notes:[{id:"bn1",text:"The chapter on play connects strongly with my notes about attention.",createdAt:"2026-08-29"}], quotes:[{id:"bq1",text:"Experience, not information, is the key to emotional development.",page:"p. 83"}], topics:["adhd","books"] },
-    { id:"b2", title:"Meditations", author:"Marcus Aurelius", status:"finished", progress:100, cover:"https://images.pexels.com/photos/2908984/pexels-photo-2908984.jpeg?auto=compress&cs=tinysrgb&w=700", notes:[{id:"bn2",text:"Return to Book IV when everything feels noisier than it needs to.",createdAt:"2026-07-18"}], quotes:[{id:"bq2",text:"You have power over your mind — not outside events.",page:"Book XII"}], topics:["books"] },
+    { id:"b2", title:"Meditations", author:"Marcus Aurelius", status:"finished", progress:100, cover:"https://images.pexels.com/photos/2908984/pexels-photo-2908984.jpeg?auto=compress&cs=tinysrgb&w=700", notes:[{id:"bn2",text:"Return to Book IV when everything feels noisier than it needs to.",createdAt:"2026-07-18"}], quotes:[{id:"bq2",text:"You have power over your mind, not outside events.",page:"Book XII"}], topics:["books"] },
     { id:"b3", title:"Tomorrow, and Tomorrow, and Tomorrow", author:"Gabrielle Zevin", status:"want-to-read", progress:0, cover:"https://images.pexels.com/photos/904616/pexels-photo-904616.jpeg?auto=compress&cs=tinysrgb&w=700", notes:[], quotes:[], topics:["books"] }
   ]
 };

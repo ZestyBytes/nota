@@ -23,7 +23,7 @@ tags: [nota]
 
 ## Monday 31 August
 
-- [[Staked the runner beans]] — Journal · Gardening
-- [[Day 12 — the chord change]] — Journey · Music
+- [[Staked the runner beans]] · Journal · Gardening
+- [[Day 12: the chord change]] · Journey · Music
 
 <p class="quiet-note">Writing and planning stay private in Obsidian. Only entries explicitly marked for publication appear here.</p>

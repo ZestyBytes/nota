@@ -18,9 +18,9 @@ tags: [nota]
 
 ## Quotations
 
-- [[Attention is the beginning of devotion]] — Mary Oliver
-- [[Experience, not information]] — linked to [[The Anxious Generation]]
-- [[You have power over your mind]] — linked to [[Meditations]]
+- [[Attention is the beginning of devotion]] · Mary Oliver
+- [[Experience, not information]] · linked to [[The Anxious Generation]]
+- [[You have power over your mind]] · linked to [[Meditations]]
 
 ## Notes
 

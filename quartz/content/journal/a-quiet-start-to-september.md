@@ -8,4 +8,4 @@ publishedAt: "2026-09-01"
 publish: true
 ---
 
-Nothing dramatic — just the first properly cool morning of the year, and the sense that the season has quietly turned over.
+Nothing dramatic, just the first properly cool morning of the year, and the sense that the season has quietly turned over.

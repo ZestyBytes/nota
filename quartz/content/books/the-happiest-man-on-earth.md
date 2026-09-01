@@ -13,7 +13,7 @@ publish: true
 ## Reading notes
 
 A Holocaust survivor's memoir, written in his nineties, that keeps returning
-to friendship as the thing that made survival possible — and afterwards, the
+to friendship as the thing that made survival possible, and afterwards the
 thing that made life worth having.
 
 ## Quotations

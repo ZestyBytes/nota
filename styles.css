@@ -1,5 +1,5 @@
 /* ============================================================
-   NOTA — Field Archive
+   NOTA, Field Archive
    A private record kept the way a naturalist keeps a herbarium:
    every entry mounted, tagged, numbered and stamped.
    ============================================================ */
@@ -411,7 +411,7 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px}
 .pull-hint.spin{color:var(--ink)}
 
 /* ---------- modal scroll lock ----------
-   position:fixed rather than overflow:hidden — iOS ignores the latter on
+   position:fixed rather than overflow:hidden, because iOS ignores the latter on
    body, which let the archive scroll away underneath an open note. */
 body.modal-open{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 

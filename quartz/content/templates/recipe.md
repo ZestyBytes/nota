@@ -13,7 +13,7 @@ publish: false
 
 ![Photo of the finished dish](https://example.com/photo.jpg)
 
-One sentence about the dish — becomes the card excerpt.
+One sentence about the dish, which becomes the card excerpt.
 
 ## You'll need
 

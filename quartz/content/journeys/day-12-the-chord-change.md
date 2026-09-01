@@ -1,5 +1,5 @@
 ---
-title: Day 12 — the chord change
+title: "Day 12: the chord change"
 type: journey
 journey: Learning guitar
 tags: [music]

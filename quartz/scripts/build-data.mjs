@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 // Reads the real Obsidian content in quartz/content and emits a data.js
 // (window.NOTA_DATA = {...}) in the exact shape the Nota PWA (app.js)
-// expects. Only files with `publish: true` are included — the same rule
-// quartz's own explicit-publish plugin enforces — so private planning and
+// expects. Only files with `publish: true` are included, the same rule
+// quartz's own explicit-publish plugin enforces, so private planning and
 // drafts never leave Obsidian.
 //
 // Usage: node quartz/scripts/build-data.mjs [--out <path>]
@@ -19,7 +19,7 @@ const args = process.argv.slice(2);
 const outIdx = args.indexOf("--out");
 const OUT_PATH = outIdx >= 0 ? args[outIdx + 1] : join(__dirname, "..", "..", "dist", "data.js");
 
-// Topic taxonomy — mirrors the six paths declared in content/topics.md.
+// Topic taxonomy, mirroring the paths declared in content/topics.md.
 const TOPICS = {
   gardening: { name: "Gardening", color: "#3f6b2e", soft: "#e4ead9", description: "Seasons, seedlings and life outdoors" },
   music: { name: "Music", color: "#a13a2e", soft: "#f0e1dd", description: "Practice, listening and the guitar journey" },

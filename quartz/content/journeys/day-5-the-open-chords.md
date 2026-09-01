@@ -1,5 +1,5 @@
 ---
-title: Day 5 — the open chords
+title: "Day 5: the open chords"
 type: journey
 journey: Learning guitar
 tags: [music]
