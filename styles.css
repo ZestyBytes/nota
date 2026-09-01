@@ -658,3 +658,9 @@ body.modal-open{position:fixed;left:0;right:0;width:100%;overflow:hidden}
   .shot-grid{grid-template-columns:repeat(2,1fr);gap:8px}
   .shot-cap{opacity:1;font-size:8px;padding:14px 7px 6px}
 }
+
+/* a tile holding several photographs says so, and gets a stacked edge */
+.shot-count{position:absolute;right:6px;top:9px;display:flex;align-items:center;gap:4px;padding:3px 7px;background:rgba(34,38,30,.78);color:var(--paper);font:10px var(--mono);line-height:1;z-index:2}
+.shot-count .line-icon{width:11px;height:11px;stroke-width:1.8}
+.shot.is-set{box-shadow:4px -4px 0 -1px var(--paper-alt),5px -5px 0 0 var(--line)}
+.shot.is-set:hover{box-shadow:4px -4px 0 -1px var(--paper-alt),5px -5px 0 0 var(--line),0 10px 22px -12px rgba(34,38,30,.35)}

@@ -178,11 +178,15 @@ function coverPlate(b){
 // Every image the archive already holds, newest first. Nothing new to host:
 // these are the same files the entries use, so they are already cached.
 function galleryGrid(){
-  const shots=[];
-  for(const e of state.data.entries)for(const im of e.images||[])shots.push({...im,entry:e});
-  shots.sort((a,b)=>(b.entry.occurredAt||b.entry.createdAt||"").localeCompare(a.entry.occurredAt||a.entry.createdAt||""));
-  if(!shots.length)return `<p class="empty">No photographs in the archive yet.</p>`;
-  return `<div class="shot-grid">${shots.map(sh=>`<button class="shot" data-entry="${esc(sh.entry.id)}" style="--topic:${topic(sh.entry.topics?.[0]).color}"><img src="${esc(sh.src)}" alt="${esc(sh.alt||"")}" loading="lazy" decoding="async"><span class="shot-cap">${esc(sh.entry.title)}</span></button>`).join("")}</div>`;
+  // One tile per entry rather than per photograph: four shots of the same day
+  // are one thing that happened, and the entry already shows them all.
+  const sets=state.data.entries.filter(e=>e.images?.length)
+    .sort((a,b)=>(b.occurredAt||b.createdAt||"").localeCompare(a.occurredAt||a.createdAt||""));
+  if(!sets.length)return `<p class="empty">No photographs in the archive yet.</p>`;
+  return `<div class="shot-grid">${sets.map(e=>{
+    const n=e.images.length,cover=e.images[0];
+    return `<button class="shot ${n>1?"is-set":""}" data-entry="${esc(e.id)}" style="--topic:${topic(e.topics?.[0]).color}" aria-label="${esc(e.title)}, ${n} photograph${n>1?"s":""}"><img src="${esc(cover.src)}" alt="${esc(cover.alt||"")}" loading="lazy" decoding="async">${n>1?`<span class="shot-count">${icon("photos")}${n}</span>`:""}<span class="shot-cap">${esc(e.title)}</span></button>`;
+  }).join("")}</div>`;
 }
 function library(){let body="";if(state.library==="gallery")body=galleryGrid();else if(state.library==="reading")body=`<div class="book-grid">${state.data.books.map((b,i)=>`<article class="book ${b.cover?"":"has-plate"}" data-book="${b.id}"><span class="acc-no">No. ${accNo(b.id)}</span>${b.cover?`<img class="book-cover" src="${b.cover}" alt="" loading="lazy">`:coverPlate(b)}<div class="book-copy"><h3>${esc(b.title)}</h3><p>${esc(b.author)}</p><div class="book-links"><span>${(b.notes||[]).length} notes</span><span>${(b.quotes||[]).length} quotes</span></div><span class="status">${esc(b.status.replaceAll("-"," "))}${b.status==="reading"?` · ${b.progress}%`:""}</span><div class="progress"><i style="width:${b.progress}%"></i></div></div></article>`).join("")||`<p class="empty">Your library is empty.</p>`}</div>`;else if(state.library==="quotes")body=`<div class="quote-list">${[...state.data.entries.filter(e=>e.type==="Quote"),...state.data.books.flatMap(b=>(b.quotes||[]).map(q=>({...q,title:q.text,author:b.title,bookId:b.id})))].map(e=>`<blockquote class="library-quote" ${e.bookId?`data-book="${e.bookId}"`:`data-entry="${e.id}"`}>“${esc(e.title)}”<cite>${esc(e.author)}${e.page?` · ${esc(e.page)}`:""}</cite></blockquote>`).join("")||`<p class="empty">No quotations kept yet.</p>`}</div>`;else body=`<div class="entry-list">${state.data.entries.filter(e=>["Note","Journal","Journey"].includes(e.type)).map(entryCard).join("")||`<p class="empty">No notes kept yet.</p>`}</div>`;return `<section>${pageHead("Things worth keeping","Library","Books hold their own reading notes and quotations while each quote remains discoverable across Nota.")}<div class="library-tabs">${["reading","quotes","notes","gallery"].map(x=>`<button class="filter ${state.library===x?"active":""}" data-library="${x}">${x[0].toUpperCase()+x.slice(1)}</button>`).join("")}</div>${body}</section>`}
 // A topic may hold sub-topics: Self care covers ADHD, and later therapy,
