@@ -1,6 +1,7 @@
 ---
 title: Podcasts worth the time
 type: note
+view: playlist
 tags: [playlist]
 occurredAt: "2026-09-01"
 createdAt: "2026-09-01"
@@ -11,11 +12,9 @@ publish: true
 The three I actually keep up with, rather than the twenty sitting unplayed
 in a queue.
 
-**Feel Better, Live More** with Dr Rangan Chatterjee. Long-form conversations
-about health and habits, closer to a considered interview than a wellness
-show.
+- Feel Better, Live More, *Dr Rangan Chatterjee*
+- At Home with the Buckleys, *easy company for a walk or the washing up*
+- The Josh James Show
 
-**At Home with the Buckleys.** Easy company; the sort of thing that suits a
-walk or the washing up.
-
-**The Josh James Show.**
+Long-form conversations on the first one, closer to a considered interview
+than a wellness show.

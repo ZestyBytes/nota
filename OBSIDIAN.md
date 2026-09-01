@@ -82,6 +82,11 @@ swipeable deck instead of flowing prose: one card per paragraph, or one per
 `##` heading if the note uses them. Good for a numbered list of points,
 wrong for ordinary writing, so it is opt-in.
 
+`view: playlist` sets a note's bullets as a numbered listing instead of a
+bulleted paragraph, for records, podcasts and audiobooks. An italic tail on
+a line becomes its second line, so `- Dermot Kennedy, *Sonder*` reads as the
+artist with the record underneath.
+
 **Note** (`type: note`): same shape as Journal, for things that aren't a
 dated diary entry. Same fields.
 

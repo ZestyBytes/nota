@@ -9,7 +9,7 @@ function esc(s=""){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;
 // Just enough Markdown for a note body: escape first, then re-introduce the
 // handful of marks the vault actually uses. Any image after the lead one
 // is rendered in place, since the lead is already shown above the text.
-function inline(t){return esc(t).replace(/\[\[([^\]|]+)\|?[^\]]*\]\]/g,"$1").replace(/\*\*([^*]+)\*\*/g,"<strong>$1</strong>").replace(/\[([^\]]+)\]\(([^)]+)\)/g,"$1")}
+function inline(t){return esc(t).replace(/\[\[([^\]|]+)\|?[^\]]*\]\]/g,"$1").replace(/\*\*([^*]+)\*\*/g,"<strong>$1</strong>").replace(/(^|[^*])\*([^*\n]+)\*/g,"$1<em>$2</em>").replace(/\[([^\]]+)\]\(([^)]+)\)/g,"$1")}
 function markdown(src="",leadImage=""){
   const out=[];let para=[],list=[];
   const flushPara=()=>{if(para.length){out.push(`<p>${inline(para.join(" "))}</p>`);para=[]}};
@@ -62,6 +62,28 @@ function cardDeck(body,leadImage=""){
     cards.map((c,i)=>`<article class="deck-card"><span class="deck-no">${String(i+1).padStart(2,"0")} / ${String(cards.length).padStart(2,"0")}</span><div class="deck-copy">${markdown(c,leadImage)}</div></article>`).join("")
   }</div><div class="deck-dots" aria-hidden="true">${cards.map((_,i)=>`<i class="${i?"":"on"}"></i>`).join("")}</div></div>`;
 }
+// `view: playlist` turns each bullet into a numbered row. An italic tail on
+// a line becomes its second line, so "Dermot Kennedy, *Sonder*" reads as the
+// artist with the record underneath.
+function trackRow(raw,i){
+  const m=raw.match(/^(.*?),?\s*\*([^*]+)\*\s*$/);
+  const main=m?m[1].trim():raw,sub=m?m[2].trim():"";
+  return `<li><span class="track-no">${String(i+1).padStart(2,"0")}</span><span class="track-copy"><b>${inline(main)}</b>${sub?`<small>${inline(sub)}</small>`:""}</span></li>`;
+}
+function playlistBody(body=""){
+  const out=[];let items=[],para=[];
+  const flushItems=()=>{if(items.length){out.push(`<ol class="tracklist">${items.map(trackRow).join("")}</ol>`);items=[]}};
+  const flushPara=()=>{if(para.length){out.push(`<p>${inline(para.join(" "))}</p>`);para=[]}};
+  for(const raw of String(body).split("\n")){
+    const t=raw.trim();
+    if(!t){flushPara();continue}
+    if(t.startsWith("- ")){flushPara();items.push(t.slice(2));continue}
+    if(t.startsWith("![")||t.startsWith("#")){continue}
+    flushItems();para.push(t);
+  }
+  flushPara();flushItems();
+  return out.join("");
+}
 function entryPage(id){
   const e=[...state.data.entries,...state.data.tasks].find(x=>x.id===id);
   const back=state.returnTo||"#today";
@@ -74,7 +96,7 @@ function entryPage(id){
     <div class="chips">${chips(e.topics)}</div>
     <h1 class="entry-page-title">${e.type==="Quote"?`&ldquo;${esc(e.title)}&rdquo;`:esc(e.title)}</h1>
     ${e.author?`<p class="entry-page-author">${esc(e.author)}</p>`:""}
-    ${e.view==="cards"&&e.body?cardDeck(e.body,e.image):`<div class="detail-body">${e.body?markdown(e.body,e.image):`<p>${esc(e.excerpt||"Saved in your Nota archive.")}</p>`}</div>`}
+    ${e.view==="cards"&&e.body?cardDeck(e.body,e.image):`<div class="detail-body">${e.body?(e.view==="playlist"?playlistBody(e.body):markdown(e.body,e.image)):`<p>${esc(e.excerpt||"Saved in your Nota archive.")}</p>`}</div>`}
     ${e.attachments?.length?`<div class="attachment-list"><p class="eyebrow">Attachments</p>${e.attachments.map((a,i)=>`<div>${icon("paperclip")}<span><b>${esc(a.name)}</b><small>${esc(a.kind)} &middot; ${esc(a.size)}</small></span><button type="button" data-view-attachment="${i}" data-entry-id="${e.id}">View</button></div>`).join("")}</div>`:""}
   </section>`;
 }

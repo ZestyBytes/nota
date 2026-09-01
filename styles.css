@@ -510,3 +510,14 @@ body.modal-open{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .body-figure{margin:26px 0;padding:0}
 .body-figure img{display:block;width:100%;background:var(--paper-alt);filter:saturate(.9)}
 .body-figure figcaption{margin-top:9px;font:11px var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+
+/* ---------- track list (view: playlist) ----------
+   A listening note is a run of records, so it is set as a numbered sleeve
+   listing rather than a bulleted paragraph. */
+.tracklist{list-style:none;margin:26px 0 0;padding:0;border-top:1px solid var(--line);counter-reset:track}
+.tracklist li{display:flex;gap:16px;align-items:baseline;padding:15px 2px;border-bottom:1px solid var(--line)}
+.track-no{font:10px var(--mono);letter-spacing:.1em;color:var(--faint);flex:none;width:20px}
+.track-copy b{display:block;font:600 19px/1.25 var(--serif)}
+.track-copy small{display:block;margin-top:3px;font:11px var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-style:normal}
+.track-copy em{font-style:italic}
+.entry-page .detail-body .tracklist+p{margin-top:22px}

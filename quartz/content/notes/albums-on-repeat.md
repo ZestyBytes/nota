@@ -1,6 +1,7 @@
 ---
 title: On repeat
 type: note
+view: playlist
 tags: [playlist, music]
 occurredAt: "2026-09-01"
 createdAt: "2026-09-01"
