@@ -204,11 +204,65 @@ function dayIndex(n){const d=new Date(todayKey+"T12:00:00");return Math.floor((d
 function pageHead(kicker,title,lede=""){return `<div class="page-head"><div><p class="eyebrow">${kicker}</p><h1 class="page-title">${title}</h1>${lede?`<p class="lede">${lede}</p>`:""}</div></div>`}
 function today(){const entries=state.data.entries.filter(e=>e.occurredAt===todayKey),lastYear=`${now.getFullYear()-1}-${todayKey.slice(5)}`,memory=state.data.entries.find(e=>e.occurredAt===lastYear),quote=state.data.entries.find(e=>e.type==="Quote"),label=now.toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"});const recent=entries.length?[]:[...state.data.entries].sort((a,b)=>(b.occurredAt||"").localeCompare(a.occurredAt||"")).slice(0,3);return `<section><div class="page-head"><div><p class="eyebrow">A record of a life</p><h1 class="page-title">Today</h1></div>${todayWidget()}</div>${memory?`<div class="memory">On this day last year: <a href="#" data-entry="${memory.id}">${esc(memory.title)}</a></div>`:""}<div class="today-grid"><div><h2 class="section-title">Entries</h2>${entries.length?`<div class="entry-list">${entries.map(entryCard).join("")}</div>`:recent.length?`<p class="empty small">Nothing recorded today yet. Here's what's most recent.</p><div class="entry-list">${recent.map(entryCard).join("")}</div>`:`<p class="empty">Nothing recorded yet. Publish your first entry from Obsidian to see it here.</p>`}</div><aside><h2 class="section-title">To-do</h2><div class="tasks">${state.data.tasks.length?state.data.tasks.map(taskRow).join(""):`<p class="empty small">Nothing waiting.</p>`}</div>${quote?`<div class="quote-card"><p class="eyebrow">A thought to keep</p><blockquote>“${esc(quote.title)}”</blockquote><cite>${esc(quote.author)}</cite></div>`:""}</aside></div></section>`}
 function taskRow(t){const tp=topic(t.topics[0]);return `<div class="task ${t.completedAt?"done":""} ${t.note?"has-note":""}" ${t.note?`data-entry="${esc(t.id)}"`:""}><span class="task-mark" aria-hidden="true">${t.completedAt?icon("check"):""}</span><span class="task-copy"><span class="task-title">${esc(t.title)}</span>${t.note?`<small class="task-note">${esc(t.note)}</small>`:""}${t.dueAt&&!t.completedAt?`<small class="task-due">${t.dueAt<=todayKey?"Due today":"Due "+esc(fmtDate(t.dueAt))}</small>`:""}</span><span class="chip" style="--topic:${tp.color};--soft:${tp.soft}">${esc(tp.name)}</span></div>`}
-function monthEntries(date){return state.data.entries.filter(e=>e.occurredAt===date)}
-function calendar(){const y=state.month.getFullYear(),m=state.month.getMonth(),first=new Date(y,m,1),start=(first.getDay()+6)%7,days=new Date(y,m+1,0).getDate(),cells=[];for(let i=0;i<start;i++)cells.push(`<button class="day muted" disabled></button>`);for(let d=1;d<=days;d++){const date=`${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`,es=monthEntries(date),dots=[...new Set(es.flatMap(e=>e.topics))].slice(0,3).map(id=>`<i class="dot" style="background:${topic(id).color}"></i>`).join("");cells.push(`<button class="day ${date===state.selectedDate?"selected":""}" data-date="${date}"><span>${d}</span><span class="dots">${dots}</span></button>`)}const selected=monthEntries(state.selectedDate),label=new Date(state.selectedDate+"T12:00:00").toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"});return `<section>${pageHead("Browse the archive","Calendar","Every item keeps its own dates; the calendar simply gathers the record of each day.")}<div class="calendar-shell"><div><div class="calendar-head"><button class="icon-button" data-month="-1" aria-label="Previous month">←</button><h2>${first.toLocaleDateString("en-GB",{month:"long",year:"numeric"})}</h2><button class="icon-button" data-month="1" aria-label="Next month">→</button></div><div class="week">${["M","T","W","T","F","S","S"].map(x=>`<span>${x}</span>`).join("")}</div><div class="calendar-grid">${cells.join("")}</div></div><aside class="selected-day"><p class="eyebrow">Selected day</p><h3>${label}</h3>${selected.length?selected.map(entryCard).join(""):`<p class="empty">Nothing recorded on this day.</p>`}</aside></div></section>`}
-// No cover art in the vault, and stock photographs of other people's
-// bookshelves say nothing about the book. A plate set in the archive's own
-// type carries the title, the author and the topic's ink instead.
+// Everything that carries a date belongs on the calendar, not only entries:
+// a task is due on a day too, and a day with four things should look busier
+// than a day with one.
+function dayItems(date){
+  return [...state.data.entries.filter(e=>e.occurredAt===date),
+          ...state.data.tasks.filter(t=>t.dueAt===date).map(t=>({...t,type:"Task",excerpt:t.note||""}))];
+}
+function datesWithSomething(){
+  const set=new Set();
+  for(const e of state.data.entries)if(e.occurredAt)set.add(e.occurredAt);
+  for(const t of state.data.tasks)if(t.dueAt)set.add(t.dueAt);
+  return set;
+}
+// Paging a month at a time through empty years is no way to find anything, so
+// offer the nearest month that actually holds something.
+function nearestMonth(from,dates){
+  const months=[...new Set([...dates].map(d=>d.slice(0,7)))].sort();
+  if(!months.length)return null;
+  const key=`${from.getFullYear()}-${String(from.getMonth()+1).padStart(2,"0")}`;
+  return months.reduce((best,m)=>Math.abs(monthDistance(m,key))<Math.abs(monthDistance(best,key))?m:best,months[0]);
+}
+function monthDistance(a,b){const [ay,am]=a.split("-").map(Number),[by,bm]=b.split("-").map(Number);return (ay*12+am)-(by*12+bm)}
+function calendar(){
+  const y=state.month.getFullYear(),m=state.month.getMonth(),first=new Date(y,m,1);
+  const start=(first.getDay()+6)%7,days=new Date(y,m+1,0).getDate(),cells=[];
+  const dates=datesWithSomething();
+  for(let i=0;i<start;i++)cells.push(`<button class="day muted" disabled aria-hidden="true"></button>`);
+  let monthCount=0;
+  for(let d=1;d<=days;d++){
+    const date=`${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+    const items=dayItems(date);monthCount+=items.length;
+    const dots=[...new Set(items.flatMap(e=>e.topics||[]))].slice(0,4)
+      .map(id=>`<i class="dot" style="background:${topic(id).color}"></i>`).join("");
+    cells.push(`<button class="day ${date===state.selectedDate?"selected":""} ${date===todayKey?"is-today":""} ${items.length?"has-items":""}" data-date="${date}" aria-label="${esc(fmtDate(date))}${items.length?`, ${items.length} item${items.length>1?"s":""}`:""}"><span class="day-no">${d}</span><span class="dots">${dots}</span>${items.length>4?`<span class="day-more">${items.length}</span>`:""}</button>`);
+  }
+  const selected=dayItems(state.selectedDate);
+  const label=new Date(state.selectedDate+"T12:00:00").toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+  const near=nearestMonth(state.month,dates);
+  const monthKey=`${y}-${String(m+1).padStart(2,"0")}`;
+  const jump=!monthCount&&near&&near!==monthKey
+    ? `<p class="empty small">Nothing this month. <button class="linkish" data-jump="${near}">Go to ${new Date(near+"-01T12:00:00").toLocaleDateString("en-GB",{month:"long",year:"numeric"})}</button></p>` : "";
+  return `<section>${pageHead("Browse the archive","Calendar","Every item keeps its own dates; the calendar simply gathers the record of each day.")}
+    <div class="calendar-shell"><div>
+      <div class="calendar-head">
+        <button class="icon-button" data-month="-1" aria-label="Previous month">&larr;</button>
+        <h2>${first.toLocaleDateString("en-GB",{month:"long",year:"numeric"})}</h2>
+        <button class="icon-button" data-month="1" aria-label="Next month">&rarr;</button>
+      </div>
+      <p class="month-count">${monthCount?`${monthCount} item${monthCount>1?"s":""} this month`:"Nothing recorded this month"}${monthKey!==todayKey.slice(0,7)?` &middot; <button class="linkish" data-jump="${todayKey.slice(0,7)}">This month</button>`:""}</p>
+      <div class="week">${["M","T","W","T","F","S","S"].map(x=>`<span>${x}</span>`).join("")}</div>
+      <div class="calendar-grid">${cells.join("")}</div>
+      ${jump}
+    </div>
+    <aside class="selected-day">
+      <p class="eyebrow">${state.selectedDate===todayKey?"Today":"Selected day"}</p>
+      <h3>${label}</h3>
+      ${selected.length?`<div class="entry-list">${selected.map(e=>entryCard(e)).join("")}</div>`:`<p class="empty">Nothing recorded on this day.</p>`}
+    </aside></div></section>`;
+}
 function coverPlate(b){
   const t=topic(b.topics?.[0]);
   return `<div class="book-cover book-plate" style="--topic:${t.color}" aria-hidden="true"><span class="plate-rule"></span><span class="plate-mark">${esc((b.title||"?")[0])}</span><span class="plate-title">${esc(b.title)}</span></div>`;
@@ -342,6 +396,8 @@ document.addEventListener("click",async e=>{
   const book=e.target.closest("[data-book]");if(book){bookDetail(book.dataset.book);return}
   const entry=e.target.closest("[data-entry]");if(entry){e.preventDefault();state.returnTo=location.hash||"#today";state.returnScroll=window.scrollY;location.hash=`entry/${encodeURIComponent(entry.dataset.entry)}`}
   const date=e.target.closest("[data-date]");if(date){state.selectedDate=date.dataset.date;render()}
+  const jump=e.target.closest("[data-jump]");
+  if(jump){const [jy,jm]=jump.dataset.jump.split("-").map(Number);state.month=new Date(jy,jm-1,1);render();return}
   const month=e.target.closest("[data-month]");if(month){state.month=new Date(state.month.getFullYear(),state.month.getMonth()+Number(month.dataset.month),1);render()}
   const lib=e.target.closest("[data-library]");if(lib){state.library=lib.dataset.library;render()}
   const filter=e.target.closest("[data-filter]");if(filter){state.filter=filter.dataset.filter;render()}
@@ -420,6 +476,23 @@ window.addEventListener("pageshow",refreshArchive);
 window.addEventListener("online",()=>{lastRefresh=0;refreshArchive()});
 // And a slow poll, so an app left open on a desk still catches up.
 setInterval(refreshArchive,5*60*1000);
+
+// Swipe the month grid sideways to change month, which is what a calendar on
+// a phone should do. Only a clearly horizontal swipe counts, so scrolling the
+// page through the grid still works.
+let swipeFrom=null;
+addEventListener("touchstart",e=>{
+  const grid=e.target.closest?.(".calendar-grid");
+  swipeFrom=grid&&e.touches.length===1?{x:e.touches[0].clientX,y:e.touches[0].clientY}:null;
+},{passive:true});
+addEventListener("touchend",e=>{
+  if(!swipeFrom)return;
+  const t=e.changedTouches[0],dx=t.clientX-swipeFrom.x,dy=t.clientY-swipeFrom.y;
+  swipeFrom=null;
+  if(Math.abs(dx)<60||Math.abs(dx)<Math.abs(dy)*1.6)return;
+  state.month=new Date(state.month.getFullYear(),state.month.getMonth()+(dx<0?1:-1),1);
+  render();
+},{passive:true});
 
 // Pull down at the top of the page to refresh by hand.
 const pullHint=document.createElement("div");pullHint.className="pull-hint";pullHint.textContent="Pull to refresh";document.body.appendChild(pullHint);

@@ -716,3 +716,16 @@ body.modal-open{position:fixed;left:0;right:0;width:100%;overflow:hidden}
   .detail-actions .danger:hover{color:#14160f}
   .entry p.snippet mark{background:color-mix(in srgb,var(--stamp-red) 34%,transparent)}
 }
+
+/* ---------- calendar ---------- */
+.month-count{margin:-12px 0 18px;font:10px var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.linkish{border:0;background:none;padding:0;cursor:pointer;font:inherit;color:var(--ink);text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--line)}
+.linkish:hover{text-decoration-color:var(--stamp-red)}
+.day-no{font-size:13px}
+.day.has-items .day-no{font-weight:700}
+.day:not(.has-items):not(.muted) .day-no{color:var(--faint)}
+/* today is a fact about the grid, not a selection: keep them distinguishable */
+.day.is-today .day-no{position:relative;color:var(--stamp-red)}
+.day.is-today .day-no:after{content:"";position:absolute;left:50%;bottom:-5px;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--stamp-red)}
+.day-more{font:9px var(--mono);color:var(--muted);letter-spacing:.06em}
+.calendar-grid{touch-action:pan-y}
