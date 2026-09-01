@@ -1,4 +1,7 @@
 const CACHE="nota-shell-__BUILD__";
+// Remote images live in their own cache, deliberately not stamped with the
+// build: a deploy replaces the shell, but the covers should survive it.
+const MEDIA="nota-media";
 const SHELL=["./","index.html","styles.css","config.js","backend.js","app.js","data.js","manifest.webmanifest","icon.svg"];
 
 self.addEventListener("install",event=>{
@@ -9,7 +12,7 @@ self.addEventListener("install",event=>{
 });
 self.addEventListener("activate",event=>{
   event.waitUntil(Promise.all([
-    caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))),
+    caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE&&key!==MEDIA).map(key=>caches.delete(key)))),
     self.clients.claim()
   ]));
 });
@@ -27,7 +30,22 @@ self.addEventListener("fetch",event=>{
   const request=event.request;
   if(request.method!=="GET")return;
   const url=new URL(request.url);
-  if(url.origin!==location.origin)return; // fonts and anything remote: leave to the browser
+  if(url.origin!==location.origin){
+    // Remote images, chiefly the book covers, were refetched on every visit
+    // because nothing here cached them. Keep them and serve from the cache,
+    // so a cover appears the instant a shelf is opened. Anything else remote,
+    // such as the fonts, is left to the browser.
+    if(request.destination!=="image")return;
+    event.respondWith(caches.open(MEDIA).then(cache=>
+      cache.match(request).then(hit=>hit||fetch(request).then(response=>{
+        // an image loads no-cors, so its response is opaque: status 0, still
+        // perfectly cacheable
+        if(response.ok||response.type==="opaque")cache.put(request,response.clone());
+        return response;
+      }).catch(()=>hit))
+    ));
+    return;
+  }
 
   // data.js is the live content feed. Network first so a fresh publish wins,
   // but keep a copy so the archive still opens with no connection at all.
