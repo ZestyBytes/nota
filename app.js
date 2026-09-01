@@ -54,3 +54,13 @@ document.addEventListener("submit",async e=>{
 async function loadRemoteArchive(){const remote=await NotaBackend.loadData();state.data=Object.keys(remote.topics).length?remote:clone(BASE)}
 async function boot(){try{const session=await NotaBackend.init();state.user=session.user;if(state.user)await loadRemoteArchive();else if(NotaBackend.configured&&location.hash==="#writing")state.data={...emptyArchive(),entries:await NotaBackend.loadPublished()};NotaBackend.onAuthChange(user=>{state.user=user;if(!user)render()})}catch(error){console.error(error);toast("Could not connect to storage")}finally{state.booting=false;render()}}
 window.addEventListener("hashchange",async()=>{if(NotaBackend.configured&&!state.user&&location.hash==="#writing")state.data={...emptyArchive(),entries:await NotaBackend.loadPublished()};render()});boot();if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js"));
+
+// data.js is a plain <script>, parsed once at launch — an installed PWA
+// resumed from the background never re-runs it, so a fresh publish only
+// appeared after force-closing the app. Re-run it on return to the
+// foreground instead.
+let lastRefresh=Date.now();
+function reloadData(){return new Promise((resolve,reject)=>{const s=document.createElement("script");s.src=`data.js?t=${Date.now()}`;s.onload=()=>{s.remove();resolve()};s.onerror=()=>{s.remove();reject(new Error("data.js unreachable"))};document.head.appendChild(s)})}
+async function refreshArchive(){if(document.hidden||state.booting||Date.now()-lastRefresh<15000)return;if(document.getElementById("modal-root").innerHTML)return;lastRefresh=Date.now();try{if(NotaBackend.configured&&state.user)await loadRemoteArchive();else{await reloadData();state.data=clone(window.NOTA_DATA)}render()}catch(error){/* offline, or the fetch failed — keep showing what we already have */}}
+document.addEventListener("visibilitychange",refreshArchive);
+window.addEventListener("pageshow",refreshArchive);
