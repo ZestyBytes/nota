@@ -57,6 +57,16 @@ function firstImage(body) {
   return m ? { image: m[2], imageAlt: m[1] } : { image: "", imageAlt: "" };
 }
 
+// Every image in the body, in order, so an entry can carry a gallery rather
+// than a single photograph.
+function allImages(body) {
+  const out = [];
+  const re = /!\[([^\]]*)\]\(([^)]+)\)/g;
+  let m;
+  while ((m = re.exec(body))) out.push({ src: m[2], alt: m[1] });
+  return out;
+}
+
 function firstParagraph(body) {
   const lines = body.split("\n");
   const paras = [];
@@ -147,7 +157,7 @@ for (const file of files) {
     id: slug, type: TYPE_MAP[data.type], title: data.title,
     excerpt: firstParagraph(body), body: body.trim(), view: data.view || "", topics,
     occurredAt: data.occurredAt || "", createdAt: data.createdAt || data.occurredAt || "",
-    publishedAt: data.publishedAt || "", image, imageAlt, attachments: []
+    publishedAt: data.publishedAt || "", image, imageAlt, images: allImages(body), attachments: []
   };
   if (data.view === "recipe") {
     entry.recipe = {

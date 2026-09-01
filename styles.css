@@ -113,7 +113,13 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px}
 .attachment-inline{display:flex;align-items:center;gap:6px;margin-top:14px;color:var(--muted);font:11px var(--mono);text-transform:uppercase;letter-spacing:.04em}
 .attachment-inline .line-icon{width:14px;height:14px}
 .entry.has-thumb{display:grid;grid-template-columns:1fr 150px;gap:24px}
-.entry-thumb{width:150px;height:115px;object-fit:cover;grid-column:2;grid-row:1;filter:saturate(.82) sepia(.06)}
+/* align-self:start, or the wrapper stretches down the whole grid row and
+   the count drifts to the bottom of the card instead of the photograph. */
+.thumb-wrap{position:relative;grid-column:2;grid-row:1;align-self:start;justify-self:end;display:block;width:fit-content;line-height:0}
+.entry-thumb{width:150px;height:115px;object-fit:cover;filter:saturate(.82) sepia(.06)}
+/* how many photographs are behind this one */
+.thumb-count{position:absolute;right:6px;bottom:6px;display:flex;align-items:center;gap:4px;padding:3px 7px;background:rgba(34,38,30,.78);color:var(--paper);font:10px var(--mono);letter-spacing:.06em;line-height:1}
+.thumb-count .line-icon{width:11px;height:11px;stroke-width:1.8}
 .entry-copy{grid-column:1;grid-row:1}
 
 /* time-depth: older specimens fade like sun-bleached ink */
@@ -521,3 +527,16 @@ body.modal-open{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .track-copy small{display:block;margin-top:3px;font:11px var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-style:normal}
 .track-copy em{font-style:italic}
 .entry-page .detail-body .tracklist+p{margin-top:22px}
+
+/* ---------- photo gallery ---------- */
+.gallery-wrap{margin:0 0 22px}
+.gallery{display:grid;grid-auto-flow:column;grid-auto-columns:100%;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.gallery::-webkit-scrollbar{display:none}
+.gallery:focus-visible{outline:2px solid var(--stamp-red);outline-offset:3px}
+.gallery-shot{position:relative;margin:0;scroll-snap-align:center;line-height:0}
+.gallery-shot img{width:100%;aspect-ratio:4/3;object-fit:cover;background:var(--paper-alt)}
+.gallery-no{position:absolute;right:10px;top:10px;padding:4px 8px;background:rgba(34,38,30,.72);color:var(--paper);font:10px var(--mono);letter-spacing:.1em;line-height:1}
+.gallery-dots{display:flex;justify-content:center;gap:7px;margin-top:12px}
+.gallery-dots i{width:6px;height:6px;border-radius:50%;background:var(--line);transition:background .18s ease,transform .18s ease}
+.gallery-dots i.on{background:var(--stamp-red);transform:scale(1.25)}
+.gallery-caption{margin:10px 0 0;font:11px var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);min-height:14px}

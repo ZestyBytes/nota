@@ -7,10 +7,10 @@ function clone(v){return JSON.parse(JSON.stringify(v))}
 function emptyArchive(){return {topics:clone(BASE.topics),entries:[],tasks:[],books:[]}}
 function esc(s=""){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
 // Just enough Markdown for a note body: escape first, then re-introduce the
-// handful of marks the vault actually uses. Any image after the lead one
-// is rendered in place, since the lead is already shown above the text.
+// handful of marks the vault actually uses. Images already shown above the
+// text, as a photograph or a gallery, are skipped here.
 function inline(t){return esc(t).replace(/\[\[([^\]|]+)\|?[^\]]*\]\]/g,"$1").replace(/\*\*([^*]+)\*\*/g,"<strong>$1</strong>").replace(/(^|[^*])\*([^*\n]+)\*/g,"$1<em>$2</em>").replace(/\[([^\]]+)\]\(([^)]+)\)/g,"$1")}
-function markdown(src="",leadImage=""){
+function markdown(src="",shown=[]){
   const out=[];let para=[],list=[];
   const flushPara=()=>{if(para.length){out.push(`<p>${inline(para.join(" "))}</p>`);para=[]}};
   const flushList=()=>{if(list.length){out.push(`<ul>${list.map(i=>`<li>${inline(i)}</li>`).join("")}</ul>`);list=[]}};
@@ -21,7 +21,7 @@ function markdown(src="",leadImage=""){
       flushPara();flushList();
       const m=t.match(/^!\[([^\]]*)\]\(([^)]+)\)/);
       // the lead image is already shown above the text; the rest belong here
-      if(m&&m[2]!==leadImage)out.push(`<figure class="body-figure"><img src="${esc(m[2])}" alt="${esc(m[1])}" loading="lazy">${m[1]?`<figcaption>${esc(m[1])}</figcaption>`:""}</figure>`);
+      if(m&&!shown.includes(m[2]))out.push(`<figure class="body-figure"><img src="${esc(m[2])}" alt="${esc(m[1])}" loading="lazy">${m[1]?`<figcaption>${esc(m[1])}</figcaption>`:""}</figure>`);
       continue;
     }
     if(t.startsWith("#")){flushPara();flushList();out.push(`<h3>${inline(t.replace(/^#+\s*/,""))}</h3>`);continue}
@@ -33,14 +33,14 @@ function markdown(src="",leadImage=""){
   return out.join("");
 }
 function topic(id){return state.data.topics[id]||{name:id,color:"#777",soft:"#eee"}}
-function icon(name){const paths={leaf:'<path d="M20 4C12 4 6 8 6 15c0 3 2 5 5 5 7 0 9-8 9-16Z"/><path d="M5 21c3-6 7-9 12-12"/>',music:'<path d="M9 18V5l10-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/>',terminal:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="m7 9 3 3-3 3m6 0h4"/>',mind:'<path d="M12 21s-8-4.5-8-11a4 4 0 0 1 7-2.6A4 4 0 0 1 20 10c0 6.5-8 11-8 11Z"/><path d="M7 13h3l1.5-3 2 6 1.5-3h3"/>',book:'<path d="M4 5a3 3 0 0 1 3-3h12v18H7a3 3 0 0 1 0-6h12"/>',home:'<path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10M9 20v-6h6v6"/>',fork:'<path d="M7 3v7m-3-7v4a3 3 0 0 0 6 0V3M7 10v11M17 3v18m0-18c3 3 3 8 0 10"/>',paperclip:'<path d="m21 11-8.5 8.5a6 6 0 0 1-8.5-8.5l9-9a4 4 0 0 1 5.7 5.7l-9 9a2 2 0 0 1-2.9-2.9L15 5.6"/>',quote:'<path d="M9 11H5a4 4 0 0 1 4-4v8a4 4 0 0 1-4 4M19 11h-4a4 4 0 0 1 4-4v8a4 4 0 0 1-4 4"/>',note:'<path d="M4 3h16v18H4zM8 8h8M8 12h8M8 16h5"/>',check:'<path d="m5 12 5 5 9-9"/>'};return `<svg class="line-icon" viewBox="0 0 24 24" aria-hidden="true">${paths[name]||paths.note}</svg>`}
+function icon(name){const paths={leaf:'<path d="M20 4C12 4 6 8 6 15c0 3 2 5 5 5 7 0 9-8 9-16Z"/><path d="M5 21c3-6 7-9 12-12"/>',music:'<path d="M9 18V5l10-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/>',terminal:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="m7 9 3 3-3 3m6 0h4"/>',mind:'<path d="M12 21s-8-4.5-8-11a4 4 0 0 1 7-2.6A4 4 0 0 1 20 10c0 6.5-8 11-8 11Z"/><path d="M7 13h3l1.5-3 2 6 1.5-3h3"/>',book:'<path d="M4 5a3 3 0 0 1 3-3h12v18H7a3 3 0 0 1 0-6h12"/>',home:'<path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10M9 20v-6h6v6"/>',fork:'<path d="M7 3v7m-3-7v4a3 3 0 0 0 6 0V3M7 10v11M17 3v18m0-18c3 3 3 8 0 10"/>',paperclip:'<path d="m21 11-8.5 8.5a6 6 0 0 1-8.5-8.5l9-9a4 4 0 0 1 5.7 5.7l-9 9a2 2 0 0 1-2.9-2.9L15 5.6"/>',quote:'<path d="M9 11H5a4 4 0 0 1 4-4v8a4 4 0 0 1-4 4M19 11h-4a4 4 0 0 1 4-4v8a4 4 0 0 1-4 4"/>',note:'<path d="M4 3h16v18H4zM8 8h8M8 12h8M8 16h5"/>',check:'<path d="m5 12 5 5 9-9"/>',photos:'<rect x="7" y="3" width="14" height="14" rx="1.5"/><path d="M17 21H4.5A1.5 1.5 0 0 1 3 19.5V7"/>'};return `<svg class="line-icon" viewBox="0 0 24 24" aria-hidden="true">${paths[name]||paths.note}</svg>`}
 function chips(ids=[]){return ids.map(id=>{const t=topic(id);return `<span class="chip" style="--topic:${t.color};--soft:${t.soft}">${esc(t.name)}</span>`}).join("")}
 // Specimen-label date: 01 SEP 2026. The card had no date at all before.
 const MONTHS=["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
 function fmtDate(iso){if(!iso)return"";const d=new Date(String(iso).slice(0,10)+"T12:00:00");return isNaN(d)?"":`${String(d.getDate()).padStart(2,"0")} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`}
 function accNo(id){let h=0;for(const c of String(id))h=(h*31+c.charCodeAt(0))>>>0;return String(1000+h%9000)}
 function ageTier(dateStr){if(!dateStr)return"";const days=(now-new Date(dateStr+"T12:00:00"))/864e5;return days>180?"archive":days>30?"aged":""}
-function entryCard(e){const t=topic(e.topics?.[0]),attachment=e.attachments?.[0],age=ageTier(e.occurredAt),date=fmtDate(e.occurredAt||e.createdAt||e.dueAt);return `<article class="entry ${e.image?"has-thumb":""} ${age}" data-entry="${e.id}" style="--topic:${t.color}"><span class="acc-no">No. ${accNo(e.id)}</span><span class="mount-tag" style="background:${t.color}">${esc(t.name)}</span>${e.image?`<img class="entry-thumb" src="${e.image}" alt="${esc(e.imageAlt||"")}" loading="lazy">`:""}<div class="entry-copy"><div class="entry-meta"><span class="type-label">${esc(e.type)}</span>${date?`<span class="entry-date">${date}</span>`:""}${e.publishedAt||e.type==="Task"?"":`<span class="stamp stamp-private">private</span>`}</div><h3>${e.type==="Quote"?`“${esc(e.title)}”`:esc(e.title)}</h3>${e.author?`<p>${esc(e.author)}</p>`:e.excerpt?`<p>${esc(e.excerpt)}</p>`:""}${attachment?`<span class="attachment-inline">${icon("paperclip")}${esc(attachment.name)}</span>`:""}</div></article>`}
+function entryCard(e){const t=topic(e.topics?.[0]),attachment=e.attachments?.[0],age=ageTier(e.occurredAt),date=fmtDate(e.occurredAt||e.createdAt||e.dueAt);return `<article class="entry ${e.image?"has-thumb":""} ${age}" data-entry="${e.id}" style="--topic:${t.color}"><span class="acc-no">No. ${accNo(e.id)}</span><span class="mount-tag" style="background:${t.color}">${esc(t.name)}</span>${e.image?`<span class="thumb-wrap"><img class="entry-thumb" src="${e.image}" alt="${esc(e.imageAlt||"")}" loading="lazy">${e.images?.length>1?`<span class="thumb-count">${icon("photos")}${e.images.length}</span>`:""}</span>`:""}<div class="entry-copy"><div class="entry-meta"><span class="type-label">${esc(e.type)}</span>${date?`<span class="entry-date">${date}</span>`:""}${e.publishedAt||e.type==="Task"?"":`<span class="stamp stamp-private">private</span>`}</div><h3>${e.type==="Quote"?`“${esc(e.title)}”`:esc(e.title)}</h3>${e.author?`<p>${esc(e.author)}</p>`:e.excerpt?`<p>${esc(e.excerpt)}</p>`:""}${attachment?`<span class="attachment-inline">${icon("paperclip")}${esc(attachment.name)}</span>`:""}</div></article>`}
 // A page-shaped placeholder rather than a spinner: same title block, same
 // card metrics, so the real content lands in the space already held for it.
 function skeletonEntry(){return `<div class="entry skeleton-entry"><div class="skeleton skeleton-line" style="width:34%;height:10px"></div><div class="skeleton skeleton-line" style="width:78%;height:26px;margin:14px 0 12px"></div><div class="skeleton skeleton-line"></div><div class="skeleton skeleton-line"></div></div>`}
@@ -55,11 +55,11 @@ function cardBlocks(body=""){
   for(const b of blocks){if(b.startsWith("## ")||!cards.length)cards.push(b);else cards[cards.length-1]+="\n\n"+b}
   return cards;
 }
-function cardDeck(body,leadImage=""){
+function cardDeck(body,shown=[]){
   const cards=cardBlocks(body);
-  if(cards.length<2)return `<div class="detail-body">${markdown(body,leadImage)}</div>`;
+  if(cards.length<2)return `<div class="detail-body">${markdown(body,shown)}</div>`;
   return `<div class="deck-wrap"><div class="deck" tabindex="0" role="group" aria-label="Swipe through ${cards.length} cards">${
-    cards.map((c,i)=>`<article class="deck-card"><span class="deck-no">${String(i+1).padStart(2,"0")} / ${String(cards.length).padStart(2,"0")}</span><div class="deck-copy">${markdown(c,leadImage)}</div></article>`).join("")
+    cards.map((c,i)=>`<article class="deck-card"><span class="deck-no">${String(i+1).padStart(2,"0")} / ${String(cards.length).padStart(2,"0")}</span><div class="deck-copy">${markdown(c,shown)}</div></article>`).join("")
   }</div><div class="deck-dots" aria-hidden="true">${cards.map((_,i)=>`<i class="${i?"":"on"}"></i>`).join("")}</div></div>`;
 }
 // `view: playlist` turns each bullet into a numbered row. An italic tail on
@@ -84,6 +84,13 @@ function playlistBody(body=""){
   flushPara();flushItems();
   return out.join("");
 }
+// More than one photograph becomes a swipeable gallery with a counter, so a
+// second image is not left buried below the text.
+function gallery(images){
+  return `<div class="gallery-wrap"><div class="gallery" tabindex="0" role="group" aria-label="${images.length} photographs">${
+    images.map((im,i)=>`<figure class="gallery-shot"><img src="${esc(im.src)}" alt="${esc(im.alt||"")}" loading="${i?"lazy":"eager"}"><span class="gallery-no">${String(i+1).padStart(2,"0")} / ${String(images.length).padStart(2,"0")}</span></figure>`).join("")
+  }</div><div class="gallery-dots" aria-hidden="true">${images.map((_,i)=>`<i class="${i?"":"on"}"></i>`).join("")}</div><p class="gallery-caption">${esc(images[0].alt||"")}</p></div>`;
+}
 function entryPage(id){
   const e=[...state.data.entries,...state.data.tasks].find(x=>x.id===id);
   const back=state.returnTo||"#today";
@@ -92,11 +99,11 @@ function entryPage(id){
   return `<section class="entry-page" style="--topic:${t.color}">
     <p class="back-link"><a href="${back}" data-back>Back</a></p>
     <div class="entry-page-meta"><span class="type-label">${esc(e.type||"Task")}</span>${date?`<span class="entry-date">${date}</span>`:""}${e.publishedAt||e.type==="Task"?"":`<span class="stamp stamp-private">private</span>`}<span class="acc-no acc-no-page">No. ${accNo(e.id)}</span></div>
-    ${e.image?`<img class="detail-image" src="${e.image}" alt="${esc(e.imageAlt||"")}">`:""}
+    ${e.images?.length>1?gallery(e.images):e.image?`<img class="detail-image" src="${e.image}" alt="${esc(e.imageAlt||"")}">`:""}
     <div class="chips">${chips(e.topics)}</div>
     <h1 class="entry-page-title">${e.type==="Quote"?`&ldquo;${esc(e.title)}&rdquo;`:esc(e.title)}</h1>
     ${e.author?`<p class="entry-page-author">${esc(e.author)}</p>`:""}
-    ${e.view==="cards"&&e.body?cardDeck(e.body,e.image):`<div class="detail-body">${e.body?(e.view==="playlist"?playlistBody(e.body):markdown(e.body,e.image)):`<p>${esc(e.excerpt||"Saved in your Nota archive.")}</p>`}</div>`}
+    ${(()=>{const shown=e.images?.length>1?e.images.map(i=>i.src):[e.image];return e.view==="cards"&&e.body?cardDeck(e.body,shown):`<div class="detail-body">${e.body?(e.view==="playlist"?playlistBody(e.body):markdown(e.body,shown)):`<p>${esc(e.excerpt||"Saved in your Nota archive.")}</p>`}</div>`})()}
     ${e.attachments?.length?`<div class="attachment-list"><p class="eyebrow">Attachments</p>${e.attachments.map((a,i)=>`<div>${icon("paperclip")}<span><b>${esc(a.name)}</b><small>${esc(a.kind)} &middot; ${esc(a.size)}</small></span><button type="button" data-view-attachment="${i}" data-entry-id="${e.id}">View</button></div>`).join("")}</div>`:""}
   </section>`;
 }
@@ -139,15 +146,27 @@ function afterRender(route){
   if(route==="entry"&&lastRoute!==null&&lastRoute!=="entry")window.scrollTo(0,0);
   else if(lastRoute==="entry"&&route!=="entry")window.scrollTo(0,state.returnScroll||0);
   lastRoute=route;
-  const deck=document.querySelector(".deck");
-  if(!deck)return;
-  const dots=[...document.querySelectorAll(".deck-dots i")];
-  const sync=()=>{const i=Math.round(deck.scrollLeft/deck.clientWidth);dots.forEach((d,n)=>d.classList.toggle("on",n===i))};
-  deck.addEventListener("scroll",()=>requestAnimationFrame(sync),{passive:true});
-  deck.addEventListener("keydown",ev=>{
+  swipeable(".deck",".deck-dots i");
+  swipeable(".gallery",".gallery-dots i",".gallery-caption");
+}
+// Shared wiring for the card deck and the photo gallery: keep the dots in
+// step with the swipe, and let the arrow keys move it too.
+function swipeable(trackSel,dotSel,captionSel){
+  const track=document.querySelector(trackSel);
+  if(!track)return;
+  const dots=[...document.querySelectorAll(dotSel)];
+  const caption=captionSel?document.querySelector(captionSel):null;
+  const shots=captionSel?[...track.querySelectorAll("img")]:[];
+  const sync=()=>{
+    const i=Math.round(track.scrollLeft/track.clientWidth);
+    dots.forEach((d,n)=>d.classList.toggle("on",n===i));
+    if(caption&&shots[i])caption.textContent=shots[i].alt||"";
+  };
+  track.addEventListener("scroll",()=>requestAnimationFrame(sync),{passive:true});
+  track.addEventListener("keydown",ev=>{
     const step=ev.key==="ArrowRight"?1:ev.key==="ArrowLeft"?-1:0;
     if(!step)return;ev.preventDefault();
-    deck.scrollTo({left:(Math.round(deck.scrollLeft/deck.clientWidth)+step)*deck.clientWidth,behavior:"smooth"});
+    track.scrollTo({left:(Math.round(track.scrollLeft/track.clientWidth)+step)*track.clientWidth,behavior:"smooth"});
   });
 }
 // Freeze the page behind the modal at its current offset, so the archive
