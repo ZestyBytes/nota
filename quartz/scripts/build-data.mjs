@@ -30,7 +30,8 @@ const TOPICS = {
   food: { name: "Food", mode: "recipes", color: "#8a4a1a", soft: "#ecddcb", description: "Recipes, experiments and things made for the table" },
   lifestyle: { name: "Lifestyle", color: "#2f5d8a", soft: "#dde5ee", description: "Everyday life, plans and the practical things" },
   habits: { name: "Habits", color: "#6b3f6b", soft: "#e9dfe9", description: "Practices worth repeating, and what makes them stick" },
-  playlist: { name: "Playlist", color: "#6b6a2e", soft: "#e9e8d3", description: "Records, podcasts and things worth listening to" }
+  playlist: { name: "Playlist", color: "#6b6a2e", soft: "#e9e8d3", description: "Records, podcasts and things worth listening to" },
+  motoring: { name: "Motoring", color: "#b0472c", soft: "#f2ded6", description: "The Mini, the road, and the days worth the drive" }
 };
 const TYPE_MAP = { journal: "Journal", journey: "Journey", note: "Note", quote: "Quote" };
 

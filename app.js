@@ -7,16 +7,23 @@ function clone(v){return JSON.parse(JSON.stringify(v))}
 function emptyArchive(){return {topics:clone(BASE.topics),entries:[],tasks:[],books:[]}}
 function esc(s=""){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
 // Just enough Markdown for a note body: escape first, then re-introduce the
-// handful of marks the vault actually uses. Images are skipped: the detail
-// view already shows the entry's own image above the text.
+// handful of marks the vault actually uses. Any image after the lead one
+// is rendered in place, since the lead is already shown above the text.
 function inline(t){return esc(t).replace(/\[\[([^\]|]+)\|?[^\]]*\]\]/g,"$1").replace(/\*\*([^*]+)\*\*/g,"<strong>$1</strong>").replace(/\[([^\]]+)\]\(([^)]+)\)/g,"$1")}
-function markdown(src=""){
+function markdown(src="",leadImage=""){
   const out=[];let para=[],list=[];
   const flushPara=()=>{if(para.length){out.push(`<p>${inline(para.join(" "))}</p>`);para=[]}};
   const flushList=()=>{if(list.length){out.push(`<ul>${list.map(i=>`<li>${inline(i)}</li>`).join("")}</ul>`);list=[]}};
   for(const raw of String(src).split("\n")){
     const t=raw.trim();
-    if(!t||t.startsWith("![")){flushPara();flushList();continue}
+    if(!t){flushPara();flushList();continue}
+    if(t.startsWith("![")){
+      flushPara();flushList();
+      const m=t.match(/^!\[([^\]]*)\]\(([^)]+)\)/);
+      // the lead image is already shown above the text; the rest belong here
+      if(m&&m[2]!==leadImage)out.push(`<figure class="body-figure"><img src="${esc(m[2])}" alt="${esc(m[1])}" loading="lazy">${m[1]?`<figcaption>${esc(m[1])}</figcaption>`:""}</figure>`);
+      continue;
+    }
     if(t.startsWith("#")){flushPara();flushList();out.push(`<h3>${inline(t.replace(/^#+\s*/,""))}</h3>`);continue}
     if(t.startsWith(">")){flushPara();flushList();out.push(`<blockquote>${inline(t.replace(/^>\s*/,""))}</blockquote>`);continue}
     if(t.startsWith("- ")){flushPara();list.push(t.slice(2));continue}
@@ -48,11 +55,11 @@ function cardBlocks(body=""){
   for(const b of blocks){if(b.startsWith("## ")||!cards.length)cards.push(b);else cards[cards.length-1]+="\n\n"+b}
   return cards;
 }
-function cardDeck(body){
+function cardDeck(body,leadImage=""){
   const cards=cardBlocks(body);
-  if(cards.length<2)return `<div class="detail-body">${markdown(body)}</div>`;
+  if(cards.length<2)return `<div class="detail-body">${markdown(body,leadImage)}</div>`;
   return `<div class="deck-wrap"><div class="deck" tabindex="0" role="group" aria-label="Swipe through ${cards.length} cards">${
-    cards.map((c,i)=>`<article class="deck-card"><span class="deck-no">${String(i+1).padStart(2,"0")} / ${String(cards.length).padStart(2,"0")}</span><div class="deck-copy">${markdown(c)}</div></article>`).join("")
+    cards.map((c,i)=>`<article class="deck-card"><span class="deck-no">${String(i+1).padStart(2,"0")} / ${String(cards.length).padStart(2,"0")}</span><div class="deck-copy">${markdown(c,leadImage)}</div></article>`).join("")
   }</div><div class="deck-dots" aria-hidden="true">${cards.map((_,i)=>`<i class="${i?"":"on"}"></i>`).join("")}</div></div>`;
 }
 function entryPage(id){
@@ -67,7 +74,7 @@ function entryPage(id){
     <div class="chips">${chips(e.topics)}</div>
     <h1 class="entry-page-title">${e.type==="Quote"?`&ldquo;${esc(e.title)}&rdquo;`:esc(e.title)}</h1>
     ${e.author?`<p class="entry-page-author">${esc(e.author)}</p>`:""}
-    ${e.view==="cards"&&e.body?cardDeck(e.body):`<div class="detail-body">${e.body?markdown(e.body):`<p>${esc(e.excerpt||"Saved in your Nota archive.")}</p>`}</div>`}
+    ${e.view==="cards"&&e.body?cardDeck(e.body,e.image):`<div class="detail-body">${e.body?markdown(e.body,e.image):`<p>${esc(e.excerpt||"Saved in your Nota archive.")}</p>`}</div>`}
     ${e.attachments?.length?`<div class="attachment-list"><p class="eyebrow">Attachments</p>${e.attachments.map((a,i)=>`<div>${icon("paperclip")}<span><b>${esc(a.name)}</b><small>${esc(a.kind)} &middot; ${esc(a.size)}</small></span><button type="button" data-view-attachment="${i}" data-entry-id="${e.id}">View</button></div>`).join("")}</div>`:""}
   </section>`;
 }

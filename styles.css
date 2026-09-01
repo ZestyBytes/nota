@@ -501,3 +501,8 @@ body.modal-open{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 @media(max-width:800px){
   .header-date{display:block}
 }
+
+/* ---------- images inside a note body ---------- */
+.body-figure{margin:26px 0;padding:0}
+.body-figure img{display:block;width:100%;background:var(--paper-alt);filter:saturate(.9)}
+.body-figure figcaption{margin-top:9px;font:11px var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}

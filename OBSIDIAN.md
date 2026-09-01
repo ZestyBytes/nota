@@ -60,7 +60,7 @@ at `templates/`) to start a new note in the right shape.
 
 Every type takes `tags: [slug, ...]`, the topic(s) it belongs to. Valid
 slugs today: `gardening`, `music`, `technology`, `adhd`, `books`, `family`,
-`food`, `lifestyle`, `habits`, `playlist`. Adding a new one means adding it to the `TOPICS` object at the top
+`food`, `lifestyle`, `habits`, `playlist`, `motoring`. Adding a new one means adding it to the `TOPICS` object at the top
 of `quartz/scripts/build-data.mjs` (and to `content/topics.md`'s grid if you
 want it browsable).
 
