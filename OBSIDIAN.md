@@ -81,6 +81,10 @@ publish: true
 Body: first paragraph becomes the card excerpt everywhere. A leading
 `![alt](url)` image becomes the entry's photo.
 
+Add `writing: true` to a Journal, Note or Journey to put it on the Writing
+page, which is a chosen selection rather than a copy of the whole archive.
+Without it a piece still lives in the archive, it simply is not featured.
+
 Add `view: cards` to a Journal, Note or Journey and its page becomes a
 swipeable deck instead of flowing prose: one card per paragraph, or one per
 `##` heading if the note uses them. Good for a numbered list of points,

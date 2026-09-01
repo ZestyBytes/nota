@@ -13,8 +13,28 @@ function esc(s=""){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;
 // Just enough Markdown for a note body: escape first, then re-introduce the
 // handful of marks the vault actually uses. Images already shown above the
 // text, as a photograph or a gallery, are skipped here.
+// The vault is a linked notebook, so a [[wikilink]] should behave like one.
+// Titles match case-insensitively; anything unresolved stays as plain text,
+// reading exactly as it did before.
+function linkTarget(name){
+  const want=String(name).replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">").trim().toLowerCase();
+  const entry=state.data.entries.find(e=>(e.title||"").trim().toLowerCase()===want);
+  if(entry)return {kind:"entry",id:entry.id};
+  const book=state.data.books.find(b=>(b.title||"").trim().toLowerCase()===want);
+  if(book)return {kind:"book",id:book.id};
+  const slug=Object.keys(state.data.topics).find(k=>k===want||(state.data.topics[k].name||"").trim().toLowerCase()===want);
+  if(slug)return {kind:"topic",id:slug};
+  return null;
+}
+function wikilink(name,label){
+  const t=linkTarget(name),text=label||name;
+  if(!t)return text;
+  if(t.kind==="entry")return `<a class="wikilink" href="#entry/${encodeURIComponent(t.id)}">${text}</a>`;
+  if(t.kind==="topic")return `<a class="wikilink" href="#topics/${encodeURIComponent(t.id)}">${text}</a>`;
+  return `<button type="button" class="wikilink" data-book="${esc(t.id)}">${text}</button>`;
+}
 function inline(t){return esc(t)
-  .replace(/\[\[([^\]|]+)\|?[^\]]*\]\]/g,"$1")
+  .replace(/\[\[([^\]|]+)(?:\|([^\]]*))?\]\]/g,(m,name,label)=>wikilink(name,label))
   .replace(/`([^`]+)`/g,"<code>$1</code>")
   .replace(/\*\*([^*]+)\*\*/g,"<strong>$1</strong>")
   .replace(/(^|[^*])\*([^*\n]+)\*/g,"$1<em>$2</em>")
@@ -132,6 +152,14 @@ function recipeBody(e){
     ${r.ingredients?.length?`<section class="recipe-part"><h2 class="section-title">You will need</h2><ul class="ingredients">${r.ingredients.map((i,n)=>`<li class="${done.includes(n)?"got":""}" data-tick="${n}" data-recipe="${e.id}"><span class="tick" aria-hidden="true">${icon("check")}</span><span>${inline(i)}</span></li>`).join("")}</ul></section>`:""}
     ${r.method?.length?`<section class="recipe-part"><details class="method" open><summary><span class="section-title">Method</span><span class="method-count">${r.method.length} steps</span></summary><ol class="steps">${r.method.map(m=>`<li>${inline(m)}</li>`).join("")}</ol></details></section>`:""}`;
 }
+// What else in the archive points at this entry. A one-way link is half a
+// connection; the other half is knowing you were mentioned.
+function backlinks(e){
+  const title=(e.title||"").trim().toLowerCase();
+  if(!title)return [];
+  return state.data.entries.filter(x=>x.id!==e.id&&(x.body||"").toLowerCase()
+    .match(/\[\[([^\]|]+)(?:\|[^\]]*)?\]\]/g)?.some(m=>m.replace(/^\[\[|\]\]$/g,"").split("|")[0].trim()===title));
+}
 function entryPage(id){
   const e=[...state.data.entries,...state.data.tasks].find(x=>x.id===id);
   const back=state.returnTo||"#today";
@@ -145,6 +173,7 @@ function entryPage(id){
     <h1 class="entry-page-title">${e.type==="Quote"?`&ldquo;${esc(e.title)}&rdquo;`:esc(e.title)}</h1>
     ${e.author?`<p class="entry-page-author">${esc(e.author)}</p>`:""}
     ${(()=>{const shown=e.images?.length>1?e.images.map(i=>i.src):[e.image];return e.recipe?`<div class="detail-body recipe-body">${recipeBody(e)}</div>`:e.view==="cards"&&e.body?cardDeck(e.body,shown):`<div class="detail-body">${e.body?(e.view==="playlist"?playlistBody(e.body):markdown(e.body,shown)):`<p>${esc(e.excerpt||"Saved in your Nota archive.")}</p>`}</div>`})()}
+    ${(()=>{const back=backlinks(e);return back.length?`<section class="backlinks"><h2 class="section-title">Mentioned in</h2><ul>${back.map(b=>`<li><a href="#entry/${encodeURIComponent(b.id)}">${esc(b.title)}</a><small>${esc(b.type)}${b.occurredAt?` &middot; ${esc(fmtDate(b.occurredAt))}`:""}</small></li>`).join("")}</ul></section>`:""})()}
     ${e.attachments?.length?`<div class="attachment-list"><p class="eyebrow">Attachments</p>${e.attachments.map((a,i)=>`<div>${icon("paperclip")}<span><b>${esc(a.name)}</b><small>${esc(a.kind)} &middot; ${esc(a.size)}</small></span><button type="button" data-view-attachment="${i}" data-entry-id="${e.id}">View</button></div>`).join("")}</div>`:""}
   </section>`;
 }
@@ -335,7 +364,18 @@ function matchSnippet(e,q){
   return `${from>0?"&hellip; ":""}${esc(head)}<mark>${esc(hit)}</mark>${esc(tail)}${to<text.length?" &hellip;":""}`;
 }
 function search(){const q=state.search,pool=searchPool(),present=new Set(pool.map(x=>x.type)),types=["all",...["Journal","Note","Reading","Quote","Journey","Task","Event"].filter(t=>present.has(t))],items=searchResults(q);return `<section>${pageHead("Find anything","Search","Search across titles, words, types and topics.")}<input class="search-box" type="search" value="${esc(state.search)}" placeholder="Search nota…" autofocus><div class="search-filters">${types.map(t=>`<button class="filter ${state.filter===t?"active":""}" data-filter="${t}">${t}</button>`).join("")}</div><div class="entry-list search-results">${items.length?items.map(e=>entryCard(e,matchSnippet(e,q))).join(""):`<p class="empty">No matching records.</p>`}</div></section>`}
-function writing(){const items=state.data.entries.filter(e=>e.publishedAt);return `<section class="writing-page">${pageHead("Selected writing","Writing","Notes and journal entries deliberately shared from the private archive.")}<div class="entry-list">${items.map(entryCard).join("")||`<p class="empty">Nothing has been published yet.</p>`}</div></section>`}
+function writing(){
+  // Writing is a selection, not a second copy of the archive. An entry joins
+  // it by saying so with `writing: true`; publishedAt keeps its own job of
+  // marking what is not held back.
+  const items=state.data.entries.filter(e=>e.writing)
+    .sort((a,b)=>(b.occurredAt||b.createdAt||"").localeCompare(a.occurredAt||a.createdAt||""));
+  return `<section class="writing-page">${pageHead("Selected writing","Writing","Pieces chosen from the archive, rather than everything in it.")}
+    ${items.length
+      ? `<div class="entry-list">${items.map(e=>entryCard(e)).join("")}</div>`
+      : `<p class="empty">Nothing selected yet. Add <code>writing: true</code> to a note's frontmatter and it will appear here.</p>`}
+  </section>`;
+}
 function topicView(id){const t=topic(id),kids=childTopics(id),items=state.data.entries.filter(e=>inTopic(e,id)),books=state.data.books.filter(b=>inTopic(b,id));let body=`<div class="entry-list">${items.map(entryCard).join("")||(books.length?"":`<p class="empty">Nothing in this topic yet.</p>`)}</div>`;if(t.mode==="listen"){
     const groups=items.map(e=>({e,rows:bulletsOf(e.body)})).filter(g=>g.rows.length);
     const rest=items.filter(e=>!bulletsOf(e.body).length);

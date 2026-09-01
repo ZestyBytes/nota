@@ -176,7 +176,7 @@ for (const file of files) {
     id: slug, type: TYPE_MAP[data.type], title: data.title,
     excerpt: firstParagraph(body), body: body.trim(), view: data.view || "", topics,
     occurredAt: data.occurredAt || "", createdAt: data.createdAt || data.occurredAt || "",
-    publishedAt: data.publishedAt || "", image, imageAlt, images: allImages(body), attachments: []
+    publishedAt: data.publishedAt || "", writing: Boolean(data.writing), image, imageAlt, images: allImages(body), attachments: []
   };
   if (data.view === "recipe") {
     entry.recipe = {
