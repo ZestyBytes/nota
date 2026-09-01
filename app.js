@@ -10,14 +10,21 @@ function esc(s=""){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;
 // Just enough Markdown for a note body: escape first, then re-introduce the
 // handful of marks the vault actually uses. Images already shown above the
 // text, as a photograph or a gallery, are skipped here.
-function inline(t){return esc(t).replace(/\[\[([^\]|]+)\|?[^\]]*\]\]/g,"$1").replace(/\*\*([^*]+)\*\*/g,"<strong>$1</strong>").replace(/(^|[^*])\*([^*\n]+)\*/g,"$1<em>$2</em>").replace(/\[([^\]]+)\]\(([^)]+)\)/g,"$1")}
+function inline(t){return esc(t)
+  .replace(/\[\[([^\]|]+)\|?[^\]]*\]\]/g,"$1")
+  .replace(/`([^`]+)`/g,"<code>$1</code>")
+  .replace(/\*\*([^*]+)\*\*/g,"<strong>$1</strong>")
+  .replace(/(^|[^*])\*([^*\n]+)\*/g,"$1<em>$2</em>")
+  // only http(s) links become anchors; anything else stays as its text
+  .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g,'<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
+  .replace(/\[([^\]]+)\]\(([^)]+)\)/g,"$1")}
 function markdown(src="",shown=[]){
-  const out=[];let para=[],list=[],rows=[];
+  const out=[];let para=[],list=[],rows=[],fence=null,lang="";
   const flushPara=()=>{if(para.length){out.push(`<p>${inline(para.join(" "))}</p>`);para=[]}};
   const flushList=()=>{if(list.length){out.push(`<ul>${list.map(i=>`<li>${inline(i)}</li>`).join("")}</ul>`);list=[]}};
   for(const raw of String(src).split("\n")){
     const t=raw.trim();
-    if(!t){flushPara();flushList();continue}
+    if(!t&&fence===null){flushPara();flushList();continue}
     if(t.startsWith("![")){
       flushPara();flushList();
       const m=t.match(/^!\[([^\]]*)\]\(([^)]+)\)/);
@@ -27,12 +34,19 @@ function markdown(src="",shown=[]){
     }
     if(t.startsWith("#")){flushPara();flushList();out.push(`<h3>${inline(t.replace(/^#+\s*/,""))}</h3>`);continue}
     if(t.startsWith(">")){flushPara();flushList();out.push(`<blockquote>${inline(t.replace(/^>\s*/,""))}</blockquote>`);continue}
+    if(t.startsWith("```")){
+      if(fence===null){flushPara();flushList();fence=[];lang=t.slice(3).trim()}
+      else{out.push(`<pre class="code"${lang?` data-lang="${esc(lang)}"`:""}><code>${esc(fence.join("\n"))}</code></pre>`);fence=null;lang=""}
+      continue;
+    }
+    if(fence!==null){fence.push(raw.replace(/\s+$/,""));continue}
     if(t.startsWith("|")&&t.endsWith("|")){flushPara();flushList();rows.push(t);continue}
     if(rows.length){out.push(table(rows));rows=[]}
     if(t.startsWith("- ")){flushPara();list.push(t.slice(2));continue}
     flushList();para.push(t);
   }
   flushPara();flushList();if(rows.length)out.push(table(rows));
+  if(fence!==null)out.push(`<pre class="code"><code>${esc(fence.join("\n"))}</code></pre>`);
   return out.join("");
 }
 // A pipe table was printing its pipes as prose; render it as a table.

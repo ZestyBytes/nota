@@ -153,7 +153,7 @@ for (const file of files) {
     books.push({
       id: slug, title: data.title, author: data.author || "",
       status: data.status || "want-to-read", progress: Number(data.progress || 0),
-      cover: firstImage(body).image, topics: topics.length ? topics : ["books"],
+      cover: data.cover || firstImage(body).image, topics: topics.length ? topics : ["books"],
       notes: (() => {
         const n = firstParagraph(body.slice(body.toLowerCase().indexOf("## reading notes")));
         return n && body.toLowerCase().includes("## reading notes") ? [{ id: `${slug}-n1`, text: n, createdAt: data.startedAt || "" }] : [];

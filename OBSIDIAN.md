@@ -123,6 +123,10 @@ progress: 42            # 0-100, shown only while status: reading
 tags: [books, adhd]
 publish: true
 ```
+Add `cover: "https://…/cover.jpg"` (or a path like `assets/books/x.jpg`) to
+show real cover art. Without one the Library sets a typographic plate from
+the title instead, so a book never looks broken for want of a picture.
+
 Body: a `## Reading notes` section's first paragraph becomes the book's one
 note. Quotes come from separate quote files linked with `book:` (above),
 not written inline here.

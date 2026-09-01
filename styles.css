@@ -636,3 +636,11 @@ body.modal-open{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .widget-row .book-plate .plate-title{display:none}
 .widget-row .book-plate .plate-rule{inset:4px}
 .widget-row .book-plate .plate-mark{font-size:44px;right:-.04em;bottom:-.24em;opacity:.3}
+
+/* ---------- links and code in a note body ---------- */
+.detail-body a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px;text-decoration-thickness:1.5px}
+.detail-body a:hover{text-decoration-color:var(--stamp-red)}
+.detail-body code{font:.86em var(--mono);background:var(--paper-alt);padding:2px 5px;border-radius:2px;word-break:break-word}
+.detail-body pre.code{position:relative;margin:0 0 22px;padding:18px 16px;background:var(--ink);color:#e7e9df;overflow-x:auto;font:12px/1.65 var(--mono)}
+.detail-body pre.code code{background:none;padding:0;font:inherit;color:inherit;white-space:pre}
+.detail-body pre.code[data-lang]:before{content:attr(data-lang);position:absolute;top:0;right:0;padding:3px 8px;background:rgba(255,255,255,.09);font:9px var(--mono);text-transform:uppercase;letter-spacing:.14em;color:#a9ad9c}
