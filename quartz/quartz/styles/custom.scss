@@ -100,7 +100,7 @@ body[data-slug="index"] article > h2 { font: 700 .72rem/1 var(--nota-mono); text
 .topic-card h3 a { border: 0 !important; color: var(--topic-ink); }
 .topic-card p { color: var(--nota-ink); font: italic .84rem/1.4 var(--nota-serif); margin: 0; opacity: .82; }
 .topic-count { font: .62rem/1 var(--nota-mono); letter-spacing: .06em; text-transform: uppercase; position: absolute; top: 1.1rem; right: 1.1rem; }
-.topic-card.tech { --topic-ink: #1c6e63; } .topic-card.food { --topic-ink: #8a4a1a; } .topic-card.garden { --topic-ink: #3f6b2e; } .topic-card.health { --topic-ink: #5b4a9e; } .topic-card.music { --topic-ink: #a13a2e; } .topic-card.books { --topic-ink: #8a5a12; } .topic-card.lifestyle { --topic-ink: #2f5d8a; } .topic-card.family { --topic-ink: #96355a; }
+.topic-card.tech { --topic-ink: #1c6e63; } .topic-card.food { --topic-ink: #8a4a1a; } .topic-card.garden { --topic-ink: #3f6b2e; } .topic-card.health { --topic-ink: #5b4a9e; } .topic-card.music { --topic-ink: #a13a2e; } .topic-card.books { --topic-ink: #8a5a12; } .topic-card.lifestyle { --topic-ink: #2f5d8a; } .topic-card.family { --topic-ink: #96355a; } .topic-card.habits { --topic-ink: #6b3f6b; }
 .topic-intro { border-left: 3px solid currentColor; color: var(--topic-ink); margin-bottom: 2.4rem; padding: .8rem 1.1rem; font-style: italic; }
 .topic-intro p { color: currentColor; margin: 0; }
 .topic-intro.tech { --topic-ink: #1c6e63; background: #dbe9e6; } .topic-intro.food { --topic-ink: #8a4a1a; background: #ecddcb; }

@@ -28,7 +28,8 @@ const TOPICS = {
   books: { name: "Books", color: "#8a5a12", soft: "#ece0cb", description: "Reading, marginalia and ideas worth keeping" },
   family: { name: "Family", color: "#96355a", soft: "#eddce3", description: "Home life and shared memories" },
   food: { name: "Food", mode: "recipes", color: "#8a4a1a", soft: "#ecddcb", description: "Recipes, experiments and things made for the table" },
-  lifestyle: { name: "Lifestyle", color: "#2f5d8a", soft: "#dde5ee", description: "Everyday life, plans and the practical things" }
+  lifestyle: { name: "Lifestyle", color: "#2f5d8a", soft: "#dde5ee", description: "Everyday life, plans and the practical things" },
+  habits: { name: "Habits", color: "#6b3f6b", soft: "#e9dfe9", description: "Practices worth repeating, and what makes them stick" }
 };
 const TYPE_MAP = { journal: "Journal", journey: "Journey", note: "Note", quote: "Quote" };
 
