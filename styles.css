@@ -664,3 +664,16 @@ body.modal-open{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .shot-count .line-icon{width:11px;height:11px;stroke-width:1.8}
 .shot.is-set{box-shadow:4px -4px 0 -1px var(--paper-alt),5px -5px 0 0 var(--line)}
 .shot.is-set:hover{box-shadow:4px -4px 0 -1px var(--paper-alt),5px -5px 0 0 var(--line),0 10px 22px -12px rgba(34,38,30,.35)}
+
+/* the rotating slot's other faces */
+.widget-quote{font:600 17px/1.35 var(--serif);font-style:italic}
+.widget-quote:before{content:"\201C"}
+.widget-quote:after{content:"\201D"}
+
+/* a task carrying a note reads as two lines and opens like an entry */
+.task-copy{display:flex;flex-direction:column;gap:3px;min-width:0}
+.task-note{font:12px/1.45 var(--serif);font-style:italic;color:var(--muted)}
+.task-due{font:9px var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--faint)}
+.task.has-note{cursor:pointer}
+.task.has-note:hover .task-title{text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--line)}
+.task.done .task-note,.task.done .task-due{color:var(--faint)}

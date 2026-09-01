@@ -145,7 +145,8 @@ for (const file of files) {
 
   if (data.type === "task") {
     tasks.push({ id: slug, title: data.title, topics: topics.length ? topics : ["books"],
-      dueAt: data.dueAt || "", completedAt: data.completedAt || null });
+      dueAt: data.dueAt || "", completedAt: data.completedAt || null,
+      note: firstParagraph(body), body: body.trim() });
     continue;
   }
 

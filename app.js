@@ -136,7 +136,7 @@ function entryPage(id){
   const date=fmtDate(e.occurredAt||e.createdAt||e.dueAt),t=topic(e.topics?.[0]);
   return `<section class="entry-page" style="--topic:${t.color}">
     <p class="back-link"><a href="${back}" data-back>Back</a><button class="share-button" data-share="${esc(e.id)}" type="button">Share</button></p>
-    <div class="entry-page-meta"><span class="type-label">${esc(e.type||"Task")}</span>${date?`<span class="entry-date">${date}</span>`:""}${e.publishedAt||e.type==="Task"?"":`<span class="stamp stamp-private">private</span>`}<span class="acc-no acc-no-page">No. ${accNo(e.id)}</span></div>
+    <div class="entry-page-meta"><span class="type-label">${esc(e.type||"Task")}</span>${date?`<span class="entry-date">${date}</span>`:""}${e.publishedAt||!e.type||e.type==="Task"?"":`<span class="stamp stamp-private">private</span>`}<span class="acc-no acc-no-page">No. ${accNo(e.id)}</span></div>
     ${e.images?.length>1?gallery(e.images):e.image?`<img class="detail-image" src="${e.image}" alt="${esc(e.imageAlt||"")}">`:""}
     <div class="chips">${chips(e.topics)}</div>
     <h1 class="entry-page-title">${e.type==="Quote"?`&ldquo;${esc(e.title)}&rdquo;`:esc(e.title)}</h1>
@@ -149,23 +149,58 @@ function entryPage(id){
 // what is actually in progress. Falls back to the archive count when there
 // is nothing on the go.
 function todayWidget(){
+  // Rotates daily rather than showing the same book forever: whatever is
+  // current, a quote worth rereading, this day in a previous year, the next
+  // thing due. Chosen by the date, so it is steady all day and different
+  // tomorrow.
+  const cards=[];
   const book=state.data.books.find(b=>b.status==="reading");
-  if(book)return `<button class="side-widget" data-book="${book.id}" aria-label="Open ${esc(book.title)}">
+  if(book)cards.push(`<button class="side-widget" data-book="${book.id}" aria-label="Open ${esc(book.title)}">
     <span class="eyebrow">Now reading</span>
     <span class="widget-row">${book.cover?`<img src="${book.cover}" alt="" loading="lazy">`:coverPlate(book)}<span><b>${esc(book.title)}</b><small>${esc(book.author)}</small></span></span>
     <span class="widget-bar"><i style="width:${book.progress}%"></i></span>
     <span class="widget-foot">${book.progress}% through</span>
-  </button>`;
-  const open=state.data.tasks.filter(t=>!t.completedAt).length;
-  return `<div class="side-widget side-widget-static">
-    <span class="eyebrow">The archive</span>
-    <span class="widget-figure">${state.data.entries.length}</span>
-    <span class="widget-foot">entries kept${open?`, ${open} thing${open>1?"s":""} waiting`:""}</span>
-  </div>`;
+  </button>`);
+
+  const quotes=state.data.entries.filter(e=>e.type==="Quote").concat(state.data.books.flatMap(b=>(b.quotes||[]).map(q=>({title:q.text,author:b.author,id:b.id}))));
+  if(quotes.length){
+    const q=quotes[dayIndex(quotes.length)];
+    cards.push(`<div class="side-widget side-widget-static">
+      <span class="eyebrow">A thought to keep</span>
+      <span class="widget-quote">${esc(q.title)}</span>
+      ${q.author?`<span class="widget-foot">${esc(q.author)}</span>`:""}
+    </div>`);
+  }
+
+  const memory=state.data.entries.find(e=>e.occurredAt&&e.occurredAt.slice(5)===todayKey.slice(5)&&e.occurredAt.slice(0,4)<todayKey.slice(0,4));
+  if(memory)cards.push(`<button class="side-widget" data-entry="${esc(memory.id)}">
+    <span class="eyebrow">On this day, ${memory.occurredAt.slice(0,4)}</span>
+    <span class="widget-row"><span><b>${esc(memory.title)}</b><small>${esc(memory.type)}</small></span></span>
+    <span class="widget-foot">${esc(fmtDate(memory.occurredAt))}</span>
+  </button>`);
+
+  const due=state.data.tasks.filter(t=>!t.completedAt&&t.dueAt).sort((a,b)=>a.dueAt.localeCompare(b.dueAt))[0];
+  if(due)cards.push(`<div class="side-widget side-widget-static">
+    <span class="eyebrow">Next up</span>
+    <span class="widget-row"><span><b>${esc(due.title)}</b></span></span>
+    <span class="widget-foot">${due.dueAt<=todayKey?"Due today":"Due "+esc(fmtDate(due.dueAt))}</span>
+  </div>`);
+
+  if(!cards.length){
+    const open=state.data.tasks.filter(t=>!t.completedAt).length;
+    return `<div class="side-widget side-widget-static">
+      <span class="eyebrow">The archive</span>
+      <span class="widget-figure">${state.data.entries.length}</span>
+      <span class="widget-foot">entries kept${open?`, ${open} thing${open>1?"s":""} waiting`:""}</span>
+    </div>`;
+  }
+  return cards[dayIndex(cards.length)];
 }
+// stable for the whole day, different tomorrow
+function dayIndex(n){const d=new Date(todayKey+"T12:00:00");return Math.floor((d-new Date(d.getFullYear(),0,0))/864e5)%n}
 function pageHead(kicker,title,lede=""){return `<div class="page-head"><div><p class="eyebrow">${kicker}</p><h1 class="page-title">${title}</h1>${lede?`<p class="lede">${lede}</p>`:""}</div></div>`}
 function today(){const entries=state.data.entries.filter(e=>e.occurredAt===todayKey),lastYear=`${now.getFullYear()-1}-${todayKey.slice(5)}`,memory=state.data.entries.find(e=>e.occurredAt===lastYear),quote=state.data.entries.find(e=>e.type==="Quote"),label=now.toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"});const recent=entries.length?[]:[...state.data.entries].sort((a,b)=>(b.occurredAt||"").localeCompare(a.occurredAt||"")).slice(0,3);return `<section><div class="page-head"><div><p class="eyebrow">A record of a life</p><h1 class="page-title">Today</h1></div>${todayWidget()}</div>${memory?`<div class="memory">On this day last year: <a href="#" data-entry="${memory.id}">${esc(memory.title)}</a></div>`:""}<div class="today-grid"><div><h2 class="section-title">Entries</h2>${entries.length?`<div class="entry-list">${entries.map(entryCard).join("")}</div>`:recent.length?`<p class="empty small">Nothing recorded today yet. Here's what's most recent.</p><div class="entry-list">${recent.map(entryCard).join("")}</div>`:`<p class="empty">Nothing recorded yet. Publish your first entry from Obsidian to see it here.</p>`}</div><aside><h2 class="section-title">To-do</h2><div class="tasks">${state.data.tasks.length?state.data.tasks.map(taskRow).join(""):`<p class="empty small">Nothing waiting.</p>`}</div>${quote?`<div class="quote-card"><p class="eyebrow">A thought to keep</p><blockquote>“${esc(quote.title)}”</blockquote><cite>${esc(quote.author)}</cite></div>`:""}</aside></div></section>`}
-function taskRow(t){const tp=topic(t.topics[0]);return `<div class="task ${t.completedAt?"done":""}"><span class="task-mark" aria-hidden="true">${t.completedAt?icon("check"):""}</span><span class="task-title">${esc(t.title)}</span><span class="chip" style="--topic:${tp.color};--soft:${tp.soft}">${esc(tp.name)}</span></div>`}
+function taskRow(t){const tp=topic(t.topics[0]);return `<div class="task ${t.completedAt?"done":""} ${t.note?"has-note":""}" ${t.note?`data-entry="${esc(t.id)}"`:""}><span class="task-mark" aria-hidden="true">${t.completedAt?icon("check"):""}</span><span class="task-copy"><span class="task-title">${esc(t.title)}</span>${t.note?`<small class="task-note">${esc(t.note)}</small>`:""}${t.dueAt&&!t.completedAt?`<small class="task-due">${t.dueAt<=todayKey?"Due today":"Due "+esc(fmtDate(t.dueAt))}</small>`:""}</span><span class="chip" style="--topic:${tp.color};--soft:${tp.soft}">${esc(tp.name)}</span></div>`}
 function monthEntries(date){return state.data.entries.filter(e=>e.occurredAt===date)}
 function calendar(){const y=state.month.getFullYear(),m=state.month.getMonth(),first=new Date(y,m,1),start=(first.getDay()+6)%7,days=new Date(y,m+1,0).getDate(),cells=[];for(let i=0;i<start;i++)cells.push(`<button class="day muted" disabled></button>`);for(let d=1;d<=days;d++){const date=`${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`,es=monthEntries(date),dots=[...new Set(es.flatMap(e=>e.topics))].slice(0,3).map(id=>`<i class="dot" style="background:${topic(id).color}"></i>`).join("");cells.push(`<button class="day ${date===state.selectedDate?"selected":""}" data-date="${date}"><span>${d}</span><span class="dots">${dots}</span></button>`)}const selected=monthEntries(state.selectedDate),label=new Date(state.selectedDate+"T12:00:00").toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"});return `<section>${pageHead("Browse the archive","Calendar","Every item keeps its own dates; the calendar simply gathers the record of each day.")}<div class="calendar-shell"><div><div class="calendar-head"><button class="icon-button" data-month="-1" aria-label="Previous month">←</button><h2>${first.toLocaleDateString("en-GB",{month:"long",year:"numeric"})}</h2><button class="icon-button" data-month="1" aria-label="Next month">→</button></div><div class="week">${["M","T","W","T","F","S","S"].map(x=>`<span>${x}</span>`).join("")}</div><div class="calendar-grid">${cells.join("")}</div></div><aside class="selected-day"><p class="eyebrow">Selected day</p><h3>${label}</h3>${selected.length?selected.map(entryCard).join(""):`<p class="empty">Nothing recorded on this day.</p>`}</aside></div></section>`}
 // No cover art in the vault, and stock photographs of other people's
