@@ -59,8 +59,12 @@ at `templates/`) to start a new note in the right shape.
 ## Frontmatter reference
 
 Every type takes `tags: [slug, ...]`, the topic(s) it belongs to. Valid
-slugs today: `gardening`, `music`, `technology`, `adhd`, `books`, `family`,
-`food`, `lifestyle`, `habits`, `playlist`, `motoring`. Adding a new one means adding it to the `TOPICS` object at the top
+slugs today: `gardening`, `music`, `technology`, `selfcare`, `adhd`,
+`books`, `family`, `food`, `recipes`, `eatingout`, `lifestyle`, `habits`,
+`playlist`, `motoring`. Some are sub-topics: `adhd` sits under `selfcare`,
+and `recipes` and `eatingout` under `food`, set by a `parent` on the topic.
+Tag the specific one; the parent gathers its children automatically. Adding
+a new one means adding it to the `TOPICS` object at the top
 of `quartz/scripts/build-data.mjs` (and to `content/topics.md`'s grid if you
 want it browsable).
 
@@ -134,7 +138,12 @@ difficulty: "easy"
 tags: [food, gardening]
 publish: true
 ```
-Body: put a `## You'll need` section with a `- ` bullet per ingredient.
+Body: put a `## You'll need` section with a `- ` bullet per ingredient, and
+a `## Method` section with the steps, either bulleted or numbered. The page
+sets the time, servings and difficulty as a fact strip, the ingredients as a
+list you can tick off while cooking (remembered on that phone), and the
+method as a section you can collapse. No need to repeat the facts as a table
+in the body.
 
 **Task** (`type: task`): shows on Today's To-do list. This folder doesn't
 exist in the vault yet, so create `quartz/content/tasks/` and drop task notes

@@ -596,3 +596,36 @@ body.modal-open{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .topic-card:hover .topic-motif{opacity:.16}
 .topic-motif-page{right:0;top:-14px;bottom:auto;width:clamp(150px,26vw,260px);height:clamp(150px,26vw,260px);opacity:.07;z-index:-1}
 @media(max-width:720px){.topic-motif{width:96px;height:96px;right:-12px;bottom:-14px}}
+
+/* ---------- tables in a note body ---------- */
+.table-wrap{overflow-x:auto;margin:0 0 20px}
+.detail-body table{border-collapse:collapse;width:100%;font:13px var(--mono)}
+.detail-body th,.detail-body td{border-bottom:1px solid var(--line);padding:9px 12px 8px;text-align:left}
+.detail-body th{font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-size:10px;color:var(--muted)}
+
+/* ---------- recipe ---------- */
+.share-button{margin-left:auto;border:1px solid var(--line);background:transparent;padding:5px 12px;cursor:pointer;font:10px var(--mono);text-transform:uppercase;letter-spacing:.14em;color:var(--muted)}
+.share-button:hover{border-color:var(--ink);color:var(--ink)}
+.back-link{display:flex;align-items:center}
+.recipe-facts{display:flex;gap:0;margin:0 0 24px;border:1.5px solid var(--ink)}
+.recipe-facts div{flex:1;padding:12px 10px;border-left:1px solid var(--line);text-align:center}
+.recipe-facts div:first-child{border-left:0}
+.recipe-facts dt{font:9px var(--mono);text-transform:uppercase;letter-spacing:.14em;color:var(--muted)}
+.recipe-facts dd{margin:6px 0 0;font:600 17px/1 var(--serif);text-transform:capitalize}
+.recipe-lede{font:19px/1.6 var(--serif);font-style:italic;color:var(--ink-soft);margin:0 0 30px}
+.recipe-part{margin-bottom:34px}
+.ingredients{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.ingredients li{display:flex;align-items:center;gap:13px;padding:13px 2px;border-bottom:1px solid var(--line);cursor:pointer;font:17px/1.35 var(--serif);-webkit-tap-highlight-color:transparent}
+.ingredients .tick{width:20px;height:20px;flex:none;border:1.5px solid var(--ink);border-radius:2px;display:grid;place-items:center;color:transparent}
+.ingredients .tick .line-icon{width:13px;height:13px;stroke-width:2.4}
+.ingredients li.got .tick{background:var(--ink);color:var(--paper)}
+.ingredients li.got span:last-child{text-decoration:line-through;color:var(--faint)}
+.method summary{display:flex;align-items:center;gap:12px;cursor:pointer;list-style:none}
+.method summary::-webkit-details-marker{display:none}
+.method summary .section-title{margin:0}
+.method-count{font:10px var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--faint);flex:none}
+.method summary:after{content:"";width:8px;height:8px;border-right:1.5px solid var(--muted);border-bottom:1.5px solid var(--muted);transform:rotate(45deg);margin-left:auto;transition:transform .18s ease}
+.method[open] summary:after{transform:rotate(-135deg)}
+.steps{margin:20px 0 0;padding-left:0;list-style:none;counter-reset:step}
+.steps li{counter-increment:step;position:relative;padding:0 0 20px 42px;font:17px/1.6 var(--serif)}
+.steps li:before{content:counter(step,decimal-leading-zero);position:absolute;left:0;top:2px;font:10px var(--mono);letter-spacing:.1em;color:var(--faint)}

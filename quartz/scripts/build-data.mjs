@@ -28,7 +28,9 @@ const TOPICS = {
   adhd: { name: "ADHD", parent: "selfcare", icon: "mind", color: "#5b4a9e", soft: "#e5e1f2", description: "Understanding attention and living well" },
   books: { name: "Books", icon: "book", color: "#8a5a12", soft: "#ece0cb", description: "Reading, marginalia and ideas worth keeping" },
   family: { name: "Family", icon: "home", color: "#96355a", soft: "#eddce3", description: "Home life and shared memories" },
-  food: { name: "Food", mode: "recipes", icon: "fork", color: "#8a4a1a", soft: "#ecddcb", description: "Recipes, experiments and things made for the table" },
+  food: { name: "Food", icon: "fork", color: "#8a4a1a", soft: "#ecddcb", description: "Recipes, experiments and things made for the table" },
+  recipes: { name: "Recipes", parent: "food", mode: "recipes", icon: "fork", color: "#a25a1e", soft: "#f0e2d2", description: "Things made at home, and how they were made" },
+  eatingout: { name: "Eating out", parent: "food", icon: "cup", color: "#7a5a2e", soft: "#ece1d0", description: "Meals out worth remembering" },
   lifestyle: { name: "Lifestyle", icon: "cup", color: "#2f5d8a", soft: "#dde5ee", description: "Everyday life, plans and the practical things" },
   habits: { name: "Habits", icon: "repeat", color: "#6b3f6b", soft: "#e9dfe9", description: "Practices worth repeating, and what makes them stick" },
   playlist: { name: "Playlist", mode: "listen", icon: "disc", color: "#6b6a2e", soft: "#e9e8d3", description: "Records, podcasts and things worth listening to" },
@@ -82,6 +84,21 @@ function firstParagraph(body) {
   if (cur.length) paras.push(cur.join(" "));
   const first = paras[0] || "";
   return first.replace(/\[\[([^\]|]+)\|?[^\]]*\]\]/g, "$1").replace(/\*\*([^*]+)\*\*/g, "$1");
+}
+
+// Steps are often numbered rather than bulleted, so accept either.
+function stepsAfter(body, heading) {
+  const lines = body.split("\n");
+  const start = lines.findIndex(l => l.trim().toLowerCase() === `## ${heading}`.toLowerCase());
+  if (start < 0) return [];
+  const items = [];
+  for (let i = start + 1; i < lines.length; i++) {
+    const t = lines[i].trim();
+    if (t.startsWith("## ")) break;
+    const m = t.match(/^(?:[-*]|\d+[.)])\s+(.*)$/);
+    if (m) items.push(m[1].trim());
+  }
+  return items;
 }
 
 function bulletsAfter(body, heading) {
@@ -163,7 +180,8 @@ for (const file of files) {
   if (data.view === "recipe") {
     entry.recipe = {
       time: data.time || "", serves: String(data.serves || ""), difficulty: data.difficulty || "",
-      ingredients: bulletsAfter(body, "you'll need")
+      ingredients: bulletsAfter(body, "you'll need"),
+      method: stepsAfter(body, "method").length ? stepsAfter(body, "method") : stepsAfter(body, "steps")
     };
   }
   entries.push(entry);

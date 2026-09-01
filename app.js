@@ -12,7 +12,7 @@ function esc(s=""){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;
 // text, as a photograph or a gallery, are skipped here.
 function inline(t){return esc(t).replace(/\[\[([^\]|]+)\|?[^\]]*\]\]/g,"$1").replace(/\*\*([^*]+)\*\*/g,"<strong>$1</strong>").replace(/(^|[^*])\*([^*\n]+)\*/g,"$1<em>$2</em>").replace(/\[([^\]]+)\]\(([^)]+)\)/g,"$1")}
 function markdown(src="",shown=[]){
-  const out=[];let para=[],list=[];
+  const out=[];let para=[],list=[],rows=[];
   const flushPara=()=>{if(para.length){out.push(`<p>${inline(para.join(" "))}</p>`);para=[]}};
   const flushList=()=>{if(list.length){out.push(`<ul>${list.map(i=>`<li>${inline(i)}</li>`).join("")}</ul>`);list=[]}};
   for(const raw of String(src).split("\n")){
@@ -27,11 +27,21 @@ function markdown(src="",shown=[]){
     }
     if(t.startsWith("#")){flushPara();flushList();out.push(`<h3>${inline(t.replace(/^#+\s*/,""))}</h3>`);continue}
     if(t.startsWith(">")){flushPara();flushList();out.push(`<blockquote>${inline(t.replace(/^>\s*/,""))}</blockquote>`);continue}
+    if(t.startsWith("|")&&t.endsWith("|")){flushPara();flushList();rows.push(t);continue}
+    if(rows.length){out.push(table(rows));rows=[]}
     if(t.startsWith("- ")){flushPara();list.push(t.slice(2));continue}
     flushList();para.push(t);
   }
-  flushPara();flushList();
+  flushPara();flushList();if(rows.length)out.push(table(rows));
   return out.join("");
+}
+// A pipe table was printing its pipes as prose; render it as a table.
+function table(rows){
+  const cells=r=>r.replace(/^\||\|$/g,"").split("|").map(c=>c.trim());
+  const body=rows.filter(r=>!/^\|[\s|:-]+\|$/.test(r));
+  if(!body.length)return "";
+  const [head,...rest]=body;
+  return `<div class="table-wrap"><table><thead><tr>${cells(head).map(c=>`<th>${inline(c)}</th>`).join("")}</tr></thead><tbody>${rest.map(r=>`<tr>${cells(r).map(c=>`<td>${inline(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
 }
 function topic(id){return state.data.topics[id]||{name:id,color:"#777",soft:"#eee"}}
 function icon(name){const paths={leaf:'<path d="M20 4C12 4 6 8 6 15c0 3 2 5 5 5 7 0 9-8 9-16Z"/><path d="M5 21c3-6 7-9 12-12"/>',music:'<path d="M9 18V5l10-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/>',terminal:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="m7 9 3 3-3 3m6 0h4"/>',mind:'<path d="M12 21s-8-4.5-8-11a4 4 0 0 1 7-2.6A4 4 0 0 1 20 10c0 6.5-8 11-8 11Z"/><path d="M7 13h3l1.5-3 2 6 1.5-3h3"/>',book:'<path d="M4 5a3 3 0 0 1 3-3h12v18H7a3 3 0 0 1 0-6h12"/>',home:'<path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10M9 20v-6h6v6"/>',fork:'<path d="M7 3v7m-3-7v4a3 3 0 0 0 6 0V3M7 10v11M17 3v18m0-18c3 3 3 8 0 10"/>',paperclip:'<path d="m21 11-8.5 8.5a6 6 0 0 1-8.5-8.5l9-9a4 4 0 0 1 5.7 5.7l-9 9a2 2 0 0 1-2.9-2.9L15 5.6"/>',quote:'<path d="M9 11H5a4 4 0 0 1 4-4v8a4 4 0 0 1-4 4M19 11h-4a4 4 0 0 1 4-4v8a4 4 0 0 1-4 4"/>',note:'<path d="M4 3h16v18H4zM8 8h8M8 12h8M8 16h5"/>',check:'<path d="m5 12 5 5 9-9"/>',photos:'<rect x="7" y="3" width="14" height="14" rx="1.5"/><path d="M17 21H4.5A1.5 1.5 0 0 1 3 19.5V7"/>',car:'<path d="M3 13.5h18"/><path d="M5 13.5 6.8 8A2 2 0 0 1 8.7 6.6h6.6A2 2 0 0 1 17.2 8L19 13.5"/><path d="M3.6 13.5v3.2a1 1 0 0 0 1 1h14.8a1 1 0 0 0 1-1v-3.2"/><circle cx="7.6" cy="17.6" r="1.5"/><circle cx="16.4" cy="17.6" r="1.5"/>',disc:'<circle cx="12" cy="12" r="8.6"/><circle cx="12" cy="12" r="2.3"/><path d="M12 3.4a8.6 8.6 0 0 1 8.6 8.6"/>',repeat:'<path d="M4 9.6A4.6 4.6 0 0 1 8.6 5h9"/><path d="m14.8 2.4 2.9 2.6-2.9 2.6"/><path d="M20 14.4A4.6 4.6 0 0 1 15.4 19h-9"/><path d="m9.2 16.4-2.9 2.6 2.9 2.6"/>',heart:'<path d="M12 20.3s-7.6-4.4-7.6-10a4.2 4.2 0 0 1 7.6-2.6 4.2 4.2 0 0 1 7.6 2.6c0 5.6-7.6 10-7.6 10Z"/>',cup:'<path d="M5 8.4h11v5.8a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4Z"/><path d="M16 9.8h2.2a2.3 2.3 0 0 1 0 4.6H16"/><path d="M7.6 4.4v1.9M11 3.9v2.4M14.4 4.4v1.9"/>'};return `<svg class="line-icon" viewBox="0 0 24 24" aria-hidden="true">${paths[name]||paths.note}</svg>`}
@@ -93,19 +103,31 @@ function gallery(images){
     images.map((im,i)=>`<figure class="gallery-shot"><img src="${esc(im.src)}" alt="${esc(im.alt||"")}" loading="${i?"lazy":"eager"}"><span class="gallery-no">${String(i+1).padStart(2,"0")} / ${String(images.length).padStart(2,"0")}</span></figure>`).join("")
   }</div><div class="gallery-dots" aria-hidden="true">${images.map((_,i)=>`<i class="${i?"":"on"}"></i>`).join("")}</div><p class="gallery-caption">${esc(images[0].alt||"")}</p></div>`;
 }
+// A recipe is read standing up in a kitchen: the facts first, then the
+// shopping, then the steps. Ingredients tick off and are remembered, so you
+// can put the phone down and come back to it.
+function ticked(id){try{return JSON.parse(localStorage.getItem("nota-ticked-"+id)||"[]")}catch(error){return []}}
+function recipeBody(e){
+  const r=e.recipe,done=ticked(e.id);
+  const facts=[["Time",r.time],["Serves",r.serves],["Difficulty",r.difficulty]].filter(([,v])=>v);
+  return `${facts.length?`<dl class="recipe-facts">${facts.map(([k,v])=>`<div><dt>${k}</dt><dd>${esc(String(v))}</dd></div>`).join("")}</dl>`:""}
+    ${e.excerpt?`<p class="recipe-lede">${esc(e.excerpt)}</p>`:""}
+    ${r.ingredients?.length?`<section class="recipe-part"><h2 class="section-title">You will need</h2><ul class="ingredients">${r.ingredients.map((i,n)=>`<li class="${done.includes(n)?"got":""}" data-tick="${n}" data-recipe="${e.id}"><span class="tick" aria-hidden="true">${icon("check")}</span><span>${inline(i)}</span></li>`).join("")}</ul></section>`:""}
+    ${r.method?.length?`<section class="recipe-part"><details class="method" open><summary><span class="section-title">Method</span><span class="method-count">${r.method.length} steps</span></summary><ol class="steps">${r.method.map(m=>`<li>${inline(m)}</li>`).join("")}</ol></details></section>`:""}`;
+}
 function entryPage(id){
   const e=[...state.data.entries,...state.data.tasks].find(x=>x.id===id);
   const back=state.returnTo||"#today";
   if(!e)return `<section><p class="back-link"><a href="${back}" data-back>Back</a></p><p class="empty">That entry is no longer in the archive.</p></section>`;
   const date=fmtDate(e.occurredAt||e.createdAt||e.dueAt),t=topic(e.topics?.[0]);
   return `<section class="entry-page" style="--topic:${t.color}">
-    <p class="back-link"><a href="${back}" data-back>Back</a></p>
+    <p class="back-link"><a href="${back}" data-back>Back</a><button class="share-button" data-share="${esc(e.id)}" type="button">Share</button></p>
     <div class="entry-page-meta"><span class="type-label">${esc(e.type||"Task")}</span>${date?`<span class="entry-date">${date}</span>`:""}${e.publishedAt||e.type==="Task"?"":`<span class="stamp stamp-private">private</span>`}<span class="acc-no acc-no-page">No. ${accNo(e.id)}</span></div>
     ${e.images?.length>1?gallery(e.images):e.image?`<img class="detail-image" src="${e.image}" alt="${esc(e.imageAlt||"")}">`:""}
     <div class="chips">${chips(e.topics)}</div>
     <h1 class="entry-page-title">${e.type==="Quote"?`&ldquo;${esc(e.title)}&rdquo;`:esc(e.title)}</h1>
     ${e.author?`<p class="entry-page-author">${esc(e.author)}</p>`:""}
-    ${(()=>{const shown=e.images?.length>1?e.images.map(i=>i.src):[e.image];return e.view==="cards"&&e.body?cardDeck(e.body,shown):`<div class="detail-body">${e.body?(e.view==="playlist"?playlistBody(e.body):markdown(e.body,shown)):`<p>${esc(e.excerpt||"Saved in your Nota archive.")}</p>`}</div>`})()}
+    ${(()=>{const shown=e.images?.length>1?e.images.map(i=>i.src):[e.image];return e.recipe?`<div class="detail-body recipe-body">${recipeBody(e)}</div>`:e.view==="cards"&&e.body?cardDeck(e.body,shown):`<div class="detail-body">${e.body?(e.view==="playlist"?playlistBody(e.body):markdown(e.body,shown)):`<p>${esc(e.excerpt||"Saved in your Nota archive.")}</p>`}</div>`})()}
     ${e.attachments?.length?`<div class="attachment-list"><p class="eyebrow">Attachments</p>${e.attachments.map((a,i)=>`<div>${icon("paperclip")}<span><b>${esc(a.name)}</b><small>${esc(a.kind)} &middot; ${esc(a.size)}</small></span><button type="button" data-view-attachment="${i}" data-entry-id="${e.id}">View</button></div>`).join("")}</div>`:""}
   </section>`;
 }
@@ -222,6 +244,21 @@ document.addEventListener("click",async e=>{
   const month=e.target.closest("[data-month]");if(month){state.month=new Date(state.month.getFullYear(),state.month.getMonth()+Number(month.dataset.month),1);render()}
   const lib=e.target.closest("[data-library]");if(lib){state.library=lib.dataset.library;render()}
   const filter=e.target.closest("[data-filter]");if(filter){state.filter=filter.dataset.filter;render()}
+  const tick=e.target.closest("[data-tick]");
+  if(tick){
+    const id=tick.dataset.recipe,n=Number(tick.dataset.tick),have=ticked(id);
+    const next=have.includes(n)?have.filter(x=>x!==n):[...have,n];
+    try{localStorage.setItem("nota-ticked-"+id,JSON.stringify(next))}catch(error){/* not remembered, still ticks */}
+    tick.classList.toggle("got");
+    return;
+  }
+  const share=e.target.closest("[data-share]");
+  if(share){
+    const url=location.href,title=document.querySelector(".entry-page-title")?.textContent||"nota";
+    if(navigator.share)navigator.share({title,url}).catch(()=>{});
+    else navigator.clipboard?.writeText(url).then(()=>toast("Link copied")).catch(()=>toast("Could not copy the link"));
+    return;
+  }
   const sort=e.target.closest("[data-topicsort]");if(sort){state.topicSort=sort.dataset.topicsort;try{localStorage.setItem("nota-topic-sort",state.topicSort)}catch(error){/* nothing to remember it with */}render();return}
   const tp=e.target.closest("[data-topic]");if(tp)location.hash=`topics/${tp.dataset.topic}`;
   if(e.target.closest(".main-nav a"))document.querySelector(".main-nav").classList.remove("open");
