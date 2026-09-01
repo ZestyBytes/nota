@@ -21,18 +21,18 @@ const OUT_PATH = outIdx >= 0 ? args[outIdx + 1] : join(__dirname, "..", "..", "d
 
 // Topic taxonomy, mirroring the paths declared in content/topics.md.
 const TOPICS = {
-  gardening: { name: "Gardening", color: "#3f6b2e", soft: "#e4ead9", description: "Seasons, seedlings and life outdoors" },
-  music: { name: "Music", color: "#a13a2e", soft: "#f0e1dd", description: "Practice, listening and the guitar journey" },
-  technology: { name: "Technology", mode: "tech", color: "#1c6e63", soft: "#dbe9e6", description: "Tools, code and thoughtful technology" },
-  selfcare: { name: "Self care", color: "#3f6470", soft: "#dde7ea", description: "Looking after the machine: health, mind and upkeep" },
-  adhd: { name: "ADHD", parent: "selfcare", color: "#5b4a9e", soft: "#e5e1f2", description: "Understanding attention and living well" },
-  books: { name: "Books", color: "#8a5a12", soft: "#ece0cb", description: "Reading, marginalia and ideas worth keeping" },
-  family: { name: "Family", color: "#96355a", soft: "#eddce3", description: "Home life and shared memories" },
-  food: { name: "Food", mode: "recipes", color: "#8a4a1a", soft: "#ecddcb", description: "Recipes, experiments and things made for the table" },
-  lifestyle: { name: "Lifestyle", color: "#2f5d8a", soft: "#dde5ee", description: "Everyday life, plans and the practical things" },
-  habits: { name: "Habits", color: "#6b3f6b", soft: "#e9dfe9", description: "Practices worth repeating, and what makes them stick" },
-  playlist: { name: "Playlist", mode: "listen", color: "#6b6a2e", soft: "#e9e8d3", description: "Records, podcasts and things worth listening to" },
-  motoring: { name: "Motoring", color: "#b0472c", soft: "#f2ded6", description: "The Mini, the road, and the days worth the drive" }
+  gardening: { name: "Gardening", icon: "leaf", color: "#3f6b2e", soft: "#e4ead9", description: "Seasons, seedlings and life outdoors" },
+  music: { name: "Music", icon: "music", color: "#a13a2e", soft: "#f0e1dd", description: "Practice, listening and the guitar journey" },
+  technology: { name: "Technology", mode: "tech", icon: "terminal", color: "#1c6e63", soft: "#dbe9e6", description: "Tools, code and thoughtful technology" },
+  selfcare: { name: "Self care", icon: "heart", color: "#3f6470", soft: "#dde7ea", description: "Looking after the machine: health, mind and upkeep" },
+  adhd: { name: "ADHD", parent: "selfcare", icon: "mind", color: "#5b4a9e", soft: "#e5e1f2", description: "Understanding attention and living well" },
+  books: { name: "Books", icon: "book", color: "#8a5a12", soft: "#ece0cb", description: "Reading, marginalia and ideas worth keeping" },
+  family: { name: "Family", icon: "home", color: "#96355a", soft: "#eddce3", description: "Home life and shared memories" },
+  food: { name: "Food", mode: "recipes", icon: "fork", color: "#8a4a1a", soft: "#ecddcb", description: "Recipes, experiments and things made for the table" },
+  lifestyle: { name: "Lifestyle", icon: "cup", color: "#2f5d8a", soft: "#dde5ee", description: "Everyday life, plans and the practical things" },
+  habits: { name: "Habits", icon: "repeat", color: "#6b3f6b", soft: "#e9dfe9", description: "Practices worth repeating, and what makes them stick" },
+  playlist: { name: "Playlist", mode: "listen", icon: "disc", color: "#6b6a2e", soft: "#e9e8d3", description: "Records, podcasts and things worth listening to" },
+  motoring: { name: "Motoring", icon: "car", color: "#b0472c", soft: "#f2ded6", description: "The Mini, the road, and the days worth the drive" }
 };
 const TYPE_MAP = { journal: "Journal", journey: "Journey", note: "Note", quote: "Quote" };
 

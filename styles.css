@@ -587,3 +587,12 @@ body.modal-open{position:fixed;left:0;right:0;width:100%;overflow:hidden}
    pale, so it needs ink instead */
 .book.has-plate .acc-no{color:var(--muted);text-shadow:none}
 .book-detail-head .book-plate{width:120px;height:160px;flex:none}
+
+/* ---------- topic motifs ----------
+   A line drawn in the topic's own ink, sitting under the type as a quiet
+   background rather than a picture competing with it. */
+.topic-motif{position:absolute;right:-16px;bottom:-20px;width:128px;height:128px;color:var(--topic);opacity:.11;pointer-events:none;user-select:none}
+.topic-motif .line-icon{width:100%;height:100%;stroke-width:1}
+.topic-card:hover .topic-motif{opacity:.16}
+.topic-motif-page{right:0;top:-14px;bottom:auto;width:clamp(150px,26vw,260px);height:clamp(150px,26vw,260px);opacity:.07;z-index:-1}
+@media(max-width:720px){.topic-motif{width:96px;height:96px;right:-12px;bottom:-14px}}
