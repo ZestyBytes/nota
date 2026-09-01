@@ -10,7 +10,6 @@ publishedAt: 2026-09-01
 publish: true
 ---
 
-> This is the most important thing I have ever learned: the greatest thing
-> you will ever do is be loved by another person.
+> This is the most important thing I have ever learned: the greatest thing you will ever do is be loved by another person.
 
 From [[The Happiest Man on Earth]], page 83.

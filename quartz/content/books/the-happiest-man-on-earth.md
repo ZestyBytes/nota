@@ -8,6 +8,8 @@ tags: [books]
 publish: true
 ---
 
+![The book open at page 83](assets/books/the-happiest-man-on-earth.jpg)
+
 ## Reading notes
 
 A Holocaust survivor's memoir, written in his nineties, that keeps returning
