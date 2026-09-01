@@ -1,6 +1,9 @@
 // Fall back to an empty archive rather than throwing: if data.js is ever
 // missing (a first visit that went offline mid-load) the shell still opens.
 const BASE = window.NOTA_DATA || { topics:{}, entries:[], tasks:[], books:[] };
+// Stamped at deploy. Left as the literal token when running from a checkout,
+// which is how the version check knows to stay out of the way locally.
+const BUILD="__BUILD__";
 const now = new Date(), todayKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`;
 let savedSort="items";try{savedSort=localStorage.getItem("nota-topic-sort")||"items"}catch(error){/* private mode: fall back to the default */}
 const state = { route:"today", topicSort:savedSort, month:new Date(now.getFullYear(),now.getMonth(),1), selectedDate:todayKey, library:"reading", search:"", filter:"all", data:clone(BASE), user:null, booting:NotaBackend.configured };
@@ -347,6 +350,24 @@ if("serviceWorker" in navigator){
   });
   window.addEventListener("load",async()=>{try{swReg=await navigator.serviceWorker.register("sw.js")}catch(error){/* no worker: the app still runs from the network */}});
   document.addEventListener("visibilitychange",()=>{if(!document.hidden&&swReg)swReg.update().catch(()=>{})});
+  // Belt and braces: the worker update can be slow to notice a new build, so
+  // ask the server outright which build is deployed and reload if the running
+  // one is older. Skipped when running from a checkout, where BUILD is still
+  // its placeholder.
+  const checkBuild=async()=>{
+    if(document.hidden||reloading||BUILD.startsWith("__"))return;
+    try{
+      const res=await fetch(`version.json?t=${Date.now()}`,{cache:"no-store"});
+      const {build}=await res.json();
+      // Ask the worker to pick up the new build rather than reloading here:
+      // the shell is served from its cache, so reloading on our own would
+      // just load the same stale files again, and again.
+      if(build&&build!==BUILD&&swReg)swReg.update().catch(()=>{});
+    }catch(error){/* offline, or no version file: nothing to do */}
+  };
+  document.addEventListener("visibilitychange",checkBuild);
+  window.addEventListener("pageshow",checkBuild);
+  setInterval(checkBuild,5*60*1000);
 }
 
 // data.js is a plain <script>, parsed once at launch. An installed PWA

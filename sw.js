@@ -47,6 +47,13 @@ self.addEventListener("fetch",event=>{
     return;
   }
 
+  // version.json says which build is deployed. Never cached, or the check
+  // that reads it could never see a new one.
+  if(url.pathname.endsWith("/version.json")){
+    event.respondWith(fetch(request,{cache:"no-store"}).catch(()=>new Response("{}",{headers:{"content-type":"application/json"}})));
+    return;
+  }
+
   // data.js is the live content feed. Network first so a fresh publish wins,
   // but keep a copy so the archive still opens with no connection at all.
   if(url.pathname.endsWith("/data.js")){
