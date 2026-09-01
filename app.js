@@ -138,7 +138,7 @@ function todayWidget(){
   const book=state.data.books.find(b=>b.status==="reading");
   if(book)return `<button class="side-widget" data-book="${book.id}" aria-label="Open ${esc(book.title)}">
     <span class="eyebrow">Now reading</span>
-    <span class="widget-row">${book.cover?`<img src="${book.cover}" alt="" loading="lazy">`:""}<span><b>${esc(book.title)}</b><small>${esc(book.author)}</small></span></span>
+    <span class="widget-row">${book.cover?`<img src="${book.cover}" alt="" loading="lazy">`:coverPlate(book)}<span><b>${esc(book.title)}</b><small>${esc(book.author)}</small></span></span>
     <span class="widget-bar"><i style="width:${book.progress}%"></i></span>
     <span class="widget-foot">${book.progress}% through</span>
   </button>`;

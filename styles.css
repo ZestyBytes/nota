@@ -629,3 +629,10 @@ body.modal-open{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .steps{margin:20px 0 0;padding-left:0;list-style:none;counter-reset:step}
 .steps li{counter-increment:step;position:relative;padding:0 0 20px 42px;font:17px/1.6 var(--serif)}
 .steps li:before{content:counter(step,decimal-leading-zero);position:absolute;left:0;top:2px;font:10px var(--mono);letter-spacing:.1em;color:var(--faint)}
+
+/* the plate stands in for a cover in the Today widget, at a size where only
+   the watermark is legible */
+.widget-row .book-plate{width:42px;height:56px;flex:none;padding:0;border-bottom-width:2px}
+.widget-row .book-plate .plate-title{display:none}
+.widget-row .book-plate .plate-rule{inset:4px}
+.widget-row .book-plate .plate-mark{font-size:44px;right:-.04em;bottom:-.24em;opacity:.3}
