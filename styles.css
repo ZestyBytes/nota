@@ -321,11 +321,14 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px}
   .menu-button span{width:18px;height:2px;background:var(--ink)}
   .wordmark-mark{font-size:24px}
   .wordmark-sub{display:none}
-  .mobile-nav{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;z-index:8;bottom:0;left:0;right:0;padding:9px max(6px,env(safe-area-inset-right)) calc(9px + env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-left));background:var(--surface);border-top:1.5px solid var(--ink)}
-  .mobile-nav a{display:grid;place-items:center;gap:5px;border:0;background:transparent;font:10px var(--mono);text-transform:uppercase;letter-spacing:.04em;color:var(--muted);min-height:44px}
-  .mobile-nav a:before{content:"";width:5px;height:5px;border-radius:50%;background:transparent;transition:background .14s ease}
+  .mobile-nav{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;z-index:8;bottom:0;left:0;right:0;padding:6px max(6px,env(safe-area-inset-right)) calc(6px + env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-left));background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:saturate(1.4) blur(12px);border-top:1.5px solid var(--ink)}
+  .mobile-nav a{position:relative;display:grid;place-items:center;align-content:center;gap:3px;border:0;background:transparent;font:9px var(--mono);text-transform:uppercase;letter-spacing:.05em;color:var(--muted);min-height:50px;border-radius:10px;-webkit-tap-highlight-color:transparent;transition:color .16s ease,transform .16s ease}
+  /* the pinned-specimen marker: a red tack above the active icon */
+  .mobile-nav a:before{content:"";position:absolute;top:2px;width:4px;height:4px;border-radius:50%;background:transparent;transition:background .16s ease}
   .mobile-nav a.active{color:var(--ink)}
   .mobile-nav a.active:before{background:var(--stamp-red)}
+  .mobile-nav a.active .nav-icon{stroke-width:1.9}
+  .mobile-nav a:active{transform:scale(.93);color:var(--ink)}
   main{padding:30px 18px 104px}
   .page-head{align-items:flex-start;margin-bottom:34px}
   .date-large{width:88px;height:88px}
@@ -381,3 +384,28 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
 
 .line-icon{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- nav icons ---------- */
+.nav-icon{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;transition:stroke-width .16s ease}
+
+/* ---------- skeletons ----------
+   Placeholders carry the exact metrics of the real thing, so content
+   swapping in never moves the page under a thumb. */
+@keyframes skeleton-breathe{0%,100%{opacity:1}50%{opacity:.45}}
+.skeleton{background:var(--paper-alt);border-radius:2px;animation:skeleton-breathe 1.6s ease-in-out infinite}
+.skeleton-page{animation:none}
+.skeleton-line{height:13px;margin-bottom:10px}
+.skeleton-title{height:52px;width:min(360px,62%);margin-bottom:22px}
+.skeleton-entry{background:var(--surface);border:1px solid var(--line);padding:20px 16px 18px;margin-bottom:18px}
+.skeleton-entry .skeleton-line:last-child{margin-bottom:0;width:70%}
+@media(prefers-reduced-motion:reduce){.skeleton{animation:none}}
+
+/* Reserve the exact box an image will fill, and tint it while it loads,
+   so a slow photo never reflows the card around it. */
+.entry-thumb,.book-cover,.detail-image{background:var(--paper-alt)}
+.detail-image{aspect-ratio:4/3;object-fit:cover;width:100%}
+
+/* ---------- pull to refresh ---------- */
+.pull-hint{position:fixed;z-index:9;top:0;left:0;right:0;display:grid;place-items:center;height:0;overflow:hidden;color:var(--muted);font:10px var(--mono);text-transform:uppercase;letter-spacing:.14em;background:var(--paper);transition:height .18s ease}
+.pull-hint.on{height:38px}
+.pull-hint.spin{color:var(--ink)}
