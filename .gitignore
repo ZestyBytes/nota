@@ -1,10 +1,9 @@
 .impeccable/
 
-# Obsidian's per-device workspace state: pane layout, recent files, plugin
-# caches. Committing it means every device fights every other device.
-.obsidian/workspace.json
-.obsidian/workspace-mobile.json
-.obsidian/cache/
+# Obsidian's own settings folder, which it recreates per device: pane layout,
+# recent files, appearance, plugin caches. Committing it means every device
+# fights every other device, and a phone vault regenerates it constantly.
+.obsidian/
 
 # macOS and iOS leave these in folders they touch
 .DS_Store
