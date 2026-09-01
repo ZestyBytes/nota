@@ -424,3 +424,10 @@ body.modal-open{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .entry-detail .detail-body blockquote{margin:0 0 18px;padding-left:16px;border-left:2px solid var(--line);font-style:italic;color:var(--ink-soft)}
 .entry-detail .detail-body ul{margin:0 0 18px;padding-left:20px}
 .entry-detail .detail-body li{margin-bottom:6px}
+
+/* ---------- search filters ----------
+   One strip that scrolls sideways rather than wrapping onto a second row:
+   a wrapped row broke the ruled-box look and pushed results down the page. */
+.search-filters{flex-wrap:nowrap;overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.search-filters::-webkit-scrollbar{display:none}
+.search-filters .filter{flex:none;white-space:nowrap;scroll-snap-align:start}
