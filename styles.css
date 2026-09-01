@@ -312,13 +312,9 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px}
 /* ---------- responsive ---------- */
 @media(max-width:800px){
   .site-header{height:70px;padding:0 18px;display:flex;justify-content:space-between}
-  .main-nav{position:absolute;display:none;top:70px;left:12px;width:calc(100% - 24px);background:var(--surface);border:1.5px solid var(--ink);padding:6px;z-index:10;flex-direction:column;gap:0}
-  .main-nav.open{display:flex}
-  .main-nav a{padding:13px 12px;border-left:0;border-bottom:1px solid var(--line)}
-  .main-nav a:last-child{border-bottom:0}
-  .main-nav a.active:after{display:none}
-  .menu-button{display:grid;width:40px;height:40px;place-content:center;gap:5px;background:transparent;border:1.5px solid var(--ink);order:-1}
-  .menu-button span{width:18px;height:2px;background:var(--ink)}
+  /* No burger on a phone: the bottom bar already reaches every route, so
+     the space goes to the date instead. */
+  .main-nav{display:none}
   .wordmark-mark{font-size:24px}
   .wordmark-sub{display:none}
   .mobile-nav{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;z-index:8;bottom:0;left:0;right:0;padding:6px max(6px,env(safe-area-inset-right)) calc(6px + env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-left));background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:saturate(1.4) blur(12px);border-top:1.5px solid var(--ink)}
@@ -472,3 +468,36 @@ body.modal-open{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .deck-dots i{width:6px;height:6px;border-radius:50%;background:var(--line);transition:background .18s ease,transform .18s ease}
 .deck-dots i.on{background:var(--stamp-red);transform:scale(1.25)}
 @media(min-width:760px){.deck-wrap{margin:0}.deck{grid-auto-columns:minmax(0,420px);padding:4px 0 6px}}
+
+/* ---------- header date (phone only) ---------- */
+.header-date{display:none;margin:0;order:-1;font:11px/1.3 var(--mono);text-transform:uppercase;letter-spacing:.12em;color:var(--muted)}
+
+/* ---------- Today widget ----------
+   Sits where the postmark date used to, now that the date lives in the
+   header and the stamp would only have repeated it. */
+.side-widget{position:relative;display:flex;flex-direction:column;gap:9px;width:230px;flex:none;text-align:left;background:var(--surface);border:1.5px solid var(--ink);padding:16px 16px 14px;cursor:pointer;font:inherit;color:inherit;transition:transform .16s ease,box-shadow .16s ease}
+.side-widget:before,.side-widget:after{content:"";position:absolute;width:34px;height:14px;top:-7px;background:var(--tape)}
+.side-widget:before{left:16px;transform:rotate(-7deg)}
+.side-widget:after{right:16px;transform:rotate(6deg)}
+.side-widget:hover{transform:translateY(-3px);box-shadow:0 10px 22px -12px rgba(34,38,30,.35)}
+.side-widget-static{cursor:default}
+.side-widget-static:hover{transform:none;box-shadow:none}
+.side-widget .eyebrow{margin:0}
+.widget-row{display:flex;gap:11px;align-items:flex-start}
+.widget-row img{width:42px;height:56px;object-fit:cover;background:var(--paper-alt);filter:saturate(.68) sepia(.08);flex:none}
+.widget-row b{display:block;font:600 15px/1.25 var(--serif)}
+.widget-row small{display:block;margin-top:3px;color:var(--muted);font-style:italic;font-size:12px}
+.widget-bar{display:block;height:3px;background:var(--line)}
+.widget-bar i{display:block;height:100%;background:var(--stamp-red)}
+.widget-foot{font:10px var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.widget-figure{font:700 40px/1 var(--mono);letter-spacing:-.02em}
+@media(max-width:720px){
+  .side-widget{width:100%}
+  .header-date{max-width:46%}
+}
+
+/* Shown only where the top nav is hidden, which is the 800px breakpoint
+   used above. Kept last so it wins over the base display:none. */
+@media(max-width:800px){
+  .header-date{display:block}
+}
