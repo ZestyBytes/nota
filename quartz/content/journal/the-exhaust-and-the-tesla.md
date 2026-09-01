@@ -8,6 +8,8 @@ publishedAt: "2026-09-01"
 publish: true
 ---
 
+![The exhaust finally off, laid out on the road beside the Jazz](assets/journal/jazz-exhaust-roadside.jpg)
+
 Today was meant to be simple: drive to Southampton, hand over the Honda Jazz,
 collect the new Model Y.
 
@@ -16,7 +18,11 @@ Chichester, which is a noise you feel before you hear. Cue a great deal of
 stress and no small amount of panic at the side of the road, a repair attempt
 that did not hold, and eventually getting the thing off properly.
 
+![Where it sheared, rusted right through](assets/journal/jazz-exhaust-break.jpg)
+
 Quikfix in Chichester replaced it. Almost £400.
+
+![The Jazz up on the lift at Quikfix](assets/journal/jazz-on-the-lift.jpg)
 
 Four hundred pounds on a car I was, at that point, less than thirty minutes
 from trading in. Oh, what a day.
