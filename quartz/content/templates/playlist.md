@@ -1,11 +1,15 @@
 ---
 title: ""
 type: note
-tags: []
+view: playlist
+tags: [playlist]
 occurredAt: "YYYY-MM-DD"
 createdAt: "YYYY-MM-DD"
 publishedAt: "YYYY-MM-DD"
 publish: true
 ---
 
-Write the note here. The first paragraph becomes the card excerpt.
+One line about what this is.
+
+- First thing
+- Second thing, *with a note in italics*

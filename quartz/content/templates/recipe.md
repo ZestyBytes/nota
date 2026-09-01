@@ -1,17 +1,15 @@
 ---
-title: "{{title}}"
+title: ""
 type: note
 view: recipe
 time: ""
 serves: ""
 difficulty: ""
-tags: [food]
-occurredAt: "{{date}}"
-publishedAt: "{{date}}"
-publish: false
+tags: [recipes]
+occurredAt: "YYYY-MM-DD"
+publishedAt: "YYYY-MM-DD"
+publish: true
 ---
-
-![Photo of the finished dish](https://example.com/photo.jpg)
 
 One sentence about the dish, which becomes the card excerpt.
 
@@ -19,3 +17,8 @@ One sentence about the dish, which becomes the card excerpt.
 
 - Ingredient
 - Ingredient
+
+## Method
+
+1. First step.
+2. Second step.

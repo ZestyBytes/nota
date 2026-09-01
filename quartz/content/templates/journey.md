@@ -1,12 +1,13 @@
 ---
-title: "{{title}}"
+title: ""
 type: journey
 journey: ""
 tags: []
-occurredAt: "{{date}}"
-createdAt: "{{date}}"
-publishedAt: "{{date}}"
-publish: false
+occurredAt: "YYYY-MM-DD"
+createdAt: "YYYY-MM-DD"
+publishedAt: "YYYY-MM-DD"
+publish: true
 ---
 
-Write today's entry in the journey. The first paragraph becomes the card excerpt.
+Write today's entry in the journey. Give every entry in the same journey the
+same `journey:` name so they thread together.
