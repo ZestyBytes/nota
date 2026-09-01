@@ -166,6 +166,45 @@ publish: true
 ```
 No body needed.
 
+## Writing from a phone or a MacBook
+
+The vault is a folder in a Git repository, so any device that can edit that
+folder and push can publish. Nothing else is needed, and the app stays
+read-only.
+
+### iPhone or iPad
+
+1. Install **Working Copy** from the App Store. Cloning and editing are free;
+   pushing is a one-off purchase.
+2. In Working Copy, tap **+** and choose **Clone repository**. Paste
+   `https://github.com/ZestyBytes/nota` and sign in to GitHub when asked.
+3. In the Files app, go to **Browse**, tap the three dots, choose **Edit**,
+   and make sure **Working Copy** is switched on as a location.
+4. Install **Obsidian** from the App Store. Choose **Open folder as vault**,
+   then navigate: Locations, Working Copy, nota, quartz, content. That folder
+   is the vault; the same one the desktop opens.
+5. Write as normal. New notes go in the folder for their type, with the
+   frontmatter this file describes.
+6. Switch to Working Copy, open the repo, review the changed files, write a
+   commit message, and push. The site rebuilds in about forty seconds.
+
+### MacBook
+
+Nothing special: clone the repo, open `quartz/content` as a vault in Obsidian
+for Mac, and commit and push with whatever Git tool you like. It is the same
+repository the phone and the Linux machine use.
+
+### Two things worth knowing
+
+- Only one device should be mid-edit at a time. Pull before writing and push
+  when done, or you will be resolving merge conflicts in a text editor on a
+  phone, which is nobody's idea of a good evening.
+- Photographs added from Obsidian land inside the vault, and the site only
+  serves images from the repository's top-level `assets/` folder, so an
+  attachment inserted on the phone will not appear on the site yet. Move it to
+  `assets/` in Working Copy, or ask me to wire the vault's attachments into
+  the build.
+
 ## Previewing before you publish
 
 You can still preview the old quartz-rendered view of your content (article
