@@ -409,3 +409,18 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px}
 .pull-hint{position:fixed;z-index:9;top:0;left:0;right:0;display:grid;place-items:center;height:0;overflow:hidden;color:var(--muted);font:10px var(--mono);text-transform:uppercase;letter-spacing:.14em;background:var(--paper);transition:height .18s ease}
 .pull-hint.on{height:38px}
 .pull-hint.spin{color:var(--ink)}
+
+/* ---------- modal scroll lock ----------
+   position:fixed rather than overflow:hidden — iOS ignores the latter on
+   body, which let the archive scroll away underneath an open note. */
+body.modal-open{position:fixed;left:0;right:0;width:100%;overflow:hidden}
+
+/* ---------- note body inside a detail modal ---------- */
+.entry-detail .chips{margin-bottom:18px}
+.entry-detail .detail-body p{margin:0 0 18px}
+.entry-detail .detail-body p:last-child{margin-bottom:0}
+.entry-detail .detail-body h3{font:700 12px/1 var(--mono);text-transform:uppercase;letter-spacing:.14em;color:var(--muted);margin:30px 0 14px}
+.entry-detail .detail-body strong{font-weight:600}
+.entry-detail .detail-body blockquote{margin:0 0 18px;padding-left:16px;border-left:2px solid var(--line);font-style:italic;color:var(--ink-soft)}
+.entry-detail .detail-body ul{margin:0 0 18px;padding-left:20px}
+.entry-detail .detail-body li{margin-bottom:6px}
