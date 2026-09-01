@@ -7,7 +7,7 @@
 //
 // Usage: node quartz/scripts/build-data.mjs [--out <path>]
 
-import { readdirSync, statSync, readFileSync, mkdirSync, writeFileSync } from "node:fs";
+import { readdirSync, statSync, readFileSync, mkdirSync, writeFileSync, copyFileSync, existsSync } from "node:fs";
 import { join, relative, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parse as parseYaml } from "yaml";
@@ -53,6 +53,80 @@ function splitFrontmatter(raw) {
   const m = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/);
   if (!m) return { data: {}, body: raw };
   return { data: parseYaml(m[1]) || {}, body: m[2] };
+}
+
+// Photographs added in Obsidian land wherever that device's attachment
+// setting points, inside the vault, and Obsidian writes them as ![[name.jpg]]
+// rather than as markdown. Neither reaches the site on its own: the app only
+// serves what the deploy copies, and its renderer only understands the
+// markdown form. So the vault's own media is indexed here, copied into the
+// build beside the hand-placed assets/, and every reference rewritten to the
+// path it will actually live at. Writing on the phone then needs no detour.
+const MEDIA_RE = /\.(jpe?g|png|gif|webp|avif|svg|heic)$/i;
+const VAULT_MEDIA_DIR = "assets/vault";
+const OUT_DIR = dirname(OUT_PATH);
+
+// relative path under content -> absolute source, plus a basename index, since
+// an Obsidian embed names the file alone with no idea where it sits.
+const vaultMedia = new Map();
+const vaultMediaByName = new Map();
+(function indexMedia(dir) {
+  for (const name of readdirSync(dir)) {
+    if (IGNORE_DIRS.has(name) || name.startsWith(".")) continue;
+    const full = join(dir, name);
+    if (statSync(full).isDirectory()) { indexMedia(full); continue; }
+    if (!MEDIA_RE.test(name)) continue;
+    const rel = relative(CONTENT_DIR, full).replace(/\\/g, "/");
+    vaultMedia.set(rel, full);
+    if (!vaultMediaByName.has(name)) vaultMediaByName.set(name, rel);
+  }
+})(CONTENT_DIR);
+
+const copied = new Set();
+function publishMedia(rel) {
+  const src = vaultMedia.get(rel);
+  const dest = join(OUT_DIR, VAULT_MEDIA_DIR, rel);
+  if (!copied.has(rel)) {
+    mkdirSync(dirname(dest), { recursive: true });
+    copyFileSync(src, dest);
+    copied.add(rel);
+  }
+  return `${VAULT_MEDIA_DIR}/${rel}`;
+}
+
+// A reference is resolved against the note's own folder, then the vault root,
+// then by filename anywhere in the vault. Anything remote, or already pointing
+// at the repository's top-level assets/, is left exactly as it is.
+function resolveMedia(src, file) {
+  const clean = decodeURIComponent(src.trim().split("|")[0].split("#")[0]);
+  if (/^(https?:)?\/\//i.test(clean) || clean.startsWith("data:") || clean.startsWith("assets/")) return src;
+  const noteDir = relative(CONTENT_DIR, dirname(file)).replace(/\\/g, "/");
+  const candidates = [
+    noteDir ? `${noteDir}/${clean}` : clean,
+    clean,
+    vaultMediaByName.get(clean.split("/").pop()) || ""
+  ];
+  const hit = candidates.find(c => c && vaultMedia.has(c));
+  return hit ? publishMedia(hit) : src;
+}
+
+// Rewrites a note body so both forms of image reference come out as markdown
+// pointing at a path the deployed site serves.
+function resolveBodyMedia(body, file) {
+  return body
+    .replace(/!\[\[([^\]]+)\]\]/g, (whole, target) => {
+      const [path, label] = target.split("|");
+      if (!MEDIA_RE.test(path.trim())) return whole; // an embedded note, not a photograph
+      const resolved = resolveMedia(path, file);
+      // Obsidian uses the pipe for display size, so "300" or "300x200" is a
+      // width and not a caption. Anything else was typed as one.
+      const caption = /^\s*\d+(x\d+)?\s*$/.test(label || "") ? "" : (label || "").trim();
+      return `![${caption}](${resolved})`;
+    })
+    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (whole, alt, src) => {
+      const resolved = resolveMedia(src, file);
+      return resolved === src ? whole : `![${alt}](${resolved})`;
+    });
 }
 
 function firstImage(body) {
@@ -138,8 +212,9 @@ const entries = [], books = [], quoteFiles = [], tasks = [];
 
 for (const file of files) {
   const raw = readFileSync(file, "utf8");
-  const { data, body } = splitFrontmatter(raw);
+  const { data, body: rawBody } = splitFrontmatter(raw);
   if (!data.publish || data.draft) continue;
+  const body = resolveBodyMedia(rawBody, file);
   const slug = relative(CONTENT_DIR, file).replace(/\.md$/, "").replace(/\\/g, "/");
   const topics = topicsOf(data);
 

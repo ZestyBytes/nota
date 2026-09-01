@@ -5,6 +5,7 @@ tags: [technology]
 occurredAt: "2026-08-30"
 createdAt: "2026-08-30"
 publishedAt: "2026-08-30"
+writing: true
 publish: true
 ---
 

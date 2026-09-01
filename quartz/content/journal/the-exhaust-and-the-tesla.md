@@ -5,6 +5,7 @@ tags: [motoring]
 occurredAt: "2026-09-01"
 createdAt: "2026-09-01"
 publishedAt: "2026-09-01"
+writing: true
 publish: true
 ---
 

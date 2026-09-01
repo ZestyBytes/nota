@@ -174,19 +174,44 @@ read-only.
 
 ### iPhone or iPad
 
-1. Install **Working Copy** from the App Store. Cloning and editing are free;
-   pushing is a one-off purchase.
-2. In Working Copy, tap **+** and choose **Clone repository**. Paste
-   `https://github.com/ZestyBytes/nota` and sign in to GitHub when asked.
-3. In the Files app, go to **Browse**, tap the three dots, choose **Edit**,
-   and make sure **Working Copy** is switched on as a location.
-4. Install **Obsidian** from the App Store. Choose **Open folder as vault**,
-   then navigate: Locations, Working Copy, nota, quartz, content. That folder
-   is the vault; the same one the desktop opens.
-5. Write as normal. New notes go in the folder for their type, with the
-   frontmatter this file describes.
-6. Switch to Working Copy, open the repo, review the changed files, write a
-   commit message, and push. The site rebuilds in about forty seconds.
+Obsidian for iOS will not open a vault that lives inside Working Copy, so the
+order is the other way round: make the vault first, then point Working Copy at
+it.
+
+1. Install **Working Copy** and **Obsidian** from the App Store. Working Copy
+   is free to install, but both pushing commits and linking an external
+   directory need its Pro unlock, £29.99 one off, with a free ten day trial.
+2. In Working Copy, tap **+**, choose **Clone repository**, tap **GitHub** and
+   sign in. This is only to authorise the account; the clone it makes is not
+   the copy Obsidian uses.
+3. In the **Files** app: **Browse**, the **⋯** button, **Edit**, switch
+   **Working Copy** on as a location.
+4. In Obsidian, answer "Where is your vault located?" with **Other**, then
+   **Create vault**. Name it `nota` and store it **On my iPhone**. It will be
+   empty.
+5. Back in Working Copy, tap **+** on the repository list, then
+   **Link external repository** and **Directory**. Choose
+   **On my iPhone › Obsidian › nota**.
+6. Open **Repository**, add a remote named `origin` pointing at
+   `https://github.com/ZestyBytes/nota`, and **Save**.
+7. Tap **origin**, then **Fetch**. Go back, tap **Revert changes** to clear
+   the `.obsidian` folder Obsidian just wrote, then **Branch** and check out
+   **origin/main**.
+8. Open Obsidian. The vault now holds the repository, and the writing lives in
+   `quartz/content`.
+
+Afterwards the loop is: write in Obsidian, then in Working Copy commit and
+push. The site rebuilds in about forty seconds.
+
+Because the git root has to be the vault root, the vault contains the whole
+repository, not just the content folder. Two settings make that comfortable,
+and both are per device since `.obsidian` is deliberately not committed:
+
+- **Settings › Files and links › Excluded files**: add `assets`, `quartz/quartz`,
+  `tests`, `supabase` and `.github` to keep them out of search and suggestions.
+- **Settings › Core plugins › Templates**, then set the template folder to
+  `quartz/content/templates`. The command "Insert template" then offers one
+  ready-made file per content type.
 
 ### MacBook
 
@@ -199,11 +224,13 @@ repository the phone and the Linux machine use.
 - Only one device should be mid-edit at a time. Pull before writing and push
   when done, or you will be resolving merge conflicts in a text editor on a
   phone, which is nobody's idea of a good evening.
-- Photographs added from Obsidian land inside the vault, and the site only
-  serves images from the repository's top-level `assets/` folder, so an
-  attachment inserted on the phone will not appear on the site yet. Move it to
-  `assets/` in Working Copy, or ask me to wire the vault's attachments into
-  the build.
+- Photographs work from anywhere in the vault. Attach one in Obsidian however
+  that device is set up, whether it writes `![[IMG_4821.jpg]]` or ordinary
+  markdown, and the build finds the file, copies it into the deploy and
+  rewrites the reference. To give a photograph a caption, write it as
+  `![Caption here](IMG_4821.jpg)` or `![[IMG_4821.jpg|Caption here]]`; a bare
+  embed simply has none. Hand-placed images in the repository's top-level
+  `assets/` folder keep working exactly as before.
 
 ## Previewing before you publish
 
