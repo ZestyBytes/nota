@@ -94,7 +94,14 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px}
 .entry:hover .mount-tag{transform:rotate(0deg) translateY(-1px)}
 .acc-no{position:absolute;top:14px;right:16px;font:11px var(--mono);color:var(--faint);letter-spacing:.04em;z-index:3}
 .entry.has-thumb .acc-no{color:#f2f4ea;text-shadow:0 1px 3px rgba(0,0,0,.8)}
-.book .acc-no{color:#f7f8f2;text-shadow:0 1px 3px rgba(0,0,0,.7)}
+/* Over a muted stock photograph a shadow was enough. Real cover art is busy
+   and often pale exactly where this sits, so give the number its own ground
+   rather than fighting the artwork. */
+.book .acc-no{
+  top:0;right:0;padding:4px 7px 3px;font-size:10px;
+  background:var(--surface);border-left:1px solid var(--line);border-bottom:1px solid var(--line);
+  color:var(--muted);text-shadow:none;
+}
 .mount-tag{
   position:absolute;top:-11px;left:20px;color:#fff;font:10px/1 var(--mono);text-transform:uppercase;
   letter-spacing:.08em;padding:5px 9px 4px;transform:rotate(-2deg);transition:transform .16s ease;
@@ -171,12 +178,15 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px}
 
 /* ---------- library / books ---------- */
 .book-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-.book{position:relative;background:var(--surface);border:1px solid var(--line);padding:0;min-height:300px;display:flex;flex-direction:column;overflow:hidden;cursor:pointer;transition:transform .16s ease,box-shadow .16s ease}
+.book{position:relative;background:var(--surface);border:1px solid var(--line);padding:0;min-height:0;display:flex;flex-direction:column;overflow:hidden;cursor:pointer;transition:transform .16s ease,box-shadow .16s ease}
 .book:before,.book:after{content:"";position:absolute;width:34px;height:14px;top:-6px;background:var(--tape);z-index:2}
 .book:before{left:16px;transform:rotate(-7deg)}
 .book:after{right:16px;transform:rotate(6deg)}
 .book:hover{transform:translateY(-3px);box-shadow:0 10px 22px -12px rgba(34,38,30,.35)}
-.book-cover{width:100%;height:160px;object-fit:cover;filter:saturate(.68) sepia(.08)}
+/* Real cover art is portrait, so a fixed 160px letterbox cropped the title
+   and the author straight off the middle of it. Hold the shape a book
+   actually is and the crop becomes negligible. */
+.book-cover{width:100%;aspect-ratio:2/3;height:auto;object-fit:cover;object-position:top center;filter:saturate(.82) sepia(.05)}
 .book-cover-empty{display:grid;place-content:center;background:var(--ink);color:#585c4d;font:56px var(--mono);height:160px}
 .book-copy{padding:20px;display:flex;flex:1;flex-direction:column}
 .book h3{font:600 24px/1.16 var(--serif);margin:0 0 6px}
@@ -340,7 +350,7 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px}
   .entry{padding:20px 16px 18px}
   .entry h3{font-size:23px}
   .book-grid,.topic-grid{grid-template-columns:1fr 1fr}
-  .book{min-height:380px}
+  .book{min-height:0}
   .topic-card{min-height:180px}
   .calendar-shell{display:block}
   .selected-day{margin-top:34px}
@@ -371,8 +381,8 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px}
 @media(max-width:480px){
   .page-title{font-size:48px}
   .page-head{gap:10px}
-  .book-grid{grid-template-columns:1fr}
-  .book{min-height:220px}
+  /* portrait covers read as a shelf two across; one across is a poster */
+  .book{min-height:0}
   .topic-card{min-height:158px;padding:16px 14px 14px}
   .calendar-head h2{font-size:26px}
   .modal{padding:22px}
@@ -707,7 +717,7 @@ body.modal-open{position:fixed;left:0;right:0;width:100%;overflow:hidden}
   .entry:hover,.book:hover,.topic-card:hover,.side-widget:hover,.shot:hover{box-shadow:0 10px 22px -12px rgba(0,0,0,.7)}
   .modal-backdrop{background:rgba(0,0,0,.66)}
   .mount-tag{color:#14160f;box-shadow:0 3px 6px -2px rgba(0,0,0,.6)}
-  .book .acc-no{color:#e6e9dc;text-shadow:0 1px 3px rgba(0,0,0,.85)}
+  .book .acc-no{color:var(--muted);text-shadow:none}
   .thumb-count,.gallery-no,.shot-count{background:rgba(0,0,0,.7)}
   /* photographs are lit for daylight; take the glare off after dark */
   .entry-thumb,.book-cover,.detail-image,.gallery-shot img,.shot img,.body-figure img{filter:saturate(.82) brightness(.86)}
