@@ -6,6 +6,8 @@
 
 **Naturalist Field Notebook / Herbarium Archive.** Every entry in Nota is a mounted specimen, not a feed item: a bordered card with mounting-tape corners, a pinned topic tag, an accession number, and a hard rubber-stamp mark for private/published status. Older entries fade like sun-bleached ink (time-depth cue). Direction seed key `df5200b8` (candidate 4, assigned).
 
+The archive has two deliberately different entrances. **Spaces** groups things by subject and gives every room its own material language: kitchen recipe folio, developer console, record cabinet, reading room, field log, road book, family album, and personal dashboard. **Library** is the neutral catalogue, grouping those same records by format. Search remains in the primary navigation because retrieval is a core action rather than another archive category.
+
 ## Palette
 
 Restrained ground with fully committed, saturated per-topic ink, never pastel chips.
@@ -41,7 +43,7 @@ Both faces load via Google Fonts (`index.html` `<link>`), with system fallbacks.
 
 ## Layout
 
-Max width 1220px. Section headers are small tracked mono labels with a trailing rule (`.section-title`), never numbered/kickered above content headings. Filters and library tabs render as bordered mono tab strips, not pill buttons. Nav is a vertical-rule-separated mono strip with ordinal numbers (`01 Today`, `02 Calendar`…) and an underline on the active item.
+Max width 1220px. Section headers are small tracked mono labels with a trailing rule (`.section-title`), never numbered/kickered above content headings. Filters and library tabs render as bordered mono tab strips, not pill buttons. The desktop nav is a vertical-rule-separated mono strip with ordinal numbers and an underline on the active item. On phones the persistent five destinations are Home, Calendar, Library, Spaces and To-do. Search stays in the desktop header and has a prominent field on Home; it does not displace a daily destination in the phone bar.
 
 ## What must not drift back in
 
@@ -52,4 +54,4 @@ Max width 1220px. Section headers are small tracked mono labels with a trailing 
 
 ## Provenance
 
-Photography in `data.js` is pre-existing sourced stock (Pexels URLs), unchanged by this redesign. No new raster assets were generated for this pass; every visual effect here is CSS (tape, stamps, tags, dates) or the two Google Fonts above.
+Topic spaces preferentially use the author's own archive photography and real book covers. Bespoke editorial images in `assets/posts/` were generated locally for records that had no suitable personal image; remote stock-image URLs are not used. Reading, Technology and Music previews on the Spaces index are assembled from existing book covers or drawn entirely in CSS. Fonts remain the two Google Fonts above.

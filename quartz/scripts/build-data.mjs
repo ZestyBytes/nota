@@ -53,9 +53,9 @@ const TOPICS = {
   food:       { name: "Food", mode: "kitchen", icon: "fork", color: "#8a4a1a", soft: "#ecddcb", ground: "coarse", photo: "assets/posts/slow-roast-tomato-focaccia.jpg", description: "Recipes, experiments and things made for the table" },
   recipes:    { name: "Recipes", parent: "food", mode: "recipes", icon: "fork", color: "#a25a1e", soft: "#f0e2d2", ground: "duo", photo: "", description: "Things made at home, and how they were made" },
   eatingout:  { name: "Eating out", parent: "food", icon: "cup", color: "#7a5a2e", soft: "#ece1d0", ground: "plain", photo: "", description: "Meals out worth remembering" },
-  technology: { name: "Technology", mode: "tech", icon: "terminal", color: "#1c6e63", soft: "#dbe9e6", ground: "grid", photo: "assets/posts/a-week-living-with-omarchy.jpg", description: "Tools, code and thoughtful technology" },
+  technology: { name: "Technology", mode: "tech", icon: "terminal", color: "#1c6e63", soft: "#dbe9e6", ground: "grid", photo: "", description: "Tools, code and thoughtful technology" },
   motoring:   { name: "Motoring", icon: "car", color: "#b0472c", soft: "#f2ded6", ground: "wedge", photo: "", description: "The Mini, the road, and the days worth the drive" },
-  gardening:  { name: "Gardening", icon: "leaf", color: "#3f6b2e", soft: "#e4ead9", ground: "hatch", photo: "assets/posts/staked-the-runner-beans.jpg", description: "Seasons, seedlings and life outdoors" }
+  gardening:  { name: "Gardening", icon: "leaf", color: "#3f6b2e", soft: "#e4ead9", ground: "hatch", photo: "", description: "Seasons, seedlings and life outdoors" }
 };
 // Normalise every topic photograph once, at build time, so the app only ever
 // sees a finished URL.

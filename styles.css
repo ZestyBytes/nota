@@ -129,6 +129,7 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px}
 .thumb-count{position:absolute;right:6px;bottom:6px;display:flex;align-items:center;gap:4px;padding:3px 7px;background:rgba(34,38,30,.78);color:var(--paper);font:10px var(--mono);letter-spacing:.06em;line-height:1}
 .thumb-count .line-icon{width:11px;height:11px;stroke-width:1.8}
 .entry-copy{grid-column:1;grid-row:1}
+.entry-copy{min-width:0}
 
 /* time-depth: older specimens fade like sun-bleached ink */
 .entry.aged{border-color:var(--line);opacity:.86}
@@ -718,6 +719,8 @@ body.modal-open{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 /* ---------- search result snippets ---------- */
 .entry p.snippet{font-style:normal;font-size:15px;color:var(--ink-soft)}
 .entry p.snippet mark{background:color-mix(in srgb,var(--stamp-red) 22%,transparent);color:var(--ink);padding:0 2px;border-radius:2px}
+.search-results,.search-results .entry,.search-results .entry-copy{min-width:0;max-width:100%}
+.search-results .snippet{overflow-wrap:anywhere;word-break:break-word}
 
 /* ============================================================
    Dark: the same herbarium at night. Ground and ink swap, the
@@ -1187,4 +1190,76 @@ aside .section-title{display:flex;align-items:baseline}
 @media(prefers-color-scheme:dark){
   .entry-plate{border-color:var(--line)}
   .entry-plate .plate-motif{opacity:.4}
+}
+
+/* ---------- Spaces: every room advertises its own material ---------- */
+.spaces-index .page-lede{max-width:670px}
+.space-card{min-height:300px;padding-top:150px}
+.space-card .topic-count{z-index:3}
+.space-card .topic-foot{display:block;margin-top:16px;padding-top:9px;border-top:1px solid currentColor;opacity:.58}
+.space-card.has-space-preview{background:#eee9dc}
+.space-card.has-space-preview:before,.space-card.has-space-preview:after{z-index:5}
+.space-card.has-space-preview h2,.space-card.has-space-preview p,.space-card.has-space-preview .topic-foot{z-index:3}
+.space-reading-preview,.space-tech-preview,.space-music-preview{position:absolute;inset:0 0 auto;height:135px;overflow:hidden}
+.space-reading-preview{display:flex;align-items:flex-end;justify-content:center;gap:7px;padding:15px 24px 0;background:repeating-linear-gradient(90deg,#e9dfc9 0 31px,#dfd1b4 32px);border-bottom:12px solid #634523;box-shadow:inset 0 -4px #3d2918}
+.space-reading-preview img{width:58px;height:92px;object-fit:cover;object-position:top;box-shadow:3px 2px 4px rgba(47,31,17,.28);transform:rotate(-2deg)}
+.space-reading-preview img:nth-child(2){height:100px;transform:rotate(2deg)}
+.space-reading-preview img:nth-child(3){height:87px;transform:rotate(-1deg)}
+.space-reading-preview img:nth-child(4){height:96px;transform:rotate(1.5deg)}
+.space-tech-preview{display:grid;align-content:center;padding:18px 22px;background:#101815;color:#a9dfc8;border-bottom:4px solid #35d09a;font-family:var(--mono)}
+.space-tech-preview:before{content:"~/nota/projects";font-size:7px;letter-spacing:.13em;color:#678b7d;margin-bottom:10px}
+.space-tech-preview i{position:absolute;right:21px;top:21px;font:700 42px/1 var(--mono);color:#35d09a;opacity:.32}
+.space-tech-preview b{font:700 14px var(--mono);font-style:normal}.space-tech-preview em{display:block;width:67%;height:1px;background:#547267;margin-top:7px}.space-tech-preview em:nth-of-type(2){width:48%}.space-tech-preview em:nth-of-type(3){width:57%}
+.space-music-preview{background:#231d1a;border-bottom:5px solid #a13a2e}
+.space-music-preview i{position:absolute;width:105px;height:105px;left:50%;top:14px;transform:translateX(-50%);border-radius:50%;background:repeating-radial-gradient(circle,#171312 0 3px,#2e2724 4px 6px);box-shadow:0 2px 9px #000}
+.space-music-preview i:after{content:"";position:absolute;inset:40px;border-radius:50%;background:#a13a2e;border:8px solid #d6c5a3}
+.space-music-preview b{position:absolute;right:17px;bottom:10px;color:#d6c5a3;font:700 9px var(--mono);letter-spacing:.15em}
+
+/* ---------- Calendar: month as a visual journal ---------- */
+.calendar-overview{display:grid;grid-template-columns:260px 1fr;gap:24px;margin:8px 0 34px;padding:18px;border:1px solid var(--line);background:var(--surface)}
+.calendar-stats{display:grid;grid-template-columns:repeat(3,1fr);border-right:1px solid var(--line)}
+.calendar-stats p{margin:0;padding:8px 12px;border-left:1px solid var(--line)}
+.calendar-stats p:first-child{border-left:0}.calendar-stats b,.calendar-stats span{display:block}.calendar-stats b{font:700 28px var(--mono)}.calendar-stats span{font:7px var(--mono);text-transform:uppercase;letter-spacing:.12em;color:var(--muted)}
+.month-filmstrip{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;min-width:0}
+.month-filmstrip button{position:relative;height:92px;padding:0;border:0;background:var(--paper-alt);cursor:pointer;overflow:hidden}
+.month-filmstrip img{width:100%;height:100%;object-fit:cover;filter:saturate(.72)}
+.month-filmstrip span{position:absolute;inset:auto 0 0;padding:18px 7px 6px;background:linear-gradient(transparent,rgba(0,0,0,.75));color:#fff;font:7px var(--mono);text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.month-quiet{align-self:center;margin:0;font:italic 14px var(--serif);color:var(--muted)}
+.day{position:relative;overflow:hidden}.day-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.2;filter:saturate(.55)}
+.day.has-day-photo:after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,rgba(247,248,242,.25),rgba(247,248,242,.9));pointer-events:none}
+.day-no,.dots,.day-more{position:relative;z-index:2}.day-more{margin-top:auto;padding:2px 5px;background:var(--surface);border:1px solid var(--line)}
+.day.selected .day-photo{opacity:.32}
+
+/* Entry pages keep one shared reading system, with the room's material at
+   their edges: recognisable, but calm enough for long-form prose. */
+.entry-page{position:relative;padding:30px;border:1px solid color-mix(in srgb,var(--space) 32%,var(--line));background-color:var(--surface);background-image:linear-gradient(90deg,color-mix(in srgb,var(--space) 12%,transparent),transparent 22%);box-shadow:inset 6px 0 0 color-mix(in srgb,var(--space) 72%,transparent)}
+.entry-space-link{font:700 8px var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--space);margin-left:auto;text-decoration:none;border-bottom:1px solid currentColor}
+.entry-space-technology{background-image:linear-gradient(90deg,color-mix(in srgb,var(--space) 13%,transparent),transparent 25%),linear-gradient(rgba(28,110,99,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(28,110,99,.055) 1px,transparent 1px);background-size:auto,24px 24px,24px 24px}
+.entry-space-reading{background-image:repeating-linear-gradient(to bottom,transparent 0 31px,rgba(138,90,18,.08) 31px 32px)}
+.entry-space-music{box-shadow:inset 6px 0 0 var(--space),inset 14px 0 0 color-mix(in srgb,var(--space) 18%,transparent)}
+.entry-space-gardening{border-radius:22px 2px 22px 2px}.entry-space-family{background-color:color-mix(in srgb,#e8dce1 42%,var(--surface))}.entry-space-life{background-color:color-mix(in srgb,#dce6eb 42%,var(--surface))}
+
+/* ---------- Home: an introduction, not a dashboard ---------- */
+.home-welcome{position:relative;padding:54px 48px 44px;margin-bottom:24px;background:#252a22;color:#f1f1e8;border:1px solid #252a22;overflow:hidden}
+.home-welcome:after{content:"n.";position:absolute;right:-18px;top:-34px;font:700 220px/1 var(--mono);color:#fff;opacity:.035;pointer-events:none}
+.home-welcome .eyebrow{color:#aeb5a2}.home-welcome h1{font:700 clamp(68px,11vw,132px)/.82 var(--mono);letter-spacing:-.09em;margin:26px 0 28px}.home-welcome>p:last-of-type{max-width:650px;font:italic 500 clamp(19px,2.5vw,28px)/1.4 var(--serif);color:#d5d9cc}
+.home-welcome nav{display:grid;grid-template-columns:repeat(3,1fr);margin-top:42px;border-top:1px solid #51584a;border-bottom:1px solid #51584a}
+.home-welcome nav a{display:grid;gap:5px;padding:18px 16px;border-left:1px solid #51584a}.home-welcome nav a:first-child{border-left:0}.home-welcome nav a:hover{background:#30362d}
+.home-welcome nav b{font:700 11px var(--mono);text-transform:uppercase;letter-spacing:.1em}.home-welcome nav span{font:italic 13px var(--serif);color:#aeb5a2}
+.home-search{margin:0 0 44px;padding:20px 22px;border:1px solid var(--line);background:var(--surface)}.home-search label{display:block;margin-bottom:9px;font:700 9px var(--mono);text-transform:uppercase;letter-spacing:.12em;color:var(--muted)}.home-search>div{display:grid;grid-template-columns:1fr auto}.home-search input{min-width:0;padding:13px 14px;border:1px solid var(--ink);background:transparent;color:var(--ink);font:15px var(--serif)}.home-search button{padding:0 20px;border:1px solid var(--ink);border-left:0;background:var(--ink);color:var(--paper);font:700 9px var(--mono);text-transform:uppercase;letter-spacing:.1em;cursor:pointer}
+.home-latest-head{display:flex;align-items:baseline;justify-content:space-between;margin-top:46px}.home-latest-head .section-title{flex:1}.home-latest-head>a{margin-left:20px;font:9px var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.deck-intro{margin-bottom:22px}
+.practice-progress{display:grid;width:100%;gap:8px;padding:16px;margin-bottom:12px;text-align:left;background:#f0e2d2;border:1px solid #b9916d;color:#4d2f24;cursor:pointer}.practice-progress span,.practice-progress small{font:8px var(--mono);text-transform:uppercase;letter-spacing:.1em}.practice-progress b{font:700 28px var(--mono)}.practice-progress i{display:block;height:4px;background:#d5b99e}.practice-progress em{display:block;height:100%;background:#a13a2e}
+
+@media(max-width:800px){
+  .space-card{min-height:255px;padding-top:130px}.space-reading-preview,.space-tech-preview,.space-music-preview{height:116px}
+  .calendar-overview{grid-template-columns:1fr}.calendar-stats{border-right:0;border-bottom:1px solid var(--line);padding-bottom:12px}.month-filmstrip{grid-template-columns:repeat(4,minmax(0,1fr))}.month-filmstrip button{height:74px}
+  .entry-page{padding:22px 18px}.entry-space-link{width:100%;margin:3px 0 0}
+}
+@media(max-width:480px){
+  .topic-grid{grid-template-columns:1fr}.space-card{min-height:270px}
+  .calendar-overview{margin-left:-6px;margin-right:-6px;padding:12px}.month-filmstrip button:nth-child(n+4){display:none}.month-filmstrip{grid-template-columns:repeat(3,1fr)}
+  .day{min-height:64px;padding:6px;gap:7px}.day-more{font-size:7px}.entry-page{margin-left:-8px;margin-right:-8px}
+  .search-results .entry.has-thumb{grid-template-columns:1fr}.search-results .thumb-wrap{display:none}
+  .home-welcome{padding:38px 24px 28px;margin-left:-6px;margin-right:-6px}.home-welcome nav{grid-template-columns:1fr}.home-welcome nav a{border-left:0;border-top:1px solid #51584a}.home-welcome nav a:first-child{border-top:0}.home-search{padding:15px}.home-latest-head{display:block}.home-latest-head>a{display:block;margin:-10px 0 24px}
 }

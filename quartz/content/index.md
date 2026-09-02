@@ -1,25 +1,25 @@
 ---
-title: Find anything.
-description: Search and browse a record of days, books, quotations and things worth keeping.
+title: Nota
+description: A living personal archive of photographs, stories, ideas, books and projects.
 publish: true
 date: 2026-08-31
 tags: [nota]
 ---
 
-<nav class="nota-nav"><a class="active" href="./">Archive</a><a href="calendar">Calendar</a><a href="library">Library</a><a href="topics">Topics</a><a href="about">About</a><button onclick="document.querySelector('.search-button')?.click()">Search</button></nav>
+<nav class="nota-nav"><a class="active" href="./">Home</a><a href="calendar">Calendar</a><a href="library">Library</a><a href="topics">Spaces</a><a href="about">About</a><button onclick="document.querySelector('.search-button')?.click()">Search</button></nav>
 
-<p class="archive-deck">Every day, book, quotation and thought in one searchable personal archive.</p>
+<p class="archive-deck">Photographs, stories, ideas, books and projects—kept together so the ordinary days do not disappear.</p>
 
-<button class="archive-search" onclick="document.querySelector('.search-button')?.click()"><span>Search Nota</span><strong>Try “garden”, “Mary Oliver” or a date</strong></button>
+<button class="archive-search" onclick="document.querySelector('.search-button')?.click()"><span>Search Nota</span><strong>Find a person, place, project or date</strong></button>
 
-<div class="archive-tabs"><span>Everything</span><a href="#recently-opened">Journal</a><a href="library">Books</a><a href="library#quotations">Quotes</a><a href="topics">Topics</a></div>
+<div class="archive-tabs"><span>Latest</span><a href="library">Library</a><a href="calendar">Calendar</a><a href="topics">Spaces</a></div>
 
 ## Recently opened
 
-<div class="archive-result"><span>Journal · Gardening · 31 Aug</span><h3><a href="journal/staked-the-runner-beans">Staked the runner beans</a></h3><p>A quiet hour outside before the rain came.</p></div>
+<div class="archive-result"><span>Journal · Family · 2 Sep</span><h3><a href="journal/school-starts">School Starts</a></h3><p>First day back at school for Molly and a move up at nursery for Ruby.</p></div>
 
 <div class="archive-result"><span>Book · Reading · 42%</span><h3><a href="books/the-anxious-generation">The Anxious Generation</a></h3><p>Jonathan Haidt · reading notes and quotations</p></div>
 
 <div class="archive-result"><span>Quotation · Mary Oliver</span><h3><a href="quotes/attention-is-the-beginning-of-devotion">Attention is the beginning of devotion.</a></h3></div>
 
-<aside class="return-to"><h2>Return to</h2><a href="calendar">On this day</a><a href="library">Currently reading</a><a href="tags/music">Unfinished journeys</a><a href="library#quotations">Saved quotations</a></aside>
+<aside class="return-to"><h2>Return to</h2><a href="calendar">A day</a><a href="library">The bookshelves</a><a href="tags/music">Learning guitar</a><a href="library#quotations">Saved quotations</a></aside>

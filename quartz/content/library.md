@@ -8,7 +8,7 @@ tags: [nota]
 
 <nav class="nota-nav"><a href="./">Today</a><a href="calendar">Calendar</a><a class="active" href="library">Library</a><a href="topics">Topics</a><a href="about">About</a></nav>
 
-<p class="page-deck">The books I am reading, the notes they leave behind, and words worth returning to.</p>
+<p class="page-deck">Browse the archive by format. Highlights are selected pieces; Notes & journals is the complete written record.</p>
 
 <div class="library-grid">
   <div class="book-card book-sage"><span class="book-status">Reading · 42%</span><h3><a href="books/the-anxious-generation">The Anxious Generation</a></h3><p>Jonathan Haidt</p><small>1 note · 1 quote</small></div>
@@ -22,7 +22,8 @@ tags: [nota]
 - [[Experience, not information]] · linked to [[The Anxious Generation]]
 - [[You have power over your mind]] · linked to [[Meditations]]
 
-## Notes
+## Recent notes
 
 - [[A week living with Omarchy]]
-- [[The humane scale of small software]]
+- [[Eight Japanese principles for building habits]]
+- [[Podcasts worth the time]]

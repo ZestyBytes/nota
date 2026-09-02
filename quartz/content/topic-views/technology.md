@@ -11,11 +11,11 @@ publish: true
 <div class="topic-intro tech"><p>Tools, code and thoughtful technology. Presented as a working log, while every item remains an ordinary note underneath.</p></div>
 
 ```text
+2026-08-30  first-open-source-contributions.md     #technology
 2026-08-27  a-week-living-with-omarchy.md          #technology
-2026-08-18  the-humane-scale-of-small-software.md  #technology
 ```
 
 ## Notes
 
 - [[A week living with Omarchy]]
-- [[The humane scale of small software]]
+- [[Two plugins, live]]

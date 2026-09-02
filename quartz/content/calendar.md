@@ -10,20 +10,13 @@ tags: [nota]
 
 <p class="page-deck">A quieter way to move through the archive: by the days things happened, not only when they were written down.</p>
 
-## August 2026
+## September 2026
 
-| Mon | Tue | Wed | Thu | Fri | Sat | Sun |
-| --- | --- | --- | --- | --- | --- | --- |
-|  |  |  |  |  | 1 | 2 |
-| 3 | 4 | 5 | 6 | 7 | 8 | 9 |
-| 10 | 11 | 12 | 13 | 14 | 15 | 16 |
-| 17 | 18 | 19 | 20 | 21 · Food | 22 | 23 |
-| 24 · Quote | 25 | 26 | 27 · Journal · Note | 28 | 29 | 30 |
-| **31 · Journal · Journey** |  |  |  |  |  |  |
+The app builds this view automatically from every dated entry and task.
 
-## Monday 31 August
+## Wednesday 2 September
 
-- [[Staked the runner beans]] · Journal · Gardening
-- [[Day 12: the chord change]] · Journey · Music
+- [[The tooth, and a bag of peas]] · Journal · Self care
+- [[School Starts]] · Journal · Family
 
 <p class="quiet-note">Writing and planning stay private in Obsidian. Only entries explicitly marked for publication appear here.</p>

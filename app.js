@@ -151,6 +151,13 @@ function table(rows){
   return `<div class="table-wrap"><table><thead><tr>${cells(head).map(c=>`<th>${inline(c)}</th>`).join("")}</tr></thead><tbody>${rest.map(r=>`<tr>${cells(r).map(c=>`<td>${inline(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
 }
 function topic(id){return state.data.topics[id]||{name:id,color:"#777",soft:"#eee"}}
+function rootTopic(id){
+  let current=id,seen=new Set();
+  while(current&&state.data.topics[current]?.parent&&!seen.has(current)){
+    seen.add(current);current=state.data.topics[current].parent;
+  }
+  return current||"life";
+}
 function icon(name){const paths={leaf:'<path d="M20.4 3.6c-9.4 0-14.8 4.3-14.8 10.5a4.7 4.7 0 0 0 4.7 4.7c6.7 0 10.1-6.5 10.1-15.2Z"/><path d="M4.2 20.4c2.5-5.8 6.7-9.9 12.5-12.6"/>',music:'<path d="M9 18V5l10-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/>',terminal:'<path d="M4.6 5.2h14.8a1.8 1.8 0 0 1 1.8 1.8v10a1.8 1.8 0 0 1-1.8 1.8H4.6a1.8 1.8 0 0 1-1.8-1.8V7a1.8 1.8 0 0 1 1.8-1.8Z"/><path d="M7.4 9.6l2.9 2.4-2.9 2.4M13.2 14.4h4.2"/>',mind:'<path d="M12 21s-8-4.5-8-11a4 4 0 0 1 7-2.6A4 4 0 0 1 20 10c0 6.5-8 11-8 11Z"/><path d="M7 13h3l1.5-3 2 6 1.5-3h3"/>',book:'<path d="M4 5a3 3 0 0 1 3-3h12v18H7a3 3 0 0 1 0-6h12"/>',home:'<path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10M9 20v-6h6v6"/>',fork:'<path d="M7 3v7m-3-7v4a3 3 0 0 0 6 0V3M7 10v11M17 3v18m0-18c3 3 3 8 0 10"/>',paperclip:'<path d="m21 11-8.5 8.5a6 6 0 0 1-8.5-8.5l9-9a4 4 0 0 1 5.7 5.7l-9 9a2 2 0 0 1-2.9-2.9L15 5.6"/>',quote:'<path d="M9 11H5a4 4 0 0 1 4-4v8a4 4 0 0 1-4 4M19 11h-4a4 4 0 0 1 4-4v8a4 4 0 0 1-4 4"/>',note:'<path d="M4 3h16v18H4zM8 8h8M8 12h8M8 16h5"/>',check:'<path d="m5 12 5 5 9-9"/>',photos:'<rect x="7" y="3" width="14" height="14" rx="1.5"/><path d="M17 21H4.5A1.5 1.5 0 0 1 3 19.5V7"/>',car:'<path d="M3.6 15.8v-2.2l1.9-4.5A2.3 2.3 0 0 1 7.6 7.7h8.8a2.3 2.3 0 0 1 2.1 1.4l1.9 4.5v2.2Z"/><path d="M4.4 13.6h15.2M9.5 7.9v5.7M14.5 7.9v5.7"/><path d="M9.1 16.3a2.05 2.05 0 1 1-4.1 0 2.05 2.05 0 0 1 4.1 0ZM19 16.3a2.05 2.05 0 1 1-4.1 0 2.05 2.05 0 0 1 4.1 0Z"/>',disc:'<path d="M20.7 12a8.7 8.7 0 1 1-17.4 0 8.7 8.7 0 0 1 17.4 0ZM14.4 12a2.4 2.4 0 1 1-4.8 0 2.4 2.4 0 0 1 4.8 0Z"/><path d="M17.6 12A5.6 5.6 0 0 0 12 6.4"/>',repeat:'<path d="M4 9.6A4.6 4.6 0 0 1 8.6 5h9"/><path d="m14.8 2.4 2.9 2.6-2.9 2.6"/><path d="M20 14.4A4.6 4.6 0 0 1 15.4 19h-9"/><path d="m9.2 16.4-2.9 2.6 2.9 2.6"/>',heart:'<path d="M12 20.3s-7.6-4.4-7.6-10a4.2 4.2 0 0 1 7.6-2.6 4.2 4.2 0 0 1 7.6 2.6c0 5.6-7.6 10-7.6 10Z"/>',cup:'<path d="M5 8.4h11v5.8a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4Z"/><path d="M16 9.8h2.2a2.3 2.3 0 0 1 0 4.6H16"/><path d="M7.6 4.4v1.9M11 3.9v2.4M14.4 4.4v1.9"/>',alert:'<path d="M12 3.6 21 19H3Z"/><path d="M12 9.6v4.2"/><path d="M12 16.6h.01"/>',help:'<circle cx="12" cy="12" r="8.6"/><path d="M9.6 9.6a2.5 2.5 0 0 1 4.8.8c0 1.7-2.4 1.9-2.4 3.4"/><path d="M12 17.2h.01"/>'};return `<svg class="line-icon" viewBox="0 0 24 24" aria-hidden="true">${paths[name]||paths.note}</svg>`}
 function chips(ids=[]){return ids.map(id=>{const t=topic(id);return `<span class="chip" style="--topic:${t.color};--soft:${t.soft}">${esc(t.name)}</span>`}).join("")}
 // Specimen-label date: 01 SEP 2026. The card had no date at all before.
@@ -198,9 +205,21 @@ function cardBlocks(body=""){
   return cards;
 }
 function cardDeck(body,shown=[],owner=""){
-  const cards=cardBlocks(body);
+  let cards=cardBlocks(body),intro="";
+  // Numbered principles often wrap across source paragraphs. A new number
+  // begins a slide; subsequent unnumbered paragraphs belong to that slide.
+  const firstNumber=cards.findIndex(c=>/^\*\*\d+[.)]/.test(c));
+  if(firstNumber>=0&&cards.filter(c=>/^\*\*\d+[.)]/.test(c)).length>1){
+    intro=cards.slice(0,firstNumber).join("\n\n");
+    const grouped=[];
+    for(const block of cards.slice(firstNumber)){
+      if(/^\*\*\d+[.)]/.test(block)||!grouped.length)grouped.push(block);
+      else grouped[grouped.length-1]+="\n\n"+block;
+    }
+    cards=grouped;
+  }
   if(cards.length<2)return `<div class="detail-body">${markdown(body,shown,owner)}</div>`;
-  return `<div class="deck-wrap"><div class="deck" tabindex="0" role="group" aria-label="Swipe through ${cards.length} cards">${
+  return `${intro?`<div class="detail-body deck-intro">${markdown(intro,shown,owner)}</div>`:""}<div class="deck-wrap"><div class="deck" tabindex="0" role="group" aria-label="Swipe through ${cards.length} cards">${
     cards.map((c,i)=>`<article class="deck-card"><span class="deck-no">${String(i+1).padStart(2,"0")} / ${String(cards.length).padStart(2,"0")}</span><div class="deck-copy">${markdown(c,shown,owner)}</div></article>`).join("")
   }</div><div class="deck-dots" aria-hidden="true">${cards.map((_,i)=>`<i class="${i?"":"on"}"></i>`).join("")}</div></div>`;
 }
@@ -259,11 +278,11 @@ function entryPage(id){
   const e=[...state.data.entries,...state.data.tasks].find(x=>x.id===id);
   const back=state.returnTo||"#today";
   if(!e)return `<section><p class="back-link"><a href="${back}" data-back>Back</a></p><p class="empty">That entry is no longer in the archive.</p></section>`;
-  const date=fmtDate(e.occurredAt||e.createdAt||e.dueAt),t=topic(e.topics?.[0]);
+  const date=fmtDate(e.occurredAt||e.createdAt||e.dueAt),t=topic(e.topics?.[0]),spaceId=rootTopic(e.topics?.[0]),space=topic(spaceId);
   if(e.type==="Quote")return `<section class="quote-entry-page" style="--topic:${t.color}"><p class="back-link"><a href="${back}" data-back>Back</a><button class="share-button" data-share="${esc(e.id)}" type="button">Share</button></p><article><span>Commonplace book · No. ${accNo(e.id)}</span><blockquote>“${esc(e.title)}”</blockquote><cite>${esc(e.author||"")}</cite><time>${date?`Filed ${date}`:""}</time></article></section>`;
-  return `<section class="entry-page" style="--topic:${t.color}">
+  return `<section class="entry-page entry-space-${spaceId}" style="--topic:${t.color};--space:${space.color}">
     <p class="back-link"><a href="${back}" data-back>Back</a><button class="share-button" data-share="${esc(e.id)}" type="button">Share</button></p>
-    <div class="entry-page-meta"><span class="type-label">${esc(e.type||"Task")}</span>${date?`<span class="entry-date">${date}</span>`:""}${e.publishedAt||!e.type||e.type==="Task"?"":`<span class="stamp stamp-private">private</span>`}<span class="acc-no acc-no-page">No. ${accNo(e.id)}</span></div>
+    <div class="entry-page-meta"><span class="type-label">${esc(e.type||"Task")}</span>${date?`<span class="entry-date">${date}</span>`:""}${e.publishedAt||!e.type||e.type==="Task"?"":`<span class="stamp stamp-private">private</span>`}<a class="entry-space-link" href="#topics/${encodeURIComponent(spaceId)}">${esc(space.name)} space &rarr;</a><span class="acc-no acc-no-page">No. ${accNo(e.id)}</span></div>
     ${e.images?.length>1?gallery(e.images):e.image?`<img class="detail-image" src="${e.image}" alt="${esc(e.imageAlt||"")}">`:""}
     <div class="chips">${chips(e.topics)}</div>
     ${e.journey?(()=>{const rows=journeyEntries(e.journey),n=rows.findIndex(r=>r.id===e.id)+1;return `<p class="journey-of"><a href="#journey/${encodeURIComponent(e.journey)}">${esc(e.journey)}</a><span>${n} of ${rows.length}</span></p>`})():""}
@@ -328,7 +347,16 @@ function todayWidget(){
 // stable for the whole day, different tomorrow
 function dayIndex(n){const d=new Date(todayKey+"T12:00:00");return Math.floor((d-new Date(d.getFullYear(),0,0))/864e5)%n}
 function pageHead(kicker,title,lede=""){return `<div class="page-head"><div><p class="eyebrow">${kicker}</p><h1 class="page-title">${title}</h1>${lede?`<p class="lede">${lede}</p>`:""}</div></div>`}
-function today(){const entries=state.data.entries.filter(e=>e.occurredAt===todayKey),lastYear=`${now.getFullYear()-1}-${todayKey.slice(5)}`,memory=state.data.entries.find(e=>e.occurredAt===lastYear),quote=state.data.entries.find(e=>e.type==="Quote"),label=now.toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"});const recent=entries.length?[]:[...state.data.entries].sort((a,b)=>(b.occurredAt||"").localeCompare(a.occurredAt||"")).slice(0,3);return `<section><div class="page-head"><div><p class="eyebrow">A record of a life</p><h1 class="page-title">Today</h1></div>${todayWidget()}</div>${memory?`<div class="memory">On this day last year: <a href="#" data-entry="${memory.id}">${esc(memory.title)}</a></div>`:""}<div class="today-grid"><div><h2 class="section-title">Entries</h2>${entries.length?`<div class="entry-list">${entries.map(e=>entryCard(e)).join("")}</div>`:recent.length?`<p class="empty small">Nothing recorded today yet. Here's what's most recent.</p><div class="entry-list">${recent.map(e=>entryCard(e)).join("")}</div>`:`<p class="empty">Nothing recorded yet. Publish your first entry from Obsidian to see it here.</p>`}</div><aside><h2 class="section-title"><a href="#tasks">To-do</a><span class="see-all">All</span></h2><div class="tasks">${state.data.tasks.length?state.data.tasks.map(taskRow).join(""):`<p class="empty small">Nothing waiting.</p>`}</div>${quote?`<div class="quote-card"><p class="eyebrow">A thought to keep</p><blockquote>“${esc(quote.title)}”</blockquote><cite>${esc(quote.author)}</cite></div>`:""}</aside></div></section>`}
+function today(){
+  const recent=[...state.data.entries].sort((a,b)=>(b.occurredAt||b.createdAt||"").localeCompare(a.occurredAt||a.createdAt||"")).slice(0,6);
+  const open=state.data.tasks.filter(t=>!t.completedAt).length;
+  return `<section class="home-page"><header class="home-welcome"><p class="eyebrow">A living personal archive</p><h1>Nota</h1><p>Photographs, stories, ideas, books and projects—kept together so the ordinary days do not disappear.</p><nav><a href="#topics"><b>Spaces</b><span>Explore by subject</span></a><a href="#library"><b>Library</b><span>Browse by format</span></a><a href="#calendar"><b>Calendar</b><span>Return to a day</span></a></nav></header>
+    <form class="home-search" action="#search"><label for="home-query">Looking for something?</label><div><input id="home-query" type="search" placeholder="Search the whole archive…"><button type="submit">Search</button></div></form>
+    ${journeyStrip()}
+    <div class="home-latest-head"><h2 class="section-title">Latest from the archive</h2>${open?`<a href="#tasks">${open} thing${open===1?"":"s"} to do &rarr;</a>`:""}</div>
+    <div class="entry-list">${recent.length?recent.map(e=>entryCard(e)).join(""):`<p class="empty">The archive is ready for its first entry.</p>`}</div>
+  </section>`;
+}
 function taskRow(t){const tp=topic(t.topics[0]);return `<div class="task ${t.completedAt?"done":""} ${t.note?"has-note":""}" ${t.note?`data-entry="${esc(t.id)}"`:""}><span class="task-mark" aria-hidden="true">${t.completedAt?icon("check"):""}</span><span class="task-copy"><span class="task-title">${esc(t.title)}</span>${t.note?`<small class="task-note">${esc(t.note)}</small>`:""}${t.dueAt&&!t.completedAt?`<small class="task-due${t.dueAt<todayKey?" late":""}">${t.dueAt<todayKey?"Overdue, was due "+esc(fmtDate(t.dueAt)):t.dueAt===todayKey?"Due today":"Due "+esc(fmtDate(t.dueAt))}</small>`:""}</span><span class="chip" style="--topic:${tp.color};--soft:${tp.soft}">${esc(tp.name)}</span></div>`}
 // Everything that carries a date belongs on the calendar, not only entries:
 // a task is due on a day too, and a day with four things should look busier
@@ -377,14 +405,19 @@ function calendar(){
     const items=dayItems(date);monthCount+=items.length;
     const dots=[...new Set(items.flatMap(e=>e.topics||[]))].slice(0,4)
       .map(id=>`<i class="dot" style="background:${topic(id).color}"></i>`).join("");
-    cells.push(`<button class="day ${date===state.selectedDate?"selected":""} ${date===todayKey?"is-today":""} ${items.length?"has-items":""}" data-date="${date}" aria-label="${esc(fmtDate(date))}${items.length?`, ${items.length} item${items.length>1?"s":""}`:""}"><span class="day-no">${d}</span><span class="dots">${dots}</span>${items.length>4?`<span class="day-more">${items.length}</span>`:""}</button>`);
+    const image=items.find(e=>e.image)?.image;
+    cells.push(`<button class="day ${date===state.selectedDate?"selected":""} ${date===todayKey?"is-today":""} ${items.length?"has-items":""} ${image?"has-day-photo":""}" data-date="${date}" aria-label="${esc(fmtDate(date))}${items.length?`, ${items.length} item${items.length>1?"s":""}`:""}">${image?`<img class="day-photo" src="${esc(image)}" alt="" loading="lazy">`:""}<span class="day-no">${d}</span><span class="dots">${dots}</span>${items.length?`<span class="day-more">${items.length}</span>`:""}</button>`);
   }
   const label=new Date(state.selectedDate+"T12:00:00").toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
   const near=nearestMonth(state.month,dates);
   const monthKey=`${y}-${String(m+1).padStart(2,"0")}`;
+  const monthEntries=state.data.entries.filter(e=>(e.occurredAt||e.createdAt||"").startsWith(monthKey));
+  const activeDays=new Set(monthEntries.map(e=>e.occurredAt||e.createdAt).filter(Boolean)).size;
+  const monthPhotos=monthEntries.filter(e=>e.image).slice(0,4);
   const jump=!monthCount&&near&&near!==monthKey
     ? `<p class="empty small">Nothing this month. <button class="linkish" data-jump="${near}">Go to ${new Date(near+"-01T12:00:00").toLocaleDateString("en-GB",{month:"long",year:"numeric"})}</button></p>` : "";
-  return `<section>${pageHead("Browse the archive","Calendar","Every item keeps its own dates; the calendar simply gathers the record of each day.")}
+  return `<section>${pageHead("A visual journal","Calendar","Move through the archive by day: photographs, notes, plans and small moments gathered into the month they happened.")}
+    <div class="calendar-overview"><div class="calendar-stats"><p><b>${monthCount}</b><span>records</span></p><p><b>${activeDays}</b><span>days kept</span></p><p><b>${monthEntries.reduce((n,e)=>n+(e.images?.length||0),0)}</b><span>photographs</span></p></div>${monthPhotos.length?`<div class="month-filmstrip">${monthPhotos.map(e=>`<button data-entry="${esc(e.id)}" aria-label="Open ${esc(e.title)}"><img src="${esc(e.image)}" alt="" loading="lazy"><span>${esc(e.title)}</span></button>`).join("")}</div>`:`<p class="month-quiet">An unphotographed month—its written record still lives below.</p>`}</div>
     <div class="calendar-shell"><div>
       <div class="calendar-head">
         <button class="icon-button" data-month="-1" aria-label="Previous month">&larr;</button>
@@ -440,7 +473,7 @@ function scrapBoard(){
     return `<article class="scrap tilt-${i%4}" data-entry="${esc(e.id)}" style="--topic:${t.color};--soft:${t.soft}"><span class="pin" aria-hidden="true"></span><p class="scrap-text">${inline(e.title||"")}</p>${e.excerpt&&e.excerpt!==e.title?`<p class="scrap-note">${esc(e.excerpt)}</p>`:""}<p class="scrap-foot">${e.topics?.length?`<span>${esc(t.name)}</span>`:"<span></span>"}${date?`<time>${date}</time>`:""}</p></article>`;
   }).join("")}</div>`;
 }
-function library(){let body="";if(state.library==="gallery")body=galleryGrid();else if(state.library==="reading")body=`<div class="book-grid">${state.data.books.map((b,i)=>`<article class="book ${b.cover?"":"has-plate"}" data-book="${b.id}"><span class="acc-no">No. ${accNo(b.id)}</span>${b.cover?`<img class="book-cover" src="${b.cover}" alt="" loading="lazy">`:coverPlate(b)}<div class="book-copy"><h3>${esc(b.title)}</h3><p>${esc(b.author)}</p><div class="book-links"><span>${(b.notes||[]).length} notes</span><span>${(b.quotes||[]).length} quotes</span></div><span class="status">${esc(b.status.replaceAll("-"," "))}${b.status==="reading"?` · ${b.progress}%`:""}</span><div class="progress"><i style="width:${b.progress}%"></i></div></div></article>`).join("")||`<p class="empty">Your library is empty.</p>`}</div>`;else if(state.library==="quotes")body=`<div class="quote-list">${[...state.data.entries.filter(e=>e.type==="Quote"),...state.data.books.flatMap(b=>(b.quotes||[]).map(q=>({...q,title:q.text,author:b.title,bookId:b.id})))].map(e=>`<blockquote class="library-quote" ${e.bookId?`data-book="${e.bookId}"`:`data-entry="${e.id}"`}>“${esc(e.title)}”<cite>${esc(e.author)}${e.page?` · ${esc(e.page)}`:""}</cite></blockquote>`).join("")||`<p class="empty">No quotations kept yet.</p>`}</div>`;else if(state.library==="scraps")body=scrapBoard();else if(state.library==="writing")body=writingList();else body=`${journeyStrip()}<div class="entry-list">${state.data.entries.filter(e=>["Note","Journal","Journey"].includes(e.type)).map(e=>entryCard(e)).join("")||`<p class="empty">No notes kept yet.</p>`}</div>`;return `<section>${pageHead("Things worth keeping","Library","Books hold their own reading notes and quotations while each quote remains discoverable across Nota.")}<div class="library-tabs">${["writing","reading","quotes","notes","gallery","scraps"].map(x=>`<button class="filter ${state.library===x?"active":""}" data-library="${x}">${x[0].toUpperCase()+x.slice(1)}</button>`).join("")}</div>${body}</section>`}
+function library(){let body="";if(state.library==="gallery")body=galleryGrid();else if(state.library==="reading")body=`<div class="book-grid">${state.data.books.map((b,i)=>`<article class="book ${b.cover?"":"has-plate"}" data-book="${b.id}"><span class="acc-no">No. ${accNo(b.id)}</span>${b.cover?`<img class="book-cover" src="${b.cover}" alt="" loading="lazy">`:coverPlate(b)}<div class="book-copy"><h3>${esc(b.title)}</h3><p>${esc(b.author)}</p><div class="book-links"><span>${(b.notes||[]).length} notes</span><span>${(b.quotes||[]).length} quotes</span></div><span class="status">${esc(b.status.replaceAll("-"," "))}${b.status==="reading"?` · ${b.progress}%`:""}</span><div class="progress"><i style="width:${b.progress}%"></i></div></div></article>`).join("")||`<p class="empty">Your library is empty.</p>`}</div>`;else if(state.library==="quotes")body=`<div class="quote-list">${[...state.data.entries.filter(e=>e.type==="Quote"),...state.data.books.flatMap(b=>(b.quotes||[]).map(q=>({...q,title:q.text,author:b.title,bookId:b.id})))].map(e=>`<blockquote class="library-quote" ${e.bookId?`data-book="${e.bookId}"`:`data-entry="${e.id}"`}>“${esc(e.title)}”<cite>${esc(e.author)}${e.page?` · ${esc(e.page)}`:""}</cite></blockquote>`).join("")||`<p class="empty">No quotations kept yet.</p>`}</div>`;else if(state.library==="writing")body=writingList();else body=`${journeyStrip()}<div class="entry-list">${state.data.entries.filter(e=>["Note","Journal","Journey"].includes(e.type)).sort((a,b)=>(b.occurredAt||b.createdAt||"").localeCompare(a.occurredAt||a.createdAt||"")).map(e=>entryCard(e)).join("")||`<p class="empty">No notes kept yet.</p>`}</div>`;const tabs={writing:"Highlights",reading:"Books",quotes:"Quotes",notes:"Notes & journals",gallery:"Photos"};return `<section class="library-index">${pageHead("Browse by format","Library","Highlights are the pieces chosen to share. Notes & journals is the complete written record; books, quotes and photos keep their own shelves.")}<div class="library-tabs">${Object.entries(tabs).map(([x,label])=>`<button class="filter ${state.library===x?"active":""}" data-library="${x}">${label}</button>`).join("")}</div>${body}</section>`}
 // A topic may hold sub-topics: Self care covers ADHD, and later therapy,
 // fitness, the dentist. A parent counts and shows its children's items too.
 function childTopics(id){return Object.entries(state.data.topics).filter(([,t])=>t.parent===id).map(([slug])=>slug)}
@@ -473,13 +506,23 @@ function topicPhoto(id){
   const named=state.data.topics[id]?.photo;
   return named?{src:named}:null;
 }
+function spacePreview(id,photo){
+  if(id==="reading"){
+    const covers=state.data.books.filter(b=>b.cover).slice(0,4);
+    return covers.length?`<span class="space-reading-preview" aria-hidden="true">${covers.map(b=>`<img src="${esc(b.cover)}" alt="">`).join("")}</span>`:"";
+  }
+  if(id==="technology")return `<span class="space-tech-preview" aria-hidden="true"><i>&lt;/&gt;</i><b>build small_</b><em></em><em></em><em></em></span>`;
+  if(id==="music")return `<span class="space-music-preview" aria-hidden="true"><i></i><b>33</b></span>`;
+  return photo?`<img class="topic-photo" src="${esc(photo.src)}" alt="" decoding="async" fetchpriority="high" onload="this.dataset.ready=1" onerror="this.closest('.topic-card').classList.remove('has-photo');this.nextElementSibling?.remove();this.remove()"><span class="topic-shade" aria-hidden="true"></span>`:"";
+}
+function spaceCard({id,t,count,latest,kids}){
+  const photo=topicPhoto(id),special=["reading","technology","music"].includes(id),visual=spacePreview(id,photo);
+  return `<button class="topic-card space-card space-${id} ground-${t.ground||"plain"} ${photo&&!special?"has-photo":""} ${special?"has-space-preview":""}" data-topic="${id}" style="--topic:${t.color};--soft:${t.soft}">${visual}${!visual&&t.ground==="wedge"?`<span class="topic-flag" aria-hidden="true"></span>`:""}${!visual&&t.icon?`<span class="topic-motif" aria-hidden="true">${icon(t.icon)}</span>`:""}<h2>${esc(t.name)}</h2><p>${esc(t.description)}</p>${kids.length?`<span class="topic-kids">${kids.map(k=>`<span class="kid" data-topic="${k}" style="--topic:${state.data.topics[k].color}">${esc(state.data.topics[k].name)}</span>`).join("")}</span>`:""}<span class="topic-foot">Enter space →</span></button>`;
+}
 function topics(){
-  const sorts={items:"Most kept",name:"A to Z",recent:"Recent"};
   const list=Object.entries(state.data.topics).filter(([,t])=>!t.parent).map(([id,t])=>({id,t,count:topicCount(id),latest:topicLatest(id),kids:childTopics(id)}));
-  list.sort((a,b)=>state.topicSort==="name"?a.t.name.localeCompare(b.t.name)
-    :state.topicSort==="recent"?(b.latest||"").localeCompare(a.latest||"")||b.count-a.count
-    :b.count-a.count||a.t.name.localeCompare(b.t.name));
-  return `<section>${pageHead("Paths through the archive","Topics","Each topic has a quiet default appearance, or an optional view shaped around its material, without changing the underlying taxonomy.")}<div class="search-filters topic-sort">${Object.entries(sorts).map(([k,label])=>`<button class="filter ${state.topicSort===k?"active":""}" data-topicsort="${k}">${label}</button>`).join("")}</div><div class="topic-grid">${list.map(({id,t,count,latest,kids})=>`${(()=>{const photo=topicPhoto(id);return `<button class="topic-card ground-${t.ground||"plain"} ${photo?"has-photo":""}" data-topic="${id}" style="--topic:${t.color};--soft:${t.soft}">${photo?`<img class="topic-photo" src="${esc(photo.src)}" alt="" decoding="async" fetchpriority="high" onload="this.dataset.ready=1" onerror="this.closest('.topic-card').classList.remove('has-photo');this.nextElementSibling?.remove();this.remove()"><span class="topic-shade" aria-hidden="true"></span>`:""}${!photo&&t.ground==="wedge"?`<span class="topic-flag" aria-hidden="true"></span>`:""}${t.icon?`<span class="topic-motif" aria-hidden="true">${icon(t.icon)}</span>`:`<span class="topic-mark" aria-hidden="true">${esc(t.name[0])}</span>`}<span class="topic-count">${count} ${count===1?"item":"items"}</span><h2>${esc(t.name)}</h2><p>${esc(t.description)}</p>${kids.length?`<span class="topic-kids">${kids.map(k=>`<span class="kid" data-topic="${k}" style="--topic:${state.data.topics[k].color}">${esc(state.data.topics[k].name)}</span>`).join("")}</span>`:""}<span class="topic-foot">${t.mode?"Tailored view":latest?fmtDate(latest):"&nbsp;"}</span></button>`})()}`).join("")}</div></section>`;
+  list.sort((a,b)=>(b.latest||"").localeCompare(a.latest||"")||b.count-a.count);
+  return `<section class="spaces-index">${pageHead("Rooms in the archive","Spaces","Enter by subject. The rooms reorder themselves as the archive grows, bringing the most recently used to the front.")}<div class="topic-grid">${list.map(spaceCard).join("")}</div></section>`;
 }
 // Search reads the whole note, not just its first paragraph. Everything the
 // archive is for is finding a thing again later, and the words that identify
@@ -639,13 +682,15 @@ function topicRoom(id,t,items,books,kids){
 }
 function ordered(items){return [...items].sort((a,b)=>(b.occurredAt||b.createdAt||"").localeCompare(a.occurredAt||a.createdAt||""))}
 function codeBlocks(body=""){return [...String(body).matchAll(/```([^\n]*)\n([\s\S]*?)```/g)].map(m=>({lang:m[1]||"text",code:m[2].trim()}))}
+function snippetLine(code=""){return String(code).split("\n").map(x=>x.trim()).find(x=>x&&!/^[{[(]$/.test(x))||"Code sample"}
 function technologySpace(items){
   const rows=ordered(items),projects=rows.filter(e=>/github\.com|plugin|project/i.test(e.body||e.title)),snippets=rows.flatMap(e=>codeBlocks(e.body).map(s=>({...s,e}))),lead=projects[0]||rows[0];
-  return `<div class="tech-space"><header class="tech-console"><div class="tech-chrome"><i></i><i></i><i></i><span>nota://workspace/technology</span></div><div class="tech-console-copy"><p>Personal development environment</p><h1>Build small.<br><em>Build useful.</em></h1><p>Projects, sites, code and the decisions behind them.</p></div><dl><div><dt>Projects</dt><dd>${projects.length}</dd></div><div><dt>Snippets</dt><dd>${snippets.length}</dd></div><div><dt>Notes</dt><dd>${rows.length}</dd></div></dl></header>${lead?`<section class="tech-feature" data-entry="${esc(lead.id)}"><div><span>Latest project · ${fmtDate(lead.occurredAt||lead.createdAt)}</span><h2>${esc(lead.title)}</h2><p>${esc(lead.excerpt)}</p><b>Open project log →</b></div>${snippets[0]?`<pre data-lang="${esc(snippets[0].lang)}"><code>${esc(snippets[0].code.split("\n").slice(0,8).join("\n"))}</code></pre>`:`<div class="tech-diagram" aria-hidden="true"><i></i><i></i><i></i><i></i></div>`}</section>`:""}<div class="tech-columns"><section><h2>Project index</h2>${rows.map((e,i)=>`<article class="tech-row" data-entry="${esc(e.id)}"><span>${String(i+1).padStart(2,"0")}</span><div><b>${esc(e.title)}</b><small>${esc(e.excerpt)}</small></div><time>${fmtDate(e.occurredAt||e.createdAt)}</time></article>`).join("")}</section><aside><h2>Snippet drawer</h2>${snippets.length?snippets.slice(0,3).map(s=>`<button class="snippet-card" data-entry="${esc(s.e.id)}"><span>${esc(s.lang)}</span><code>${esc(s.code.split("\n")[0])}</code></button>`).join(""):`<p class="tech-empty">Code fences added in Obsidian will collect here automatically.</p>`}</aside></div></div>`;
+  return `<div class="tech-space"><header class="tech-console"><div class="tech-chrome"><i></i><i></i><i></i><span>nota://workspace/technology</span></div><div class="tech-console-copy"><p>Personal development environment</p><h1>Build small.<br><em>Build useful.</em></h1><p>Projects, sites, code and the decisions behind them.</p></div><dl><div><dt>Projects</dt><dd>${projects.length}</dd></div><div><dt>Snippets</dt><dd>${snippets.length}</dd></div><div><dt>Notes</dt><dd>${rows.length}</dd></div></dl></header>${lead?`<section class="tech-feature" data-entry="${esc(lead.id)}"><div><span>Latest project · ${fmtDate(lead.occurredAt||lead.createdAt)}</span><h2>${esc(lead.title)}</h2><p>${esc(lead.excerpt)}</p><b>Open project log →</b></div>${snippets[0]?`<pre data-lang="${esc(snippets[0].lang)}"><code>${esc(snippets[0].code.split("\n").slice(0,8).join("\n"))}</code></pre>`:`<div class="tech-diagram" aria-hidden="true"><i></i><i></i><i></i><i></i></div>`}</section>`:""}<div class="tech-columns"><section><h2>Project index</h2>${rows.map((e,i)=>`<article class="tech-row" data-entry="${esc(e.id)}"><span>${String(i+1).padStart(2,"0")}</span><div><b>${esc(e.title)}</b><small>${esc(e.excerpt)}</small></div><time>${fmtDate(e.occurredAt||e.createdAt)}</time></article>`).join("")}</section><aside><h2>Snippet drawer</h2>${snippets.length?snippets.slice(0,3).map(s=>`<button class="snippet-card" data-entry="${esc(s.e.id)}"><span>${esc(s.lang)}</span><code>${esc(snippetLine(s.code))}</code></button>`).join(""):`<p class="tech-empty">Code fences added in Obsidian will collect here automatically.</p>`}</aside></div></div>`;
 }
 function musicSpace(items){
   const rows=ordered(items),playlists=rows.map(e=>({e,tracks:bulletsOf(e.body)})).filter(x=>x.tracks.length),practice=rows.filter(e=>e.journey);
-  return `<div class="music-space"><header class="music-stage"><span class="groove" aria-hidden="true"></span><div><p>Nota listening room</p><h1>music</h1><blockquote>What the speakers are playing,<br>and what the fingers are learning.</blockquote></div><b>${playlists.reduce((n,p)=>n+p.tracks.length,0)}<small>things in rotation</small></b></header><div class="music-cabinets"><section><h2>In rotation</h2>${playlists.map(({e,tracks})=>`<article class="record-card" data-entry="${esc(e.id)}">${e.image?`<img src="${esc(e.image)}" alt="${esc(e.imageAlt||"")}">`:""}<div><span>${esc(e.title)}</span><ol>${tracks.slice(0,5).map((raw,i)=>{const t=trackParts(raw);return `<li><i>${String(i+1).padStart(2,"0")}</i>${esc(t.main)}${t.sub?`<small>${esc(t.sub)}</small>`:""}</li>`}).join("")}</ol></div></article>`).join("")}</section><aside><h2>Practice log</h2>${practice.length?practice.map(e=>`<article class="practice-slip" data-entry="${esc(e.id)}"><span>${e.day?`Day ${e.day}`:fmtDate(e.occurredAt)}</span><b>${esc(e.title.replace(/^Day\s+\d+:\s*/i,""))}</b><p>${esc(e.excerpt)}</p></article>`).join(""):`<p>Journey entries will collect here.</p>`}</aside></div></div>`;
+  const journey=practice[0]?.journey,maxDay=Math.max(0,...practice.map(e=>e.day||0));
+  return `<div class="music-space"><header class="music-stage"><span class="groove" aria-hidden="true"></span><div><p>Nota listening room</p><h1>music</h1><blockquote>What the speakers are playing,<br>and what the fingers are learning.</blockquote></div><b>${playlists.reduce((n,p)=>n+p.tracks.length,0)}<small>things in rotation</small></b></header><div class="music-cabinets"><section><h2>In rotation</h2>${playlists.map(({e,tracks})=>`<article class="record-card" data-entry="${esc(e.id)}">${e.image?`<img src="${esc(e.image)}" alt="${esc(e.imageAlt||"")}">`:""}<div><span>${esc(e.title)}</span><ol>${tracks.slice(0,5).map((raw,i)=>{const t=trackParts(raw);return `<li><i>${String(i+1).padStart(2,"0")}</i>${esc(t.main)}${t.sub?`<small>${esc(t.sub)}</small>`:""}</li>`}).join("")}</ol></div></article>`).join("")}</section><aside><h2>Practice journey</h2>${practice.length?`<button class="practice-progress" data-journey="${esc(journey)}"><span>Learning guitar</span><b>Day ${maxDay}</b><i><em style="width:${Math.min(100,maxDay/30*100)}%"></em></i><small>${practice.length} milestones kept · open the full journey →</small></button>${practice.map(e=>`<article class="practice-slip" data-entry="${esc(e.id)}"><span>${e.day?`Day ${e.day}`:fmtDate(e.occurredAt)}</span><b>${esc(e.title.replace(/^Day\s+\d+:\s*/i,""))}</b><p>${esc(e.excerpt)}</p></article>`).join("")}`:`<p>Journey entries will collect here.</p>`}</aside></div></div>`;
 }
 function readingSpace(items,books){
   const quotes=items.filter(e=>e.type==="Quote"),notes=items.filter(e=>e.type!=="Quote"),reading=books.filter(b=>b.status==="reading");
@@ -745,7 +790,9 @@ document.addEventListener("click",async e=>{
 });
 document.addEventListener("input",e=>{if(e.target.matches(".search-box")){state.search=e.target.value;const pos=e.target.selectionStart;document.querySelector(".search-results").innerHTML=(()=>{const items=searchResults(state.search);return items.length?items.map(e=>entryCard(e,matchSnippet(e,state.search))).join(""):`<p class="empty">No matching records.</p>`})();e.target.setSelectionRange(pos,pos)}});
 document.addEventListener("submit",async e=>{
-  e.preventDefault();const f=new FormData(e.target),submit=e.submitter;e.target.classList.add("working");if(submit)submit.disabled=true;
+  e.preventDefault();
+  if(e.target.classList.contains("home-search")){state.search=e.target.querySelector("input")?.value||"";location.hash="search";return}
+  const f=new FormData(e.target),submit=e.submitter;e.target.classList.add("working");if(submit)submit.disabled=true;
   try{
     if(e.target.id==="auth-form"){const email=f.get("email"),password=f.get("password");state.user=await NotaBackend.signIn(email,password);await loadRemoteArchive();render();return}
   }catch(error){const target=e.target.querySelector(".form-error");if(target)target.textContent=error.message;else toast(error.message)}finally{e.target.classList.remove("working");if(submit)submit.disabled=false}
@@ -763,7 +810,7 @@ if("serviceWorker" in navigator){
   navigator.serviceWorker.addEventListener("controllerchange",()=>{
     if(reloading)return;reloading=true;location.reload();
   });
-  window.addEventListener("load",async()=>{try{swReg=await navigator.serviceWorker.register("sw.js")}catch(error){/* no worker: the app still runs from the network */}});
+  window.addEventListener("load",async()=>{try{swReg=await navigator.serviceWorker.register("sw.js",{updateViaCache:"none"});await swReg.update();checkBuild()}catch(error){/* no worker: the app still runs from the network */}});
   document.addEventListener("visibilitychange",()=>{if(!document.hidden&&swReg)swReg.update().catch(()=>{})});
   // Belt and braces: the worker update can be slow to notice a new build, so
   // ask the server outright which build is deployed and reload if the running
