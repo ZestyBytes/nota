@@ -334,15 +334,34 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px}
   .main-nav{display:none}
   .wordmark-mark{font-size:24px}
   .wordmark-sub{display:none}
-  .mobile-nav{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;z-index:8;bottom:0;left:0;right:0;padding:6px max(6px,env(safe-area-inset-right)) calc(6px + env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-left));background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:saturate(1.4) blur(12px);border-top:1.5px solid var(--ink)}
-  .mobile-nav a{position:relative;display:grid;place-items:center;align-content:center;gap:3px;border:0;background:transparent;font:9px var(--mono);text-transform:uppercase;letter-spacing:.05em;color:var(--muted);min-height:50px;border-radius:10px;-webkit-tap-highlight-color:transparent;transition:color .16s ease,transform .16s ease}
+  /* The bar floats clear of the edges rather than sitting on them: a mounted
+     slip resting on the sheet, with the paper showing under and around it.
+     Frosted so the archive stays visible as it passes beneath. */
+  .mobile-nav{
+    display:grid;grid-template-columns:repeat(5,1fr);position:fixed;z-index:8;
+    left:max(10px,env(safe-area-inset-left));right:max(10px,env(safe-area-inset-right));
+    bottom:calc(9px + env(safe-area-inset-bottom));
+    padding:7px 6px 8px;border-radius:22px;
+    background:color-mix(in srgb,var(--surface) 84%,transparent);
+    backdrop-filter:saturate(1.6) blur(22px);-webkit-backdrop-filter:saturate(1.6) blur(22px);
+    border:1px solid color-mix(in srgb,var(--ink) 16%,transparent);
+    box-shadow:0 10px 28px -14px rgba(34,38,30,.5),0 2px 6px -3px rgba(34,38,30,.28);
+  }
+  /* Without backdrop-filter the bar would be a translucent smear over the
+     text passing behind it, so fall back to opaque paper. */
+  @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+    .mobile-nav{background:var(--surface)}
+  }
+  .mobile-nav a{position:relative;display:grid;place-items:center;align-content:center;gap:3px;border:0;background:transparent;font:9px var(--mono);text-transform:uppercase;letter-spacing:.05em;color:var(--muted);min-height:48px;border-radius:15px;-webkit-tap-highlight-color:transparent;transition:color .16s ease,transform .16s ease,background .16s ease}
+  .mobile-nav a.active{background:color-mix(in srgb,var(--ink) 7%,transparent)}
   /* the pinned-specimen marker: a red tack above the active icon */
   .mobile-nav a:before{content:"";position:absolute;top:2px;width:4px;height:4px;border-radius:50%;background:transparent;transition:background .16s ease}
   .mobile-nav a.active{color:var(--ink)}
+  /* glass over a dark ground wants a touch more body to stay a surface */
   .mobile-nav a.active:before{background:var(--stamp-red)}
   .mobile-nav a.active .nav-icon .nav-fill{opacity:.3}
   .mobile-nav a:active{transform:scale(.93);color:var(--ink)}
-  main{padding:30px 18px 104px}
+  main{padding:30px 18px calc(112px + env(safe-area-inset-bottom))}
   .page-head{align-items:flex-start;margin-bottom:34px}
   .date-large{width:88px;height:88px}
   .date-large b{font-size:13px}
@@ -1042,3 +1061,12 @@ aside .section-title{display:flex;align-items:baseline}
   border:1px solid var(--line);background:var(--paper-alt);
 }
 @media(prefers-color-scheme:dark){.day-row-thumb{filter:saturate(.82) brightness(.86)}}
+
+@media(prefers-color-scheme:dark){
+  .mobile-nav{
+    background:color-mix(in srgb,var(--surface) 88%,transparent);
+    border-color:color-mix(in srgb,var(--ink) 22%,transparent);
+    box-shadow:0 12px 30px -14px rgba(0,0,0,.8),0 2px 8px -4px rgba(0,0,0,.6);
+  }
+  .mobile-nav a.active{background:color-mix(in srgb,var(--ink) 12%,transparent)}
+}

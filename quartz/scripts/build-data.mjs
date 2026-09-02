@@ -159,6 +159,22 @@ function allImages(body) {
   return out;
 }
 
+// An excerpt is shown as plain text everywhere it appears, so the markdown has
+// to come off it: a card was printing "[Omarchy](https://omarchy.org)" in full,
+// link syntax and all. Wikilinks and bold were already handled here; links,
+// code, italics and stray images were not.
+function plain(text) {
+  return String(text)
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, "")
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+    .replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g, (m, a, b) => b || a)
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/\*\*([^*]+)\*\*/g, "$1")
+    .replace(/(^|[^*])\*([^*]+)\*/g, "$1$2")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function firstParagraph(body) {
   const lines = body.split("\n");
   const paras = [];
@@ -171,8 +187,7 @@ function firstParagraph(body) {
     cur.push(t);
   }
   if (cur.length) paras.push(cur.join(" "));
-  const first = paras[0] || "";
-  return first.replace(/\[\[([^\]|]+)\|?[^\]]*\]\]/g, "$1").replace(/\*\*([^*]+)\*\*/g, "$1");
+  return plain(paras[0] || "");
 }
 
 // Steps are often numbered rather than bulleted, so accept either.
