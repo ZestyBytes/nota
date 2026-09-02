@@ -8,4 +8,6 @@ publishedAt: 2026-08-18
 publish: true
 ---
 
+![A modest handmade mechanism on a quiet writing desk](assets/posts/the-humane-scale-of-small-software.jpg)
+
 The best personal tools leave room for the person using them. They solve the recurring machinery while resisting the temptation to prescribe a life.

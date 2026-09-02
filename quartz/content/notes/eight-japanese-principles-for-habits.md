@@ -10,6 +10,8 @@ writing: true
 publish: true
 ---
 
+![Eight everyday objects arranged as a collection of small repeatable practices](assets/posts/eight-japanese-principles-for-habits.jpg)
+
 Eight ideas for starting and keeping habits, saved from a carousel post and
 rewritten in my own words. The through-line is that none of them ask for
 more motivation. They lower the cost of starting, or make stopping the

@@ -50,7 +50,7 @@ const TOPICS = {
   playlist:   { name: "Playlist", parent: "music", mode: "listen", icon: "disc", color: "#6b6a2e", soft: "#e9e8d3", ground: "dots", photo: "", description: "Records, podcasts and things worth listening to" },
   practice:   { name: "Practice", parent: "music", icon: "music", color: "#8a4438", soft: "#f0e3e0", ground: "hatch", photo: "", description: "The guitar, and the hours it asks for" },
   reading:    { name: "Reading", icon: "book", color: "#8a5a12", soft: "#ece0cb", ground: "ruled", photo: "9572622", description: "Books, marginalia and ideas worth keeping" },
-  food:       { name: "Food", icon: "fork", color: "#8a4a1a", soft: "#ecddcb", ground: "coarse", photo: "6605214", description: "Recipes, experiments and things made for the table" },
+  food:       { name: "Food", mode: "kitchen", icon: "fork", color: "#8a4a1a", soft: "#ecddcb", ground: "coarse", photo: "6605214", description: "Recipes, experiments and things made for the table" },
   recipes:    { name: "Recipes", parent: "food", mode: "recipes", icon: "fork", color: "#a25a1e", soft: "#f0e2d2", ground: "duo", photo: "", description: "Things made at home, and how they were made" },
   eatingout:  { name: "Eating out", parent: "food", icon: "cup", color: "#7a5a2e", soft: "#ece1d0", ground: "plain", photo: "", description: "Meals out worth remembering" },
   technology: { name: "Technology", mode: "tech", icon: "terminal", color: "#1c6e63", soft: "#dbe9e6", ground: "grid", photo: "34054502", description: "Tools, code and thoughtful technology" },
