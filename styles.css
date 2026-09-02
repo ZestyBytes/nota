@@ -755,7 +755,7 @@ body.modal-open{position:fixed;left:0;right:0;width:100%;overflow:hidden}
   /* shadows read as depth on paper and as murk on a dark ground */
   .entry:hover,.book:hover,.topic-card:hover,.side-widget:hover,.shot:hover{box-shadow:0 10px 22px -12px rgba(0,0,0,.7)}
   .modal-backdrop{background:rgba(0,0,0,.66)}
-  .mount-tag{color:#14160f;box-shadow:0 3px 6px -2px rgba(0,0,0,.6)}
+  .mount-tag{box-shadow:0 3px 6px -2px rgba(0,0,0,.6)}
   .book .acc-no{color:var(--muted);text-shadow:none}
   .thumb-count,.gallery-no,.shot-count{background:rgba(0,0,0,.7)}
   /* photographs are lit for daylight; take the glare off after dark */
