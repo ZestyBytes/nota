@@ -158,7 +158,7 @@ function rootTopic(id){
   }
   return current||"life";
 }
-function icon(name){const paths={leaf:'<path d="M20.4 3.6c-9.4 0-14.8 4.3-14.8 10.5a4.7 4.7 0 0 0 4.7 4.7c6.7 0 10.1-6.5 10.1-15.2Z"/><path d="M4.2 20.4c2.5-5.8 6.7-9.9 12.5-12.6"/>',music:'<path d="M9 18V5l10-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/>',terminal:'<path d="M4.6 5.2h14.8a1.8 1.8 0 0 1 1.8 1.8v10a1.8 1.8 0 0 1-1.8 1.8H4.6a1.8 1.8 0 0 1-1.8-1.8V7a1.8 1.8 0 0 1 1.8-1.8Z"/><path d="M7.4 9.6l2.9 2.4-2.9 2.4M13.2 14.4h4.2"/>',mind:'<path d="M12 21s-8-4.5-8-11a4 4 0 0 1 7-2.6A4 4 0 0 1 20 10c0 6.5-8 11-8 11Z"/><path d="M7 13h3l1.5-3 2 6 1.5-3h3"/>',book:'<path d="M4 5a3 3 0 0 1 3-3h12v18H7a3 3 0 0 1 0-6h12"/>',home:'<path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10M9 20v-6h6v6"/>',fork:'<path d="M7 3v7m-3-7v4a3 3 0 0 0 6 0V3M7 10v11M17 3v18m0-18c3 3 3 8 0 10"/>',paperclip:'<path d="m21 11-8.5 8.5a6 6 0 0 1-8.5-8.5l9-9a4 4 0 0 1 5.7 5.7l-9 9a2 2 0 0 1-2.9-2.9L15 5.6"/>',quote:'<path d="M9 11H5a4 4 0 0 1 4-4v8a4 4 0 0 1-4 4M19 11h-4a4 4 0 0 1 4-4v8a4 4 0 0 1-4 4"/>',note:'<path d="M4 3h16v18H4zM8 8h8M8 12h8M8 16h5"/>',check:'<path d="m5 12 5 5 9-9"/>',photos:'<rect x="7" y="3" width="14" height="14" rx="1.5"/><path d="M17 21H4.5A1.5 1.5 0 0 1 3 19.5V7"/>',car:'<path d="M3.6 15.8v-2.2l1.9-4.5A2.3 2.3 0 0 1 7.6 7.7h8.8a2.3 2.3 0 0 1 2.1 1.4l1.9 4.5v2.2Z"/><path d="M4.4 13.6h15.2M9.5 7.9v5.7M14.5 7.9v5.7"/><path d="M9.1 16.3a2.05 2.05 0 1 1-4.1 0 2.05 2.05 0 0 1 4.1 0ZM19 16.3a2.05 2.05 0 1 1-4.1 0 2.05 2.05 0 0 1 4.1 0Z"/>',disc:'<path d="M20.7 12a8.7 8.7 0 1 1-17.4 0 8.7 8.7 0 0 1 17.4 0ZM14.4 12a2.4 2.4 0 1 1-4.8 0 2.4 2.4 0 0 1 4.8 0Z"/><path d="M17.6 12A5.6 5.6 0 0 0 12 6.4"/>',repeat:'<path d="M4 9.6A4.6 4.6 0 0 1 8.6 5h9"/><path d="m14.8 2.4 2.9 2.6-2.9 2.6"/><path d="M20 14.4A4.6 4.6 0 0 1 15.4 19h-9"/><path d="m9.2 16.4-2.9 2.6 2.9 2.6"/>',heart:'<path d="M12 20.3s-7.6-4.4-7.6-10a4.2 4.2 0 0 1 7.6-2.6 4.2 4.2 0 0 1 7.6 2.6c0 5.6-7.6 10-7.6 10Z"/>',cup:'<path d="M5 8.4h11v5.8a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4Z"/><path d="M16 9.8h2.2a2.3 2.3 0 0 1 0 4.6H16"/><path d="M7.6 4.4v1.9M11 3.9v2.4M14.4 4.4v1.9"/>',alert:'<path d="M12 3.6 21 19H3Z"/><path d="M12 9.6v4.2"/><path d="M12 16.6h.01"/>',help:'<circle cx="12" cy="12" r="8.6"/><path d="M9.6 9.6a2.5 2.5 0 0 1 4.8.8c0 1.7-2.4 1.9-2.4 3.4"/><path d="M12 17.2h.01"/>'};return `<svg class="line-icon" viewBox="0 0 24 24" aria-hidden="true">${paths[name]||paths.note}</svg>`}
+function icon(name){const paths={leaf:'<path d="M20.4 3.6c-9.4 0-14.8 4.3-14.8 10.5a4.7 4.7 0 0 0 4.7 4.7c6.7 0 10.1-6.5 10.1-15.2Z"/><path d="M4.2 20.4c2.5-5.8 6.7-9.9 12.5-12.6"/>',music:'<path d="M9 18V5l10-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/>',terminal:'<path d="M4.6 5.2h14.8a1.8 1.8 0 0 1 1.8 1.8v10a1.8 1.8 0 0 1-1.8 1.8H4.6a1.8 1.8 0 0 1-1.8-1.8V7a1.8 1.8 0 0 1 1.8-1.8Z"/><path d="M7.4 9.6l2.9 2.4-2.9 2.4M13.2 14.4h4.2"/>',mind:'<path d="M12 21s-8-4.5-8-11a4 4 0 0 1 7-2.6A4 4 0 0 1 20 10c0 6.5-8 11-8 11Z"/><path d="M7 13h3l1.5-3 2 6 1.5-3h3"/>',book:'<path d="M4 5a3 3 0 0 1 3-3h12v18H7a3 3 0 0 1 0-6h12"/>',home:'<path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10M9 20v-6h6v6"/>',fork:'<path d="M7 3v7m-3-7v4a3 3 0 0 0 6 0V3M7 10v11M17 3v18m0-18c3 3 3 8 0 10"/>',paperclip:'<path d="m21 11-8.5 8.5a6 6 0 0 1-8.5-8.5l9-9a4 4 0 0 1 5.7 5.7l-9 9a2 2 0 0 1-2.9-2.9L15 5.6"/>',quote:'<path d="M9 11H5a4 4 0 0 1 4-4v8a4 4 0 0 1-4 4M19 11h-4a4 4 0 0 1 4-4v8a4 4 0 0 1-4 4"/>',note:'<path d="M4 3h16v18H4zM8 8h8M8 12h8M8 16h5"/>',check:'<path d="m5 12 5 5 9-9"/>',photos:'<rect x="7" y="3" width="14" height="14" rx="1.5"/><path d="M17 21H4.5A1.5 1.5 0 0 1 3 19.5V7"/>',car:'<path d="M3.6 15.8v-2.2l1.9-4.5A2.3 2.3 0 0 1 7.6 7.7h8.8a2.3 2.3 0 0 1 2.1 1.4l1.9 4.5v2.2Z"/><path d="M4.4 13.6h15.2M9.5 7.9v5.7M14.5 7.9v5.7"/><path d="M9.1 16.3a2.05 2.05 0 1 1-4.1 0 2.05 2.05 0 0 1 4.1 0ZM19 16.3a2.05 2.05 0 1 1-4.1 0 2.05 2.05 0 0 1 4.1 0Z"/>',disc:'<path d="M20.7 12a8.7 8.7 0 1 1-17.4 0 8.7 8.7 0 0 1 17.4 0ZM14.4 12a2.4 2.4 0 1 1-4.8 0 2.4 2.4 0 0 1 4.8 0Z"/><path d="M17.6 12A5.6 5.6 0 0 0 12 6.4"/>',repeat:'<path d="M4 9.6A4.6 4.6 0 0 1 8.6 5h9"/><path d="m14.8 2.4 2.9 2.6-2.9 2.6"/><path d="M20 14.4A4.6 4.6 0 0 1 15.4 19h-9"/><path d="m9.2 16.4-2.9 2.6 2.9 2.6"/>',heart:'<path d="M12 20.3s-7.6-4.4-7.6-10a4.2 4.2 0 0 1 7.6-2.6 4.2 4.2 0 0 1 7.6 2.6c0 5.6-7.6 10-7.6 10Z"/>',weights:'<path d="M3.4 9.6v4.8M6.6 7.2v9.6M17.4 7.2v9.6M20.6 9.6v4.8M6.6 12h10.8"/>',cup:'<path d="M5 8.4h11v5.8a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4Z"/><path d="M16 9.8h2.2a2.3 2.3 0 0 1 0 4.6H16"/><path d="M7.6 4.4v1.9M11 3.9v2.4M14.4 4.4v1.9"/>',alert:'<path d="M12 3.6 21 19H3Z"/><path d="M12 9.6v4.2"/><path d="M12 16.6h.01"/>',help:'<circle cx="12" cy="12" r="8.6"/><path d="M9.6 9.6a2.5 2.5 0 0 1 4.8.8c0 1.7-2.4 1.9-2.4 3.4"/><path d="M12 17.2h.01"/>'};return `<svg class="line-icon" viewBox="0 0 24 24" aria-hidden="true">${paths[name]||paths.note}</svg>`}
 function chips(ids=[]){return ids.map(id=>{const t=topic(id);return `<span class="chip" style="--topic:${t.color};--soft:${t.soft}">${esc(t.name)}</span>`}).join("")}
 // Specimen-label date: 01 SEP 2026. The card had no date at all before.
 const MONTHS=["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
@@ -190,7 +190,11 @@ function entryPlate(e){
 }
 function entryCard(e,snippet="",within=""){if(typeof snippet!=="string")snippet="";
   const tagId=(e.topics||[]).find(id=>id!==within&&topic(id).parent!==within),
-    t=topic(tagId||e.topics?.[0]),attachment=e.attachments?.[0],age=ageTier(e.occurredAt),date=fmtDate(e.occurredAt||e.createdAt||e.dueAt);return `<article class="entry has-thumb ${e.image?"":"has-plate"} ${age}" data-entry="${e.id}" style="--topic:${t.color}"><span class="acc-no">No. ${accNo(e.id)}</span>${tagId?`<span class="mount-tag" style="background:${t.color}">${esc(t.name)}</span>`:""}<span class="thumb-wrap">${e.image?`<img class="entry-thumb" src="${e.image}" alt="${esc(e.imageAlt||"")}" loading="lazy">${e.images?.length>1?`<span class="thumb-count">${icon("photos")}${e.images.length}</span>`:""}`:entryPlate(e)}</span><div class="entry-copy"><div class="entry-meta"><span class="type-label">${esc(e.type)}</span>${date?`<span class="entry-date">${date}</span>`:""}${e.publishedAt||e.type==="Task"?"":`<span class="stamp stamp-private">private</span>`}</div><h3>${e.type==="Quote"?`“${esc(e.title)}”`:esc(e.title)}</h3>${snippet?`<p class="snippet">${snippet}</p>`:e.author?`<p>${esc(e.author)}</p>`:e.excerpt?`<p>${esc(e.excerpt)}</p>`:""}${attachment?`<span class="attachment-inline">${icon("paperclip")}${esc(attachment.name)}</span>`:""}</div></article>`}
+    t=topic(tagId||e.topics?.[0]),attachment=e.attachments?.[0],age=ageTier(e.occurredAt),date=fmtDate(e.occurredAt||e.createdAt||e.dueAt);
+  // A to-do is a line of text, not a specimen. Give it a picture only if one
+  // was actually attached, rather than inventing a plate to fill the space.
+  const thumb=e.image?`<img class="entry-thumb" src="${e.image}" alt="${esc(e.imageAlt||"")}" loading="lazy">${e.images?.length>1?`<span class="thumb-count">${icon("photos")}${e.images.length}</span>`:""}`:e.type==="Task"?"":entryPlate(e);
+  return `<article class="entry ${thumb?"has-thumb":"no-thumb"} ${e.image?"":thumb?"has-plate":""} ${age}" data-entry="${e.id}" style="--topic:${t.color}"><span class="acc-no">No. ${accNo(e.id)}</span>${tagId?`<span class="mount-tag" style="background:${t.color}">${esc(t.name)}</span>`:""}${thumb?`<span class="thumb-wrap">${thumb}</span>`:""}<div class="entry-copy"><div class="entry-meta"><span class="type-label">${esc(e.type)}</span>${date?`<span class="entry-date">${date}</span>`:""}${e.publishedAt||e.type==="Task"?"":`<span class="stamp stamp-private">private</span>`}</div><h3>${e.type==="Quote"?`“${esc(e.title)}”`:esc(e.title)}</h3>${snippet?`<p class="snippet">${snippet}</p>`:e.author?`<p>${esc(e.author)}</p>`:e.excerpt?`<p>${esc(e.excerpt)}</p>`:""}${attachment?`<span class="attachment-inline">${icon("paperclip")}${esc(attachment.name)}</span>`:""}</div></article>`}
 // A page-shaped placeholder rather than a spinner: same title block, same
 // card metrics, so the real content lands in the space already held for it.
 function skeletonEntry(){return `<div class="entry skeleton-entry"><div class="skeleton skeleton-line" style="width:34%;height:10px"></div><div class="skeleton skeleton-line" style="width:78%;height:26px;margin:14px 0 12px"></div><div class="skeleton skeleton-line"></div><div class="skeleton skeleton-line"></div></div>`}
@@ -475,11 +479,12 @@ function library(){
   if(state.library==="gallery")body=galleryGrid();
   else if(state.library==="reading")body=`<div class="book-grid">${state.data.books.map(b=>`<article class="book ${b.cover?"":"has-plate"}" data-book="${b.id}"><span class="acc-no">No. ${accNo(b.id)}</span>${b.cover?`<img class="book-cover" src="${b.cover}" alt="" loading="lazy">`:coverPlate(b)}<div class="book-copy"><h3>${esc(b.title)}</h3><p>${esc(b.author)}</p><div class="book-links"><span>${(b.notes||[]).length} notes</span><span>${(b.quotes||[]).length} quotes</span></div><span class="status">${esc(b.status.replaceAll("-"," "))}${b.status==="reading"?` · ${b.progress}%`:""}</span><div class="progress"><i style="width:${b.progress}%"></i></div></div></article>`).join("")||`<p class="empty">Your library is empty.</p>`}</div>`;
   else if(state.library==="writing")body=writingList();
+  else if(state.library==="journeys")body=journeys().length?journeyStrip(true):`<p class="empty">No journeys yet. Add <code>journey: "Name"</code> to a note and its entries thread together here.</p>`;
   else {
     const notes=state.data.entries.filter(e=>["Note","Journal","Quote"].includes(e.type)).sort((a,b)=>(b.occurredAt||b.createdAt||"").localeCompare(a.occurredAt||a.createdAt||""));
-    body=`${journeyStrip()}<div class="entry-list">${notes.map(e=>entryCard(e)).join("")||`<p class="empty">No notes kept yet.</p>`}</div>`;
+    body=`<div class="entry-list">${notes.map(e=>entryCard(e)).join("")||`<p class="empty">No notes kept yet.</p>`}</div>`;
   }
-  const tabs={writing:"Highlights",notes:"Notes",reading:"Books",gallery:"Photos"};
+  const tabs={writing:"Highlights",notes:"Notes",journeys:"Journeys",reading:"Books",gallery:"Photos"};
   return `<section class="library-index">${pageHead("Browse by format","Library","Highlights are a small selection chosen to share. Notes gathers notes, journals and quotes; journeys, books and photographs keep their useful shapes.")}<div class="library-tabs">${Object.entries(tabs).map(([x,label])=>`<button class="filter ${state.library===x?"active":""}" data-library="${x}">${label}</button>`).join("")}</div>${body}</section>`;
 }
 // A topic may hold sub-topics: Self care covers ADHD, and later therapy,
@@ -600,12 +605,38 @@ function journeys(){
   const names=[...new Set(state.data.entries.map(e=>e.journey).filter(Boolean))];
   return names.map(name=>{const rows=journeyEntries(name);return {name,rows,last:rows[rows.length-1]}});
 }
-function journeyStrip(){
+// A journey either counts towards a number or it just accumulates. Weight and
+// distance have a start, a target and a reading each check-in, so they get a
+// bar. Learning the guitar has none of that, so it gets a dot per entry: the
+// same idea, told by how much of the row is filled in.
+function journeyProgress(rows){
+  const start=rows.map(r=>r.start).find(v=>typeof v==="number");
+  const target=rows.map(r=>r.target).find(v=>typeof v==="number");
+  const readings=rows.filter(r=>typeof r.metric==="number");
+  if(typeof start!=="number"||typeof target!=="number"||start===target)return null;
+  const latest=readings.length?readings[readings.length-1].metric:start;
+  const unit=rows.map(r=>r.unit).find(Boolean)||"";
+  // Works in either direction: losing weight counts down, running further counts up.
+  const pct=Math.max(0,Math.min(100,Math.round((start-latest)/(start-target)*100)));
+  const moved=Math.round(Math.abs(start-latest)*10)/10,left=Math.round(Math.abs(latest-target)*10)/10;
+  return {start,target,latest,unit,pct,moved,left,readings};
+}
+function fmtMetric(n,unit){return `${Math.round(n*10)/10}${unit?esc(unit):""}`}
+function journeyBar(p){
+  return `<div class="journey-progress"><div class="journey-bar" role="img" aria-label="${p.pct}% of the way there"><i style="width:${p.pct}%"></i></div><p class="journey-numbers"><span>${fmtMetric(p.start,p.unit)} start</span><b>${fmtMetric(p.latest,p.unit)}</b><span>${fmtMetric(p.target,p.unit)} goal</span></p></div>`;
+}
+// One mark per entry, so a long thread reads as progress at a glance. Beyond
+// thirty the row would stop being readable, so the rest are counted instead.
+function journeyDots(n){
+  const shown=Math.min(n,30);
+  return `<p class="journey-dots" role="img" aria-label="${n} ${n===1?"entry":"entries"} so far">${Array.from({length:shown},()=>`<i></i>`).join("")}${n>shown?`<em>+${n-shown}</em>`:""}</p>`;
+}
+function journeyStrip(bare=false){
   const rows=journeys();
   if(!rows.length)return "";
-  return `<section class="journey-strip"><h2 class="section-title">Journeys</h2><div class="journey-cards">${rows.map(({name,rows:items,last})=>{
+  return `<section class="journey-strip">${bare?"":`<h2 class="section-title">Journeys</h2>`}<div class="journey-cards">${rows.map(({name,rows:items,last})=>{
     const t=topic(items[0].topics?.[0]),days=items.map(i=>i.day).filter(Boolean);
-    return `<article class="journey-card" data-journey="${esc(name)}" style="--topic:${t.color};--soft:${t.soft}"><p class="eyebrow">${esc(t.name)}</p><h3>${esc(name)}</h3><p class="journey-last">${esc(last.title)}</p><p class="journey-meta">${days.length?`Day ${Math.max(...days)} &middot; `:""}${items.length} ${items.length===1?"entry":"entries"}${last.occurredAt?` &middot; ${fmtDate(last.occurredAt)}`:""}</p></article>`;
+    return `<article class="journey-card" data-journey="${esc(name)}" style="--topic:${t.color};--soft:${t.soft}"><p class="eyebrow">${esc(t.name)}</p><h3>${esc(name)}</h3><p class="journey-last">${esc(last.title)}</p><p class="journey-meta">${days.length?`Day ${Math.max(...days)} &middot; `:""}${items.length} ${items.length===1?"entry":"entries"}${last.occurredAt?` &middot; ${fmtDate(last.occurredAt)}`:""}</p>${(()=>{const p=journeyProgress(items);return p?journeyBar(p):journeyDots(items.length)})()}</article>`;
   }).join("")}</div></section>`;
 }
 function journeyPage(id){
@@ -619,8 +650,9 @@ function journeyPage(id){
   return `<section class="journey-page" style="--topic:${t.color};--soft:${t.soft}">
     <p class="back-link"><a href="${state.returnTo||"#library"}" data-back>Back</a></p>
     <div class="page-head"><div><p class="eyebrow">Journey</p><h1 class="page-title" style="color:${t.color}">${esc(name)}</h1>
-      <p class="journey-facts">${facts.map(f=>`<span>${esc(f)}</span>`).join("")}</p></div></div>
-    <ol class="journey-thread">${rows.map(r=>`<li><a href="#entry/${encodeURIComponent(r.id)}" data-entry="${esc(r.id)}" data-return="#journey/${encodeURIComponent(name)}"><span class="journey-day">${r.day?`Day ${r.day}`:fmtDate(r.occurredAt)||"&mdash;"}</span><span class="journey-copy"><b>${esc(r.title.replace(/^Day\s+\d+:\s*/i,""))}</b><small>${esc(r.excerpt||"")}</small></span>${r.occurredAt?`<time>${fmtDate(r.occurredAt)}</time>`:""}</a></li>`).join("")}</ol>
+      <p class="journey-facts">${facts.map(f=>`<span>${esc(f)}</span>`).join("")}</p>
+      ${(()=>{const p=journeyProgress(rows);return p?`<div class="journey-goal">${journeyBar(p)}<p class="journey-goal-note">${p.left?`${fmtMetric(p.moved,p.unit)} down, ${fmtMetric(p.left,p.unit)} to go.`:"Goal reached."}</p></div>`:journeyDots(rows.length)})()}</div></div>
+    <ol class="journey-thread">${rows.map(r=>`<li><a href="#entry/${encodeURIComponent(r.id)}" data-entry="${esc(r.id)}" data-return="#journey/${encodeURIComponent(name)}"><span class="journey-day">${r.day?`Day ${r.day}`:fmtDate(r.occurredAt)||"&mdash;"}</span><span class="journey-copy"><b>${esc(r.title.replace(/^Day\s+\d+:\s*/i,""))}</b><small>${esc(r.excerpt||"")}</small></span><span class="journey-reading">${typeof r.metric==="number"?fmtMetric(r.metric,rows.map(x=>x.unit).find(Boolean)||""):""}</span>${r.occurredAt?`<time>${fmtDate(r.occurredAt)}</time>`:""}</a></li>`).join("")}</ol>
   </section>`;
 }
 // Tasks lived only as a sidebar on Today and dots on the calendar, so nothing

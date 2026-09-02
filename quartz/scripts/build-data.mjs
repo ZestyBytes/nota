@@ -45,6 +45,7 @@ const TOPICS = {
   life:       { name: "Life", icon: "cup", color: "#2f5d8a", soft: "#dde5ee", ground: "verticals", photo: "", description: "Everyday life, plans and the practical things" },
   selfcare:   { name: "Self care", parent: "life", icon: "heart", color: "#3f6470", soft: "#dde7ea", ground: "wash", photo: "", description: "Looking after the machine: health, mind and upkeep" },
   adhd:       { name: "Attention", parent: "life", icon: "mind", color: "#5b4a9e", soft: "#e5e1f2", ground: "fade", photo: "", description: "Understanding attention and living well" },
+  fitness:    { name: "Fitness", parent: "life", icon: "weights", color: "#2f7a63", soft: "#dcebe5", ground: "band", photo: "", description: "Moving more, and keeping track of whether it is working" },
   habits:     { name: "Habits", parent: "life", icon: "repeat", color: "#6b3f6b", soft: "#e9dfe9", ground: "crosshatch", photo: "assets/posts/eight-japanese-principles-for-habits.jpg", description: "Practices worth repeating, and what makes them stick" },
   music:      { name: "Music", icon: "music", color: "#a13a2e", soft: "#f0e1dd", ground: "ink", photo: "assets/posts/on-repeat.jpg", description: "Listening, playing, and what the speakers are on" },
   playlist:   { name: "Playlist", parent: "music", mode: "listen", icon: "disc", color: "#6b6a2e", soft: "#e9e8d3", ground: "dots", photo: "", description: "Records, podcasts and things worth listening to" },
@@ -202,6 +203,12 @@ function plain(text) {
 
 // YAML gives a Date for an unquoted 2026-09-01 and a string for a quoted one.
 // Everything downstream compares plain YYYY-MM-DD, so flatten both to that.
+function numberOrNull(value) {
+  if (value === undefined || value === null || value === "") return null;
+  const n = Number(value);
+  return Number.isFinite(n) ? n : null;
+}
+
 function dateOnly(value) {
   if (!value) return null;
   if (value instanceof Date) return Number.isNaN(value.getTime()) ? null : value.toISOString().slice(0, 10);
@@ -324,6 +331,11 @@ for (const file of files) {
     // A journey is a thread, not a pile: carry the thread's name and the day
     // number so the app can put its entries back in order.
     journey: unwikilink(data.journey) || "", day: Number(data.day || (String(data.title || "").match(/^Day\s+(\d+)/i)?.[1] ?? 0)) || 0,
+    // A journey that is heading somewhere measurable carries its numbers.
+    // start/target/unit are declared once, on whichever entry is easiest, and
+    // metric is the reading taken at that check-in.
+    metric: numberOrNull(data.metric), start: numberOrNull(data.start),
+    target: numberOrNull(data.target), unit: String(data.unit || "").trim(),
     image, imageAlt, images: allImages(body), attachments: []
   };
   if (data.view === "recipe") {

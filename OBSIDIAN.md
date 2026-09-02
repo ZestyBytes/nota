@@ -222,7 +222,32 @@ link.
 belongs to a thread. Give every entry in the same undertaking the same name,
 and either a `day:` number or a title beginning "Day 5:", and the app builds
 the thread: its own page in day order, how far it has run, and a link on each
-entry to the rest. They are listed under Library, Notes.
+entry to the rest. They have their own tab under Library, Journeys.
+
+A journey heading for a number can show a progress bar. Declare the goal once,
+on whichever entry is easiest (usually the first), and then give each check-in
+its reading:
+
+```yaml
+# on the first entry only
+start: 92
+target: 82
+unit: kg
+metric: 92      # this entry's reading
+```
+
+```yaml
+# every check-in after that
+metric: 89.6
+```
+
+The bar fills from `start` towards `target` and works in either direction, so
+counting down to 82kg and counting up to a 20 mile run both read correctly.
+The latest reading, how far you have come and how far is left all show on the
+journey page, and each reading shows beside its entry in the thread.
+
+A journey with no numbers gets a mark per entry instead, one dot for each
+thing kept, which fills up as the thread grows.
 
 **Scraps.** A note in `scraps/` with `type: scrap` is a thing caught in
 passing rather than a dated entry. The title is the scrap, since that is what

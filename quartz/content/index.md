@@ -8,7 +8,7 @@ tags: [noted]
 
 <nav class="noted-nav"><a class="active" href="./">Home</a><a href="calendar">Calendar</a><a href="library">Library</a><a href="topics">Spaces</a><a href="about">About</a><button onclick="document.querySelector('.search-button')?.click()">Search</button></nav>
 
-<p class="archive-deck">Photographs, stories, ideas, books and projects—kept together so the ordinary days do not disappear.</p>
+<p class="archive-deck">Photographs, stories, ideas, books and projects, kept together so the ordinary days do not disappear.</p>
 
 <button class="archive-search" onclick="document.querySelector('.search-button')?.click()"><span>Search Noted</span><strong>Find a person, place, project or date</strong></button>
 
