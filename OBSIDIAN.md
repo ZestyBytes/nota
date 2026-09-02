@@ -46,6 +46,8 @@ quartz/content/
   quotes/        quotations (standalone or linked to a book)
   books/         reading list (type: reading)
   recipes/       recipe notes (a note with view: recipe)
+  scraps/        short undated captures (type: scrap), shown as a pinboard
+  attachments/   photographs added from Obsidian land here
   tasks/         to-do items (type: task), create this folder yourself
   templates/     starting frontmatter for each type, see below
   private/       fully excluded from the build, whatever `publish` says
@@ -166,6 +168,56 @@ publish: true
 ```
 No body needed.
 
+## Blocks you can use in any body
+
+None of these need frontmatter. They work in a journal entry, a note, a
+recipe, anywhere with a body.
+
+**Photographs.** Attach as many as you like. The first becomes the entry's
+image; more than one becomes a swipe gallery with a counter and dots, and the
+card in any list carries a stacked-corner badge with the count.
+
+**Callouts.** Obsidian's own aside syntax renders as a marked box, in the
+colour of its kind:
+
+```
+> [!warning] Watch the oven
+> It runs hot, so check it ten minutes early.
+```
+
+`note`, `info`, `tip`, `success`, `question`, `warning`, `caution`, `danger`,
+`bug`, `todo`, `example`, `quote` and `summary` are recognised. The title after
+the marker is optional. A plain `>` line is still an ordinary quotation, and
+consecutive `>` lines are now one block rather than one quotation per line.
+
+**Checklists.** A list where every line opens with a box becomes tickable on
+the page, and the ticks are remembered on that device:
+
+```
+- [ ] Passports
+- [x] Charger
+```
+
+A `- [x]` starts ticked. Mix a box line with ordinary bullets and the whole
+list stays an ordinary list, so a stray box in prose changes nothing.
+
+**Video and music.** A YouTube, Vimeo or Spotify link alone on its own line
+becomes the player itself. Only those three, matched by exact host, so a
+pasted link cannot load an arbitrary frame. A link inside a sentence stays a
+link.
+
+**Journeys.** A note in `journeys/` with `type: journey` and a `journey:` name
+belongs to a thread. Give every entry in the same undertaking the same name,
+and either a `day:` number or a title beginning "Day 5:", and the app builds
+the thread: its own page in day order, how far it has run, and a link on each
+entry to the rest. They are listed under Library, Notes.
+
+**Scraps.** A note in `scraps/` with `type: scrap` is a thing caught in
+passing rather than a dated entry. The title is the scrap, since that is what
+shows on the board; anything in the body appears under it in smaller type.
+They are pinned as cards under Library, Scraps, and carry no accession number
+and no stamp. `occurredAt` is optional.
+
 ## Writing from a phone or a MacBook
 
 The vault is a folder in a Git repository, so any device that can edit that
@@ -201,17 +253,56 @@ it.
    `quartz/content`.
 
 Afterwards the loop is: write in Obsidian, then in Working Copy commit and
-push. The site rebuilds in about forty seconds.
+push. The site rebuilds in about forty seconds. The Shortcut below reduces
+that second half to a single tap, and is worth setting up straight away.
+
+#### Three Obsidian settings
 
 Because the git root has to be the vault root, the vault contains the whole
-repository, not just the content folder. Two settings make that comfortable,
-and both are per device since `.obsidian` is deliberately not committed:
+repository, not just the content folder. These make that comfortable, and all
+are per device, since `.obsidian` is deliberately not committed:
 
-- **Settings › Files and links › Excluded files**: add `assets`, `quartz/quartz`,
-  `tests`, `supabase` and `.github` to keep them out of search and suggestions.
 - **Settings › Core plugins › Templates**, then set the template folder to
-  `quartz/content/templates`. The command "Insert template" then offers one
-  ready-made file per content type.
+  `quartz/content/templates`. To reach the command on a phone, go to
+  **Settings › Mobile › Manage toolbar options**, add a command, and pick
+  **Templates: Insert template**. It then sits on the editor toolbar as a
+  button, which is easier than hunting for the command palette.
+- **Settings › Files and links › Excluded files**: add `assets`,
+  `quartz/quartz`, `tests`, `supabase` and `.github` to keep them out of
+  search and suggestions.
+- **Settings › Files and links › Default location for new attachments**:
+  choose **In the folder specified below** and enter
+  `quartz/content/attachments`. Obsidian otherwise drops photographs at the
+  vault root, which here is the repository root. The build finds them either
+  way, but this keeps them with the writing.
+
+#### Publishing in one tap
+
+Working Copy exposes actions to the Shortcuts app, so the whole commit and
+push routine can be one button on the home screen. In **Shortcuts**, make a
+new shortcut named `Publish Nota` and add three actions, in this order:
+
+1. **Pull Repository**, repository `nota-2`
+2. **Commit Repository**, repository `nota-2`, message `Committed on iPhone.`
+3. **Push Repository**, repository `nota-2`
+
+Two settings inside the Commit action matter:
+
+- **What to Commit** must be `modified`, not `staged`. A new note is untracked
+  and would otherwise be left behind, so the shortcut would commit nothing.
+- **Fail when nothing to Commit** off, so tapping the button with nothing
+  written does nothing rather than throwing an error.
+
+Set each repository field explicitly and check it goes solid rather than
+staying a pale "Repository" placeholder; an empty field makes Shortcuts stop
+and ask at run time, once per action. Leave the editor with the back arrow to
+save, then add the shortcut to the home screen.
+
+After that, publishing is: write, tap **Publish Nota**, done. It commits
+everything that has changed, so anything not ready to go live wants
+`publish: false` in its frontmatter rather than being left uncommitted. If the
+shortcut ever fails partway, it will be a merge conflict from writing on two
+devices; open Working Copy, which will say so.
 
 ### MacBook
 

@@ -36,7 +36,7 @@ const TOPICS = {
   playlist: { name: "Playlist", mode: "listen", icon: "disc", color: "#6b6a2e", soft: "#e9e8d3", description: "Records, podcasts and things worth listening to" },
   motoring: { name: "Motoring", icon: "car", color: "#b0472c", soft: "#f2ded6", description: "The Mini, the road, and the days worth the drive" }
 };
-const TYPE_MAP = { journal: "Journal", journey: "Journey", note: "Note", quote: "Quote" };
+const TYPE_MAP = { journal: "Journal", journey: "Journey", note: "Note", quote: "Quote", scrap: "Scrap" };
 
 function walk(dir) {
   const out = [];
@@ -262,7 +262,11 @@ for (const file of files) {
     id: slug, type: TYPE_MAP[data.type], title: data.title,
     excerpt: firstParagraph(body), body: body.trim(), view: data.view || "", topics,
     occurredAt: data.occurredAt || "", createdAt: data.createdAt || data.occurredAt || "",
-    publishedAt: data.publishedAt || "", writing: Boolean(data.writing), image, imageAlt, images: allImages(body), attachments: []
+    publishedAt: data.publishedAt || "", writing: Boolean(data.writing),
+    // A journey is a thread, not a pile: carry the thread's name and the day
+    // number so the app can put its entries back in order.
+    journey: unwikilink(data.journey) || "", day: Number(data.day || (String(data.title || "").match(/^Day\s+(\d+)/i)?.[1] ?? 0)) || 0,
+    image, imageAlt, images: allImages(body), attachments: []
   };
   if (data.view === "recipe") {
     entry.recipe = {

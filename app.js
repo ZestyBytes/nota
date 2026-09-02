@@ -41,22 +41,37 @@ function inline(t){return esc(t)
   // only http(s) links become anchors; anything else stays as its text
   .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g,'<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
   .replace(/\[([^\]]+)\]\(([^)]+)\)/g,"$1")}
-function markdown(src="",shown=[]){
-  const out=[];let para=[],list=[],rows=[],fence=null,lang="";
+function markdown(src="",shown=[],owner=""){
+  const out=[];let para=[],list=[],rows=[],quote=[],fence=null,lang="",box=0;
   const flushPara=()=>{if(para.length){out.push(`<p>${inline(para.join(" "))}</p>`);para=[]}};
-  const flushList=()=>{if(list.length){out.push(`<ul>${list.map(i=>`<li>${inline(i)}</li>`).join("")}</ul>`);list=[]}};
+  // A checklist is a list where every item opens with a box. Mixed lists stay
+  // ordinary, so a stray "- [x]" in prose does not turn the rest into one.
+  const flushList=()=>{
+    if(!list.length)return;
+    const items=list.map(i=>{const m=i.match(/^\[([ xX])\]\s*(.*)$/);return m?{done:m[1]!==" ",text:m[2]}:null});
+    if(items.every(Boolean)){
+      const saved=owner?ticked("check-"+owner):[];
+      out.push(`<ul class="checklist">${items.map((it,n)=>`<li class="${it.done||saved.includes(n)?"got":""}" data-tick="${n}" data-recipe="check-${esc(owner)}"><span class="tick" aria-hidden="true">${icon("check")}</span><span>${inline(it.text)}</span></li>`).join("")}</ul>`);
+    } else out.push(`<ul>${list.map(i=>`<li>${inline(i)}</li>`).join("")}</ul>`);
+    list=[];
+  };
+  const flushQuote=()=>{if(quote.length){out.push(callout(quote));quote=[]}};
+  const flushAll=()=>{flushPara();flushList();flushQuote()};
   for(const raw of String(src).split("\n")){
     const t=raw.trim();
-    if(!t&&fence===null){flushPara();flushList();continue}
+    if(!t&&fence===null){flushAll();continue}
     if(t.startsWith("![")){
-      flushPara();flushList();
+      flushAll();
       const m=t.match(/^!\[([^\]]*)\]\(([^)]+)\)/);
       // the lead image is already shown above the text; the rest belong here
       if(m&&!shown.includes(m[2]))out.push(`<figure class="body-figure"><img src="${esc(m[2])}" alt="${esc(m[1])}" loading="lazy">${m[1]?`<figcaption>${esc(m[1])}</figcaption>`:""}</figure>`);
       continue;
     }
-    if(t.startsWith("#")){flushPara();flushList();out.push(`<h3>${inline(t.replace(/^#+\s*/,""))}</h3>`);continue}
-    if(t.startsWith(">")){flushPara();flushList();out.push(`<blockquote>${inline(t.replace(/^>\s*/,""))}</blockquote>`);continue}
+    if(t.startsWith("#")){flushAll();out.push(`<h3>${inline(t.replace(/^#+\s*/,""))}</h3>`);continue}
+    // Consecutive > lines are one block, so an Obsidian callout keeps its body
+    // instead of becoming a run of one-line quotations.
+    if(t.startsWith(">")){flushPara();flushList();quote.push(t.replace(/^>\s?/,""));continue}
+    flushQuote();
     if(t.startsWith("```")){
       if(fence===null){flushPara();flushList();fence=[];lang=t.slice(3).trim()}
       else{out.push(`<pre class="code"${lang?` data-lang="${esc(lang)}"`:""}><code>${esc(fence.join("\n"))}</code></pre>`);fence=null;lang=""}
@@ -65,12 +80,48 @@ function markdown(src="",shown=[]){
     if(fence!==null){fence.push(raw.replace(/\s+$/,""));continue}
     if(t.startsWith("|")&&t.endsWith("|")){flushPara();flushList();rows.push(t);continue}
     if(rows.length){out.push(table(rows));rows=[]}
-    if(t.startsWith("- ")){flushPara();list.push(t.slice(2));continue}
+    if(t.startsWith("- ")||t.startsWith("* ")){flushPara();list.push(t.slice(2).trim());continue}
+    // A video or a record on a line of its own is meant to be played, not read
+    // as a URL. Anything else keeps being ordinary prose.
+    const player=t.match(/^<?(https?:\/\/\S+?)>?$/)&&embed(t.replace(/^<|>$/g,""));
+    if(player){flushAll();out.push(player);continue}
     flushList();para.push(t);
   }
-  flushPara();flushList();if(rows.length)out.push(table(rows));
+  flushAll();if(rows.length)out.push(table(rows));
   if(fence!==null)out.push(`<pre class="code"><code>${esc(fence.join("\n"))}</code></pre>`);
   return out.join("");
+}
+// Obsidian writes asides as "> [!note] Title". Rendered as a plain quotation
+// the marker showed as literal text, so the one piece of structure the note
+// carried was the one thing that did not survive.
+const CALLOUTS={note:"note",info:"note",tip:"check",success:"check",done:"check",question:"help",warning:"alert",caution:"alert",danger:"alert",bug:"terminal",example:"note",quote:"quote",cite:"quote",abstract:"note",summary:"note",todo:"check",failure:"alert",important:"alert"};
+function callout(lines){
+  const m=(lines[0]||"").match(/^\[!(\w+)\]([+-]?)\s*(.*)$/i);
+  if(!m)return `<blockquote>${lines.map(l=>inline(l)).join("<br>")}</blockquote>`;
+  const kind=m[1].toLowerCase(),title=m[3].trim()||m[1][0].toUpperCase()+m[1].slice(1).toLowerCase();
+  // Lines wrapped in the source are one paragraph, as they are everywhere
+  // else; a blank line inside the callout starts a new one.
+  const paras=[];let cur=[];
+  for(const l of lines.slice(1)){if(l.trim())cur.push(l.trim());else if(cur.length){paras.push(cur.join(" "));cur=[]}}
+  if(cur.length)paras.push(cur.join(" "));
+  const body=paras.map(t=>`<p>${inline(t)}</p>`).join("");
+  return `<aside class="callout callout-${esc(CALLOUTS[kind]?kind:"note")}"><p class="callout-head">${icon(CALLOUTS[kind]||"note")}<b>${esc(title)}</b></p>${body}</aside>`;
+}
+// A YouTube, Vimeo or Spotify link becomes the thing itself. Only these three,
+// and only by exact host, so a pasted link cannot load an arbitrary frame.
+function embed(url){
+  let u;try{u=new URL(url)}catch(error){return ""}
+  const host=u.hostname.replace(/^www\./,"");
+  let src="",kind="video";
+  if(host==="youtu.be")src=`https://www.youtube-nocookie.com/embed/${u.pathname.slice(1)}`;
+  else if(host==="youtube.com"||host==="m.youtube.com"){
+    const id=u.searchParams.get("v")||(u.pathname.startsWith("/shorts/")?u.pathname.split("/")[2]:"");
+    if(id)src=`https://www.youtube-nocookie.com/embed/${id}`;
+  }
+  else if(host==="vimeo.com")src=`https://player.vimeo.com/video/${u.pathname.split("/").filter(Boolean)[0]}`;
+  else if(host==="open.spotify.com"){src=`https://open.spotify.com/embed${u.pathname}`;kind="audio"}
+  if(!src)return "";
+  return `<div class="embed embed-${kind}"><iframe src="${esc(src)}" title="Embedded ${kind}" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>`;
 }
 // A pipe table was printing its pipes as prose; render it as a table.
 function table(rows){
@@ -81,7 +132,7 @@ function table(rows){
   return `<div class="table-wrap"><table><thead><tr>${cells(head).map(c=>`<th>${inline(c)}</th>`).join("")}</tr></thead><tbody>${rest.map(r=>`<tr>${cells(r).map(c=>`<td>${inline(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
 }
 function topic(id){return state.data.topics[id]||{name:id,color:"#777",soft:"#eee"}}
-function icon(name){const paths={leaf:'<path d="M20 4C12 4 6 8 6 15c0 3 2 5 5 5 7 0 9-8 9-16Z"/><path d="M5 21c3-6 7-9 12-12"/>',music:'<path d="M9 18V5l10-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/>',terminal:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="m7 9 3 3-3 3m6 0h4"/>',mind:'<path d="M12 21s-8-4.5-8-11a4 4 0 0 1 7-2.6A4 4 0 0 1 20 10c0 6.5-8 11-8 11Z"/><path d="M7 13h3l1.5-3 2 6 1.5-3h3"/>',book:'<path d="M4 5a3 3 0 0 1 3-3h12v18H7a3 3 0 0 1 0-6h12"/>',home:'<path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10M9 20v-6h6v6"/>',fork:'<path d="M7 3v7m-3-7v4a3 3 0 0 0 6 0V3M7 10v11M17 3v18m0-18c3 3 3 8 0 10"/>',paperclip:'<path d="m21 11-8.5 8.5a6 6 0 0 1-8.5-8.5l9-9a4 4 0 0 1 5.7 5.7l-9 9a2 2 0 0 1-2.9-2.9L15 5.6"/>',quote:'<path d="M9 11H5a4 4 0 0 1 4-4v8a4 4 0 0 1-4 4M19 11h-4a4 4 0 0 1 4-4v8a4 4 0 0 1-4 4"/>',note:'<path d="M4 3h16v18H4zM8 8h8M8 12h8M8 16h5"/>',check:'<path d="m5 12 5 5 9-9"/>',photos:'<rect x="7" y="3" width="14" height="14" rx="1.5"/><path d="M17 21H4.5A1.5 1.5 0 0 1 3 19.5V7"/>',car:'<path d="M3 13.5h18"/><path d="M5 13.5 6.8 8A2 2 0 0 1 8.7 6.6h6.6A2 2 0 0 1 17.2 8L19 13.5"/><path d="M3.6 13.5v3.2a1 1 0 0 0 1 1h14.8a1 1 0 0 0 1-1v-3.2"/><circle cx="7.6" cy="17.6" r="1.5"/><circle cx="16.4" cy="17.6" r="1.5"/>',disc:'<circle cx="12" cy="12" r="8.6"/><circle cx="12" cy="12" r="2.3"/><path d="M12 3.4a8.6 8.6 0 0 1 8.6 8.6"/>',repeat:'<path d="M4 9.6A4.6 4.6 0 0 1 8.6 5h9"/><path d="m14.8 2.4 2.9 2.6-2.9 2.6"/><path d="M20 14.4A4.6 4.6 0 0 1 15.4 19h-9"/><path d="m9.2 16.4-2.9 2.6 2.9 2.6"/>',heart:'<path d="M12 20.3s-7.6-4.4-7.6-10a4.2 4.2 0 0 1 7.6-2.6 4.2 4.2 0 0 1 7.6 2.6c0 5.6-7.6 10-7.6 10Z"/>',cup:'<path d="M5 8.4h11v5.8a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4Z"/><path d="M16 9.8h2.2a2.3 2.3 0 0 1 0 4.6H16"/><path d="M7.6 4.4v1.9M11 3.9v2.4M14.4 4.4v1.9"/>'};return `<svg class="line-icon" viewBox="0 0 24 24" aria-hidden="true">${paths[name]||paths.note}</svg>`}
+function icon(name){const paths={leaf:'<path d="M20 4C12 4 6 8 6 15c0 3 2 5 5 5 7 0 9-8 9-16Z"/><path d="M5 21c3-6 7-9 12-12"/>',music:'<path d="M9 18V5l10-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/>',terminal:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="m7 9 3 3-3 3m6 0h4"/>',mind:'<path d="M12 21s-8-4.5-8-11a4 4 0 0 1 7-2.6A4 4 0 0 1 20 10c0 6.5-8 11-8 11Z"/><path d="M7 13h3l1.5-3 2 6 1.5-3h3"/>',book:'<path d="M4 5a3 3 0 0 1 3-3h12v18H7a3 3 0 0 1 0-6h12"/>',home:'<path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10M9 20v-6h6v6"/>',fork:'<path d="M7 3v7m-3-7v4a3 3 0 0 0 6 0V3M7 10v11M17 3v18m0-18c3 3 3 8 0 10"/>',paperclip:'<path d="m21 11-8.5 8.5a6 6 0 0 1-8.5-8.5l9-9a4 4 0 0 1 5.7 5.7l-9 9a2 2 0 0 1-2.9-2.9L15 5.6"/>',quote:'<path d="M9 11H5a4 4 0 0 1 4-4v8a4 4 0 0 1-4 4M19 11h-4a4 4 0 0 1 4-4v8a4 4 0 0 1-4 4"/>',note:'<path d="M4 3h16v18H4zM8 8h8M8 12h8M8 16h5"/>',check:'<path d="m5 12 5 5 9-9"/>',photos:'<rect x="7" y="3" width="14" height="14" rx="1.5"/><path d="M17 21H4.5A1.5 1.5 0 0 1 3 19.5V7"/>',car:'<path d="M3 13.5h18"/><path d="M5 13.5 6.8 8A2 2 0 0 1 8.7 6.6h6.6A2 2 0 0 1 17.2 8L19 13.5"/><path d="M3.6 13.5v3.2a1 1 0 0 0 1 1h14.8a1 1 0 0 0 1-1v-3.2"/><circle cx="7.6" cy="17.6" r="1.5"/><circle cx="16.4" cy="17.6" r="1.5"/>',disc:'<circle cx="12" cy="12" r="8.6"/><circle cx="12" cy="12" r="2.3"/><path d="M12 3.4a8.6 8.6 0 0 1 8.6 8.6"/>',repeat:'<path d="M4 9.6A4.6 4.6 0 0 1 8.6 5h9"/><path d="m14.8 2.4 2.9 2.6-2.9 2.6"/><path d="M20 14.4A4.6 4.6 0 0 1 15.4 19h-9"/><path d="m9.2 16.4-2.9 2.6 2.9 2.6"/>',heart:'<path d="M12 20.3s-7.6-4.4-7.6-10a4.2 4.2 0 0 1 7.6-2.6 4.2 4.2 0 0 1 7.6 2.6c0 5.6-7.6 10-7.6 10Z"/>',cup:'<path d="M5 8.4h11v5.8a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4Z"/><path d="M16 9.8h2.2a2.3 2.3 0 0 1 0 4.6H16"/><path d="M7.6 4.4v1.9M11 3.9v2.4M14.4 4.4v1.9"/>',alert:'<path d="M12 3.6 21 19H3Z"/><path d="M12 9.6v4.2"/><path d="M12 16.6h.01"/>',help:'<circle cx="12" cy="12" r="8.6"/><path d="M9.6 9.6a2.5 2.5 0 0 1 4.8.8c0 1.7-2.4 1.9-2.4 3.4"/><path d="M12 17.2h.01"/>'};return `<svg class="line-icon" viewBox="0 0 24 24" aria-hidden="true">${paths[name]||paths.note}</svg>`}
 function chips(ids=[]){return ids.map(id=>{const t=topic(id);return `<span class="chip" style="--topic:${t.color};--soft:${t.soft}">${esc(t.name)}</span>`}).join("")}
 // Specimen-label date: 01 SEP 2026. The card had no date at all before.
 const MONTHS=["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
@@ -105,11 +156,11 @@ function cardBlocks(body=""){
   for(const b of blocks){if(b.startsWith("## ")||!cards.length)cards.push(b);else cards[cards.length-1]+="\n\n"+b}
   return cards;
 }
-function cardDeck(body,shown=[]){
+function cardDeck(body,shown=[],owner=""){
   const cards=cardBlocks(body);
-  if(cards.length<2)return `<div class="detail-body">${markdown(body,shown)}</div>`;
+  if(cards.length<2)return `<div class="detail-body">${markdown(body,shown,owner)}</div>`;
   return `<div class="deck-wrap"><div class="deck" tabindex="0" role="group" aria-label="Swipe through ${cards.length} cards">${
-    cards.map((c,i)=>`<article class="deck-card"><span class="deck-no">${String(i+1).padStart(2,"0")} / ${String(cards.length).padStart(2,"0")}</span><div class="deck-copy">${markdown(c,shown)}</div></article>`).join("")
+    cards.map((c,i)=>`<article class="deck-card"><span class="deck-no">${String(i+1).padStart(2,"0")} / ${String(cards.length).padStart(2,"0")}</span><div class="deck-copy">${markdown(c,shown,owner)}</div></article>`).join("")
   }</div><div class="deck-dots" aria-hidden="true">${cards.map((_,i)=>`<i class="${i?"":"on"}"></i>`).join("")}</div></div>`;
 }
 // `view: playlist` turns each bullet into a numbered row. An italic tail on
@@ -172,9 +223,10 @@ function entryPage(id){
     <div class="entry-page-meta"><span class="type-label">${esc(e.type||"Task")}</span>${date?`<span class="entry-date">${date}</span>`:""}${e.publishedAt||!e.type||e.type==="Task"?"":`<span class="stamp stamp-private">private</span>`}<span class="acc-no acc-no-page">No. ${accNo(e.id)}</span></div>
     ${e.images?.length>1?gallery(e.images):e.image?`<img class="detail-image" src="${e.image}" alt="${esc(e.imageAlt||"")}">`:""}
     <div class="chips">${chips(e.topics)}</div>
+    ${e.journey?(()=>{const rows=journeyEntries(e.journey),n=rows.findIndex(r=>r.id===e.id)+1;return `<p class="journey-of"><a href="#journey/${encodeURIComponent(e.journey)}">${esc(e.journey)}</a><span>${n} of ${rows.length}</span></p>`})():""}
     <h1 class="entry-page-title">${e.type==="Quote"?`&ldquo;${esc(e.title)}&rdquo;`:esc(e.title)}</h1>
     ${e.author?`<p class="entry-page-author">${esc(e.author)}</p>`:""}
-    ${(()=>{const shown=e.images?.length>1?e.images.map(i=>i.src):[e.image];return e.recipe?`<div class="detail-body recipe-body">${recipeBody(e)}</div>`:e.view==="cards"&&e.body?cardDeck(e.body,shown):`<div class="detail-body">${e.body?(e.view==="playlist"?playlistBody(e.body):markdown(e.body,shown)):`<p>${esc(e.excerpt||"Saved in your Nota archive.")}</p>`}</div>`})()}
+    ${(()=>{const shown=e.images?.length>1?e.images.map(i=>i.src):[e.image];return e.recipe?`<div class="detail-body recipe-body">${recipeBody(e)}</div>`:e.view==="cards"&&e.body?cardDeck(e.body,shown,e.id):`<div class="detail-body">${e.body?(e.view==="playlist"?playlistBody(e.body):markdown(e.body,shown,e.id)):`<p>${esc(e.excerpt||"Saved in your Nota archive.")}</p>`}</div>`})()}
     ${(()=>{const back=backlinks(e);return back.length?`<section class="backlinks"><h2 class="section-title">Mentioned in</h2><ul>${back.map(b=>`<li><a href="#entry/${encodeURIComponent(b.id)}">${esc(b.title)}</a><small>${esc(b.type)}${b.occurredAt?` &middot; ${esc(fmtDate(b.occurredAt))}`:""}</small></li>`).join("")}</ul></section>`:""})()}
     ${e.attachments?.length?`<div class="attachment-list"><p class="eyebrow">Attachments</p>${e.attachments.map((a,i)=>`<div>${icon("paperclip")}<span><b>${esc(a.name)}</b><small>${esc(a.kind)} &middot; ${esc(a.size)}</small></span><button type="button" data-view-attachment="${i}" data-entry-id="${e.id}">View</button></div>`).join("")}</div>`:""}
   </section>`;
@@ -233,8 +285,8 @@ function todayWidget(){
 // stable for the whole day, different tomorrow
 function dayIndex(n){const d=new Date(todayKey+"T12:00:00");return Math.floor((d-new Date(d.getFullYear(),0,0))/864e5)%n}
 function pageHead(kicker,title,lede=""){return `<div class="page-head"><div><p class="eyebrow">${kicker}</p><h1 class="page-title">${title}</h1>${lede?`<p class="lede">${lede}</p>`:""}</div></div>`}
-function today(){const entries=state.data.entries.filter(e=>e.occurredAt===todayKey),lastYear=`${now.getFullYear()-1}-${todayKey.slice(5)}`,memory=state.data.entries.find(e=>e.occurredAt===lastYear),quote=state.data.entries.find(e=>e.type==="Quote"),label=now.toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"});const recent=entries.length?[]:[...state.data.entries].sort((a,b)=>(b.occurredAt||"").localeCompare(a.occurredAt||"")).slice(0,3);return `<section><div class="page-head"><div><p class="eyebrow">A record of a life</p><h1 class="page-title">Today</h1></div>${todayWidget()}</div>${memory?`<div class="memory">On this day last year: <a href="#" data-entry="${memory.id}">${esc(memory.title)}</a></div>`:""}<div class="today-grid"><div><h2 class="section-title">Entries</h2>${entries.length?`<div class="entry-list">${entries.map(e=>entryCard(e)).join("")}</div>`:recent.length?`<p class="empty small">Nothing recorded today yet. Here's what's most recent.</p><div class="entry-list">${recent.map(e=>entryCard(e)).join("")}</div>`:`<p class="empty">Nothing recorded yet. Publish your first entry from Obsidian to see it here.</p>`}</div><aside><h2 class="section-title">To-do</h2><div class="tasks">${state.data.tasks.length?state.data.tasks.map(taskRow).join(""):`<p class="empty small">Nothing waiting.</p>`}</div>${quote?`<div class="quote-card"><p class="eyebrow">A thought to keep</p><blockquote>“${esc(quote.title)}”</blockquote><cite>${esc(quote.author)}</cite></div>`:""}</aside></div></section>`}
-function taskRow(t){const tp=topic(t.topics[0]);return `<div class="task ${t.completedAt?"done":""} ${t.note?"has-note":""}" ${t.note?`data-entry="${esc(t.id)}"`:""}><span class="task-mark" aria-hidden="true">${t.completedAt?icon("check"):""}</span><span class="task-copy"><span class="task-title">${esc(t.title)}</span>${t.note?`<small class="task-note">${esc(t.note)}</small>`:""}${t.dueAt&&!t.completedAt?`<small class="task-due">${t.dueAt<=todayKey?"Due today":"Due "+esc(fmtDate(t.dueAt))}</small>`:""}</span><span class="chip" style="--topic:${tp.color};--soft:${tp.soft}">${esc(tp.name)}</span></div>`}
+function today(){const entries=state.data.entries.filter(e=>e.occurredAt===todayKey),lastYear=`${now.getFullYear()-1}-${todayKey.slice(5)}`,memory=state.data.entries.find(e=>e.occurredAt===lastYear),quote=state.data.entries.find(e=>e.type==="Quote"),label=now.toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"});const recent=entries.length?[]:[...state.data.entries].sort((a,b)=>(b.occurredAt||"").localeCompare(a.occurredAt||"")).slice(0,3);return `<section><div class="page-head"><div><p class="eyebrow">A record of a life</p><h1 class="page-title">Today</h1></div>${todayWidget()}</div>${memory?`<div class="memory">On this day last year: <a href="#" data-entry="${memory.id}">${esc(memory.title)}</a></div>`:""}<div class="today-grid"><div><h2 class="section-title">Entries</h2>${entries.length?`<div class="entry-list">${entries.map(e=>entryCard(e)).join("")}</div>`:recent.length?`<p class="empty small">Nothing recorded today yet. Here's what's most recent.</p><div class="entry-list">${recent.map(e=>entryCard(e)).join("")}</div>`:`<p class="empty">Nothing recorded yet. Publish your first entry from Obsidian to see it here.</p>`}</div><aside><h2 class="section-title"><a href="#tasks">To-do</a><span class="see-all">All</span></h2><div class="tasks">${state.data.tasks.length?state.data.tasks.map(taskRow).join(""):`<p class="empty small">Nothing waiting.</p>`}</div>${quote?`<div class="quote-card"><p class="eyebrow">A thought to keep</p><blockquote>“${esc(quote.title)}”</blockquote><cite>${esc(quote.author)}</cite></div>`:""}</aside></div></section>`}
+function taskRow(t){const tp=topic(t.topics[0]);return `<div class="task ${t.completedAt?"done":""} ${t.note?"has-note":""}" ${t.note?`data-entry="${esc(t.id)}"`:""}><span class="task-mark" aria-hidden="true">${t.completedAt?icon("check"):""}</span><span class="task-copy"><span class="task-title">${esc(t.title)}</span>${t.note?`<small class="task-note">${esc(t.note)}</small>`:""}${t.dueAt&&!t.completedAt?`<small class="task-due${t.dueAt<todayKey?" late":""}">${t.dueAt<todayKey?"Overdue, was due "+esc(fmtDate(t.dueAt)):t.dueAt===todayKey?"Due today":"Due "+esc(fmtDate(t.dueAt))}</small>`:""}</span><span class="chip" style="--topic:${tp.color};--soft:${tp.soft}">${esc(tp.name)}</span></div>`}
 // Everything that carries a date belongs on the calendar, not only entries:
 // a task is due on a day too, and a day with four things should look busier
 // than a day with one.
@@ -311,7 +363,18 @@ function galleryGrid(){
     return `<button class="shot ${n>1?"is-set":""}" data-entry="${esc(e.id)}" style="--topic:${topic(e.topics?.[0]).color}" aria-label="${esc(e.title)}, ${n} photograph${n>1?"s":""}"><img src="${esc(cover.src)}" alt="${esc(cover.alt||"")}" loading="lazy" decoding="async">${n>1?`<span class="shot-count">${icon("photos")}${n}</span>`:""}<span class="shot-cap">${esc(e.title)}</span></button>`;
   }).join("")}</div>`;
 }
-function library(){let body="";if(state.library==="gallery")body=galleryGrid();else if(state.library==="reading")body=`<div class="book-grid">${state.data.books.map((b,i)=>`<article class="book ${b.cover?"":"has-plate"}" data-book="${b.id}"><span class="acc-no">No. ${accNo(b.id)}</span>${b.cover?`<img class="book-cover" src="${b.cover}" alt="" loading="lazy">`:coverPlate(b)}<div class="book-copy"><h3>${esc(b.title)}</h3><p>${esc(b.author)}</p><div class="book-links"><span>${(b.notes||[]).length} notes</span><span>${(b.quotes||[]).length} quotes</span></div><span class="status">${esc(b.status.replaceAll("-"," "))}${b.status==="reading"?` · ${b.progress}%`:""}</span><div class="progress"><i style="width:${b.progress}%"></i></div></div></article>`).join("")||`<p class="empty">Your library is empty.</p>`}</div>`;else if(state.library==="quotes")body=`<div class="quote-list">${[...state.data.entries.filter(e=>e.type==="Quote"),...state.data.books.flatMap(b=>(b.quotes||[]).map(q=>({...q,title:q.text,author:b.title,bookId:b.id})))].map(e=>`<blockquote class="library-quote" ${e.bookId?`data-book="${e.bookId}"`:`data-entry="${e.id}"`}>“${esc(e.title)}”<cite>${esc(e.author)}${e.page?` · ${esc(e.page)}`:""}</cite></blockquote>`).join("")||`<p class="empty">No quotations kept yet.</p>`}</div>`;else body=`<div class="entry-list">${state.data.entries.filter(e=>["Note","Journal","Journey"].includes(e.type)).map(e=>entryCard(e)).join("")||`<p class="empty">No notes kept yet.</p>`}</div>`;return `<section>${pageHead("Things worth keeping","Library","Books hold their own reading notes and quotations while each quote remains discoverable across Nota.")}<div class="library-tabs">${["reading","quotes","notes","gallery"].map(x=>`<button class="filter ${state.library===x?"active":""}" data-library="${x}">${x[0].toUpperCase()+x.slice(1)}</button>`).join("")}</div>${body}</section>`}
+// A scrap is a thing caught in passing: a line overheard, a thought, something
+// to look up. It carries no date and no shape, so it is pinned as a card on a
+// board rather than filed as a dated entry, and reads at a glance.
+function scrapBoard(){
+  const scraps=state.data.entries.filter(e=>e.type==="Scrap");
+  if(!scraps.length)return `<p class="empty">Nothing pinned yet. A scrap is a note in <code>scraps/</code> with <code>type: scrap</code>.</p>`;
+  return `<div class="scrap-board">${scraps.map((e,i)=>{
+    const t=topic(e.topics?.[0]),date=fmtDate(e.occurredAt||e.createdAt);
+    return `<article class="scrap tilt-${i%4}" data-entry="${esc(e.id)}" style="--topic:${t.color};--soft:${t.soft}"><span class="pin" aria-hidden="true"></span><p class="scrap-text">${inline(e.title||"")}</p>${e.excerpt&&e.excerpt!==e.title?`<p class="scrap-note">${esc(e.excerpt)}</p>`:""}<p class="scrap-foot">${e.topics?.length?`<span>${esc(t.name)}</span>`:"<span></span>"}${date?`<time>${date}</time>`:""}</p></article>`;
+  }).join("")}</div>`;
+}
+function library(){let body="";if(state.library==="gallery")body=galleryGrid();else if(state.library==="reading")body=`<div class="book-grid">${state.data.books.map((b,i)=>`<article class="book ${b.cover?"":"has-plate"}" data-book="${b.id}"><span class="acc-no">No. ${accNo(b.id)}</span>${b.cover?`<img class="book-cover" src="${b.cover}" alt="" loading="lazy">`:coverPlate(b)}<div class="book-copy"><h3>${esc(b.title)}</h3><p>${esc(b.author)}</p><div class="book-links"><span>${(b.notes||[]).length} notes</span><span>${(b.quotes||[]).length} quotes</span></div><span class="status">${esc(b.status.replaceAll("-"," "))}${b.status==="reading"?` · ${b.progress}%`:""}</span><div class="progress"><i style="width:${b.progress}%"></i></div></div></article>`).join("")||`<p class="empty">Your library is empty.</p>`}</div>`;else if(state.library==="quotes")body=`<div class="quote-list">${[...state.data.entries.filter(e=>e.type==="Quote"),...state.data.books.flatMap(b=>(b.quotes||[]).map(q=>({...q,title:q.text,author:b.title,bookId:b.id})))].map(e=>`<blockquote class="library-quote" ${e.bookId?`data-book="${e.bookId}"`:`data-entry="${e.id}"`}>“${esc(e.title)}”<cite>${esc(e.author)}${e.page?` · ${esc(e.page)}`:""}</cite></blockquote>`).join("")||`<p class="empty">No quotations kept yet.</p>`}</div>`;else if(state.library==="scraps")body=scrapBoard();else if(state.library==="writing")body=writingList();else body=`${journeyStrip()}<div class="entry-list">${state.data.entries.filter(e=>["Note","Journal","Journey"].includes(e.type)).map(e=>entryCard(e)).join("")||`<p class="empty">No notes kept yet.</p>`}</div>`;return `<section>${pageHead("Things worth keeping","Library","Books hold their own reading notes and quotations while each quote remains discoverable across Nota.")}<div class="library-tabs">${["reading","writing","quotes","notes","scraps","gallery"].map(x=>`<button class="filter ${state.library===x?"active":""}" data-library="${x}">${x[0].toUpperCase()+x.slice(1)}</button>`).join("")}</div>${body}</section>`}
 // A topic may hold sub-topics: Self care covers ADHD, and later therapy,
 // fitness, the dentist. A parent counts and shows its children's items too.
 function childTopics(id){return Object.entries(state.data.topics).filter(([,t])=>t.parent===id).map(([slug])=>slug)}
@@ -370,12 +433,70 @@ function writing(){
   // Writing is a selection, not a second copy of the archive. An entry joins
   // it by saying so with `writing: true`; publishedAt keeps its own job of
   // marking what is not held back.
+  return `<section class="writing-page">${pageHead("Selected writing","Writing","Pieces chosen from the archive, rather than everything in it.")}${writingList()}</section>`;
+}
+// The bottom bar holds five routes and is full, so Writing had no way in on a
+// phone: it lived only in the desktop top nav. The selection belongs with the
+// other kept things anyway, so Library carries it as a tab and #writing stays
+// a route of its own for anything already linking to it.
+function writingList(){
   const items=state.data.entries.filter(e=>e.writing)
     .sort((a,b)=>(b.occurredAt||b.createdAt||"").localeCompare(a.occurredAt||a.createdAt||""));
-  return `<section class="writing-page">${pageHead("Selected writing","Writing","Pieces chosen from the archive, rather than everything in it.")}
-    ${items.length
-      ? `<div class="entry-list">${items.map(e=>entryCard(e)).join("")}</div>`
-      : `<p class="empty">Nothing selected yet. Add <code>writing: true</code> to a note's frontmatter and it will appear here.</p>`}
+  return items.length
+    ? `<div class="entry-list">${items.map(e=>entryCard(e)).join("")}</div>`
+    : `<p class="empty">Nothing selected yet. Add <code>writing: true</code> to a note's frontmatter and it will appear here.</p>`;
+}
+// A journey is the one type whose whole point is sequence, and the app was
+// showing its entries as unrelated notes. Gather them by thread name, in day
+// order, so day 5 and day 12 are visibly the same undertaking.
+function journeyName(id){return decodeURIComponent(id||"")}
+function journeyEntries(name){
+  return state.data.entries.filter(e=>e.journey===name)
+    .sort((a,b)=>(a.day||0)-(b.day||0)||(a.occurredAt||"").localeCompare(b.occurredAt||""));
+}
+function journeys(){
+  const names=[...new Set(state.data.entries.map(e=>e.journey).filter(Boolean))];
+  return names.map(name=>{const rows=journeyEntries(name);return {name,rows,last:rows[rows.length-1]}});
+}
+function journeyStrip(){
+  const rows=journeys();
+  if(!rows.length)return "";
+  return `<section class="journey-strip"><h2 class="section-title">Journeys</h2><div class="journey-cards">${rows.map(({name,rows:items,last})=>{
+    const t=topic(items[0].topics?.[0]),days=items.map(i=>i.day).filter(Boolean);
+    return `<article class="journey-card" data-journey="${esc(name)}" style="--topic:${t.color};--soft:${t.soft}"><p class="eyebrow">${esc(t.name)}</p><h3>${esc(name)}</h3><p class="journey-last">${esc(last.title)}</p><p class="journey-meta">${days.length?`Day ${Math.max(...days)} &middot; `:""}${items.length} ${items.length===1?"entry":"entries"}${last.occurredAt?` &middot; ${fmtDate(last.occurredAt)}`:""}</p></article>`;
+  }).join("")}</div></section>`;
+}
+function journeyPage(id){
+  const name=journeyName(id),rows=journeyEntries(name);
+  if(!rows.length)return `<section>${pageHead("Journey","Not found","")}<p class="empty">No journey by that name.</p></section>`;
+  const t=topic(rows[0].topics?.[0]),days=rows.map(r=>r.day).filter(Boolean);
+  const span=(()=>{const dates=rows.map(r=>r.occurredAt).filter(Boolean).sort();if(!dates.length)return "";
+    const from=new Date(dates[0]+"T12:00:00"),to=new Date(dates[dates.length-1]+"T12:00:00");
+    const weeks=Math.round((to-from)/6048e5);return weeks>0?`${weeks} week${weeks===1?"":"s"} so far`:"started this week"})();
+  const facts=[days.length?`Day ${Math.max(...days)}`:"",`${rows.length} ${rows.length===1?"entry":"entries"}`,span].filter(Boolean);
+  return `<section class="journey-page" style="--topic:${t.color};--soft:${t.soft}">
+    <p class="back-link"><a href="${state.returnTo||"#library"}" data-back>Back</a></p>
+    <div class="page-head"><div><p class="eyebrow">Journey</p><h1 class="page-title" style="color:${t.color}">${esc(name)}</h1>
+      <p class="journey-facts">${facts.map(f=>`<span>${esc(f)}</span>`).join("")}</p></div></div>
+    <ol class="journey-thread">${rows.map(r=>`<li><a href="#entry/${encodeURIComponent(r.id)}"><span class="journey-day">${r.day?`Day ${r.day}`:fmtDate(r.occurredAt)||"&mdash;"}</span><span class="journey-copy"><b>${esc(r.title.replace(/^Day\s+\d+:\s*/i,""))}</b><small>${esc(r.excerpt||"")}</small></span>${r.occurredAt?`<time>${fmtDate(r.occurredAt)}</time>`:""}</a></li>`).join("")}</ol>
+  </section>`;
+}
+// Tasks lived only as a sidebar on Today and dots on the calendar, so nothing
+// showed what was overdue, and nothing kept what was done.
+function taskPage(){
+  const all=state.data.tasks,open=all.filter(t=>!t.completedAt),done=all.filter(t=>t.completedAt);
+  const overdue=open.filter(t=>t.dueAt&&t.dueAt<todayKey);
+  const today=open.filter(t=>t.dueAt===todayKey);
+  const ahead=open.filter(t=>t.dueAt&&t.dueAt>todayKey).sort((a,b)=>a.dueAt.localeCompare(b.dueAt));
+  const undated=open.filter(t=>!t.dueAt);
+  const group=(label,rows,cls="")=>rows.length?`<section class="task-group ${cls}"><h2 class="section-title">${label}<span class="task-count">${rows.length}</span></h2><div class="tasks">${rows.map(taskRow).join("")}</div></section>`:"";
+  return `<section class="tasks-page">${pageHead("Still to do","To-do","Everything waiting, what is late, and what has been seen off.")}
+    ${open.length||done.length?"":`<p class="empty">Nothing waiting. Add a note in <code>tasks/</code> with <code>type: task</code>.</p>`}
+    ${group("Overdue",overdue,"overdue")}
+    ${group("Today",today)}
+    ${group("Coming up",ahead)}
+    ${group("No date",undated)}
+    ${done.length?`<section class="task-group"><details class="done-tasks"><summary><span class="section-title">Done<span class="task-count">${done.length}</span></span></summary><div class="tasks">${done.map(taskRow).join("")}</div></details></section>`:""}
   </section>`;
 }
 function topicView(id){const t=topic(id),kids=childTopics(id),items=state.data.entries.filter(e=>inTopic(e,id)),books=state.data.books.filter(b=>inTopic(b,id));let body=`<div class="entry-list">${items.map(e=>entryCard(e)).join("")||(books.length?"":`<p class="empty">Nothing in this topic yet.</p>`)}</div>`;if(t.mode==="listen"){
@@ -386,7 +507,7 @@ function topicView(id){const t=topic(id),kids=childTopics(id),items=state.data.e
   if(t.mode==="tech")body=`<div class="topic-mode tech-mode"><div class="mode-note"><p>Technical notes keep the same Nota structure, with files and dated logs presented in a more useful form.</p></div>${body}</div>`;if(t.mode==="recipes")body=`<div class="topic-mode recipe-mode">${items.map(e=>e.recipe?`<article class="recipe-card" data-entry="${e.id}">${e.image?`<img src="${e.image}" alt="${esc(e.imageAlt)}">`:""}<div><p class="eyebrow">Recipe note</p><h2>${esc(e.title)}</h2><div class="recipe-facts"><span>${esc(e.recipe.time)}</span><span>Serves ${esc(e.recipe.serves)}</span><span>${esc(e.recipe.difficulty)}</span></div><p>${esc(e.excerpt)}</p><h3>You'll need</h3><p>${e.recipe.ingredients.map(esc).join(" · ")}</p></div></article>`:entryCard(e)).join("")||`<p class="empty">No recipes yet.</p>`}</div>`;const bookSection=books.length?`<h2 class="section-title">Books</h2><div class="book-grid">${books.map((b,i)=>`<article class="book ${b.cover?"":"has-plate"}" data-book="${b.id}"><span class="acc-no">No. ${accNo(b.id)}</span>${b.cover?`<img class="book-cover" src="${b.cover}" alt="" loading="lazy">`:coverPlate(b)}<div class="book-copy"><h3>${esc(b.title)}</h3><p>${esc(b.author)}</p><span class="status">${esc(b.status.replaceAll("-"," "))}${b.status==="reading"?` · ${b.progress}%`:""}</span><div class="progress"><i style="width:${b.progress}%"></i></div></div></article>`).join("")}</div>`:"";return `<section class="topic-page" style="--topic:${t.color};--soft:${t.soft}"><p class="back-link"><a href="${state.returnTo||"#topics"}" data-back>Back</a></p>${t.icon?`<span class="topic-motif topic-motif-page" aria-hidden="true">${icon(t.icon)}</span>`:`<span class="topic-mark topic-mark-page" aria-hidden="true">${esc(t.name[0])}</span>`}<div class="page-head"><div><p class="eyebrow">Topic${t.mode?" · tailored view":""}</p><h1 class="page-title" style="color:${t.color}">${esc(t.name)}</h1><p class="lede">${esc(t.description)}</p>${kids.length?`<p class="topic-kids topic-kids-page">${kids.map(k=>`<span class="kid" data-topic="${k}" style="--topic:${state.data.topics[k].color}">${esc(state.data.topics[k].name)}</span>`).join("")}</p>`:""}${t.parent&&state.data.topics[t.parent]?`<p class="topic-parent">Part of <span class="kid" data-topic="${t.parent}" style="--topic:${state.data.topics[t.parent].color}">${esc(state.data.topics[t.parent].name)}</span></p>`:""}</div></div>${body}${bookSection}</section>`}
 function authScreen(){return `<section class="auth-shell"><div class="auth-intro"><p class="eyebrow">Your private archive</p><h1 class="page-title">Welcome to nota.</h1><p class="lede">Days, thoughts, books and things worth keeping, written in Obsidian and read here.</p></div><form id="auth-form" class="auth-card"><h2>Sign in</h2><div class="field"><label>Email</label><input name="email" type="email" autocomplete="email" required></div><div class="field"><label>Password</label><input name="password" type="password" autocomplete="current-password" minlength="8" required></div><p class="form-error" role="alert"></p><button class="submit" name="intent" value="signin">Sign in</button><p class="auth-note">This is a private Nota archive.</p></form></section>`}
 function userTools(){return state.user?`<footer class="user-tools"><button data-action="logout">Sign out</button></footer>`:""}
-function render(){const app=document.getElementById("app"),hash=location.hash.slice(1)||"today",[route,arg]=hash.split("/"),isPublic=route==="writing";document.body.classList.toggle("auth-view",NotaBackend.configured&&!state.user&&!isPublic);if(state.booting){app.innerHTML=skeletonPage();return}if(NotaBackend.configured&&!state.user&&!isPublic){app.innerHTML=authScreen();return}state.route=route;document.querySelectorAll(".main-nav a,.mobile-nav a").forEach(a=>a.classList.toggle("active",a.getAttribute("href")===`#${route}`));const page=route==="calendar"?calendar():route==="library"?library():route==="entry"?entryPage(decodeURIComponent(arg||"")):route==="topics"?(arg?topicView(arg):topics()):route==="writing"?writing():route==="search"?search():today();app.innerHTML=page+userTools();app.focus({preventScroll:true});afterRender(route,Boolean(route==="entry"||(route==="topics"&&arg)))}
+function render(){const app=document.getElementById("app"),hash=location.hash.slice(1)||"today",[route,arg]=hash.split("/"),isPublic=route==="writing";document.body.classList.toggle("auth-view",NotaBackend.configured&&!state.user&&!isPublic);if(state.booting){app.innerHTML=skeletonPage();return}if(NotaBackend.configured&&!state.user&&!isPublic){app.innerHTML=authScreen();return}state.route=route;document.querySelectorAll(".main-nav a,.mobile-nav a").forEach(a=>a.classList.toggle("active",a.getAttribute("href")===`#${route}`));const page=route==="calendar"?calendar():route==="library"?library():route==="entry"?entryPage(decodeURIComponent(arg||"")):route==="topics"?(arg?topicView(arg):topics()):route==="writing"?writing():route==="journey"?journeyPage(arg||""):route==="tasks"?taskPage():route==="search"?search():today();app.innerHTML=page+userTools();app.focus({preventScroll:true});afterRender(route,Boolean(route==="entry"||route==="journey"||(route==="topics"&&arg)))}
 // Opening an entry starts at the top of it; coming back restores the place
 // in the list you left. Re-renders inside a route leave the scroll alone.
 let lastRoute=null,lastDetail=false;
@@ -459,6 +580,7 @@ document.addEventListener("click",async e=>{
     return;
   }
   const sort=e.target.closest("[data-topicsort]");if(sort){state.topicSort=sort.dataset.topicsort;try{localStorage.setItem("nota-topic-sort",state.topicSort)}catch(error){/* nothing to remember it with */}render();return}
+  const jr=e.target.closest("[data-journey]");if(jr){state.returnTo=location.hash||"#library";state.returnScroll=window.scrollY;location.hash=`journey/${encodeURIComponent(jr.dataset.journey)}`;return}
   const tp=e.target.closest("[data-topic]");if(tp){state.returnTo=location.hash||"#topics";state.returnScroll=window.scrollY;location.hash=`topics/${tp.dataset.topic}`;return}
   if(e.target.closest(".main-nav a"))document.querySelector(".main-nav").classList.remove("open");
 });

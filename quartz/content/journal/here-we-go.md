@@ -1,25 +1,20 @@
 ---
-title: Manual Note
+title: The tooth, and a bag of peas
 type: journal
-tags:
-  - selfcare
-  - hello
-  - habits
+tags: [selfcare]
 occurredAt: 2026-09-02
 createdAt: 2026-09-02
 publishedAt: 2026-09-02
 publish: true
 ---
 
-Write the entry here. The first paragraph becomes the card excerpt on Today,
-Calendar and Search, so make it a real opening line rather than a heading.
+A bad night with a tooth, seen off with a bag of frozen peas held against my
+face at two in the morning. Not a long term plan.
+
 ![[ED742637-A240-41B9-B6DB-876BA58FAC41.jpeg]]
 
-
-> Bloody tooth 🤕
-
-Where it came from. If it is from a book already in the library, link it as
-[[Book title]] and it will appear on that book's page too.
-
+> [!todo] Already on the list
+> Contact Amit at One Smile Dental, due 30 September. Approximately £2,500 to
+> correct the top and bottom four teeth.
 
 ![[IMG_5791.png]]

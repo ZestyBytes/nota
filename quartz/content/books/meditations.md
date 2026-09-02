@@ -2,6 +2,7 @@
 title: Meditations
 type: reading
 author: Marcus Aurelius
+cover: "assets/books/meditations.jpg"
 status: finished
 progress: 100
 tags: [books]

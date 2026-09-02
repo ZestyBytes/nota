@@ -13,3 +13,7 @@ node_modules/
 
 # local build output
 dist/
+
+# scratch screenshots from local verification
+/c*.png
+/*.mjs

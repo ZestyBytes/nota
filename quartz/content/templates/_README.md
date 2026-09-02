@@ -15,6 +15,8 @@ Nothing in this folder is ever published; the build skips it entirely.
 | `book.md` | `books/` |
 | `recipe.md` | `recipes/` |
 | `playlist.md` | `notes/` |
+| `checklist.md` | `notes/` |
+| `scrap.md` | `scraps/` |
 
 Name the file after the title, in lower case with hyphens, for example
 `the-first-mini.md`. That name becomes the entry's address on the site.
@@ -26,6 +28,36 @@ will simply carry no topic:
 
 `gardening`, `music`, `technology`, `selfcare`, `adhd`, `books`, `family`,
 `food`, `recipes`, `eatingout`, `lifestyle`, `habits`, `playlist`, `motoring`
+
+## Blocks you can use in any note
+
+These work in the body of any entry, no frontmatter needed.
+
+**Photographs.** Attach as many as you like. One becomes the entry's image;
+more than one turns into a swipe gallery with a counter, and the card in lists
+shows how many. Nothing to switch on.
+
+**Callouts.** Obsidian's own aside syntax renders as a marked box:
+
+```
+> [!warning] Watch the oven
+> It runs hot, so check it ten minutes early.
+```
+
+`note`, `tip`, `warning`, `danger`, `question`, `quote`, `bug`, `todo` and
+`example` each get their own colour. A plain `>` line stays an ordinary
+quotation.
+
+**Checklists.** A list where every line starts with a box becomes tickable,
+and stays ticked on that device:
+
+```
+- [ ] Passports
+- [x] Charger
+```
+
+**Video and music.** A YouTube, Vimeo or Spotify link alone on its own line
+becomes the player itself. A link in the middle of a sentence stays a link.
 
 ## Dates
 
