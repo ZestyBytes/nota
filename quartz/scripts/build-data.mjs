@@ -36,7 +36,7 @@ const TOPICS = {
   playlist: { name: "Playlist", mode: "listen", icon: "disc", color: "#6b6a2e", soft: "#e9e8d3", description: "Records, podcasts and things worth listening to" },
   motoring: { name: "Motoring", icon: "car", color: "#b0472c", soft: "#f2ded6", description: "The Mini, the road, and the days worth the drive" }
 };
-const TYPE_MAP = { journal: "Journal", journey: "Journey", note: "Note", quote: "Quote" };
+const TYPE_MAP = { journal: "Journal", journey: "Journey", note: "Note", quote: "Quote", scrap: "Scrap" };
 
 function walk(dir) {
   const out = [];

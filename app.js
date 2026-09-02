@@ -41,22 +41,37 @@ function inline(t){return esc(t)
   // only http(s) links become anchors; anything else stays as its text
   .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g,'<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
   .replace(/\[([^\]]+)\]\(([^)]+)\)/g,"$1")}
-function markdown(src="",shown=[]){
-  const out=[];let para=[],list=[],rows=[],fence=null,lang="";
+function markdown(src="",shown=[],owner=""){
+  const out=[];let para=[],list=[],rows=[],quote=[],fence=null,lang="",box=0;
   const flushPara=()=>{if(para.length){out.push(`<p>${inline(para.join(" "))}</p>`);para=[]}};
-  const flushList=()=>{if(list.length){out.push(`<ul>${list.map(i=>`<li>${inline(i)}</li>`).join("")}</ul>`);list=[]}};
+  // A checklist is a list where every item opens with a box. Mixed lists stay
+  // ordinary, so a stray "- [x]" in prose does not turn the rest into one.
+  const flushList=()=>{
+    if(!list.length)return;
+    const items=list.map(i=>{const m=i.match(/^\[([ xX])\]\s*(.*)$/);return m?{done:m[1]!==" ",text:m[2]}:null});
+    if(items.every(Boolean)){
+      const saved=owner?ticked("check-"+owner):[];
+      out.push(`<ul class="checklist">${items.map((it,n)=>`<li class="${it.done||saved.includes(n)?"got":""}" data-tick="${n}" data-recipe="check-${esc(owner)}"><span class="tick" aria-hidden="true">${icon("check")}</span><span>${inline(it.text)}</span></li>`).join("")}</ul>`);
+    } else out.push(`<ul>${list.map(i=>`<li>${inline(i)}</li>`).join("")}</ul>`);
+    list=[];
+  };
+  const flushQuote=()=>{if(quote.length){out.push(callout(quote));quote=[]}};
+  const flushAll=()=>{flushPara();flushList();flushQuote()};
   for(const raw of String(src).split("\n")){
     const t=raw.trim();
-    if(!t&&fence===null){flushPara();flushList();continue}
+    if(!t&&fence===null){flushAll();continue}
     if(t.startsWith("![")){
-      flushPara();flushList();
+      flushAll();
       const m=t.match(/^!\[([^\]]*)\]\(([^)]+)\)/);
       // the lead image is already shown above the text; the rest belong here
       if(m&&!shown.includes(m[2]))out.push(`<figure class="body-figure"><img src="${esc(m[2])}" alt="${esc(m[1])}" loading="lazy">${m[1]?`<figcaption>${esc(m[1])}</figcaption>`:""}</figure>`);
       continue;
     }
-    if(t.startsWith("#")){flushPara();flushList();out.push(`<h3>${inline(t.replace(/^#+\s*/,""))}</h3>`);continue}
-    if(t.startsWith(">")){flushPara();flushList();out.push(`<blockquote>${inline(t.replace(/^>\s*/,""))}</blockquote>`);continue}
+    if(t.startsWith("#")){flushAll();out.push(`<h3>${inline(t.replace(/^#+\s*/,""))}</h3>`);continue}
+    // Consecutive > lines are one block, so an Obsidian callout keeps its body
+    // instead of becoming a run of one-line quotations.
+    if(t.startsWith(">")){flushPara();flushList();quote.push(t.replace(/^>\s?/,""));continue}
+    flushQuote();
     if(t.startsWith("```")){
       if(fence===null){flushPara();flushList();fence=[];lang=t.slice(3).trim()}
       else{out.push(`<pre class="code"${lang?` data-lang="${esc(lang)}"`:""}><code>${esc(fence.join("\n"))}</code></pre>`);fence=null;lang=""}
@@ -65,12 +80,43 @@ function markdown(src="",shown=[]){
     if(fence!==null){fence.push(raw.replace(/\s+$/,""));continue}
     if(t.startsWith("|")&&t.endsWith("|")){flushPara();flushList();rows.push(t);continue}
     if(rows.length){out.push(table(rows));rows=[]}
-    if(t.startsWith("- ")){flushPara();list.push(t.slice(2));continue}
+    if(t.startsWith("- ")||t.startsWith("* ")){flushPara();list.push(t.slice(2).trim());continue}
+    // A video or a record on a line of its own is meant to be played, not read
+    // as a URL. Anything else keeps being ordinary prose.
+    const player=t.match(/^<?(https?:\/\/\S+?)>?$/)&&embed(t.replace(/^<|>$/g,""));
+    if(player){flushAll();out.push(player);continue}
     flushList();para.push(t);
   }
-  flushPara();flushList();if(rows.length)out.push(table(rows));
+  flushAll();if(rows.length)out.push(table(rows));
   if(fence!==null)out.push(`<pre class="code"><code>${esc(fence.join("\n"))}</code></pre>`);
   return out.join("");
+}
+// Obsidian writes asides as "> [!note] Title". Rendered as a plain quotation
+// the marker showed as literal text, so the one piece of structure the note
+// carried was the one thing that did not survive.
+const CALLOUTS={note:"note",info:"note",tip:"check",success:"check",done:"check",question:"help",warning:"alert",caution:"alert",danger:"alert",bug:"terminal",example:"note",quote:"quote",cite:"quote",abstract:"note",summary:"note",todo:"check",failure:"alert",important:"alert"};
+function callout(lines){
+  const m=(lines[0]||"").match(/^\[!(\w+)\]([+-]?)\s*(.*)$/i);
+  if(!m)return `<blockquote>${lines.map(l=>inline(l)).join("<br>")}</blockquote>`;
+  const kind=m[1].toLowerCase(),title=m[3].trim()||m[1][0].toUpperCase()+m[1].slice(1).toLowerCase();
+  const body=lines.slice(1).filter(l=>l.trim()).map(l=>`<p>${inline(l)}</p>`).join("");
+  return `<aside class="callout callout-${esc(CALLOUTS[kind]?kind:"note")}"><p class="callout-head">${icon(CALLOUTS[kind]||"note")}<b>${esc(title)}</b></p>${body}</aside>`;
+}
+// A YouTube, Vimeo or Spotify link becomes the thing itself. Only these three,
+// and only by exact host, so a pasted link cannot load an arbitrary frame.
+function embed(url){
+  let u;try{u=new URL(url)}catch(error){return ""}
+  const host=u.hostname.replace(/^www\./,"");
+  let src="",kind="video";
+  if(host==="youtu.be")src=`https://www.youtube-nocookie.com/embed/${u.pathname.slice(1)}`;
+  else if(host==="youtube.com"||host==="m.youtube.com"){
+    const id=u.searchParams.get("v")||(u.pathname.startsWith("/shorts/")?u.pathname.split("/")[2]:"");
+    if(id)src=`https://www.youtube-nocookie.com/embed/${id}`;
+  }
+  else if(host==="vimeo.com")src=`https://player.vimeo.com/video/${u.pathname.split("/").filter(Boolean)[0]}`;
+  else if(host==="open.spotify.com"){src=`https://open.spotify.com/embed${u.pathname}`;kind="audio"}
+  if(!src)return "";
+  return `<div class="embed embed-${kind}"><iframe src="${esc(src)}" title="Embedded ${kind}" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>`;
 }
 // A pipe table was printing its pipes as prose; render it as a table.
 function table(rows){
@@ -81,7 +127,7 @@ function table(rows){
   return `<div class="table-wrap"><table><thead><tr>${cells(head).map(c=>`<th>${inline(c)}</th>`).join("")}</tr></thead><tbody>${rest.map(r=>`<tr>${cells(r).map(c=>`<td>${inline(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
 }
 function topic(id){return state.data.topics[id]||{name:id,color:"#777",soft:"#eee"}}
-function icon(name){const paths={leaf:'<path d="M20 4C12 4 6 8 6 15c0 3 2 5 5 5 7 0 9-8 9-16Z"/><path d="M5 21c3-6 7-9 12-12"/>',music:'<path d="M9 18V5l10-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/>',terminal:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="m7 9 3 3-3 3m6 0h4"/>',mind:'<path d="M12 21s-8-4.5-8-11a4 4 0 0 1 7-2.6A4 4 0 0 1 20 10c0 6.5-8 11-8 11Z"/><path d="M7 13h3l1.5-3 2 6 1.5-3h3"/>',book:'<path d="M4 5a3 3 0 0 1 3-3h12v18H7a3 3 0 0 1 0-6h12"/>',home:'<path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10M9 20v-6h6v6"/>',fork:'<path d="M7 3v7m-3-7v4a3 3 0 0 0 6 0V3M7 10v11M17 3v18m0-18c3 3 3 8 0 10"/>',paperclip:'<path d="m21 11-8.5 8.5a6 6 0 0 1-8.5-8.5l9-9a4 4 0 0 1 5.7 5.7l-9 9a2 2 0 0 1-2.9-2.9L15 5.6"/>',quote:'<path d="M9 11H5a4 4 0 0 1 4-4v8a4 4 0 0 1-4 4M19 11h-4a4 4 0 0 1 4-4v8a4 4 0 0 1-4 4"/>',note:'<path d="M4 3h16v18H4zM8 8h8M8 12h8M8 16h5"/>',check:'<path d="m5 12 5 5 9-9"/>',photos:'<rect x="7" y="3" width="14" height="14" rx="1.5"/><path d="M17 21H4.5A1.5 1.5 0 0 1 3 19.5V7"/>',car:'<path d="M3 13.5h18"/><path d="M5 13.5 6.8 8A2 2 0 0 1 8.7 6.6h6.6A2 2 0 0 1 17.2 8L19 13.5"/><path d="M3.6 13.5v3.2a1 1 0 0 0 1 1h14.8a1 1 0 0 0 1-1v-3.2"/><circle cx="7.6" cy="17.6" r="1.5"/><circle cx="16.4" cy="17.6" r="1.5"/>',disc:'<circle cx="12" cy="12" r="8.6"/><circle cx="12" cy="12" r="2.3"/><path d="M12 3.4a8.6 8.6 0 0 1 8.6 8.6"/>',repeat:'<path d="M4 9.6A4.6 4.6 0 0 1 8.6 5h9"/><path d="m14.8 2.4 2.9 2.6-2.9 2.6"/><path d="M20 14.4A4.6 4.6 0 0 1 15.4 19h-9"/><path d="m9.2 16.4-2.9 2.6 2.9 2.6"/>',heart:'<path d="M12 20.3s-7.6-4.4-7.6-10a4.2 4.2 0 0 1 7.6-2.6 4.2 4.2 0 0 1 7.6 2.6c0 5.6-7.6 10-7.6 10Z"/>',cup:'<path d="M5 8.4h11v5.8a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4Z"/><path d="M16 9.8h2.2a2.3 2.3 0 0 1 0 4.6H16"/><path d="M7.6 4.4v1.9M11 3.9v2.4M14.4 4.4v1.9"/>'};return `<svg class="line-icon" viewBox="0 0 24 24" aria-hidden="true">${paths[name]||paths.note}</svg>`}
+function icon(name){const paths={leaf:'<path d="M20 4C12 4 6 8 6 15c0 3 2 5 5 5 7 0 9-8 9-16Z"/><path d="M5 21c3-6 7-9 12-12"/>',music:'<path d="M9 18V5l10-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/>',terminal:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="m7 9 3 3-3 3m6 0h4"/>',mind:'<path d="M12 21s-8-4.5-8-11a4 4 0 0 1 7-2.6A4 4 0 0 1 20 10c0 6.5-8 11-8 11Z"/><path d="M7 13h3l1.5-3 2 6 1.5-3h3"/>',book:'<path d="M4 5a3 3 0 0 1 3-3h12v18H7a3 3 0 0 1 0-6h12"/>',home:'<path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10M9 20v-6h6v6"/>',fork:'<path d="M7 3v7m-3-7v4a3 3 0 0 0 6 0V3M7 10v11M17 3v18m0-18c3 3 3 8 0 10"/>',paperclip:'<path d="m21 11-8.5 8.5a6 6 0 0 1-8.5-8.5l9-9a4 4 0 0 1 5.7 5.7l-9 9a2 2 0 0 1-2.9-2.9L15 5.6"/>',quote:'<path d="M9 11H5a4 4 0 0 1 4-4v8a4 4 0 0 1-4 4M19 11h-4a4 4 0 0 1 4-4v8a4 4 0 0 1-4 4"/>',note:'<path d="M4 3h16v18H4zM8 8h8M8 12h8M8 16h5"/>',check:'<path d="m5 12 5 5 9-9"/>',photos:'<rect x="7" y="3" width="14" height="14" rx="1.5"/><path d="M17 21H4.5A1.5 1.5 0 0 1 3 19.5V7"/>',car:'<path d="M3 13.5h18"/><path d="M5 13.5 6.8 8A2 2 0 0 1 8.7 6.6h6.6A2 2 0 0 1 17.2 8L19 13.5"/><path d="M3.6 13.5v3.2a1 1 0 0 0 1 1h14.8a1 1 0 0 0 1-1v-3.2"/><circle cx="7.6" cy="17.6" r="1.5"/><circle cx="16.4" cy="17.6" r="1.5"/>',disc:'<circle cx="12" cy="12" r="8.6"/><circle cx="12" cy="12" r="2.3"/><path d="M12 3.4a8.6 8.6 0 0 1 8.6 8.6"/>',repeat:'<path d="M4 9.6A4.6 4.6 0 0 1 8.6 5h9"/><path d="m14.8 2.4 2.9 2.6-2.9 2.6"/><path d="M20 14.4A4.6 4.6 0 0 1 15.4 19h-9"/><path d="m9.2 16.4-2.9 2.6 2.9 2.6"/>',heart:'<path d="M12 20.3s-7.6-4.4-7.6-10a4.2 4.2 0 0 1 7.6-2.6 4.2 4.2 0 0 1 7.6 2.6c0 5.6-7.6 10-7.6 10Z"/>',cup:'<path d="M5 8.4h11v5.8a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4Z"/><path d="M16 9.8h2.2a2.3 2.3 0 0 1 0 4.6H16"/><path d="M7.6 4.4v1.9M11 3.9v2.4M14.4 4.4v1.9"/>',alert:'<path d="M12 3.6 21 19H3Z"/><path d="M12 9.6v4.2"/><path d="M12 16.6h.01"/>',help:'<circle cx="12" cy="12" r="8.6"/><path d="M9.6 9.6a2.5 2.5 0 0 1 4.8.8c0 1.7-2.4 1.9-2.4 3.4"/><path d="M12 17.2h.01"/>'};return `<svg class="line-icon" viewBox="0 0 24 24" aria-hidden="true">${paths[name]||paths.note}</svg>`}
 function chips(ids=[]){return ids.map(id=>{const t=topic(id);return `<span class="chip" style="--topic:${t.color};--soft:${t.soft}">${esc(t.name)}</span>`}).join("")}
 // Specimen-label date: 01 SEP 2026. The card had no date at all before.
 const MONTHS=["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
@@ -105,11 +151,11 @@ function cardBlocks(body=""){
   for(const b of blocks){if(b.startsWith("## ")||!cards.length)cards.push(b);else cards[cards.length-1]+="\n\n"+b}
   return cards;
 }
-function cardDeck(body,shown=[]){
+function cardDeck(body,shown=[],owner=""){
   const cards=cardBlocks(body);
-  if(cards.length<2)return `<div class="detail-body">${markdown(body,shown)}</div>`;
+  if(cards.length<2)return `<div class="detail-body">${markdown(body,shown,owner)}</div>`;
   return `<div class="deck-wrap"><div class="deck" tabindex="0" role="group" aria-label="Swipe through ${cards.length} cards">${
-    cards.map((c,i)=>`<article class="deck-card"><span class="deck-no">${String(i+1).padStart(2,"0")} / ${String(cards.length).padStart(2,"0")}</span><div class="deck-copy">${markdown(c,shown)}</div></article>`).join("")
+    cards.map((c,i)=>`<article class="deck-card"><span class="deck-no">${String(i+1).padStart(2,"0")} / ${String(cards.length).padStart(2,"0")}</span><div class="deck-copy">${markdown(c,shown,owner)}</div></article>`).join("")
   }</div><div class="deck-dots" aria-hidden="true">${cards.map((_,i)=>`<i class="${i?"":"on"}"></i>`).join("")}</div></div>`;
 }
 // `view: playlist` turns each bullet into a numbered row. An italic tail on
@@ -174,7 +220,7 @@ function entryPage(id){
     <div class="chips">${chips(e.topics)}</div>
     <h1 class="entry-page-title">${e.type==="Quote"?`&ldquo;${esc(e.title)}&rdquo;`:esc(e.title)}</h1>
     ${e.author?`<p class="entry-page-author">${esc(e.author)}</p>`:""}
-    ${(()=>{const shown=e.images?.length>1?e.images.map(i=>i.src):[e.image];return e.recipe?`<div class="detail-body recipe-body">${recipeBody(e)}</div>`:e.view==="cards"&&e.body?cardDeck(e.body,shown):`<div class="detail-body">${e.body?(e.view==="playlist"?playlistBody(e.body):markdown(e.body,shown)):`<p>${esc(e.excerpt||"Saved in your Nota archive.")}</p>`}</div>`})()}
+    ${(()=>{const shown=e.images?.length>1?e.images.map(i=>i.src):[e.image];return e.recipe?`<div class="detail-body recipe-body">${recipeBody(e)}</div>`:e.view==="cards"&&e.body?cardDeck(e.body,shown,e.id):`<div class="detail-body">${e.body?(e.view==="playlist"?playlistBody(e.body):markdown(e.body,shown,e.id)):`<p>${esc(e.excerpt||"Saved in your Nota archive.")}</p>`}</div>`})()}
     ${(()=>{const back=backlinks(e);return back.length?`<section class="backlinks"><h2 class="section-title">Mentioned in</h2><ul>${back.map(b=>`<li><a href="#entry/${encodeURIComponent(b.id)}">${esc(b.title)}</a><small>${esc(b.type)}${b.occurredAt?` &middot; ${esc(fmtDate(b.occurredAt))}`:""}</small></li>`).join("")}</ul></section>`:""})()}
     ${e.attachments?.length?`<div class="attachment-list"><p class="eyebrow">Attachments</p>${e.attachments.map((a,i)=>`<div>${icon("paperclip")}<span><b>${esc(a.name)}</b><small>${esc(a.kind)} &middot; ${esc(a.size)}</small></span><button type="button" data-view-attachment="${i}" data-entry-id="${e.id}">View</button></div>`).join("")}</div>`:""}
   </section>`;
@@ -311,7 +357,18 @@ function galleryGrid(){
     return `<button class="shot ${n>1?"is-set":""}" data-entry="${esc(e.id)}" style="--topic:${topic(e.topics?.[0]).color}" aria-label="${esc(e.title)}, ${n} photograph${n>1?"s":""}"><img src="${esc(cover.src)}" alt="${esc(cover.alt||"")}" loading="lazy" decoding="async">${n>1?`<span class="shot-count">${icon("photos")}${n}</span>`:""}<span class="shot-cap">${esc(e.title)}</span></button>`;
   }).join("")}</div>`;
 }
-function library(){let body="";if(state.library==="gallery")body=galleryGrid();else if(state.library==="reading")body=`<div class="book-grid">${state.data.books.map((b,i)=>`<article class="book ${b.cover?"":"has-plate"}" data-book="${b.id}"><span class="acc-no">No. ${accNo(b.id)}</span>${b.cover?`<img class="book-cover" src="${b.cover}" alt="" loading="lazy">`:coverPlate(b)}<div class="book-copy"><h3>${esc(b.title)}</h3><p>${esc(b.author)}</p><div class="book-links"><span>${(b.notes||[]).length} notes</span><span>${(b.quotes||[]).length} quotes</span></div><span class="status">${esc(b.status.replaceAll("-"," "))}${b.status==="reading"?` · ${b.progress}%`:""}</span><div class="progress"><i style="width:${b.progress}%"></i></div></div></article>`).join("")||`<p class="empty">Your library is empty.</p>`}</div>`;else if(state.library==="quotes")body=`<div class="quote-list">${[...state.data.entries.filter(e=>e.type==="Quote"),...state.data.books.flatMap(b=>(b.quotes||[]).map(q=>({...q,title:q.text,author:b.title,bookId:b.id})))].map(e=>`<blockquote class="library-quote" ${e.bookId?`data-book="${e.bookId}"`:`data-entry="${e.id}"`}>“${esc(e.title)}”<cite>${esc(e.author)}${e.page?` · ${esc(e.page)}`:""}</cite></blockquote>`).join("")||`<p class="empty">No quotations kept yet.</p>`}</div>`;else body=`<div class="entry-list">${state.data.entries.filter(e=>["Note","Journal","Journey"].includes(e.type)).map(e=>entryCard(e)).join("")||`<p class="empty">No notes kept yet.</p>`}</div>`;return `<section>${pageHead("Things worth keeping","Library","Books hold their own reading notes and quotations while each quote remains discoverable across Nota.")}<div class="library-tabs">${["reading","quotes","notes","gallery"].map(x=>`<button class="filter ${state.library===x?"active":""}" data-library="${x}">${x[0].toUpperCase()+x.slice(1)}</button>`).join("")}</div>${body}</section>`}
+// A scrap is a thing caught in passing: a line overheard, a thought, something
+// to look up. It carries no date and no shape, so it is pinned as a card on a
+// board rather than filed as a dated entry, and reads at a glance.
+function scrapBoard(){
+  const scraps=state.data.entries.filter(e=>e.type==="Scrap");
+  if(!scraps.length)return `<p class="empty">Nothing pinned yet. A scrap is a note in <code>scraps/</code> with <code>type: scrap</code>.</p>`;
+  return `<div class="scrap-board">${scraps.map((e,i)=>{
+    const t=topic(e.topics?.[0]),date=fmtDate(e.occurredAt||e.createdAt);
+    return `<article class="scrap tilt-${i%4}" data-entry="${esc(e.id)}" style="--topic:${t.color};--soft:${t.soft}"><span class="pin" aria-hidden="true"></span><p class="scrap-text">${inline(e.title||"")}</p>${e.excerpt&&e.excerpt!==e.title?`<p class="scrap-note">${esc(e.excerpt)}</p>`:""}<p class="scrap-foot">${e.topics?.length?`<span>${esc(t.name)}</span>`:"<span></span>"}${date?`<time>${date}</time>`:""}</p></article>`;
+  }).join("")}</div>`;
+}
+function library(){let body="";if(state.library==="gallery")body=galleryGrid();else if(state.library==="reading")body=`<div class="book-grid">${state.data.books.map((b,i)=>`<article class="book ${b.cover?"":"has-plate"}" data-book="${b.id}"><span class="acc-no">No. ${accNo(b.id)}</span>${b.cover?`<img class="book-cover" src="${b.cover}" alt="" loading="lazy">`:coverPlate(b)}<div class="book-copy"><h3>${esc(b.title)}</h3><p>${esc(b.author)}</p><div class="book-links"><span>${(b.notes||[]).length} notes</span><span>${(b.quotes||[]).length} quotes</span></div><span class="status">${esc(b.status.replaceAll("-"," "))}${b.status==="reading"?` · ${b.progress}%`:""}</span><div class="progress"><i style="width:${b.progress}%"></i></div></div></article>`).join("")||`<p class="empty">Your library is empty.</p>`}</div>`;else if(state.library==="quotes")body=`<div class="quote-list">${[...state.data.entries.filter(e=>e.type==="Quote"),...state.data.books.flatMap(b=>(b.quotes||[]).map(q=>({...q,title:q.text,author:b.title,bookId:b.id})))].map(e=>`<blockquote class="library-quote" ${e.bookId?`data-book="${e.bookId}"`:`data-entry="${e.id}"`}>“${esc(e.title)}”<cite>${esc(e.author)}${e.page?` · ${esc(e.page)}`:""}</cite></blockquote>`).join("")||`<p class="empty">No quotations kept yet.</p>`}</div>`;else if(state.library==="scraps")body=scrapBoard();else body=`<div class="entry-list">${state.data.entries.filter(e=>["Note","Journal","Journey"].includes(e.type)).map(e=>entryCard(e)).join("")||`<p class="empty">No notes kept yet.</p>`}</div>`;return `<section>${pageHead("Things worth keeping","Library","Books hold their own reading notes and quotations while each quote remains discoverable across Nota.")}<div class="library-tabs">${["reading","quotes","notes","scraps","gallery"].map(x=>`<button class="filter ${state.library===x?"active":""}" data-library="${x}">${x[0].toUpperCase()+x.slice(1)}</button>`).join("")}</div>${body}</section>`}
 // A topic may hold sub-topics: Self care covers ADHD, and later therapy,
 // fitness, the dentist. A parent counts and shows its children's items too.
 function childTopics(id){return Object.entries(state.data.topics).filter(([,t])=>t.parent===id).map(([slug])=>slug)}

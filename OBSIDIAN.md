@@ -46,6 +46,8 @@ quartz/content/
   quotes/        quotations (standalone or linked to a book)
   books/         reading list (type: reading)
   recipes/       recipe notes (a note with view: recipe)
+  scraps/        short undated captures (type: scrap), shown as a pinboard
+  attachments/   photographs added from Obsidian land here
   tasks/         to-do items (type: task), create this folder yourself
   templates/     starting frontmatter for each type, see below
   private/       fully excluded from the build, whatever `publish` says
@@ -165,6 +167,50 @@ completedAt: null        # or a date, once done
 publish: true
 ```
 No body needed.
+
+## Blocks you can use in any body
+
+None of these need frontmatter. They work in a journal entry, a note, a
+recipe, anywhere with a body.
+
+**Photographs.** Attach as many as you like. The first becomes the entry's
+image; more than one becomes a swipe gallery with a counter and dots, and the
+card in any list carries a stacked-corner badge with the count.
+
+**Callouts.** Obsidian's own aside syntax renders as a marked box, in the
+colour of its kind:
+
+```
+> [!warning] Watch the oven
+> It runs hot, so check it ten minutes early.
+```
+
+`note`, `info`, `tip`, `success`, `question`, `warning`, `caution`, `danger`,
+`bug`, `todo`, `example`, `quote` and `summary` are recognised. The title after
+the marker is optional. A plain `>` line is still an ordinary quotation, and
+consecutive `>` lines are now one block rather than one quotation per line.
+
+**Checklists.** A list where every line opens with a box becomes tickable on
+the page, and the ticks are remembered on that device:
+
+```
+- [ ] Passports
+- [x] Charger
+```
+
+A `- [x]` starts ticked. Mix a box line with ordinary bullets and the whole
+list stays an ordinary list, so a stray box in prose changes nothing.
+
+**Video and music.** A YouTube, Vimeo or Spotify link alone on its own line
+becomes the player itself. Only those three, matched by exact host, so a
+pasted link cannot load an arbitrary frame. A link inside a sentence stays a
+link.
+
+**Scraps.** A note in `scraps/` with `type: scrap` is a thing caught in
+passing rather than a dated entry. The title is the scrap, since that is what
+shows on the board; anything in the body appears under it in smaller type.
+They are pinned as cards under Library, Scraps, and carry no accession number
+and no stamp. `occurredAt` is optional.
 
 ## Writing from a phone or a MacBook
 
