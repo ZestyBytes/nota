@@ -432,16 +432,17 @@ function topicLatest(id){return state.data.entries.filter(e=>inTopic(e,id)).map(
 // it changes on its own as you write. A topic with no photograph keeps its
 // drawn ground.
 function topicPhoto(id){
-  // A topic names its own picture with `photo:` in build-data, which is what
-  // a stock image is wired in through. Failing that it borrows the most
-  // recent photograph taken under it, so a topic you write about with a
-  // camera ends up illustrated by your own work.
-  const named=state.data.topics[id]?.photo;
-  if(named)return {src:named};
-  const hit=state.data.entries
+  // Your own photographs come first: a topic you have written about with a
+  // camera should be illustrated by your own work, not by stock. `photo:` in
+  // build-data is the default underneath, for a topic that has none yet.
+  const own=state.data.entries
     .filter(e=>e.image&&inTopic(e,id))
-    .sort((a,b)=>(b.occurredAt||b.createdAt||"").localeCompare(a.occurredAt||a.createdAt||""))[0];
-  return hit?{src:hit.image}:null;
+    .sort((a,b)=>(b.occurredAt||b.createdAt||"").localeCompare(a.occurredAt||a.createdAt||""));
+  // With several to choose from it turns over daily, the way the Today widget
+  // does: the same all day, a different one tomorrow.
+  if(own.length)return {src:own[own.length===1?0:dayIndex(own.length)].image};
+  const named=state.data.topics[id]?.photo;
+  return named?{src:named}:null;
 }
 function topics(){
   const sorts={items:"Most kept",name:"A to Z",recent:"Recent"};

@@ -39,17 +39,17 @@ function resolvePhoto(value) {
 // Topic taxonomy, mirroring the paths declared in content/topics.md.
 const TOPICS = {
   gardening: { name: "Gardening", icon: "leaf", color: "#3f6b2e", soft: "#e4ead9", ground: "hatch", photo: "7728082", description: "Seasons, seedlings and life outdoors" },
-  music: { name: "Music", icon: "music", color: "#a13a2e", soft: "#f0e1dd", ground: "ink", photo: "", description: "Practice, listening and the guitar journey" },
+  music: { name: "Music", icon: "music", color: "#a13a2e", soft: "#f0e1dd", ground: "ink", photo: "6942429", description: "Practice, listening and the guitar journey" },
   technology: { name: "Technology", mode: "tech", icon: "terminal", color: "#1c6e63", soft: "#dbe9e6", ground: "grid", photo: "34054502", description: "Tools, code and thoughtful technology" },
   selfcare: { name: "Self care", icon: "heart", color: "#3f6470", soft: "#dde7ea", ground: "wash", photo: "", description: "Looking after the machine: health, mind and upkeep" },
   adhd: { name: "ADHD", parent: "selfcare", icon: "mind", color: "#5b4a9e", soft: "#e5e1f2", ground: "fade", photo: "", description: "Understanding attention and living well" },
-  books: { name: "Books", icon: "book", color: "#8a5a12", soft: "#ece0cb", ground: "ruled", photo: "", description: "Reading, marginalia and ideas worth keeping" },
+  books: { name: "Books", icon: "book", color: "#8a5a12", soft: "#ece0cb", ground: "ruled", photo: "9572622", description: "Reading, marginalia and ideas worth keeping" },
   family: { name: "Family", icon: "home", color: "#96355a", soft: "#eddce3", ground: "band", photo: "", description: "Home life and shared memories" },
   food: { name: "Food", icon: "fork", color: "#8a4a1a", soft: "#ecddcb", ground: "coarse", photo: "6605214", description: "Recipes, experiments and things made for the table" },
   recipes: { name: "Recipes", parent: "food", mode: "recipes", icon: "fork", color: "#a25a1e", soft: "#f0e2d2", ground: "duo", photo: "", description: "Things made at home, and how they were made" },
   eatingout: { name: "Eating out", parent: "food", icon: "cup", color: "#7a5a2e", soft: "#ece1d0", ground: "plain", photo: "", description: "Meals out worth remembering" },
-  lifestyle: { name: "Lifestyle", icon: "cup", color: "#2f5d8a", soft: "#dde5ee", ground: "verticals", photo: "", description: "Everyday life, plans and the practical things" },
-  habits: { name: "Habits", icon: "repeat", color: "#6b3f6b", soft: "#e9dfe9", ground: "crosshatch", photo: "", description: "Practices worth repeating, and what makes them stick" },
+  lifestyle: { name: "Lifestyle", icon: "cup", color: "#2f5d8a", soft: "#dde5ee", ground: "verticals", photo: "8972513", description: "Everyday life, plans and the practical things" },
+  habits: { name: "Habits", icon: "repeat", color: "#6b3f6b", soft: "#e9dfe9", ground: "crosshatch", photo: "6668700", description: "Practices worth repeating, and what makes them stick" },
   playlist: { name: "Playlist", mode: "listen", icon: "disc", color: "#6b6a2e", soft: "#e9e8d3", ground: "dots", photo: "", description: "Records, podcasts and things worth listening to" },
   motoring: { name: "Motoring", icon: "car", color: "#b0472c", soft: "#f2ded6", ground: "wedge", photo: "", description: "The Mini, the road, and the days worth the drive" }
 };
