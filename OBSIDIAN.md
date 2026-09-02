@@ -282,8 +282,8 @@ Working Copy exposes actions to the Shortcuts app, so the whole commit and
 push routine can be one button on the home screen. In **Shortcuts**, make a
 new shortcut named `Publish Nota` and add three actions, in this order:
 
-1. **Pull Repository**, repository `nota-2`
-2. **Commit Repository**, repository `nota-2`, message `Committed on iPhone.`
+1. **Commit Repository**, repository `nota-2`, message `Committed on iPhone.`
+2. **Pull Repository**, repository `nota-2`
 3. **Push Repository**, repository `nota-2`
 
 Two settings inside the Commit action matter:
@@ -298,11 +298,26 @@ staying a pale "Repository" placeholder; an empty field makes Shortcuts stop
 and ask at run time, once per action. Leave the editor with the back arrow to
 save, then add the shortcut to the home screen.
 
+The order matters. Commit has to come first: pulling on top of uncommitted work
+is refused, and the shortcut stops with "the pull was aborted because your
+uncommitted changes conflict with the fetched changes". Committing first banks
+what you wrote, so the pull has something to merge into.
+
 After that, publishing is: write, tap **Publish Nota**, done. It commits
 everything that has changed, so anything not ready to go live wants
-`publish: false` in its frontmatter rather than being left uncommitted. If the
-shortcut ever fails partway, it will be a merge conflict from writing on two
-devices; open Working Copy, which will say so.
+`publish: false` in its frontmatter rather than being left uncommitted. Tapping
+it before you start writing is worth the habit too, since it brings the phone
+up to date and leaves nothing to collide with.
+
+If the same lines were changed in both places, the shortcut stops with "unable
+to push changes, that couldn't be fast-forwarded", and Working Copy shows the
+repository with a conflicted entry. Tap **Resolve Conflicts** and pick a side:
+your version sits on the left, the fetched one on the right, and a block only
+counts as chosen once it is dragged into the centre; blocks left at the edges
+are excluded. Resolve, then tap the shortcut again. Note that Obsidian rewrites
+frontmatter in its own style, so most conflicts on a note you have both touched
+are only formatting, `tags: [technology]` against a bulleted list, and either
+side will do.
 
 ### MacBook
 
