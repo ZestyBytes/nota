@@ -262,7 +262,11 @@ for (const file of files) {
     id: slug, type: TYPE_MAP[data.type], title: data.title,
     excerpt: firstParagraph(body), body: body.trim(), view: data.view || "", topics,
     occurredAt: data.occurredAt || "", createdAt: data.createdAt || data.occurredAt || "",
-    publishedAt: data.publishedAt || "", writing: Boolean(data.writing), image, imageAlt, images: allImages(body), attachments: []
+    publishedAt: data.publishedAt || "", writing: Boolean(data.writing),
+    // A journey is a thread, not a pile: carry the thread's name and the day
+    // number so the app can put its entries back in order.
+    journey: unwikilink(data.journey) || "", day: Number(data.day || (String(data.title || "").match(/^Day\s+(\d+)/i)?.[1] ?? 0)) || 0,
+    image, imageAlt, images: allImages(body), attachments: []
   };
   if (data.view === "recipe") {
     entry.recipe = {

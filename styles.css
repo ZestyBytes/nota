@@ -825,3 +825,65 @@ body.modal-open{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .scrap:hover{transform:rotate(0) translateY(-2px);box-shadow:0 10px 20px -14px rgba(34,38,30,.5)}
 @media(min-width:700px){.scrap-board{grid-template-columns:repeat(3,1fr)}}
 @media(prefers-reduced-motion:reduce){.scrap,.scrap:hover{transform:none;transition:none}}
+
+/* ---------- journeys ---------- */
+/* A journey is a thread. The list reads down the page as a run of days, ruled
+   like a field log rather than boxed like cards. */
+.journey-strip{margin-bottom:26px}
+.journey-cards{display:grid;gap:12px;grid-template-columns:1fr}
+.journey-card{
+  padding:14px 16px;background:var(--surface);cursor:pointer;
+  border:1px solid var(--line);border-left:3px solid var(--topic,var(--muted));
+}
+.journey-card .eyebrow{margin:0 0 4px;color:var(--topic,var(--muted))}
+.journey-card h3{margin:0 0 6px;font:600 19px/1.2 var(--serif)}
+.journey-last{margin:0;font-size:15px;color:var(--ink-soft)}
+.journey-meta{margin:8px 0 0;font:9px var(--mono);text-transform:uppercase;letter-spacing:.11em;color:var(--faint)}
+@media(min-width:700px){.journey-cards{grid-template-columns:repeat(2,1fr)}}
+
+.journey-facts{margin:10px 0 0;display:flex;flex-wrap:wrap;gap:14px;font:10px var(--mono);text-transform:uppercase;letter-spacing:.12em;color:var(--muted)}
+.journey-thread{list-style:none;margin:22px 0 0;padding:0;border-top:1px solid var(--line)}
+.journey-thread li{border-bottom:1px solid var(--line)}
+.journey-thread a{display:grid;grid-template-columns:64px 1fr auto;gap:14px;align-items:baseline;padding:15px 2px}
+.journey-day{font:700 10px var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--topic,var(--muted))}
+.journey-copy{display:flex;flex-direction:column;gap:4px;min-width:0}
+.journey-copy b{font:600 17px/1.3 var(--serif)}
+.journey-copy small{font-size:14px;line-height:1.5;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.journey-thread time{font:9px var(--mono);color:var(--faint);white-space:nowrap}
+.journey-thread a:hover .journey-copy b{color:var(--topic,var(--ink))}
+
+/* on an entry, the thread it belongs to */
+.journey-of{
+  margin:0 0 14px;display:flex;align-items:baseline;gap:10px;
+  font:10px var(--mono);text-transform:uppercase;letter-spacing:.12em;
+}
+.journey-of a{color:var(--topic,var(--ink));border-bottom:1px solid currentColor;padding-bottom:1px}
+.journey-of span{color:var(--faint)}
+
+/* ---------- to-do page ---------- */
+.tasks-page .task-group{margin-bottom:28px}
+.tasks-page .section-title{display:flex;align-items:center;gap:9px}
+.task-count{
+  display:inline-grid;place-items:center;min-width:19px;height:19px;padding:0 5px;
+  border:1px solid var(--line);border-radius:9px;
+  font:9px/1 var(--mono);color:var(--muted);letter-spacing:0;
+}
+.task-group.overdue .section-title{color:var(--stamp-red)}
+.task-group.overdue .task-count{border-color:var(--stamp-red);color:var(--stamp-red)}
+.task-group.overdue .task{border-left:3px solid var(--stamp-red)}
+.done-tasks summary{list-style:none;cursor:pointer;display:flex;align-items:center}
+.done-tasks summary::-webkit-details-marker{display:none}
+.done-tasks summary::after{content:"";width:7px;height:7px;margin-left:9px;border-right:1.5px solid var(--muted);border-bottom:1.5px solid var(--muted);transform:rotate(45deg) translateY(-2px)}
+.done-tasks[open] summary::after{transform:rotate(-135deg) translateY(-2px)}
+.done-tasks .tasks{margin-top:10px}
+/* the To-do heading on Today is now a way through to the whole list */
+.see-all{margin-left:auto;font:9px var(--mono);text-transform:uppercase;letter-spacing:.12em;color:var(--faint)}
+aside .section-title{display:flex;align-items:baseline}
+
+/* The topic chip is hidden on a phone because Today's to-do rail is narrow.
+   The to-do page is a full column, so it has room for it. */
+@media(max-width:800px){
+  .tasks-page .task{grid-template-columns:auto 1fr auto}
+  .tasks-page .task .chip{display:inline-block}
+}
+.task-due.late{color:var(--stamp-red)}

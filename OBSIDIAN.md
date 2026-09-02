@@ -206,6 +206,12 @@ becomes the player itself. Only those three, matched by exact host, so a
 pasted link cannot load an arbitrary frame. A link inside a sentence stays a
 link.
 
+**Journeys.** A note in `journeys/` with `type: journey` and a `journey:` name
+belongs to a thread. Give every entry in the same undertaking the same name,
+and either a `day:` number or a title beginning "Day 5:", and the app builds
+the thread: its own page in day order, how far it has run, and a link on each
+entry to the rest. They are listed under Library, Notes.
+
 **Scraps.** A note in `scraps/` with `type: scrap` is a thing caught in
 passing rather than a dated entry. The title is the scrap, since that is what
 shows on the board; anything in the body appears under it in smaller type.
