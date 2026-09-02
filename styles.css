@@ -494,11 +494,19 @@ body.modal-open{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .back-link a{display:inline-flex;align-items:center;gap:8px}
 .back-link a:before{content:"";width:16px;height:1.5px;background:currentColor}
 .back-link a:hover{color:var(--ink)}
-.entry-page-meta{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
-.acc-no-page{position:static;margin-left:auto}
-.entry-page .chips{margin-bottom:14px}
-.entry-page-title{font:600 clamp(32px,7vw,52px)/1.08 var(--serif);margin:0 0 10px;max-width:16ch}
-.entry-page-author{margin:0 0 22px;color:var(--muted);font-style:italic}
+/* One masthead, three bands: a line of filing detail, the title, then the
+   context it sits in. This used to be six separate strips stacked before you
+   reached the title, each styled differently, and on a narrow screen the
+   accession number was pushed onto a row of its own with nothing beside it. */
+.entry-masthead{margin-bottom:26px}
+.entry-page-meta{display:flex;align-items:baseline;flex-wrap:wrap;gap:0 9px;margin:0 0 12px}
+.entry-page-meta>*+*:before{content:"\00b7";margin-right:9px;color:var(--line)}
+.acc-no-page{position:static}
+.entry-page-title{font:600 clamp(32px,7vw,52px)/1.08 var(--serif);margin:0;max-width:16ch}
+.entry-page-author{margin:9px 0 0;color:var(--muted);font-style:italic}
+.entry-context{display:flex;align-items:center;flex-wrap:wrap;gap:10px 14px;margin-top:17px;padding-top:14px;border-top:1px solid var(--line)}
+.entry-context:empty{display:none}
+.entry-page .chips{margin:0}
 .entry-page .detail-image{margin-bottom:22px}
 .entry-page .detail-body{font:19px/1.75 var(--serif);max-width:60ch}
 .entry-page .detail-body p{margin:0 0 18px}
@@ -931,7 +939,7 @@ body.modal-open{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 
 /* on an entry, the thread it belongs to */
 .journey-of{
-  margin:0 0 14px;display:flex;align-items:baseline;gap:10px;
+  margin:0;display:flex;align-items:baseline;gap:8px;
   font:10px var(--mono);text-transform:uppercase;letter-spacing:.12em;
 }
 .journey-of a{color:var(--topic,var(--ink));border-bottom:1px solid currentColor;padding-bottom:1px}
@@ -1263,7 +1271,7 @@ aside .section-title{display:flex;align-items:baseline}
 /* Entry pages keep one shared reading system, with the room's material at
    their edges: recognisable, but calm enough for long-form prose. */
 .entry-page{position:relative;padding:30px;border:1px solid color-mix(in srgb,var(--space) 32%,var(--line));background-color:var(--surface);background-image:linear-gradient(90deg,color-mix(in srgb,var(--space) 12%,transparent),transparent 22%);box-shadow:inset 6px 0 0 color-mix(in srgb,var(--space) 72%,transparent)}
-.entry-space-link{font:700 8px var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--space);margin-left:auto;text-decoration:none;border-bottom:1px solid currentColor}
+.entry-space-link{font:700 9px var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--space);margin-left:auto;text-decoration:none;border-bottom:1px solid currentColor;white-space:nowrap}
 .entry-space-technology{background-image:linear-gradient(90deg,color-mix(in srgb,var(--space) 13%,transparent),transparent 25%),linear-gradient(rgba(28,110,99,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(28,110,99,.055) 1px,transparent 1px);background-size:auto,24px 24px,24px 24px}
 .entry-space-reading{background-image:repeating-linear-gradient(to bottom,transparent 0 31px,rgba(138,90,18,.08) 31px 32px)}
 .entry-space-music{box-shadow:inset 6px 0 0 var(--space),inset 14px 0 0 color-mix(in srgb,var(--space) 18%,transparent)}
@@ -1283,7 +1291,7 @@ aside .section-title{display:flex;align-items:baseline}
 
 @media(max-width:800px){
   .space-card{min-height:225px;padding:112px 18px 18px}.space-reading-preview,.space-tech-preview,.space-music-preview,.space-life-preview,.space-garden-preview{height:100px}
-  .entry-page{padding:22px 18px}.entry-space-link{width:100%;margin:3px 0 0}
+  .entry-page{padding:22px 18px}.entry-space-link{margin-left:0}
 }
 @media(max-width:480px){
   .topic-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.space-card{min-height:190px;padding:94px 13px 13px}.space-reading-preview,.space-tech-preview,.space-music-preview,.space-life-preview,.space-garden-preview{height:82px}.space-card h2{font-size:19px}.space-card>p,.space-card .topic-kids{display:none}
