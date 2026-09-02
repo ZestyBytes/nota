@@ -28,8 +28,8 @@ The app offers a few ways back into them:
 
 - **Home** explains the archive and shows what was added recently.
 - **Calendar** returns to the things that happened on a particular day.
-- **Library** groups records by what they are: writing, books, quotations,
-  notes and photographs.
+- **Library** groups records by what they are: highlights, notes, journeys,
+  books and photographs.
 - **Spaces** groups them by what they are about. Each room has its own design
   because food, music, technology and family should not feel interchangeable.
 - **To-do** keeps practical things visible without making them the centre of
@@ -65,8 +65,9 @@ I like that the technology stays behind the writing. The archive does not own
 the memories; it is simply a way of arranging files I already control.
 
 It can also grow slowly. A new topic can become its own room. A run of related
-entries can become a journey. The design can change without rewriting the
-content underneath it.
+entries can become a journey, and a journey heading somewhere measurable can
+carry a progress bar without any of that being designed in advance. The look
+can change without rewriting the content underneath it.
 
 Noted is still becoming itself, which is part of the appeal. It is not meant to
 be a perfect record of everything. It is a place for the things I would be

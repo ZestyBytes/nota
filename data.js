@@ -126,20 +126,41 @@ window.NOTED_DATA = {
       "ground": "wedge",
       "photo": "",
       "description": "The Mini, the road, and the days worth the drive"
-    },
-    "gardening": {
-      "name": "Gardening",
-      "icon": "leaf",
-      "color": "#3f6b2e",
-      "soft": "#e4ead9",
-      "ground": "hatch",
-      "photo": "",
-      "description": "Seasons, seedlings and life outdoors"
     }
   },
   "entries": [
     {
-      "id": "journal/here-we-go",
+      "id": "journal/school-starts",
+      "type": "Journal",
+      "title": "School Starts",
+      "excerpt": "First day back at school for Molly, going into year 4. Ruby moves up into the big room at nursery.",
+      "body": "First day back at school for Molly, going into year 4. Ruby moves up into the\nbig room at nursery.\n\n![](assets/vault/attachments/IMG_5839.jpeg)\n\nStill not feeling great post surgery, as the throbbing face ache continues.\n\nMemory assessment with the GP this morning, which I forgot about until the\ncalendar alert came through. Dropped the kids off as part of the usual battle,\nin a new car this time, and then arrived at the doctor's half an hour early.\nI really should slow down and read the details.\n\n![](assets/vault/attachments/IMG_5846.mov)",
+      "view": "",
+      "topics": [
+        "family"
+      ],
+      "occurredAt": "2026-09-02",
+      "createdAt": "2026-09-02",
+      "publishedAt": "2026-09-02",
+      "writing": false,
+      "journey": "",
+      "day": 0,
+      "metric": null,
+      "start": null,
+      "target": null,
+      "unit": "",
+      "image": "assets/vault/attachments/IMG_5839.jpeg",
+      "imageAlt": "",
+      "images": [
+        {
+          "src": "assets/vault/attachments/IMG_5839.jpeg",
+          "alt": ""
+        }
+      ],
+      "attachments": []
+    },
+    {
+      "id": "journal/the-tooth-and-a-bag-of-peas",
       "type": "Journal",
       "title": "The tooth, and a bag of peas",
       "excerpt": "A bad night with a tooth, seen off with a bag of frozen peas held against my face at two in the morning. Not a long term plan.",
@@ -173,41 +194,11 @@ window.NOTED_DATA = {
       "attachments": []
     },
     {
-      "id": "journal/school-starts",
-      "type": "Journal",
-      "title": "School Starts",
-      "excerpt": "First day back at school for Molly, going into year 4!",
-      "body": "First day back at school for Molly, going into year 4! \n\nRuby moves up into the big room at nursery.\n\nStill not feeling great post surgery as the throbbing face ache continues.\n\nMemory assessment with the GP this morning. Forgot it was today until the calendar alert came through, dropped the kids off as part of the usual battle (but in a new car this time) and arrived at the doctors half an hour before my appointment. I really should slow down and read the details!![](assets/vault/attachments/IMG_5839.jpeg)![](assets/vault/attachments/IMG_5846.mov)",
-      "view": "",
-      "topics": [
-        "family"
-      ],
-      "occurredAt": "2026-09-02",
-      "createdAt": "2026-09-02",
-      "publishedAt": "2026-09-02",
-      "writing": false,
-      "journey": "",
-      "day": 0,
-      "metric": null,
-      "start": null,
-      "target": null,
-      "unit": "",
-      "image": "assets/vault/attachments/IMG_5839.jpeg",
-      "imageAlt": "",
-      "images": [
-        {
-          "src": "assets/vault/attachments/IMG_5839.jpeg",
-          "alt": ""
-        }
-      ],
-      "attachments": []
-    },
-    {
       "id": "notes/why-i-made-noted",
       "type": "Note",
       "title": "Why I made Noted",
       "excerpt": "I made Noted because too much of life disappears into places I rarely return to: photographs in a camera roll, thoughts in a notes app, books on a shelf, jobs on a to-do list, and small memories that never get written down at all.",
-      "body": "I made Noted because too much of life disappears into places I rarely return\nto: photographs in a camera roll, thoughts in a notes app, books on a shelf,\njobs on a to-do list, and small memories that never get written down at all.\n\nI wanted one place that could hold all of it without feeling like another\nproductivity system. Something personal, playful and calm; a place I would\nactually enjoy revisiting, and could share with family and friends.\n\n## What belongs here\n\nNoted is part journal, part library and part personal archive. A school morning\ncan sit beside a car story, a recipe, a quotation, a technical log or the next\nstep in learning guitar. They are different kinds of record, but they all\nbelong to the same life.\n\nThe app offers a few ways back into them:\n\n- **Home** explains the archive and shows what was added recently.\n- **Calendar** returns to the things that happened on a particular day.\n- **Library** groups records by what they are: writing, books, quotations,\n  notes and photographs.\n- **Spaces** groups them by what they are about. Each room has its own design\n  because food, music, technology and family should not feel interchangeable.\n- **To-do** keeps practical things visible without making them the centre of\n  the archive.\n\n## How it works\n\nEverything begins as an ordinary Markdown file in **Obsidian**. That means the\nwriting is mine, readable without a special service, and easy to keep for the\nlong term. Photographs and videos can be added from the same vault.\n\nOn my phone, **Working Copy** lets me commit those files to GitHub. A publish\nflag in a note decides whether it is included on the site, so drafts and\nprivate material can remain in the vault.\n\nWhen a change reaches GitHub, an automated build reads the Obsidian files from\nthe **Quartz 5** content folder. A small JavaScript data builder turns their\nfrontmatter, Markdown, links and media into the archive Noted expects. The\nfront end is a lightweight custom progressive web app, so it can be installed,\nwork from a cache and update itself when a new version is published.\n\nThe finished static files are deployed to **GitHub Pages**. There is no public\neditor and no database required for the published archive: the Markdown files\nremain the source of truth.\n\nIn short:\n\n`Obsidian → Working Copy → GitHub → build → GitHub Pages`\n\n## Why build it this way\n\nI like that the technology stays behind the writing. The archive does not own\nthe memories; it is simply a way of arranging files I already control.\n\nIt can also grow slowly. A new topic can become its own room. A run of related\nentries can become a journey. The design can change without rewriting the\ncontent underneath it.\n\nNoted is still becoming itself, which is part of the appeal. It is not meant to\nbe a perfect record of everything. It is a place for the things I would be\nsorry to forget.",
+      "body": "I made Noted because too much of life disappears into places I rarely return\nto: photographs in a camera roll, thoughts in a notes app, books on a shelf,\njobs on a to-do list, and small memories that never get written down at all.\n\nI wanted one place that could hold all of it without feeling like another\nproductivity system. Something personal, playful and calm; a place I would\nactually enjoy revisiting, and could share with family and friends.\n\n## What belongs here\n\nNoted is part journal, part library and part personal archive. A school morning\ncan sit beside a car story, a recipe, a quotation, a technical log or the next\nstep in learning guitar. They are different kinds of record, but they all\nbelong to the same life.\n\nThe app offers a few ways back into them:\n\n- **Home** explains the archive and shows what was added recently.\n- **Calendar** returns to the things that happened on a particular day.\n- **Library** groups records by what they are: highlights, notes, journeys,\n  books and photographs.\n- **Spaces** groups them by what they are about. Each room has its own design\n  because food, music, technology and family should not feel interchangeable.\n- **To-do** keeps practical things visible without making them the centre of\n  the archive.\n\n## How it works\n\nEverything begins as an ordinary Markdown file in **Obsidian**. That means the\nwriting is mine, readable without a special service, and easy to keep for the\nlong term. Photographs and videos can be added from the same vault.\n\nOn my phone, **Working Copy** lets me commit those files to GitHub. A publish\nflag in a note decides whether it is included on the site, so drafts and\nprivate material can remain in the vault.\n\nWhen a change reaches GitHub, an automated build reads the Obsidian files from\nthe **Quartz 5** content folder. A small JavaScript data builder turns their\nfrontmatter, Markdown, links and media into the archive Noted expects. The\nfront end is a lightweight custom progressive web app, so it can be installed,\nwork from a cache and update itself when a new version is published.\n\nThe finished static files are deployed to **GitHub Pages**. There is no public\neditor and no database required for the published archive: the Markdown files\nremain the source of truth.\n\nIn short:\n\n`Obsidian → Working Copy → GitHub → build → GitHub Pages`\n\n## Why build it this way\n\nI like that the technology stays behind the writing. The archive does not own\nthe memories; it is simply a way of arranging files I already control.\n\nIt can also grow slowly. A new topic can become its own room. A run of related\nentries can become a journey, and a journey heading somewhere measurable can\ncarry a progress bar without any of that being designed in advance. The look\ncan change without rewriting the content underneath it.\n\nNoted is still becoming itself, which is part of the appeal. It is not meant to\nbe a perfect record of everything. It is a place for the things I would be\nsorry to forget.",
       "view": "",
       "topics": [
         "life",
@@ -412,8 +403,8 @@ window.NOTED_DATA = {
       "id": "notes/a-week-living-with-omarchy",
       "type": "Note",
       "title": "A week living with Omarchy",
-      "excerpt": "Small, deliberate defaults have changed how the computer feels to use. The result is not merely faster; it is calmer.",
-      "body": "Small, deliberate defaults have changed how the computer feels to use. The result is not merely faster; it is calmer.\n\nRelated: [[Technology]]",
+      "excerpt": "A week in, and the thing I keep noticing is what I am not doing. No fiddling with the panel, no hunting for the setting that turns off the animation I did not ask for. The defaults were chosen by someone who had already made the decision, so I do not have to make it again.",
+      "body": "A week in, and the thing I keep noticing is what I am not doing. No fiddling\nwith the panel, no hunting for the setting that turns off the animation I did\nnot ask for. The defaults were chosen by someone who had already made the\ndecision, so I do not have to make it again.\n\nThat is the whole pitch, really. It is not that the machine is faster. It is\nthat it stops asking.\n\nThe test of it is whether I want to extend it, and I did: two plugins so far,\nfor the cameras and the mesh. See [[Two plugins, live]].",
       "view": "",
       "topics": [
         "technology"
@@ -478,12 +469,11 @@ window.NOTED_DATA = {
       "id": "recipes/slow-roast-tomato-focaccia",
       "type": "Note",
       "title": "Slow-roast tomato focaccia",
-      "excerpt": "A forgiving dough, tomatoes from the garden, and enough olive oil to crisp the edges.",
-      "body": "![Fresh tomato and rosemary focaccia in its baking tray](assets/posts/slow-roast-tomato-focaccia.jpg)\n\nA forgiving dough, tomatoes from the garden, and enough olive oil to crisp the edges.\n\n## You'll need\n\n- 500g strong flour\n- Ripe tomatoes\n- Sea salt\n- Good olive oil",
+      "excerpt": "A forgiving dough that asks for time rather than skill. The tomatoes go on raw and collapse into the surface as it bakes, so most of the work is done by the oven while you are somewhere else.",
+      "body": "![Fresh tomato and rosemary focaccia in its baking tray](assets/posts/slow-roast-tomato-focaccia.jpg)\n\nA forgiving dough that asks for time rather than skill. The tomatoes go on raw\nand collapse into the surface as it bakes, so most of the work is done by the\noven while you are somewhere else.\n\n## You'll need\n\n- 500g strong white bread flour\n- 400ml warm water\n- 7g fast action dried yeast\n- 10g fine salt\n- 6 tbsp olive oil, plus more for the tin and the top\n- 300g ripe cherry tomatoes, halved\n- A few sprigs of rosemary\n- Flaky sea salt\n\n## Method\n\n1. Mix the flour, yeast and salt in a large bowl. Pour in the water and 2 tbsp\n   of the oil and bring it together with a hand. It will be wetter and looser\n   than a dough you can knead, which is correct.\n2. Cover and leave for 2 hours, folding the dough over itself three or four\n   times at the half hour mark and again an hour in. Each fold takes ten\n   seconds and does the work kneading would have done.\n3. Pour 2 tbsp of oil into a roughly 20 by 30cm tin and tip the dough in.\n   Stretch it gently towards the corners, leave it 20 minutes, then stretch\n   again. It will reach the edges on the second go.\n4. Heat the oven to 220C fan. Oil your fingers and press dimples right down\n   through the dough. Push the tomato halves cut side up into the dimples,\n   tuck in the rosemary, then drizzle over the last 2 tbsp of oil and a good\n   pinch of flaky salt.\n5. Bake 22 to 25 minutes, until the top is deep gold and the tomatoes have\n   started to catch at the edges.\n6. Lift it out of the tin onto a rack as soon as it is cool enough to handle,\n   or the base goes soft.\n\n## Notes\n\nCold or watery tomatoes will steam rather than roast. Halve them an hour ahead\nand leave them cut side up on kitchen paper if they are very juicy.\n\nLeftovers split and toasted the next morning are arguably better than the\nfirst day.",
       "view": "recipe",
       "topics": [
-        "recipes",
-        "gardening"
+        "recipes"
       ],
       "occurredAt": "2026-08-21",
       "createdAt": "2026-08-21",
@@ -509,12 +499,23 @@ window.NOTED_DATA = {
         "serves": "8",
         "difficulty": "easy",
         "ingredients": [
-          "500g strong flour",
-          "Ripe tomatoes",
-          "Sea salt",
-          "Good olive oil"
+          "500g strong white bread flour",
+          "400ml warm water",
+          "7g fast action dried yeast",
+          "10g fine salt",
+          "6 tbsp olive oil, plus more for the tin and the top",
+          "300g ripe cherry tomatoes, halved",
+          "A few sprigs of rosemary",
+          "Flaky sea salt"
         ],
-        "method": []
+        "method": [
+          "Mix the flour, yeast and salt in a large bowl. Pour in the water and 2 tbsp of the oil and bring it together with a hand. It will be wetter and looser than a dough you can knead, which is correct.",
+          "Cover and leave for 2 hours, folding the dough over itself three or four times at the half hour mark and again an hour in. Each fold takes ten seconds and does the work kneading would have done.",
+          "Pour 2 tbsp of oil into a roughly 20 by 30cm tin and tip the dough in. Stretch it gently towards the corners, leave it 20 minutes, then stretch again. It will reach the edges on the second go.",
+          "Heat the oven to 220C fan. Oil your fingers and press dimples right down through the dough. Push the tomato halves cut side up into the dimples, tuck in the rosemary, then drizzle over the last 2 tbsp of oil and a good pinch of flaky salt.",
+          "Bake 22 to 25 minutes, until the top is deep gold and the tomatoes have started to catch at the edges.",
+          "Lift it out of the tin onto a rack as soon as it is cool enough to handle, or the base goes soft."
+        ]
       }
     },
     {
@@ -568,56 +569,6 @@ window.NOTED_DATA = {
       "attachments": []
     },
     {
-      "id": "journeys/day-7-put-content-first",
-      "type": "Journey",
-      "title": "Day 7: put the content first",
-      "excerpt": "The interface became quieter once recent stories and photographs appeared before explanations of the app itself.",
-      "body": "The interface became quieter once recent stories and photographs appeared before explanations of the app itself.",
-      "view": "",
-      "topics": [
-        "technology"
-      ],
-      "occurredAt": "2026-07-25",
-      "createdAt": "2026-07-25",
-      "publishedAt": "2026-07-25",
-      "writing": false,
-      "journey": "Building Noted (example)",
-      "day": 7,
-      "metric": null,
-      "start": null,
-      "target": null,
-      "unit": "",
-      "image": "",
-      "imageAlt": "",
-      "images": [],
-      "attachments": []
-    },
-    {
-      "id": "journeys/day-1-choose-one-small-improvement",
-      "type": "Journey",
-      "title": "Day 1: choose one small improvement",
-      "excerpt": "An example journey for testing the layout: begin with one part of the archive that should feel simpler, then improve only that.",
-      "body": "An example journey for testing the layout: begin with one part of the archive that should feel simpler, then improve only that.",
-      "view": "",
-      "topics": [
-        "technology"
-      ],
-      "occurredAt": "2026-07-18",
-      "createdAt": "2026-07-18",
-      "publishedAt": "2026-07-18",
-      "writing": false,
-      "journey": "Building Noted (example)",
-      "day": 1,
-      "metric": null,
-      "start": null,
-      "target": null,
-      "unit": "",
-      "image": "",
-      "imageAlt": "",
-      "images": [],
-      "attachments": []
-    },
-    {
       "id": "journeys/ten-kilos-week-1",
       "type": "Journey",
       "title": "Week 1: the first weigh-in",
@@ -637,56 +588,6 @@ window.NOTED_DATA = {
       "start": 92,
       "target": 82,
       "unit": "kg",
-      "image": "",
-      "imageAlt": "",
-      "images": [],
-      "attachments": []
-    },
-    {
-      "id": "journeys/day-21-the-first-green-shoots",
-      "type": "Journey",
-      "title": "Day 21: the first green shoots",
-      "excerpt": "Three weeks later, the first shoots made the progress visible. A journey can hold the quiet gaps as well as the milestones.",
-      "body": "Three weeks later, the first shoots made the progress visible. A journey can hold the quiet gaps as well as the milestones.",
-      "view": "",
-      "topics": [
-        "gardening"
-      ],
-      "occurredAt": "2026-06-28",
-      "createdAt": "2026-06-28",
-      "publishedAt": "2026-06-28",
-      "writing": false,
-      "journey": "A small kitchen garden (example)",
-      "day": 21,
-      "metric": null,
-      "start": null,
-      "target": null,
-      "unit": "",
-      "image": "",
-      "imageAlt": "",
-      "images": [],
-      "attachments": []
-    },
-    {
-      "id": "journeys/day-1-clear-the-first-patch",
-      "type": "Journey",
-      "title": "Day 1: clear the first patch",
-      "excerpt": "An example of a slower, seasonal journey: clear one manageable patch and decide what would be genuinely useful to grow.",
-      "body": "An example of a slower, seasonal journey: clear one manageable patch and decide what would be genuinely useful to grow.",
-      "view": "",
-      "topics": [
-        "gardening"
-      ],
-      "occurredAt": "2026-06-07",
-      "createdAt": "2026-06-07",
-      "publishedAt": "2026-06-07",
-      "writing": false,
-      "journey": "A small kitchen garden (example)",
-      "day": 1,
-      "metric": null,
-      "start": null,
-      "target": null,
-      "unit": "",
       "image": "",
       "imageAlt": "",
       "images": [],
@@ -752,12 +653,12 @@ window.NOTED_DATA = {
       "id": "tasks/pick-up-new-car",
       "title": "Pick up new car",
       "topics": [
-        "life"
+        "motoring"
       ],
       "dueAt": "2026-09-01",
-      "completedAt": null,
-      "note": "",
-      "body": ""
+      "completedAt": "2026-09-01",
+      "note": "Southampton, trading in the Honda Jazz. The exhaust had other ideas.",
+      "body": "Southampton, trading in the Honda Jazz. The exhaust had other ideas."
     }
   ],
   "books": [

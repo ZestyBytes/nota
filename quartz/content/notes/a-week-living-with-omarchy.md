@@ -8,6 +8,13 @@ publishedAt: 2026-08-28
 publish: true
 ---
 
-Small, deliberate defaults have changed how the computer feels to use. The result is not merely faster; it is calmer.
+A week in, and the thing I keep noticing is what I am not doing. No fiddling
+with the panel, no hunting for the setting that turns off the animation I did
+not ask for. The defaults were chosen by someone who had already made the
+decision, so I do not have to make it again.
 
-Related: [[Technology]]
+That is the whole pitch, really. It is not that the machine is faster. It is
+that it stops asking.
+
+The test of it is whether I want to extend it, and I did: two plugins so far,
+for the cameras and the mesh. See [[Two plugins, live]].

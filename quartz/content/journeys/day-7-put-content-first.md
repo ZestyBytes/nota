@@ -7,7 +7,7 @@ tags: [technology]
 occurredAt: 2026-07-25
 createdAt: 2026-07-25
 publishedAt: 2026-07-25
-publish: true
+publish: false
 ---
 
 The interface became quieter once recent stories and photographs appeared before explanations of the app itself.

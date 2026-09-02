@@ -1,8 +1,11 @@
 ---
 title: "Pick up new car"
 type: task
-tags: [life]
+tags: [motoring]
 dueAt: "2026-09-01"
-completedAt: null
+done: true
+completedAt: "2026-09-01"
 publish: true
 ---
+
+Southampton, trading in the Honda Jazz. The exhaust had other ideas.

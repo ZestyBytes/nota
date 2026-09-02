@@ -242,6 +242,10 @@ function stepsAfter(body, heading) {
     if (t.startsWith("## ")) break;
     const m = t.match(/^(?:[-*]|\d+[.)])\s+(.*)$/);
     if (m) items.push(m[1].trim());
+    // A list item wrapped over several lines is one step. Without this the
+    // continuation was dropped, so a method written normally in Obsidian lost
+    // everything after its first line.
+    else if (t && items.length) items[items.length - 1] += " " + t;
   }
   return items;
 }
@@ -255,6 +259,7 @@ function bulletsAfter(body, heading) {
     const t = lines[i].trim();
     if (t.startsWith("## ")) break;
     if (t.startsWith("- ")) items.push(t.slice(2).trim());
+    else if (t && items.length) items[items.length - 1] += " " + t;   // wrapped line
   }
   return items;
 }
