@@ -4,6 +4,7 @@ type: journal
 tags:
   - selfcare
   - hello
+  - habits
 occurredAt: 2026-09-02
 createdAt: 2026-09-02
 publishedAt: 2026-09-02
