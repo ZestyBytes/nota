@@ -40,7 +40,7 @@ function resolvePhoto(value) {
 const TOPICS = {
   gardening: { name: "Gardening", icon: "leaf", color: "#3f6b2e", soft: "#e4ead9", ground: "hatch", photo: "7728082", description: "Seasons, seedlings and life outdoors" },
   music: { name: "Music", icon: "music", color: "#a13a2e", soft: "#f0e1dd", ground: "ink", photo: "", description: "Practice, listening and the guitar journey" },
-  technology: { name: "Technology", mode: "tech", icon: "terminal", color: "#1c6e63", soft: "#dbe9e6", ground: "grid", photo: "", description: "Tools, code and thoughtful technology" },
+  technology: { name: "Technology", mode: "tech", icon: "terminal", color: "#1c6e63", soft: "#dbe9e6", ground: "grid", photo: "34054502", description: "Tools, code and thoughtful technology" },
   selfcare: { name: "Self care", icon: "heart", color: "#3f6470", soft: "#dde7ea", ground: "wash", photo: "", description: "Looking after the machine: health, mind and upkeep" },
   adhd: { name: "ADHD", parent: "selfcare", icon: "mind", color: "#5b4a9e", soft: "#e5e1f2", ground: "fade", photo: "", description: "Understanding attention and living well" },
   books: { name: "Books", icon: "book", color: "#8a5a12", soft: "#ece0cb", ground: "ruled", photo: "", description: "Reading, marginalia and ideas worth keeping" },
