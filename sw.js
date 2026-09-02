@@ -30,22 +30,25 @@ self.addEventListener("fetch",event=>{
   const request=event.request;
   if(request.method!=="GET")return;
   const url=new URL(request.url);
-  if(url.origin!==location.origin){
-    // Remote images, chiefly the book covers, were refetched on every visit
-    // because nothing here cached them. Keep them and serve from the cache,
-    // so a cover appears the instant a shelf is opened. Anything else remote,
-    // such as the fonts, is left to the browser.
-    if(request.destination!=="image")return;
+  // Every picture, wherever it comes from, lives in the media cache. This used
+  // to apply to remote images only, so the archive's own photographs went into
+  // the shell cache instead, which is stamped with the build and thrown away
+  // on every deploy: each release re-downloaded every photograph in the app.
+  // The media cache survives a deploy, because a photograph does not change
+  // when the code does.
+  if(request.destination==="image"){
     event.respondWith(caches.open(MEDIA).then(cache=>
       cache.match(request).then(hit=>hit||fetch(request).then(response=>{
-        // an image loads no-cors, so its response is opaque: status 0, still
-        // perfectly cacheable
+        // an image may load no-cors, so its response is opaque: status 0,
+        // still perfectly cacheable
         if(response.ok||response.type==="opaque")cache.put(request,response.clone());
         return response;
       }).catch(()=>hit))
     ));
     return;
   }
+  // Anything else remote, such as the fonts, is left to the browser.
+  if(url.origin!==location.origin)return;
 
   // version.json says which build is deployed. Never cached, or the check
   // that reads it could never see a new one.
