@@ -977,3 +977,29 @@ aside .section-title{display:flex;align-items:baseline}
   .selected-day .day-tasks .task{grid-template-columns:auto 1fr auto}
   .selected-day .day-tasks .task .chip{display:inline-block}
 }
+
+/* ---------- a topic card carrying a real photograph ---------- */
+/* The most recent picture taken under that topic, sat as a band across the
+   head with the type on clean paper below it, so nothing is read over an
+   image. A topic with no photograph keeps its drawn ground instead. */
+/* A fixed band rather than a percentage, because the card's own content sets
+   its height: a percentage band and the type it has to clear chase each other
+   and the title lands on the photograph. */
+.topic-card.has-photo{--band:96px;background:var(--surface);padding-top:calc(var(--band) + 16px)}
+.topic-photo{
+  position:absolute;inset:0 0 auto;width:100%;height:var(--band);
+  object-fit:cover;object-position:center 42%;
+  border-bottom:1px solid var(--line);
+  filter:saturate(.85) brightness(.98);
+}
+/* over a photograph a shadow is not enough; give the count the same small
+   plate the gallery thumbnails use */
+.has-photo .topic-count{top:12px;right:12px;z-index:2;color:#fff;
+  background:rgba(0,0,0,.46);padding:3px 6px 2px;border-radius:2px}
+.has-photo .topic-motif,.has-photo .topic-mark{display:none}
+.has-photo:before,.has-photo:after{z-index:3}
+@media(max-width:800px){.topic-card.has-photo{--band:86px}}
+@media(max-width:480px){.topic-card.has-photo{--band:72px;padding-top:calc(var(--band) + 12px)}}
+@media(prefers-color-scheme:dark){
+  .topic-photo{filter:saturate(.78) brightness(.82)}
+}
