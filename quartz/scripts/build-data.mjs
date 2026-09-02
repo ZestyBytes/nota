@@ -21,14 +21,14 @@ const OUT_PATH = outIdx >= 0 ? args[outIdx + 1] : join(__dirname, "..", "..", "d
 
 // Topic taxonomy, mirroring the paths declared in content/topics.md.
 const TOPICS = {
-  gardening: { name: "Gardening", icon: "leaf", color: "#3f6b2e", soft: "#e4ead9", ground: "hatch", description: "Seasons, seedlings and life outdoors" },
+  gardening: { name: "Gardening", icon: "leaf", color: "#3f6b2e", soft: "#e4ead9", ground: "hatch", photo: "https://images.pexels.com/photos/7728082/pexels-photo-7728082.jpeg?auto=compress&cs=tinysrgb&w=1400", description: "Seasons, seedlings and life outdoors" },
   music: { name: "Music", icon: "music", color: "#a13a2e", soft: "#f0e1dd", ground: "ink", description: "Practice, listening and the guitar journey" },
   technology: { name: "Technology", mode: "tech", icon: "terminal", color: "#1c6e63", soft: "#dbe9e6", ground: "grid", description: "Tools, code and thoughtful technology" },
   selfcare: { name: "Self care", icon: "heart", color: "#3f6470", soft: "#dde7ea", ground: "wash", description: "Looking after the machine: health, mind and upkeep" },
   adhd: { name: "ADHD", parent: "selfcare", icon: "mind", color: "#5b4a9e", soft: "#e5e1f2", ground: "fade", description: "Understanding attention and living well" },
   books: { name: "Books", icon: "book", color: "#8a5a12", soft: "#ece0cb", ground: "ruled", description: "Reading, marginalia and ideas worth keeping" },
   family: { name: "Family", icon: "home", color: "#96355a", soft: "#eddce3", ground: "band", description: "Home life and shared memories" },
-  food: { name: "Food", icon: "fork", color: "#8a4a1a", soft: "#ecddcb", ground: "coarse", description: "Recipes, experiments and things made for the table" },
+  food: { name: "Food", icon: "fork", color: "#8a4a1a", soft: "#ecddcb", ground: "coarse", photo: "https://images.pexels.com/photos/6605214/pexels-photo-6605214.jpeg?auto=compress&cs=tinysrgb&w=1400", description: "Recipes, experiments and things made for the table" },
   recipes: { name: "Recipes", parent: "food", mode: "recipes", icon: "fork", color: "#a25a1e", soft: "#f0e2d2", ground: "duo", description: "Things made at home, and how they were made" },
   eatingout: { name: "Eating out", parent: "food", icon: "cup", color: "#7a5a2e", soft: "#ece1d0", ground: "plain", description: "Meals out worth remembering" },
   lifestyle: { name: "Lifestyle", icon: "cup", color: "#2f5d8a", soft: "#dde5ee", ground: "verticals", description: "Everyday life, plans and the practical things" },

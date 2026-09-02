@@ -399,13 +399,16 @@ function topicLatest(id){return state.data.entries.filter(e=>inTopic(e,id)).map(
 // it changes on its own as you write. A topic with no photograph keeps its
 // drawn ground.
 function topicPhoto(id){
+  // A topic names its own picture with `photo:` in build-data, which is what
+  // a stock image is wired in through. Failing that it borrows the most
+  // recent photograph taken under it, so a topic you write about with a
+  // camera ends up illustrated by your own work.
+  const named=state.data.topics[id]?.photo;
+  if(named)return {src:named};
   const hit=state.data.entries
-    // only pictures kept in the archive itself. A remote URL is somebody
-    // else's stock photograph, which is the thing this is meant to replace,
-    // and it would also be the one part of the card that needs the network.
-    .filter(e=>e.image&&!/^https?:/i.test(e.image)&&inTopic(e,id))
+    .filter(e=>e.image&&inTopic(e,id))
     .sort((a,b)=>(b.occurredAt||b.createdAt||"").localeCompare(a.occurredAt||a.createdAt||""))[0];
-  return hit?{src:hit.image,alt:hit.imageAlt||""}:null;
+  return hit?{src:hit.image}:null;
 }
 function topics(){
   const sorts={items:"Most kept",name:"A to Z",recent:"Recent"};
@@ -413,7 +416,7 @@ function topics(){
   list.sort((a,b)=>state.topicSort==="name"?a.t.name.localeCompare(b.t.name)
     :state.topicSort==="recent"?(b.latest||"").localeCompare(a.latest||"")||b.count-a.count
     :b.count-a.count||a.t.name.localeCompare(b.t.name));
-  return `<section>${pageHead("Paths through the archive","Topics","Each topic has a quiet default appearance, or an optional view shaped around its material, without changing the underlying taxonomy.")}<div class="search-filters topic-sort">${Object.entries(sorts).map(([k,label])=>`<button class="filter ${state.topicSort===k?"active":""}" data-topicsort="${k}">${label}</button>`).join("")}</div><div class="topic-grid">${list.map(({id,t,count,latest,kids})=>`${(()=>{const photo=topicPhoto(id);return `<button class="topic-card ${photo?"has-photo":`ground-${t.ground||"plain"}`}" data-topic="${id}" style="--topic:${t.color};--soft:${t.soft}">${photo?`<img class="topic-photo" src="${esc(photo.src)}" alt="" loading="lazy">`:""}${!photo&&t.ground==="wedge"?`<span class="topic-flag" aria-hidden="true"></span>`:""}${t.icon?`<span class="topic-motif" aria-hidden="true">${icon(t.icon)}</span>`:`<span class="topic-mark" aria-hidden="true">${esc(t.name[0])}</span>`}<span class="topic-count">${count} ${count===1?"item":"items"}</span><h2>${esc(t.name)}</h2><p>${esc(t.description)}</p>${kids.length?`<span class="topic-kids">${kids.map(k=>`<span class="kid" data-topic="${k}" style="--topic:${state.data.topics[k].color}">${esc(state.data.topics[k].name)}</span>`).join("")}</span>`:""}<span class="topic-foot">${t.mode?"Tailored view":latest?fmtDate(latest):"&nbsp;"}</span></button>`})()}`).join("")}</div></section>`;
+  return `<section>${pageHead("Paths through the archive","Topics","Each topic has a quiet default appearance, or an optional view shaped around its material, without changing the underlying taxonomy.")}<div class="search-filters topic-sort">${Object.entries(sorts).map(([k,label])=>`<button class="filter ${state.topicSort===k?"active":""}" data-topicsort="${k}">${label}</button>`).join("")}</div><div class="topic-grid">${list.map(({id,t,count,latest,kids})=>`${(()=>{const photo=topicPhoto(id);return `<button class="topic-card ground-${t.ground||"plain"} ${photo?"has-photo":""}" data-topic="${id}" style="--topic:${t.color};--soft:${t.soft}">${photo?`<img class="topic-photo" src="${esc(photo.src)}" alt="" loading="lazy" onerror="this.closest('.topic-card').classList.remove('has-photo');this.nextElementSibling?.remove();this.remove()"><span class="topic-shade" aria-hidden="true"></span>`:""}${!photo&&t.ground==="wedge"?`<span class="topic-flag" aria-hidden="true"></span>`:""}${t.icon?`<span class="topic-motif" aria-hidden="true">${icon(t.icon)}</span>`:`<span class="topic-mark" aria-hidden="true">${esc(t.name[0])}</span>`}<span class="topic-count">${count} ${count===1?"item":"items"}</span><h2>${esc(t.name)}</h2><p>${esc(t.description)}</p>${kids.length?`<span class="topic-kids">${kids.map(k=>`<span class="kid" data-topic="${k}" style="--topic:${state.data.topics[k].color}">${esc(state.data.topics[k].name)}</span>`).join("")}</span>`:""}<span class="topic-foot">${t.mode?"Tailored view":latest?fmtDate(latest):"&nbsp;"}</span></button>`})()}`).join("")}</div></section>`;
 }
 // Search reads the whole note, not just its first paragraph. Everything the
 // archive is for is finding a thing again later, and the words that identify
