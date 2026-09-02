@@ -1,7 +1,9 @@
 ---
 title: Manual Note
 type: journal
-tags: []
+tags:
+  - selfcare
+  - hello
 occurredAt: 2026-09-02
 createdAt: 2026-09-02
 publishedAt: 2026-09-02
