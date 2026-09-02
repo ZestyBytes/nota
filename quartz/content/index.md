@@ -1,16 +1,16 @@
 ---
-title: Nota
+title: Noted
 description: A living personal archive of photographs, stories, ideas, books and projects.
 publish: true
 date: 2026-08-31
-tags: [nota]
+tags: [noted]
 ---
 
-<nav class="nota-nav"><a class="active" href="./">Home</a><a href="calendar">Calendar</a><a href="library">Library</a><a href="topics">Spaces</a><a href="about">About</a><button onclick="document.querySelector('.search-button')?.click()">Search</button></nav>
+<nav class="noted-nav"><a class="active" href="./">Home</a><a href="calendar">Calendar</a><a href="library">Library</a><a href="topics">Spaces</a><a href="about">About</a><button onclick="document.querySelector('.search-button')?.click()">Search</button></nav>
 
 <p class="archive-deck">Photographs, stories, ideas, books and projects—kept together so the ordinary days do not disappear.</p>
 
-<button class="archive-search" onclick="document.querySelector('.search-button')?.click()"><span>Search Nota</span><strong>Find a person, place, project or date</strong></button>
+<button class="archive-search" onclick="document.querySelector('.search-button')?.click()"><span>Search Noted</span><strong>Find a person, place, project or date</strong></button>
 
 <div class="archive-tabs"><span>Latest</span><a href="library">Library</a><a href="calendar">Calendar</a><a href="topics">Spaces</a></div>
 

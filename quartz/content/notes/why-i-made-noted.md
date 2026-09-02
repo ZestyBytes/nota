@@ -1,5 +1,5 @@
 ---
-title: Why I made Nota
+title: Why I made Noted
 type: note
 tags: [life, technology]
 occurredAt: "2026-09-02"
@@ -9,7 +9,7 @@ writing: true
 publish: true
 ---
 
-I made Nota because too much of life disappears into places I rarely return
+I made Noted because too much of life disappears into places I rarely return
 to: photographs in a camera roll, thoughts in a notes app, books on a shelf,
 jobs on a to-do list, and small memories that never get written down at all.
 
@@ -19,7 +19,7 @@ actually enjoy revisiting, and could share with family and friends.
 
 ## What belongs here
 
-Nota is part journal, part library and part personal archive. A school morning
+Noted is part journal, part library and part personal archive. A school morning
 can sit beside a car story, a recipe, a quotation, a technical log or the next
 step in learning guitar. They are different kinds of record, but they all
 belong to the same life.
@@ -47,7 +47,7 @@ private material can remain in the vault.
 
 When a change reaches GitHub, an automated build reads the Obsidian files from
 the **Quartz 5** content folder. A small JavaScript data builder turns their
-frontmatter, Markdown, links and media into the archive Nota expects. The
+frontmatter, Markdown, links and media into the archive Noted expects. The
 front end is a lightweight custom progressive web app, so it can be installed,
 work from a cache and update itself when a new version is published.
 
@@ -68,6 +68,6 @@ It can also grow slowly. A new topic can become its own room. A run of related
 entries can become a journey. The design can change without rewriting the
 content underneath it.
 
-Nota is still becoming itself, which is part of the appeal. It is not meant to
+Noted is still becoming itself, which is part of the appeal. It is not meant to
 be a perfect record of everything. It is a place for the things I would be
 sorry to forget.

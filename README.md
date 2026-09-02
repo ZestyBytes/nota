@@ -1,9 +1,9 @@
-# nota
+# noted
 
 A private-first, read/search-only record of days, thoughts, books, quotations
 and things worth keeping, written in Obsidian published as a static PWA.
 
-**Live:** <https://zestybytes.github.io/nota/>
+**Live:** <https://zestybytes.github.io/noted/>
 
 ## How this repo is put together
 
@@ -59,9 +59,9 @@ To preview with your actual published content (what the live site will
 actually show once you push):
 
 ```sh
-node quartz/scripts/build-data.mjs --out /tmp/nota-preview/data.js
-cp index.html app.js styles.css config.js backend.js manifest.webmanifest icon.svg sw.js /tmp/nota-preview/
-cd /tmp/nota-preview && python3 -m http.server 8787
+node quartz/scripts/build-data.mjs --out /tmp/noted-preview/data.js
+cp index.html app.js styles.css config.js backend.js manifest.webmanifest icon.svg sw.js /tmp/noted-preview/
+cd /tmp/noted-preview && python3 -m http.server 8787
 ```
 
 ## Alternate preview (Quartz's own rendered view)
@@ -91,7 +91,7 @@ Push to `main` (or merge into it). `.github/workflows/pages.yml`:
 4. Deploys `dist/` to GitHub Pages.
 
 Takes about 30–40 seconds end to end. Watch it with `gh run list --workflow=pages.yml`
-or at `github.com/ZestyBytes/nota/actions`.
+or at `github.com/ZestyBytes/noted/actions`.
 
 ## Optional: Supabase-backed private mode
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Reads the real Obsidian content in quartz/content and emits a data.js
-// (window.NOTA_DATA = {...}) in the exact shape the Nota PWA (app.js)
+// (window.NOTED_DATA = {...}) in the exact shape the Noted PWA (app.js)
 // expects. Only files with `publish: true` are included, the same rule
 // quartz's own explicit-publish plugin enforces, so private planning and
 // drafts never leave Obsidian.
@@ -44,7 +44,7 @@ const TOPICS = {
   family:     { name: "Family", icon: "home", color: "#96355a", soft: "#eddce3", ground: "band", photo: "", description: "Home life and shared memories" },
   life:       { name: "Life", icon: "cup", color: "#2f5d8a", soft: "#dde5ee", ground: "verticals", photo: "", description: "Everyday life, plans and the practical things" },
   selfcare:   { name: "Self care", parent: "life", icon: "heart", color: "#3f6470", soft: "#dde7ea", ground: "wash", photo: "", description: "Looking after the machine: health, mind and upkeep" },
-  adhd:       { name: "ADHD", parent: "life", icon: "mind", color: "#5b4a9e", soft: "#e5e1f2", ground: "fade", photo: "", description: "Understanding attention and living well" },
+  adhd:       { name: "Attention", parent: "life", icon: "mind", color: "#5b4a9e", soft: "#e5e1f2", ground: "fade", photo: "", description: "Understanding attention and living well" },
   habits:     { name: "Habits", parent: "life", icon: "repeat", color: "#6b3f6b", soft: "#e9dfe9", ground: "crosshatch", photo: "assets/posts/eight-japanese-principles-for-habits.jpg", description: "Practices worth repeating, and what makes them stick" },
   music:      { name: "Music", icon: "music", color: "#a13a2e", soft: "#f0e1dd", ground: "ink", photo: "assets/posts/on-repeat.jpg", description: "Listening, playing, and what the speakers are on" },
   playlist:   { name: "Playlist", parent: "music", mode: "listen", icon: "disc", color: "#6b6a2e", soft: "#e9e8d3", ground: "dots", photo: "", description: "Records, podcasts and things worth listening to" },
@@ -200,6 +200,15 @@ function plain(text) {
     .trim();
 }
 
+// YAML gives a Date for an unquoted 2026-09-01 and a string for a quoted one.
+// Everything downstream compares plain YYYY-MM-DD, so flatten both to that.
+function dateOnly(value) {
+  if (!value) return null;
+  if (value instanceof Date) return Number.isNaN(value.getTime()) ? null : value.toISOString().slice(0, 10);
+  const text = String(value).trim();
+  return /^\d{4}-\d{2}-\d{2}/.test(text) ? text.slice(0, 10) : null;
+}
+
 function firstParagraph(body) {
   const lines = body.split("\n");
   const paras = [];
@@ -274,8 +283,13 @@ for (const file of files) {
   const topics = topicsOf(data);
 
   if (data.type === "task") {
+    // Two ways to finish a task. A date in completedAt is exact, but on a phone
+    // "done: true" is one word, so accept that too and take the day the file
+    // was last saved as the date it was seen off.
+    const flagged = data.done === true || data.completed === true || String(data.status || "").toLowerCase() === "done";
+    const completedAt = dateOnly(data.completedAt) || (flagged ? dateOnly(statSync(file).mtime) : null);
     tasks.push({ id: slug, title: data.title, topics: topics.length ? topics : ["books"],
-      dueAt: data.dueAt || "", completedAt: data.completedAt || null,
+      dueAt: data.dueAt || "", completedAt,
       note: firstParagraph(body), body: body.trim() });
     continue;
   }
@@ -351,5 +365,5 @@ const payload = {
 };
 
 mkdirSync(dirname(OUT_PATH), { recursive: true });
-writeFileSync(OUT_PATH, `window.NOTA_DATA = ${JSON.stringify(payload, null, 2)};\n`);
+writeFileSync(OUT_PATH, `window.NOTED_DATA = ${JSON.stringify(payload, null, 2)};\n`);
 console.log(`Wrote ${entries.length} entries, ${tasks.length} tasks, ${books.length} books, ${Object.keys(payload.topics).length} topics -> ${OUT_PATH}`);

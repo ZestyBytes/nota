@@ -12,7 +12,7 @@ Jamie, the sole owner and user. A single-person private journal/notebook, not a 
 
 ## Product Purpose
 
-Nota is a private-first record of days, thoughts, books, quotations, and things worth keeping. It exists to give Jamie one unified place to capture journals, notes, journeys, events, quotations, recipes, and tasks, instead of scattering them across separate apps. Success is a daily record that's low-friction to capture into and pleasant to browse back through (calendar, full-archive search, topics, book library).
+Noted is a private-first record of days, thoughts, books, quotations, and things worth keeping. It exists to give Jamie one unified place to capture journals, notes, journeys, events, quotations, recipes, and tasks, instead of scattering them across separate apps. Success is a daily record that's low-friction to capture into and pleasant to browse back through (calendar, full-archive search, topics, book library).
 
 ## Positioning
 
@@ -26,8 +26,8 @@ A unified daily record: one dependency-free PWA covering journaling, notes, quot
 - Views: Today, Calendar, Library, Topics, Writing (public, published-only), Search (full-archive).
 - Private attachments served via short-lived signed URLs.
 - JSON export for portable backups (Supabase free plan has no automatic DB backups, so export is the backup path).
-- Deployed via GitHub Actions to GitHub Pages under the `/nota/` project path from `main`.
-- A separate Quartz/Obsidian-based static site (`quartz/`) exists alongside the app, a different content-publishing surface, not the Nota app UI itself.
+- Deployed via GitHub Actions to GitHub Pages under the `/noted/` project path from `main`.
+- A separate Quartz/Obsidian-based static site (`quartz/`) exists alongside the app, a different content-publishing surface, not the Noted app UI itself.
 
 ## Capabilities and Constraints
 
@@ -38,7 +38,7 @@ A unified daily record: one dependency-free PWA covering journaling, notes, quot
 
 ## Brand Commitments
 
-- Name: "nota" (lowercase wordmark, styled `nota.` with the period in an accent color).
+- Name: "noted" (lowercase wordmark, styled `noted.` with the period in an accent color).
 - Existing visual identity in the root app (`styles.css`, `icon.svg`): warm paper background (`#f7f5f0`), dark ink text (`#24231f`), Georgia serif for headings/display type, Inter/system sans for UI text, a rose/pink accent (`#b35472`). This is the current incumbent system, evidenced by shipped code, and separate from and not to be confused with `design-lab/`.
 
 ## Evidence on Hand

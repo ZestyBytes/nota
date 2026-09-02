@@ -6,9 +6,10 @@
   <meta name="theme-color" content="#eef0e7" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#14160f" media="(prefers-color-scheme: dark)">
   <meta name="color-scheme" content="light dark">
-  <script>try{const t=localStorage.getItem("nota-theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
-  <meta name="description" content="Nota, a record of days, thoughts, things learnt and things worth keeping.">
-  <title>nota</title>
+  <script>try{for(const k of Object.keys(localStorage))if(k.startsWith("nota-")){const n="noted-"+k.slice(5);if(localStorage.getItem(n)===null)localStorage.setItem(n,localStorage.getItem(k));localStorage.removeItem(k)}}catch(e){}
+  try{const t=localStorage.getItem("noted-theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+  <meta name="description" content="Noted, a record of days, thoughts, things learnt and things worth keeping.">
+  <title>noted</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,7 +19,7 @@
 </head>
 <body>
   <!--
-    THESIS: Nota is a private archive of specimens to browse, not a feed and
+    THESIS: Noted is a private archive of specimens to browse, not a feed and
     not a form. Everything here is written in Obsidian; this app only reads
     and searches it, mobile-first.
     OWN-WORLD: sage-paper ground, graphite ink, saturated specimen-label inks

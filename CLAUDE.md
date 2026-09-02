@@ -1,12 +1,12 @@
-# Nota
+# Noted
 
-This repo **is** Nota, a personal archive app. Don't use a browser or any
+This repo **is** Noted, a personal archive app. Don't use a browser or any
 external tool to "access" it; the site is just this repo's files, published
 via GitHub Pages.
 
 ## Adding content (the common case)
 
-When asked to add a journal entry, task, book, quote, or similar to Nota:
+When asked to add a journal entry, task, book, quote, or similar to Noted:
 
 1. Read **`OBSIDIAN.md`** for the exact frontmatter shape for that content
    type. Don't ask the user for field names; infer sensible ones (today's

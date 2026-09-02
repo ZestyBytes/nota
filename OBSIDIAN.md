@@ -1,9 +1,9 @@
-# Publishing to Nota from Obsidian
+# Publishing to Noted from Obsidian
 
 Open `quartz/content` as an Obsidian vault. Everything you write there is
 private by default; nothing reaches the live site until you explicitly
 publish it, and publishing requires a Git push. There is no live editor,
-upload form, or database behind `https://zestybytes.github.io/nota/`. It is
+upload form, or database behind `https://zestybytes.github.io/noted/`. It is
 a static site, rebuilt fresh from your vault on every push to `main`.
 
 ## The publish cycle, end to end
@@ -175,7 +175,10 @@ dueAt: "2026-08-31"
 completedAt: null        # or a date, once done
 publish: true
 ```
-No body needed.
+No body needed. To finish a task, either add `done: true` (quickest on a
+phone, and the day you save the file is taken as the day it was done) or put
+a date in `completedAt`. Finished tasks drop to "Recently completed" at the
+foot of the To-do page, struck through.
 
 ## Blocks you can use in any body
 
@@ -274,13 +277,13 @@ it.
 3. In the **Files** app: **Browse**, the **⋯** button, **Edit**, switch
    **Working Copy** on as a location.
 4. In Obsidian, answer "Where is your vault located?" with **Other**, then
-   **Create vault**. Name it `nota` and store it **On my iPhone**. It will be
+   **Create vault**. Name it `noted` and store it **On my iPhone**. It will be
    empty.
 5. Back in Working Copy, tap **+** on the repository list, then
    **Link external repository** and **Directory**. Choose
-   **On my iPhone › Obsidian › nota**.
+   **On my iPhone › Obsidian › noted**.
 6. Open **Repository**, add a remote named `origin` pointing at
-   `https://github.com/ZestyBytes/nota`, and **Save**.
+   `https://github.com/ZestyBytes/noted`, and **Save**.
 7. Tap **origin**, then **Fetch**. Go back, tap **Revert changes** to clear
    the `.obsidian` folder Obsidian just wrote, then **Branch** and check out
    **origin/main**.
@@ -315,11 +318,11 @@ are per device, since `.obsidian` is deliberately not committed:
 
 Working Copy exposes actions to the Shortcuts app, so the whole commit and
 push routine can be one button on the home screen. In **Shortcuts**, make a
-new shortcut named `Publish Nota` and add three actions, in this order:
+new shortcut named `Publish Noted` and add three actions, in this order:
 
-1. **Commit Repository**, repository `nota-2`, message `Committed on iPhone.`
-2. **Pull Repository**, repository `nota-2`
-3. **Push Repository**, repository `nota-2`
+1. **Commit Repository**, repository `noted-2`, message `Committed on iPhone.`
+2. **Pull Repository**, repository `noted-2`
+3. **Push Repository**, repository `noted-2`
 
 Two settings inside the Commit action matter:
 
@@ -338,7 +341,7 @@ is refused, and the shortcut stops with "the pull was aborted because your
 uncommitted changes conflict with the fetched changes". Committing first banks
 what you wrote, so the pull has something to merge into.
 
-After that, publishing is: write, tap **Publish Nota**, done. It commits
+After that, publishing is: write, tap **Publish Noted**, done. It commits
 everything that has changed, so anything not ready to go live wants
 `publish: false` in its frontmatter rather than being left uncommitted. Tapping
 it before you start writing is worth the habit too, since it brings the phone
@@ -390,9 +393,9 @@ it's just a reading view of the raw content. What actually ships is the
 app itself; to preview *that* with your real data:
 
 ```sh
-node quartz/scripts/build-data.mjs --out /tmp/nota-preview/data.js
-cp index.html app.js styles.css config.js backend.js manifest.webmanifest icon.svg sw.js /tmp/nota-preview/
-cd /tmp/nota-preview && python3 -m http.server 8787
+node quartz/scripts/build-data.mjs --out /tmp/noted-preview/data.js
+cp index.html app.js styles.css config.js backend.js manifest.webmanifest icon.svg sw.js /tmp/noted-preview/
+cd /tmp/noted-preview && python3 -m http.server 8787
 ```
 
 Open `http://localhost:8787`. This is exactly what the live site will show

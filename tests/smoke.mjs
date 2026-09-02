@@ -10,16 +10,17 @@ function element(id) {
   return elements.get(id);
 }
 const document = {
-  body:{classList:{toggle(){}}},
+  documentElement:{dataset:{}},
+  body:{classList:{toggle(){}},appendChild(){},style:{}},
   getElementById:element,
   querySelectorAll(){return []},
   querySelector(){return null},
   addEventListener(){},
-  createElement(){return {click(){}}}
+  createElement(){return {click(){},style:{},classList:{add(){},remove(){},toggle(){}}}}
 };
 const localStorage = { values:new Map(), getItem(key){return this.values.get(key)||null}, setItem(key,value){this.values.set(key,value)} };
-const window = { NOTA_CONFIG:{supabaseUrl:"",supabaseAnonKey:"",allowSignUp:true}, addEventListener(){}, location:null };
-const context = vm.createContext({ window,document,localStorage,location:{hash:"",origin:"http://localhost",pathname:"/"},navigator:{},console,setTimeout,clearTimeout,Date,JSON,String,Number,Map,Set,Blob,URL,crypto:globalThis.crypto,confirm(){return false},open(){} });
+const window = { NOTED_CONFIG:{supabaseUrl:"",supabaseAnonKey:"",allowSignUp:true}, addEventListener(){}, location:null };
+const context = vm.createContext({ window,document,localStorage,location:{hash:"",origin:"http://localhost",pathname:"/"},navigator:{},console,setTimeout,clearTimeout,setInterval(){return 0},clearInterval(){},addEventListener(){},removeEventListener(){},matchMedia(){return {matches:false,addEventListener(){}}},Date,JSON,String,Number,Map,Set,Blob,URL,crypto:globalThis.crypto,confirm(){return false},open(){} });
 window.location=context.location;
 vm.runInContext(files("data.js"),context,{filename:"data.js"});
 vm.runInContext(files("backend.js"),context,{filename:"backend.js"});
@@ -27,9 +28,10 @@ vm.runInContext(files("app.js"),context,{filename:"app.js"});
 await new Promise(resolve=>setTimeout(resolve,0));
 
 assert.match(element("app").innerHTML,/Today/);
-assert.match(element("app").innerHTML,/Export archive/);
-for (const name of ["index.html","app.js","data.js"]) assert.doesNotMatch(files(name),/<\/?em\b/i);
+assert.match(element("app").innerHTML,/Latest entries/);
+// House style: no em dashes anywhere that ships.
+for (const name of ["index.html","app.js","styles.css","data.js"]) assert.doesNotMatch(files(name),/\u2014/);
 assert.match(files("styles.css"),/@media\(max-width:480px\)/);
 assert.match(files("supabase/schema.sql"),/enable row level security/g);
 assert.match(files("supabase/schema.sql"),/public reads published entries/);
-console.log("Nota smoke checks passed");
+console.log("Noted smoke checks passed");

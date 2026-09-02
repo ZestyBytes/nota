@@ -1,7 +1,7 @@
-const CACHE="nota-shell-__BUILD__";
+const CACHE="noted-shell-__BUILD__";
 // Remote images live in their own cache, deliberately not stamped with the
 // build: a deploy replaces the shell, but the covers should survive it.
-const MEDIA="nota-media";
+const MEDIA="noted-media";
 const SHELL=["./","index.html","styles.css","config.js","backend.js","app.js","data.js","manifest.webmanifest","icon.svg"];
 
 self.addEventListener("install",event=>{

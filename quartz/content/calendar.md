@@ -1,12 +1,12 @@
 ---
 title: Calendar
-description: Browse Nota by date.
+description: Browse Noted by date.
 publish: true
 date: 2026-08-31
-tags: [nota]
+tags: [noted]
 ---
 
-<nav class="nota-nav"><a href="./">Today</a><a class="active" href="calendar">Calendar</a><a href="library">Library</a><a href="topics">Topics</a><a href="about">About</a></nav>
+<nav class="noted-nav"><a href="./">Today</a><a class="active" href="calendar">Calendar</a><a href="library">Library</a><a href="topics">Topics</a><a href="about">About</a></nav>
 
 <p class="page-deck">A quieter way to move through the archive: by the days things happened, not only when they were written down.</p>
 

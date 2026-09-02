@@ -1,5 +1,5 @@
-const NotaBackend = (() => {
-  const config = window.NOTA_CONFIG || {};
+const NotedBackend = (() => {
+  const config = window.NOTED_CONFIG || {};
   let client = null;
   const configured = Boolean(config.supabaseUrl && config.supabaseAnonKey);
 
@@ -76,4 +76,4 @@ const NotaBackend = (() => {
   async function attachmentUrl(path) { const {data,error}=await client.storage.from("attachments").createSignedUrl(path,60); if(error) throw error; return data.signedUrl; }
   return { configured,init,onAuthChange,signIn,signUp,signOut,loadData,loadPublished,saveData,upload,attachmentUrl };
 })();
-window.NotaBackend = NotaBackend;
+window.NotedBackend = NotedBackend;

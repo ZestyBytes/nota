@@ -1,4 +1,4 @@
--- Nota v1 schema. Run once in Supabase > SQL Editor.
+-- Noted v1 schema. Run once in Supabase > SQL Editor.
 create extension if not exists pgcrypto;
 create table if not exists public.topics (slug text not null,user_id uuid not null references auth.users(id) on delete cascade,name text not null,color text not null default '#777777',soft text not null default '#eeeeee',description text not null default '',mode text,created_at timestamptz not null default now(),primary key(user_id,slug));
 create table if not exists public.entries (id text primary key,user_id uuid not null references auth.users(id) on delete cascade,type text not null check(type in ('Journal','Note','Event','Reading','Quote','Journey','Collection','Recipe')),title text not null,body text,author text,topic_slugs text[] not null default '{}',occurred_at date,published_at date,image_url text,image_alt text,attachments jsonb not null default '[]'::jsonb,recipe jsonb,created_at timestamptz not null default now(),updated_at timestamptz not null default now());

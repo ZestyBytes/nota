@@ -1,12 +1,12 @@
 # yaml-language-server: $schema=./quartz/plugins/quartz-plugins.schema.json
 configuration:
-  pageTitle: nota.
-  pageTitleSuffix: " · nota"
+  pageTitle: noted.
+  pageTitleSuffix: " · noted"
   enableSPA: true
   enablePopovers: true
   analytics: null
   locale: en-GB
-  baseUrl: zestybytes.github.io/nota
+  baseUrl: zestybytes.github.io/noted
   ignorePatterns:
     - private
     - templates
@@ -229,8 +229,8 @@ plugins:
     enabled: true
     options:
       links:
-        About Nota: /nota/about
-        GitHub: https://github.com/ZestyBytes/nota
+        About Noted: /noted/about
+        GitHub: https://github.com/ZestyBytes/noted
     layout:
       position: footer
       priority: 50

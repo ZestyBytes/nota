@@ -3,10 +3,10 @@ title: Spaces
 description: Paths running across every kind of record.
 publish: true
 date: 2026-08-31
-tags: [nota]
+tags: [noted]
 ---
 
-<nav class="nota-nav"><a href="./">Home</a><a href="calendar">Calendar</a><a href="library">Library</a><a class="active" href="topics">Spaces</a><a href="about">About</a></nav>
+<nav class="noted-nav"><a href="./">Home</a><a href="calendar">Calendar</a><a href="library">Library</a><a class="active" href="topics">Spaces</a><a href="about">About</a></nav>
 
 <p class="page-deck">Enter the archive by subject. Each room has its own character and the most recently used spaces come first in the app.</p>
 

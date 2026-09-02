@@ -1,4 +1,4 @@
-name: Deploy Nota to GitHub Pages
+name: Deploy Noted to GitHub Pages
 on:
   push:
     branches: [main]
@@ -28,7 +28,7 @@ jobs:
       - name: Install data-build dependencies
         working-directory: quartz
         run: npm ci --ignore-scripts
-      - name: Assemble the Nota app for deploy
+      - name: Assemble the Noted app for deploy
         run: |
           mkdir -p dist
           cp index.html app.js styles.css config.js backend.js manifest.webmanifest icon.svg sw.js dist/

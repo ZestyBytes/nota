@@ -3,10 +3,10 @@ title: Library
 description: Books, quotations and notes worth keeping.
 publish: true
 date: 2026-08-31
-tags: [nota]
+tags: [noted]
 ---
 
-<nav class="nota-nav"><a href="./">Today</a><a href="calendar">Calendar</a><a class="active" href="library">Library</a><a href="topics">Topics</a><a href="about">About</a></nav>
+<nav class="noted-nav"><a href="./">Today</a><a href="calendar">Calendar</a><a class="active" href="library">Library</a><a href="topics">Topics</a><a href="about">About</a></nav>
 
 <p class="page-deck">Browse the archive by format. Highlights are selected pieces; Notes & journals is the complete written record.</p>
 

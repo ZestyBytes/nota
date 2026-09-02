@@ -1,7 +1,7 @@
 ---
 title: "Day 1: choose one small improvement"
 type: journey
-journey: Building Nota (example)
+journey: Building Noted (example)
 day: 1
 tags: [technology]
 occurredAt: 2026-07-18

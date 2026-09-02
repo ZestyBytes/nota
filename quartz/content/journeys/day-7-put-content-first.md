@@ -1,7 +1,7 @@
 ---
 title: "Day 7: put the content first"
 type: journey
-journey: Building Nota (example)
+journey: Building Noted (example)
 day: 7
 tags: [technology]
 occurredAt: 2026-07-25

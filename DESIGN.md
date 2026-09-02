@@ -4,7 +4,7 @@
 
 ## World
 
-**Naturalist Field Notebook / Herbarium Archive.** Every entry in Nota is a mounted specimen, not a feed item: a bordered card with mounting-tape corners, a pinned topic tag, an accession number, and a hard rubber-stamp mark for private/published status. Older entries fade like sun-bleached ink (time-depth cue). Direction seed key `df5200b8` (candidate 4, assigned).
+**Naturalist Field Notebook / Herbarium Archive.** Every entry in Noted is a mounted specimen, not a feed item: a bordered card with mounting-tape corners, a pinned topic tag, an accession number, and a hard rubber-stamp mark for private/published status. Older entries fade like sun-bleached ink (time-depth cue). Direction seed key `df5200b8` (candidate 4, assigned).
 
 The archive has two deliberately different entrances. **Spaces** groups things by subject and gives every room its own material language: kitchen recipe folio, developer console, record cabinet, reading room, field log, road book, family album, and personal dashboard. **Library** is the neutral catalogue, grouping those same records by format. Search remains in the primary navigation because retrieval is a core action rather than another archive category.
 
