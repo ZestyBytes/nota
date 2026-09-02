@@ -201,17 +201,56 @@ it.
    `quartz/content`.
 
 Afterwards the loop is: write in Obsidian, then in Working Copy commit and
-push. The site rebuilds in about forty seconds.
+push. The site rebuilds in about forty seconds. The Shortcut below reduces
+that second half to a single tap, and is worth setting up straight away.
+
+#### Three Obsidian settings
 
 Because the git root has to be the vault root, the vault contains the whole
-repository, not just the content folder. Two settings make that comfortable,
-and both are per device since `.obsidian` is deliberately not committed:
+repository, not just the content folder. These make that comfortable, and all
+are per device, since `.obsidian` is deliberately not committed:
 
-- **Settings › Files and links › Excluded files**: add `assets`, `quartz/quartz`,
-  `tests`, `supabase` and `.github` to keep them out of search and suggestions.
 - **Settings › Core plugins › Templates**, then set the template folder to
-  `quartz/content/templates`. The command "Insert template" then offers one
-  ready-made file per content type.
+  `quartz/content/templates`. To reach the command on a phone, go to
+  **Settings › Mobile › Manage toolbar options**, add a command, and pick
+  **Templates: Insert template**. It then sits on the editor toolbar as a
+  button, which is easier than hunting for the command palette.
+- **Settings › Files and links › Excluded files**: add `assets`,
+  `quartz/quartz`, `tests`, `supabase` and `.github` to keep them out of
+  search and suggestions.
+- **Settings › Files and links › Default location for new attachments**:
+  choose **In the folder specified below** and enter
+  `quartz/content/attachments`. Obsidian otherwise drops photographs at the
+  vault root, which here is the repository root. The build finds them either
+  way, but this keeps them with the writing.
+
+#### Publishing in one tap
+
+Working Copy exposes actions to the Shortcuts app, so the whole commit and
+push routine can be one button on the home screen. In **Shortcuts**, make a
+new shortcut named `Publish Nota` and add three actions, in this order:
+
+1. **Pull Repository**, repository `nota-2`
+2. **Commit Repository**, repository `nota-2`, message `Committed on iPhone.`
+3. **Push Repository**, repository `nota-2`
+
+Two settings inside the Commit action matter:
+
+- **What to Commit** must be `modified`, not `staged`. A new note is untracked
+  and would otherwise be left behind, so the shortcut would commit nothing.
+- **Fail when nothing to Commit** off, so tapping the button with nothing
+  written does nothing rather than throwing an error.
+
+Set each repository field explicitly and check it goes solid rather than
+staying a pale "Repository" placeholder; an empty field makes Shortcuts stop
+and ask at run time, once per action. Leave the editor with the back arrow to
+save, then add the shortcut to the home screen.
+
+After that, publishing is: write, tap **Publish Nota**, done. It commits
+everything that has changed, so anything not ready to go live wants
+`publish: false` in its frontmatter rather than being left uncommitted. If the
+shortcut ever fails partway, it will be a merge conflict from writing on two
+devices; open Working Copy, which will say so.
 
 ### MacBook
 
