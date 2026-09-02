@@ -904,3 +904,64 @@ aside .section-title{display:flex;align-items:baseline}
   .tasks-page .task .chip{display:inline-block}
 }
 .task-due.late{color:var(--stamp-red)}
+
+/* ============================================================
+   Topic card grounds
+   Each topic names its own ground in build-data. Every one is drawn from
+   that topic's ink with color-mix, so a card tints itself and no ground
+   needs an image or a second colour. Change a topic's `ground:` and only
+   that card changes.
+   ============================================================ */
+.ground-wash{background:color-mix(in srgb,var(--topic) 7%,var(--surface))}
+/* wider apart and fainter than a real ruled page, because at 26px the rules
+   landed through the title and read as a strikethrough */
+.ground-ruled{background:
+  repeating-linear-gradient(to bottom,transparent 0 33px,color-mix(in srgb,var(--topic) 9%,transparent) 33px 34px) 0 18px/100% 100%,
+  var(--surface)}
+.ground-grid{background:
+  repeating-linear-gradient(to bottom,transparent 0 18px,color-mix(in srgb,var(--topic) 12%,transparent) 18px 19px),
+  repeating-linear-gradient(to right,transparent 0 18px,color-mix(in srgb,var(--topic) 12%,transparent) 18px 19px),
+  var(--surface)}
+.ground-verticals{background:
+  repeating-linear-gradient(to right,transparent 0 14px,color-mix(in srgb,var(--topic) 13%,transparent) 14px 15px),
+  var(--surface)}
+.ground-dots{background:radial-gradient(color-mix(in srgb,var(--topic) 26%,transparent) 1px,transparent 1.2px) 0 0/10px 10px,var(--surface)}
+.ground-coarse{background:radial-gradient(color-mix(in srgb,var(--topic) 22%,transparent) 2px,transparent 2.3px) 0 0/17px 17px,var(--surface)}
+.ground-hatch{background:repeating-linear-gradient(-45deg,transparent 0 6px,color-mix(in srgb,var(--topic) 13%,transparent) 6px 7px),var(--surface)}
+.ground-crosshatch{background:
+  repeating-linear-gradient(-45deg,transparent 0 8px,color-mix(in srgb,var(--topic) 10%,transparent) 8px 9px),
+  repeating-linear-gradient(45deg,transparent 0 8px,color-mix(in srgb,var(--topic) 10%,transparent) 8px 9px),
+  var(--surface)}
+.ground-fade{background:linear-gradient(to top,color-mix(in srgb,var(--topic) 22%,transparent),transparent 70%),var(--surface)}
+
+/* a solid ink band across the head, the plate a specimen sheet carries */
+.ground-band{background:linear-gradient(to bottom,var(--topic) 0 7px,var(--surface) 7px)}
+
+/* a folded corner flying the topic's colour; the count moves clear of it */
+.ground-wedge{background:var(--surface)}
+.ground-wedge::before,.ground-wedge::after{display:none}
+.ground-wedge{--wedge:74px}
+.ground-wedge .topic-count{right:auto;left:26px}
+.ground-wedge .topic-flag{position:absolute;top:0;right:0;width:0;height:0;
+  border-style:solid;border-width:0 var(--wedge) var(--wedge) 0;
+  border-color:transparent var(--topic) transparent transparent;z-index:2;pointer-events:none}
+
+/* the whole card in the topic's ink, type knocked out */
+.ground-ink{background:var(--topic);border-color:var(--topic)}
+.ground-ink::before,.ground-ink::after{background:rgba(255,255,255,.22)}
+.ground-ink h2,.ground-ink .topic-count{color:var(--paper)}
+.ground-ink p{color:var(--paper);opacity:.84}
+.ground-ink .topic-foot,.ground-ink .topic-kids .kid{color:var(--paper);opacity:.7}
+.ground-ink .topic-motif{color:var(--paper);opacity:.2}
+.ground-ink .topic-mark{color:var(--paper);opacity:.14}
+
+/* Where the ground already carries a texture the watermark only muddies it,
+   so the motif is kept for the plain, washed and faded cards and for the one
+   card whose ground is the motif itself. */
+.ground-grid .topic-motif,.ground-dots .topic-motif,.ground-coarse .topic-motif,
+.ground-hatch .topic-motif,.ground-crosshatch .topic-motif,
+.ground-verticals .topic-motif,.ground-ruled .topic-motif{display:none}
+/* the one card whose ground is the motif: drawn in the same duotone language
+   as the bottom bar, a filled body under a lighter line */
+.ground-duo .topic-motif{opacity:.34}
+.ground-duo .topic-motif .line-icon{stroke-width:1.3;fill:color-mix(in srgb,var(--topic) 26%,transparent)}
