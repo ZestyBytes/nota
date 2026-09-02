@@ -441,9 +441,13 @@ body.modal-open{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 /* ---------- search filters ----------
    One strip that scrolls sideways rather than wrapping onto a second row:
    a wrapped row broke the ruled-box look and pushed results down the page. */
-.search-filters{flex-wrap:nowrap;overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:none;-webkit-overflow-scrolling:touch}
-.search-filters::-webkit-scrollbar{display:none}
-.search-filters .filter{flex:none;white-space:nowrap;scroll-snap-align:start}
+/* The Library tabs reached six and wrapped onto a second row, which broke the
+   same ruled box for the same reason. One scrolling row, as above. */
+.search-filters,.library-tabs{flex-wrap:nowrap;overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.search-filters::-webkit-scrollbar,.library-tabs::-webkit-scrollbar{display:none}
+.search-filters .filter,.library-tabs .filter{flex:none;white-space:nowrap;scroll-snap-align:start}
+/* the last tab keeps no right rule, so the row does not end on a stray line */
+.library-tabs .filter:last-child{border-right:0}
 
 /* Accession date on the card meta row, where the constant "published"
    stamp used to sit. The stamp is now kept for the exception only. */
