@@ -293,12 +293,13 @@ function entryPage(id){
   const date=fmtDate(e.occurredAt||e.createdAt||e.dueAt),t=topic(e.topics?.[0]),spaceId=rootTopic(e.topics?.[0]),space=topic(spaceId);
   if(e.type==="Quote")return `<section class="quote-entry-page" style="--topic:${t.color}"><p class="back-link"><a href="${back}" data-back>Back</a><button class="share-button" data-share="${esc(e.id)}" type="button">Share</button></p><article><span>Commonplace book · No. ${accNo(e.id)}</span><blockquote>“${esc(e.title)}”</blockquote><cite>${esc(e.author||"")}</cite><time>${date?`Filed ${date}`:""}</time></article></section>`;
   return `<section class="entry-page entry-space-${spaceId}" style="--topic:${t.color};--space:${space.color}">
+    <span class="entry-topic-tab" style="background:${t.color}">${esc(t.name)}</span>
     <p class="back-link"><a href="${back}" data-back>Back</a><button class="share-button" data-share="${esc(e.id)}" type="button">Share</button></p>
     <header class="entry-masthead">
       <p class="entry-page-meta"><span class="type-label">${esc(e.type||"Task")}</span>${date?`<span class="entry-date">${date}</span>`:""}<span class="acc-no acc-no-page">No. ${accNo(e.id)}</span>${e.publishedAt||!e.type||e.type==="Task"?"":`<span class="stamp stamp-private">private</span>`}</p>
       <h1 class="entry-page-title">${e.type==="Quote"?`&ldquo;${esc(e.title)}&rdquo;`:esc(e.title)}</h1>
       ${e.author?`<p class="entry-page-author">${esc(e.author)}</p>`:""}
-      <div class="entry-context">${chips(e.topics)}${e.journey?(()=>{const rows=journeyEntries(e.journey),n=rows.findIndex(r=>r.id===e.id)+1;return `<p class="journey-of"><a href="#journey/${encodeURIComponent(e.journey)}">${esc(e.journey)}</a><span>${n} of ${rows.length}</span></p>`})():""}<a class="entry-space-link" href="#topics/${encodeURIComponent(spaceId)}" data-topic="${esc(spaceId)}">${esc(space.name)} space &rarr;</a></div>
+      <div class="entry-context">${chips(e.topics?.slice(1))}${e.journey?(()=>{const rows=journeyEntries(e.journey),n=rows.findIndex(r=>r.id===e.id)+1;return `<p class="journey-of"><a href="#journey/${encodeURIComponent(e.journey)}">${esc(e.journey)}</a><span>${n} of ${rows.length}</span></p>`})():""}<a class="entry-space-link" href="#topics/${encodeURIComponent(spaceId)}" data-topic="${esc(spaceId)}">${esc(space.name)} space &rarr;</a></div>
     </header>
     ${e.images?.length>1?gallery(e.images):e.image?`<img class="detail-image" src="${e.image}" alt="${esc(e.imageAlt||"")}">`:""}
     ${(()=>{const shown=e.images?.length>1?e.images.map(i=>i.src):[e.image];return e.recipe?`<div class="detail-body recipe-body">${recipeBody(e)}</div>`:e.view==="cards"&&e.body?cardDeck(e.body,shown,e.id):`<div class="detail-body">${e.body?(e.view==="playlist"?playlistBody(e.body):markdown(e.body,shown,e.id)):`<p>${esc(e.excerpt||"Saved in your Noted archive.")}</p>`}</div>`})()}
