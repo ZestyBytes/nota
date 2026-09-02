@@ -877,10 +877,25 @@ if("serviceWorker" in navigator){
     try{
       const res=await fetch(`version.json?t=${Date.now()}`,{cache:"no-store"});
       const {build}=await res.json();
-      // Ask the worker to pick up the new build rather than reloading here:
-      // the shell is served from its cache, so reloading on our own would
-      // just load the same stale files again, and again.
-      if(build&&build!==BUILD&&swReg)swReg.update().catch(()=>{});
+      if(!build||build===BUILD)return;
+      if(swReg)swReg.update().catch(()=>{});
+      // The shell is served cache first, on purpose, so the app paints from
+      // disk and never waits on the network. The cost is that a plain reload
+      // hands back the same stale files and only refreshes them behind you:
+      // every deploy took two visits to appear, and if the worker was slow to
+      // update it took more than two. Since version.json has just said a newer
+      // build is live, drop the shell cache and reload. The pictures live in
+      // their own cache and are left alone.
+      // Once per build, so a version file that never matches cannot put the
+      // app into a reload loop.
+      let tried="";try{tried=sessionStorage.getItem("noted-reloaded-for")||""}catch(error){}
+      if(tried===build)return;
+      try{sessionStorage.setItem("noted-reloaded-for",build)}catch(error){}
+      try{
+        const keys=await caches.keys();
+        await Promise.all(keys.filter(k=>/^not(a|ed)-shell-/.test(k)).map(k=>caches.delete(k)));
+      }catch(error){/* no cache storage: the reload below still helps */}
+      reloading=true;location.reload();
     }catch(error){/* offline, or no version file: nothing to do */}
   };
   document.addEventListener("visibilitychange",checkBuild);
