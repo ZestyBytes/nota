@@ -277,7 +277,7 @@ function backlinks(e){
 }
 function entryPage(id){
   const e=[...state.data.entries,...state.data.tasks].find(x=>x.id===id);
-  const back=state.returnTo||"#today";
+  const back=e?.journey?`#journey/${encodeURIComponent(e.journey)}`:state.returnTo||"#today";
   if(!e)return `<section><p class="back-link"><a href="${back}" data-back>Back</a></p><p class="empty">That entry is no longer in the archive.</p></section>`;
   const date=fmtDate(e.occurredAt||e.createdAt||e.dueAt),t=topic(e.topics?.[0]),spaceId=rootTopic(e.topics?.[0]),space=topic(spaceId);
   if(e.type==="Quote")return `<section class="quote-entry-page" style="--topic:${t.color}"><p class="back-link"><a href="${back}" data-back>Back</a><button class="share-button" data-share="${esc(e.id)}" type="button">Share</button></p><article><span>Commonplace book · No. ${accNo(e.id)}</span><blockquote>“${esc(e.title)}”</blockquote><cite>${esc(e.author||"")}</cite><time>${date?`Filed ${date}`:""}</time></article></section>`;
@@ -351,11 +351,11 @@ function pageHead(kicker,title,lede=""){return `<div class="page-head"><div><p c
 function today(){
   const recent=[...state.data.entries].sort((a,b)=>(b.occurredAt||b.createdAt||"").localeCompare(a.occurredAt||a.createdAt||"")).slice(0,6);
   const open=state.data.tasks.filter(t=>!t.completedAt).length;
-  return `<section class="home-page"><header class="home-welcome"><p class="eyebrow">A living personal archive</p><h1>Nota</h1><p>Photographs, stories, ideas, books and projects—kept together so the ordinary days do not disappear.</p><nav><a href="#topics"><b>Spaces</b><span>Explore by subject</span></a><a href="#library"><b>Library</b><span>Browse by format</span></a><a href="#calendar"><b>Calendar</b><span>Return to a day</span></a></nav></header>
-    <form class="home-search" action="#search"><label for="home-query">Looking for something?</label><div><input id="home-query" type="search" placeholder="Search the whole archive…"><button type="submit">Search</button></div></form>
-    ${journeyStrip()}
-    <div class="home-latest-head"><h2 class="section-title">Latest from the archive</h2>${open?`<a href="#tasks">${open} thing${open===1?"":"s"} to do &rarr;</a>`:""}</div>
+  return `<section class="home-page"><header class="home-intro"><div><p class="eyebrow">A living personal archive</p><h1 class="page-title">Recently</h1><p class="lede">Stories, photographs, ideas and projects worth returning to.</p></div><nav class="home-paths"><a href="#topics"><b>Spaces</b><span>By subject</span></a><a href="#library"><b>Library</b><span>By format</span></a><a href="#calendar"><b>Calendar</b><span>By date</span></a></nav></header>
+    <div class="home-latest-head"><h2 class="section-title">Latest entries</h2>${open?`<a href="#tasks">${open} thing${open===1?"":"s"} to do &rarr;</a>`:""}</div>
     <div class="entry-list">${recent.length?recent.map(e=>entryCard(e)).join(""):`<p class="empty">The archive is ready for its first entry.</p>`}</div>
+    ${journeyStrip()}
+    <form class="home-search" action="#search"><label for="home-query">Find something older</label><div><input id="home-query" type="search" placeholder="Search the whole archive…"><button type="submit">Search</button></div></form>
   </section>`;
 }
 function taskRow(t){const tp=topic(t.topics[0]);return `<div class="task ${t.completedAt?"done":""} ${t.note?"has-note":""}" ${t.note?`data-entry="${esc(t.id)}"`:""}><span class="task-mark" aria-hidden="true">${t.completedAt?icon("check"):""}</span><span class="task-copy"><span class="task-title">${esc(t.title)}</span>${t.note?`<small class="task-note">${esc(t.note)}</small>`:""}${t.dueAt&&!t.completedAt?`<small class="task-due${t.dueAt<todayKey?" late":""}">${t.dueAt<todayKey?"Overdue, was due "+esc(fmtDate(t.dueAt)):t.dueAt===todayKey?"Due today":"Due "+esc(fmtDate(t.dueAt))}</small>`:""}</span><span class="chip" style="--topic:${tp.color};--soft:${tp.soft}">${esc(tp.name)}</span></div>`}
@@ -610,7 +610,7 @@ function journeyPage(id){
     <p class="back-link"><a href="${state.returnTo||"#library"}" data-back>Back</a></p>
     <div class="page-head"><div><p class="eyebrow">Journey</p><h1 class="page-title" style="color:${t.color}">${esc(name)}</h1>
       <p class="journey-facts">${facts.map(f=>`<span>${esc(f)}</span>`).join("")}</p></div></div>
-    <ol class="journey-thread">${rows.map(r=>`<li><a href="#entry/${encodeURIComponent(r.id)}"><span class="journey-day">${r.day?`Day ${r.day}`:fmtDate(r.occurredAt)||"&mdash;"}</span><span class="journey-copy"><b>${esc(r.title.replace(/^Day\s+\d+:\s*/i,""))}</b><small>${esc(r.excerpt||"")}</small></span>${r.occurredAt?`<time>${fmtDate(r.occurredAt)}</time>`:""}</a></li>`).join("")}</ol>
+    <ol class="journey-thread">${rows.map(r=>`<li><a href="#entry/${encodeURIComponent(r.id)}" data-entry="${esc(r.id)}" data-return="#journey/${encodeURIComponent(name)}"><span class="journey-day">${r.day?`Day ${r.day}`:fmtDate(r.occurredAt)||"&mdash;"}</span><span class="journey-copy"><b>${esc(r.title.replace(/^Day\s+\d+:\s*/i,""))}</b><small>${esc(r.excerpt||"")}</small></span>${r.occurredAt?`<time>${fmtDate(r.occurredAt)}</time>`:""}</a></li>`).join("")}</ol>
   </section>`;
 }
 // Tasks lived only as a sidebar on Today and dots on the calendar, so nothing
@@ -768,7 +768,7 @@ document.addEventListener("click",async e=>{
   const close=e.target.closest("[data-close]");if(close&&e.target===close)closeModal();
   const attachment=e.target.closest("[data-view-attachment]");if(attachment){const item=state.data.entries.find(x=>x.id===attachment.dataset.entryId),file=item?.attachments?.[Number(attachment.dataset.viewAttachment)];if(file?.path){try{open(await NotaBackend.attachmentUrl(file.path),"_blank","noopener")}catch(error){toast(error.message)}}return}
   const book=e.target.closest("[data-book]");if(book){bookDetail(book.dataset.book);return}
-  const entry=e.target.closest("[data-entry]");if(entry){e.preventDefault();state.returnTo=location.hash||"#today";state.returnScroll=window.scrollY;location.hash=`entry/${encodeURIComponent(entry.dataset.entry)}`}
+  const entry=e.target.closest("[data-entry]");if(entry){e.preventDefault();state.returnTo=entry.dataset.return||location.hash||"#today";state.returnScroll=window.scrollY;location.hash=`entry/${encodeURIComponent(entry.dataset.entry)}`}
   const date=e.target.closest("[data-date]");if(date){state.selectedDate=date.dataset.date;render()}
   const jump=e.target.closest("[data-jump]");
   if(jump){const [jy,jm]=jump.dataset.jump.split("-").map(Number);state.month=new Date(jy,jm-1,1);render();return}
