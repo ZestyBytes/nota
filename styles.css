@@ -340,7 +340,7 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px}
   .mobile-nav a:before{content:"";position:absolute;top:2px;width:4px;height:4px;border-radius:50%;background:transparent;transition:background .16s ease}
   .mobile-nav a.active{color:var(--ink)}
   .mobile-nav a.active:before{background:var(--stamp-red)}
-  .mobile-nav a.active .nav-icon{stroke-width:1.9}
+  .mobile-nav a.active .nav-icon .nav-fill{opacity:.3}
   .mobile-nav a:active{transform:scale(.93);color:var(--ink)}
   main{padding:30px 18px 104px}
   .page-head{align-items:flex-start;margin-bottom:34px}
@@ -399,7 +399,10 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px}
 .line-icon{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
 
 /* ---------- nav icons ---------- */
-.nav-icon{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;transition:stroke-width .16s ease}
+/* Duotone: a filled body under a light line. The fill is what marks the
+   selected tab, so the bar stays in one ink and the line stays constant. */
+.nav-icon{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.45;stroke-linecap:round;stroke-linejoin:round}
+.nav-icon .nav-fill{stroke:none;fill:currentColor;opacity:.13;transition:opacity .16s ease}
 
 /* ---------- skeletons ----------
    Placeholders carry the exact metrics of the real thing, so content
