@@ -806,8 +806,10 @@ document.addEventListener("submit",async e=>{
 });
 async function loadRemoteArchive(){const remote=await NotaBackend.loadData();state.data=Object.keys(remote.topics).length?remote:clone(BASE)}
 async function boot(){try{const session=await NotaBackend.init();state.user=session.user;if(state.user)await loadRemoteArchive();else if(NotaBackend.configured&&location.hash==="#writing")state.data={...emptyArchive(),entries:await NotaBackend.loadPublished()};NotaBackend.onAuthChange(user=>{state.user=user;if(!user)render()})}catch(error){console.error(error);toast("Could not connect to storage")}finally{state.booting=false;render()}}
-window.addEventListener("hashchange",async()=>{if(NotaBackend.configured&&!state.user&&location.hash==="#writing")state.data={...emptyArchive(),entries:await NotaBackend.loadPublished()};render()});document.querySelector(".hd-day").textContent=now.toLocaleDateString("en-GB",{weekday:"long"});document.querySelector(".hd-date").textContent=`${now.getDate()} ${now.toLocaleDateString("en-GB",{month:"long"})}`;
-function syncThemeButton(){const dark=(document.documentElement.dataset.theme||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"))==="dark",button=document.querySelector("[data-theme-toggle]");if(button){button.setAttribute("aria-label",dark?"Use light theme":"Use dark theme");button.querySelector("span").textContent=dark?"☼":"◐"}}
+window.addEventListener("hashchange",async()=>{if(NotaBackend.configured&&!state.user&&location.hash==="#writing")state.data={...emptyArchive(),entries:await NotaBackend.loadPublished()};render()});
+const headerDay=document.querySelector(".hd-day"),headerDate=document.querySelector(".hd-date");
+if(headerDay&&headerDate){headerDay.textContent=now.toLocaleDateString("en-GB",{weekday:"long"});headerDate.textContent=`${now.getDate()} ${now.toLocaleDateString("en-GB",{month:"long"})}`}
+function syncThemeButton(){const dark=(document.documentElement.dataset.theme||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"))==="dark",button=document.querySelector("[data-theme-toggle]");if(button){button.setAttribute("aria-label",dark?"Use light theme":"Use dark theme");button.title=dark?"Use light theme":"Use dark theme"}}
 syncThemeButton();
 boot();
 // The shell is served cache-first, so a deployed change would otherwise only

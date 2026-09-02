@@ -40,9 +40,10 @@ input[type="checkbox"]:focus-visible{outline-offset:3px}
   display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;
   border-bottom:2px solid var(--ink);position:relative;
 }
-.wordmark{display:flex;flex-direction:column;gap:2px;line-height:1}
+.wordmark{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:0;border:0;background:transparent;color:inherit;line-height:1;cursor:pointer;text-align:left}
+.wordmark:hover .wordmark-mark i,.wordmark:focus-visible .wordmark-mark i{transform:scale(1.35)}
 .wordmark-mark{font:700 30px/1 var(--mono);letter-spacing:-.02em;text-transform:lowercase}
-.wordmark-mark i{font-style:normal;color:var(--stamp-red)}
+.wordmark-mark i{display:inline-block;font-style:normal;color:var(--stamp-red);transition:transform .16s ease}
 .wordmark-sub{font:12px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
 .main-nav{display:flex;gap:2px;font:13px/1 var(--mono);letter-spacing:.03em;justify-self:end}
 .main-nav a{padding:14px 16px;position:relative;display:flex;align-items:baseline;gap:8px;border-left:1px solid var(--line);color:var(--muted)}
@@ -54,8 +55,6 @@ input[type="checkbox"]:focus-visible{outline-offset:3px}
 .main-nav a:hover{color:var(--ink)}
 .menu-button{display:none}
 .mobile-nav{display:none}
-.theme-toggle{width:34px;height:34px;display:grid;place-items:center;padding:0;border:1px solid var(--line);border-radius:50%;background:transparent;color:var(--muted);cursor:pointer;font:16px/1 var(--mono)}
-.theme-toggle:hover{color:var(--ink);border-color:var(--ink)}
 
 main{max-width:var(--max);margin:auto;padding:56px 28px 120px}
 
@@ -424,7 +423,7 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px}
 :root[data-theme="light"] .entry-thumb,:root[data-theme="light"] .book-cover,:root[data-theme="light"] .detail-image,:root[data-theme="light"] .gallery-shot img,:root[data-theme="light"] .shot img,:root[data-theme="light"] .body-figure img{filter:saturate(.82) sepia(.04)}
 :root[data-theme="light"] .kitchen-page{--kitchen-cream:#f2ead9;--kitchen-paper:#fbf7ec;--kitchen-ink:#3f2b20}
 :root[data-theme="light"] .topic-room{--room-paper:#f5f1e7}:root[data-theme="light"] .room-technology{--room-bg:#dce9e5;--room-paper:#eff5f2;--room-ink:#173f38}:root[data-theme="light"] .room-reading{--room-bg:#e8dfcc;--room-paper:#f5eedf;--room-ink:#493a26}:root[data-theme="light"] .room-gardening{--room-bg:#dfe8d8;--room-paper:#f0f3e8;--room-ink:#304328}:root[data-theme="light"] .room-life{--room-bg:#dce6eb;--room-paper:#f2f6f7;--room-ink:#213949}:root[data-theme="light"] .room-family{--room-bg:#e8dce1;--room-paper:#fff8fa;--room-ink:#482b38}
-@media(max-width:800px){.theme-toggle{width:31px;height:31px;flex:none}.header-date{margin-left:auto}}
+@media(max-width:800px){.header-date{margin-left:auto}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
 
 .line-icon{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
