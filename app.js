@@ -6,7 +6,7 @@ const BASE = window.NOTA_DATA || { topics:{}, entries:[], tasks:[], books:[] };
 const BUILD="__BUILD__";
 const now = new Date(), todayKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`;
 let savedSort="items";try{savedSort=localStorage.getItem("nota-topic-sort")||"items"}catch(error){/* private mode: fall back to the default */}
-const state = { route:"today", topicSort:savedSort, month:new Date(now.getFullYear(),now.getMonth(),1), selectedDate:todayKey, library:"reading", search:"", filter:"all", data:clone(BASE), user:null, booting:NotaBackend.configured };
+const state = { route:"today", topicSort:savedSort, month:new Date(now.getFullYear(),now.getMonth(),1), selectedDate:todayKey, library:"writing", search:"", filter:"all", data:clone(BASE), user:null, booting:NotaBackend.configured };
 function clone(v){return JSON.parse(JSON.stringify(v))}
 function emptyArchive(){return {topics:clone(BASE.topics),entries:[],tasks:[],books:[]}}
 function esc(s=""){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
@@ -322,7 +322,6 @@ function calendar(){
       .map(id=>`<i class="dot" style="background:${topic(id).color}"></i>`).join("");
     cells.push(`<button class="day ${date===state.selectedDate?"selected":""} ${date===todayKey?"is-today":""} ${items.length?"has-items":""}" data-date="${date}" aria-label="${esc(fmtDate(date))}${items.length?`, ${items.length} item${items.length>1?"s":""}`:""}"><span class="day-no">${d}</span><span class="dots">${dots}</span>${items.length>4?`<span class="day-more">${items.length}</span>`:""}</button>`);
   }
-  const selected=dayItems(state.selectedDate);
   const label=new Date(state.selectedDate+"T12:00:00").toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
   const near=nearestMonth(state.month,dates);
   const monthKey=`${y}-${String(m+1).padStart(2,"0")}`;
@@ -343,7 +342,17 @@ function calendar(){
     <aside class="selected-day">
       <p class="eyebrow">${state.selectedDate===todayKey?"Today":"Selected day"}</p>
       <h3>${label}</h3>
-      ${selected.length?`<div class="entry-list">${selected.map(e=>entryCard(e)).join("")}</div>`:`<p class="empty">Nothing recorded on this day.</p>`}
+      ${(()=>{
+        // A day holds two different things. Tasks belong in a list you can read
+        // the state of at a glance, ticked or not; entries are records and stay
+        // as cards. Running them together as one card list said neither.
+        const dayTasks=state.data.tasks.filter(t=>t.dueAt===state.selectedDate);
+        const dayEntries=state.data.entries.filter(e=>e.occurredAt===state.selectedDate);
+        if(!dayTasks.length&&!dayEntries.length)return `<p class="empty">Nothing recorded on this day.</p>`;
+        const left=dayTasks.filter(t=>!t.completedAt).length;
+        return `${dayTasks.length?`<section class="day-part"><h4 class="section-title">Due<span class="task-count">${left?`${left} left`:"all done"}</span></h4><div class="tasks day-tasks">${dayTasks.map(taskRow).join("")}</div></section>`:""}
+        ${dayEntries.length?`<section class="day-part"><h4 class="section-title">Recorded<span class="task-count">${dayEntries.length}</span></h4><div class="entry-list">${dayEntries.map(e=>entryCard(e)).join("")}</div></section>`:""}`;
+      })()}
     </aside></div></section>`;
 }
 function coverPlate(b){
@@ -374,7 +383,7 @@ function scrapBoard(){
     return `<article class="scrap tilt-${i%4}" data-entry="${esc(e.id)}" style="--topic:${t.color};--soft:${t.soft}"><span class="pin" aria-hidden="true"></span><p class="scrap-text">${inline(e.title||"")}</p>${e.excerpt&&e.excerpt!==e.title?`<p class="scrap-note">${esc(e.excerpt)}</p>`:""}<p class="scrap-foot">${e.topics?.length?`<span>${esc(t.name)}</span>`:"<span></span>"}${date?`<time>${date}</time>`:""}</p></article>`;
   }).join("")}</div>`;
 }
-function library(){let body="";if(state.library==="gallery")body=galleryGrid();else if(state.library==="reading")body=`<div class="book-grid">${state.data.books.map((b,i)=>`<article class="book ${b.cover?"":"has-plate"}" data-book="${b.id}"><span class="acc-no">No. ${accNo(b.id)}</span>${b.cover?`<img class="book-cover" src="${b.cover}" alt="" loading="lazy">`:coverPlate(b)}<div class="book-copy"><h3>${esc(b.title)}</h3><p>${esc(b.author)}</p><div class="book-links"><span>${(b.notes||[]).length} notes</span><span>${(b.quotes||[]).length} quotes</span></div><span class="status">${esc(b.status.replaceAll("-"," "))}${b.status==="reading"?` · ${b.progress}%`:""}</span><div class="progress"><i style="width:${b.progress}%"></i></div></div></article>`).join("")||`<p class="empty">Your library is empty.</p>`}</div>`;else if(state.library==="quotes")body=`<div class="quote-list">${[...state.data.entries.filter(e=>e.type==="Quote"),...state.data.books.flatMap(b=>(b.quotes||[]).map(q=>({...q,title:q.text,author:b.title,bookId:b.id})))].map(e=>`<blockquote class="library-quote" ${e.bookId?`data-book="${e.bookId}"`:`data-entry="${e.id}"`}>“${esc(e.title)}”<cite>${esc(e.author)}${e.page?` · ${esc(e.page)}`:""}</cite></blockquote>`).join("")||`<p class="empty">No quotations kept yet.</p>`}</div>`;else if(state.library==="scraps")body=scrapBoard();else if(state.library==="writing")body=writingList();else body=`${journeyStrip()}<div class="entry-list">${state.data.entries.filter(e=>["Note","Journal","Journey"].includes(e.type)).map(e=>entryCard(e)).join("")||`<p class="empty">No notes kept yet.</p>`}</div>`;return `<section>${pageHead("Things worth keeping","Library","Books hold their own reading notes and quotations while each quote remains discoverable across Nota.")}<div class="library-tabs">${["reading","writing","quotes","notes","scraps","gallery"].map(x=>`<button class="filter ${state.library===x?"active":""}" data-library="${x}">${x[0].toUpperCase()+x.slice(1)}</button>`).join("")}</div>${body}</section>`}
+function library(){let body="";if(state.library==="gallery")body=galleryGrid();else if(state.library==="reading")body=`<div class="book-grid">${state.data.books.map((b,i)=>`<article class="book ${b.cover?"":"has-plate"}" data-book="${b.id}"><span class="acc-no">No. ${accNo(b.id)}</span>${b.cover?`<img class="book-cover" src="${b.cover}" alt="" loading="lazy">`:coverPlate(b)}<div class="book-copy"><h3>${esc(b.title)}</h3><p>${esc(b.author)}</p><div class="book-links"><span>${(b.notes||[]).length} notes</span><span>${(b.quotes||[]).length} quotes</span></div><span class="status">${esc(b.status.replaceAll("-"," "))}${b.status==="reading"?` · ${b.progress}%`:""}</span><div class="progress"><i style="width:${b.progress}%"></i></div></div></article>`).join("")||`<p class="empty">Your library is empty.</p>`}</div>`;else if(state.library==="quotes")body=`<div class="quote-list">${[...state.data.entries.filter(e=>e.type==="Quote"),...state.data.books.flatMap(b=>(b.quotes||[]).map(q=>({...q,title:q.text,author:b.title,bookId:b.id})))].map(e=>`<blockquote class="library-quote" ${e.bookId?`data-book="${e.bookId}"`:`data-entry="${e.id}"`}>“${esc(e.title)}”<cite>${esc(e.author)}${e.page?` · ${esc(e.page)}`:""}</cite></blockquote>`).join("")||`<p class="empty">No quotations kept yet.</p>`}</div>`;else if(state.library==="scraps")body=scrapBoard();else if(state.library==="writing")body=writingList();else body=`${journeyStrip()}<div class="entry-list">${state.data.entries.filter(e=>["Note","Journal","Journey"].includes(e.type)).map(e=>entryCard(e)).join("")||`<p class="empty">No notes kept yet.</p>`}</div>`;return `<section>${pageHead("Things worth keeping","Library","Books hold their own reading notes and quotations while each quote remains discoverable across Nota.")}<div class="library-tabs">${["writing","reading","quotes","notes","gallery","scraps"].map(x=>`<button class="filter ${state.library===x?"active":""}" data-library="${x}">${x[0].toUpperCase()+x.slice(1)}</button>`).join("")}</div>${body}</section>`}
 // A topic may hold sub-topics: Self care covers ADHD, and later therapy,
 // fitness, the dentist. A parent counts and shows its children's items too.
 function childTopics(id){return Object.entries(state.data.topics).filter(([,t])=>t.parent===id).map(([slug])=>slug)}
