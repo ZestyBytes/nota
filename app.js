@@ -328,6 +328,20 @@ function nearestMonth(from,dates){
   return months.reduce((best,m)=>Math.abs(monthDistance(m,key))<Math.abs(monthDistance(best,key))?m:best,months[0]);
 }
 function monthDistance(a,b){const [ay,am]=a.split("-").map(Number),[by,bm]=b.split("-").map(Number);return (ay*12+am)-(by*12+bm)}
+// A day panel is a narrow column, and a full entry card in it is mostly air:
+// a mount tag, a taped corner, an accession number and a four line excerpt to
+// say one thing happened. A day reads better as a log, one line each.
+function dayRow(e){
+  const t=topic(e.topics?.[0]);
+  return `<li class="day-row" data-entry="${esc(e.id)}" style="--topic:${t.color}">
+    ${e.image?`<img class="day-row-thumb" src="${esc(e.image)}" alt="" loading="lazy">`:""}
+    <span class="day-row-copy">
+      <span class="day-row-kind">${esc(e.type)}${e.topics?.length?` &middot; ${esc(t.name)}`:""}</span>
+      <b>${e.type==="Quote"?`&ldquo;${esc(e.title)}&rdquo;`:esc(e.title)}</b>
+      ${e.excerpt?`<small>${esc(e.excerpt)}</small>`:""}
+    </span>
+  </li>`;
+}
 function calendar(){
   const y=state.month.getFullYear(),m=state.month.getMonth(),first=new Date(y,m,1);
   const start=(first.getDay()+6)%7,days=new Date(y,m+1,0).getDate(),cells=[];
@@ -370,7 +384,7 @@ function calendar(){
         if(!dayTasks.length&&!dayEntries.length)return `<p class="empty">Nothing recorded on this day.</p>`;
         const left=dayTasks.filter(t=>!t.completedAt).length;
         return `${dayTasks.length?`<section class="day-part"><h4 class="section-title">Due<span class="task-count">${left?`${left} left`:"all done"}</span></h4><div class="tasks day-tasks">${dayTasks.map(taskRow).join("")}</div></section>`:""}
-        ${dayEntries.length?`<section class="day-part"><h4 class="section-title">Recorded<span class="task-count">${dayEntries.length}</span></h4><div class="entry-list">${dayEntries.map(e=>entryCard(e)).join("")}</div></section>`:""}`;
+        ${dayEntries.length?`<section class="day-part"><h4 class="section-title">Entries</h4><ol class="day-log">${dayEntries.map(dayRow).join("")}</ol></section>`:""}`;
       })()}
     </aside></div></section>`;
 }
