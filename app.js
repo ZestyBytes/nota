@@ -446,7 +446,12 @@ function topicPhoto(id){
     .sort((a,b)=>(b.occurredAt||b.createdAt||"").localeCompare(a.occurredAt||a.createdAt||""));
   // With several to choose from it turns over daily, the way the Today widget
   // does: the same all day, a different one tomorrow.
-  if(own.length)return {src:own[own.length===1?0:dayIndex(own.length)].image};
+  // Offset the rotation by the topic, or two topics sharing a photograph pick
+  // the same one on the same day: Family and Motoring both showed the Mini.
+  if(own.length){
+    let h=0;for(const c of id)h=(h*31+c.charCodeAt(0))>>>0;
+    return {src:own[own.length===1?0:(dayIndex(own.length)+h)%own.length].image};
+  }
   const named=state.data.topics[id]?.photo;
   return named?{src:named}:null;
 }

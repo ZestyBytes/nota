@@ -970,7 +970,10 @@ aside .section-title{display:flex;align-items:baseline}
 .ground-ink::before,.ground-ink::after{background:rgba(255,255,255,.22)}
 .ground-ink h2,.ground-ink .topic-count{color:var(--paper)}
 .ground-ink p{color:var(--paper);opacity:.84}
-.ground-ink .topic-foot,.ground-ink .topic-kids .kid{color:var(--paper);opacity:.7}
+.ground-ink .topic-foot{color:var(--paper);opacity:.7}
+/* the chip kept its pale fill under pale type, so it read as a blank block */
+.ground-ink .topic-kids .kid{color:var(--paper);background:rgba(0,0,0,.22);border-color:rgba(255,255,255,.45)}
+.ground-ink .topic-kids .kid:hover{background:rgba(0,0,0,.4);color:var(--paper)}
 .ground-ink .topic-motif{color:var(--paper);opacity:.2}
 .ground-ink .topic-mark{color:var(--paper);opacity:.14}
 
@@ -1004,7 +1007,12 @@ aside .section-title{display:flex;align-items:baseline}
 /* No dark plate under the picture: the card keeps its drawn ground, so what
    shows while the photograph is still arriving is the ground it would have
    had anyway rather than a black rectangle. */
-.topic-card.has-photo{border-color:transparent}
+/* A card's background paints under its border, so any ground with colour in it
+   leaked round the photograph as a coloured hairline: the ink band at the head
+   of Family, the full field on Music. A photograph card drops the ground
+   entirely for a neutral plate, which is also what shows while the picture is
+   still arriving, and takes an opaque hairline so nothing can bleed through. */
+.topic-card.has-photo{background:var(--paper-alt);border-color:var(--line)}
 .topic-photo{opacity:0;transition:opacity .22s ease}
 .topic-photo[data-ready]{opacity:1}
 .topic-photo{
@@ -1025,7 +1033,8 @@ aside .section-title{display:flex;align-items:baseline}
 .has-photo p{color:#fff;opacity:.9}
 .has-photo .topic-foot{color:#fff;opacity:.62}
 .has-photo .topic-count{color:#fff;opacity:.92}
-.has-photo .topic-kids .kid{color:#fff;border-color:rgba(255,255,255,.55)}
+.has-photo .topic-kids .kid{color:#fff;border-color:rgba(255,255,255,.5);background:rgba(10,12,8,.44);backdrop-filter:blur(2px)}
+.has-photo .topic-kids .kid:hover{background:rgba(10,12,8,.66);color:#fff}
 .has-photo .topic-motif,.has-photo .topic-mark{display:none}
 /* tape reads as stuck to paper, not to a photograph */
 .has-photo:before,.has-photo:after{display:none}
