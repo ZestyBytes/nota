@@ -164,9 +164,25 @@ function ageTier(dateStr){if(!dateStr)return"";const days=(now-new Date(dateStr+
 // topic page every card carried that same topic's tag, which said nothing: the
 // page already says it. Show the first tag that is not the one you are inside,
 // and where there is none, show no tag at all.
+// Not every entry has a photograph, and a card with an empty thumbnail slot
+// breaks the rhythm of a list. Those get a drawn plate instead: the topic's
+// motif and the entry's initial, over one of the same grounds the topic cards
+// use, chosen from the entry's own id. Deterministic, so a card always looks
+// the same, and varied, so eight notes on one topic are not eight identical
+// tiles. Nothing to host and nothing to fetch.
+const PLATE_GROUNDS=["wash","ruled","grid","verticals","dots","coarse","hatch","crosshatch","fade","band","duo","plain"];
+function entryPlate(e){
+  const t=topic(e.topics?.[0]);
+  let h=0;for(const c of String(e.id))h=(h*31+c.charCodeAt(0))>>>0;
+  const g=PLATE_GROUNDS[h%PLATE_GROUNDS.length];
+  return `<span class="entry-plate ground-${g}" style="--topic:${t.color};--soft:${t.soft}" aria-hidden="true">
+    ${t.icon?`<span class="plate-motif">${icon(t.icon)}</span>`:""}
+    <i class="plate-letter">${esc((e.title||"?").trim()[0]||"?")}</i>
+  </span>`;
+}
 function entryCard(e,snippet="",within=""){if(typeof snippet!=="string")snippet="";
   const tagId=(e.topics||[]).find(id=>id!==within&&topic(id).parent!==within),
-    t=topic(tagId||e.topics?.[0]),attachment=e.attachments?.[0],age=ageTier(e.occurredAt),date=fmtDate(e.occurredAt||e.createdAt||e.dueAt);return `<article class="entry ${e.image?"has-thumb":""} ${age}" data-entry="${e.id}" style="--topic:${t.color}"><span class="acc-no">No. ${accNo(e.id)}</span>${tagId?`<span class="mount-tag" style="background:${t.color}">${esc(t.name)}</span>`:""}${e.image?`<span class="thumb-wrap"><img class="entry-thumb" src="${e.image}" alt="${esc(e.imageAlt||"")}" loading="lazy">${e.images?.length>1?`<span class="thumb-count">${icon("photos")}${e.images.length}</span>`:""}</span>`:""}<div class="entry-copy"><div class="entry-meta"><span class="type-label">${esc(e.type)}</span>${date?`<span class="entry-date">${date}</span>`:""}${e.publishedAt||e.type==="Task"?"":`<span class="stamp stamp-private">private</span>`}</div><h3>${e.type==="Quote"?`“${esc(e.title)}”`:esc(e.title)}</h3>${snippet?`<p class="snippet">${snippet}</p>`:e.author?`<p>${esc(e.author)}</p>`:e.excerpt?`<p>${esc(e.excerpt)}</p>`:""}${attachment?`<span class="attachment-inline">${icon("paperclip")}${esc(attachment.name)}</span>`:""}</div></article>`}
+    t=topic(tagId||e.topics?.[0]),attachment=e.attachments?.[0],age=ageTier(e.occurredAt),date=fmtDate(e.occurredAt||e.createdAt||e.dueAt);return `<article class="entry has-thumb ${e.image?"":"has-plate"} ${age}" data-entry="${e.id}" style="--topic:${t.color}"><span class="acc-no">No. ${accNo(e.id)}</span>${tagId?`<span class="mount-tag" style="background:${t.color}">${esc(t.name)}</span>`:""}<span class="thumb-wrap">${e.image?`<img class="entry-thumb" src="${e.image}" alt="${esc(e.imageAlt||"")}" loading="lazy">${e.images?.length>1?`<span class="thumb-count">${icon("photos")}${e.images.length}</span>`:""}`:entryPlate(e)}</span><div class="entry-copy"><div class="entry-meta"><span class="type-label">${esc(e.type)}</span>${date?`<span class="entry-date">${date}</span>`:""}${e.publishedAt||e.type==="Task"?"":`<span class="stamp stamp-private">private</span>`}</div><h3>${e.type==="Quote"?`“${esc(e.title)}”`:esc(e.title)}</h3>${snippet?`<p class="snippet">${snippet}</p>`:e.author?`<p>${esc(e.author)}</p>`:e.excerpt?`<p>${esc(e.excerpt)}</p>`:""}${attachment?`<span class="attachment-inline">${icon("paperclip")}${esc(attachment.name)}</span>`:""}</div></article>`}
 // A page-shaped placeholder rather than a spinner: same title block, same
 // card metrics, so the real content lands in the space already held for it.
 function skeletonEntry(){return `<div class="entry skeleton-entry"><div class="skeleton skeleton-line" style="width:34%;height:10px"></div><div class="skeleton skeleton-line" style="width:78%;height:26px;margin:14px 0 12px"></div><div class="skeleton skeleton-line"></div><div class="skeleton skeleton-line"></div></div>`}

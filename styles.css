@@ -1084,3 +1084,32 @@ aside .section-title{display:flex;align-items:baseline}
   }
   .mobile-nav a.active{background:color-mix(in srgb,var(--ink) 12%,transparent)}
 }
+
+/* ---------- a drawn plate where an entry has no photograph ---------- */
+/* Same footprint as the thumbnail, so a list keeps one rhythm whether or not
+   a card carries a picture. The ground comes from the entry's id, so two notes
+   on one topic differ without either being decorated at random. */
+.entry-plate{
+  position:relative;display:grid;place-items:center;overflow:hidden;
+  width:150px;height:115px;border:1px solid var(--line);
+}
+.entry-plate .plate-motif{position:absolute;inset:0;display:grid;place-items:center;color:var(--topic);opacity:.34}
+.entry-plate .plate-motif .line-icon{width:46px;height:46px;stroke-width:1.2}
+.entry-plate .plate-letter{
+  /* set into the corner rather than bled off it: at a deeper offset a "t"
+     lost its ascender and read as a cross */
+  position:absolute;right:.06em;bottom:-.14em;font:700 68px/1 var(--mono);
+  font-style:normal;color:var(--topic);opacity:.16;text-transform:lowercase;user-select:none;
+}
+/* the accession number is knocked out white over a photograph; over a pale
+   plate it has to go back to ink */
+.entry.has-plate .acc-no{color:var(--faint);text-shadow:none}
+@media(max-width:800px){
+  .entry-plate{width:108px;height:92px}
+  .entry-plate .plate-motif .line-icon{width:36px;height:36px}
+  .entry-plate .plate-letter{font-size:50px}
+}
+@media(prefers-color-scheme:dark){
+  .entry-plate{border-color:var(--line)}
+  .entry-plate .plate-motif{opacity:.4}
+}
