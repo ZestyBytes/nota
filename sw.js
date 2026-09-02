@@ -64,6 +64,11 @@ self.addEventListener("fetch",event=>{
     return;
   }
 
+  // Video is left entirely to the browser. Caching it here would put a large
+  // file in a cache that is thrown away on every deploy, and clips are fetched
+  // with range requests, which a stored full response answers badly.
+  if(request.destination==="video"||/\.(mp4|mov|m4v|webm)$/i.test(url.pathname))return;
+
   // Everything else: serve from cache immediately, refresh it in the
   // background. The app paints from disk and never waits on the network.
   event.respondWith(caches.open(CACHE).then(cache=>

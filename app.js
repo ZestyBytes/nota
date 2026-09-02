@@ -60,11 +60,20 @@ function markdown(src="",shown=[],owner=""){
   for(const raw of String(src).split("\n")){
     const t=raw.trim();
     if(!t&&fence===null){flushAll();continue}
-    if(t.startsWith("![")){
-      flushAll();
-      const m=t.match(/^!\[([^\]]*)\]\(([^)]+)\)/);
-      // the lead image is already shown above the text; the rest belong here
-      if(m&&!shown.includes(m[2]))out.push(`<figure class="body-figure"><img src="${esc(m[2])}" alt="${esc(m[1])}" loading="lazy">${m[1]?`<figcaption>${esc(m[1])}</figcaption>`:""}</figure>`);
+    // A photograph or a clip can be written on its own line or run straight on
+    // from a sentence, which is what Obsidian does when you attach one at the
+    // end of a paragraph. Pull every embed out of the line either way, so it
+    // is rendered rather than printed as its own path.
+    if(fence===null&&MEDIA_TOKEN.test(t)){
+      const parts=t.split(MEDIA_SPLIT).filter(x=>x!=="");
+      for(const part of parts){
+        const m=part.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
+        if(!m){if(part.trim())para.push(part.trim());continue}
+        flushAll();
+        // the lead image is already shown above the text; the rest belong here
+        if(shown.includes(m[2]))continue;
+        out.push(media(m[2],m[1]));
+      }
       continue;
     }
     if(t.startsWith("#")){flushAll();out.push(`<h3>${inline(t.replace(/^#+\s*/,""))}</h3>`);continue}
@@ -90,6 +99,16 @@ function markdown(src="",shown=[],owner=""){
   flushAll();if(rows.length)out.push(table(rows));
   if(fence!==null)out.push(`<pre class="code"><code>${esc(fence.join("\n"))}</code></pre>`);
   return out.join("");
+}
+const MEDIA_TOKEN=/!\[[^\]]*\]\([^)]+\)/;
+const MEDIA_SPLIT=/(!\[[^\]]*\]\([^)]+\))/g;
+const VIDEO_RE=/\.(mp4|mov|m4v|webm)(\?|$)/i;
+// One path for both: the extension says whether it is a still or a clip.
+function media(src,caption){
+  const body=VIDEO_RE.test(src)
+    ? `<video controls preload="metadata" playsinline src="${esc(src)}"></video>`
+    : `<img src="${esc(src)}" alt="${esc(caption)}" loading="lazy">`;
+  return `<figure class="body-figure${VIDEO_RE.test(src)?" body-video":""}">${body}${caption?`<figcaption>${esc(caption)}</figcaption>`:""}</figure>`;
 }
 // Obsidian writes asides as "> [!note] Title". Rendered as a plain quotation
 // the marker showed as literal text, so the one piece of structure the note

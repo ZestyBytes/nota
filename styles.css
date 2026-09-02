@@ -1008,3 +1008,12 @@ aside .section-title{display:flex;align-items:baseline}
 @media(prefers-color-scheme:dark){
   .topic-photo{filter:saturate(.66) brightness(.8) contrast(1.02)}
 }
+
+/* A pasted path or a long URL was forcing the whole page sideways: prose has
+   no break opportunities inside a token that long, so give it one. */
+.detail-body,.detail-body p,.detail-body li,.entry p,.scrap-text{overflow-wrap:anywhere}
+.detail-body a{word-break:break-word}
+
+/* A clip sits in the column exactly as a photograph does */
+.body-video video{display:block;width:100%;height:auto;background:#0d0f09}
+.body-figure video{border:1px solid var(--line)}

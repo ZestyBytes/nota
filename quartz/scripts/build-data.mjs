@@ -62,7 +62,8 @@ function splitFrontmatter(raw) {
 // markdown form. So the vault's own media is indexed here, copied into the
 // build beside the hand-placed assets/, and every reference rewritten to the
 // path it will actually live at. Writing on the phone then needs no detour.
-const MEDIA_RE = /\.(jpe?g|png|gif|webp|avif|svg|heic)$/i;
+const MEDIA_RE = /\.(jpe?g|png|gif|webp|avif|svg|heic|mp4|mov|m4v|webm)$/i;
+const VIDEO_RE = /\.(mp4|mov|m4v|webm)$/i;
 const VAULT_MEDIA_DIR = "assets/vault";
 const OUT_DIR = dirname(OUT_PATH);
 const REPO_ROOT = join(__dirname, "..", "..");
@@ -121,8 +122,9 @@ function resolveMedia(src, file) {
   return hit ? publishMedia(hit) : src;
 }
 
-// Rewrites a note body so both forms of image reference come out as markdown
-// pointing at a path the deployed site serves.
+// Rewrites a note body so both forms of reference come out as markdown
+// pointing at a path the deployed site serves. Video travels the same way and
+// is told apart by its extension at render time.
 function resolveBodyMedia(body, file) {
   return body
     .replace(/!\[\[([^\]]+)\]\]/g, (whole, target) => {
@@ -140,8 +142,10 @@ function resolveBodyMedia(body, file) {
     });
 }
 
+// A clip travels as the same markdown as a photograph, so the card thumbnail
+// and the gallery have to skip it: an <img> pointed at a .mov shows nothing.
 function firstImage(body) {
-  const m = body.match(/!\[([^\]]*)\]\(([^)]+)\)/);
+  const m = [...body.matchAll(/!\[([^\]]*)\]\(([^)]+)\)/g)].find(x => !VIDEO_RE.test(x[2]));
   return m ? { image: m[2], imageAlt: m[1] } : { image: "", imageAlt: "" };
 }
 
@@ -151,7 +155,7 @@ function allImages(body) {
   const out = [];
   const re = /!\[([^\]]*)\]\(([^)]+)\)/g;
   let m;
-  while ((m = re.exec(body))) out.push({ src: m[2], alt: m[1] });
+  while ((m = re.exec(body))) if (!VIDEO_RE.test(m[2])) out.push({ src: m[2], alt: m[1] });
   return out;
 }
 
