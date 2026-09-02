@@ -218,6 +218,32 @@ shows on the board; anything in the body appears under it in smaller type.
 They are pinned as cards under Library, Scraps, and carry no accession number
 and no stamp. `occurredAt` is optional.
 
+## Topic card pictures
+
+Each topic on the Topics page can carry a photograph as its whole card
+background. Topics name theirs in `quartz/scripts/build-data.mjs`, on the
+`photo:` field:
+
+```js
+gardening: { name: "Gardening", ..., photo: "7728082", ... }
+```
+
+That value takes whatever is easiest to paste:
+
+- **a Pexels photo id**, the digits at the end of any Pexels address
+- **a Pexels page URL**, copied straight from the browser's address bar
+- **any full image URL**, from Pexels, Unsplash or anywhere else
+- **a path inside the repo**, such as `assets/journal/first-mini-seafront.jpg`
+
+A Pexels id or page URL is expanded at build time into the image URL at
+1400px wide, which is about right for a card on a phone without pulling a
+full size original over mobile data.
+
+Leave `photo: ""` and the topic falls back to the most recent photograph
+taken under it, and failing that to its drawn ground. A card whose picture
+fails to load also drops back to the drawn ground, so a broken link costs
+nothing.
+
 ## Writing from a phone or a MacBook
 
 The vault is a folder in a Git repository, so any device that can edit that

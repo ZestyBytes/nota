@@ -19,23 +19,44 @@ const args = process.argv.slice(2);
 const outIdx = args.indexOf("--out");
 const OUT_PATH = outIdx >= 0 ? args[outIdx + 1] : join(__dirname, "..", "..", "dist", "data.js");
 
+// A topic's `photo:` accepts whatever is easiest to paste. Pexels serves a
+// deterministic URL from a photo's id, and that id is the last run of digits
+// in any Pexels address, so the browser's address bar is enough: no hunting
+// for "copy image address". A full URL from anywhere is passed straight
+// through, and a path inside the repo is left alone.
+const PEXELS = id => `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=1400`;
+function resolvePhoto(value) {
+  const v = String(value || "").trim();
+  if (!v) return "";
+  if (/^\d+$/.test(v)) return PEXELS(v);                       // a bare id
+  if (/pexels\.com/i.test(v) && !/images\.pexels\.com/i.test(v)) {
+    const id = (v.match(/(\d{4,})/g) || []).pop();             // a pexels page
+    return id ? PEXELS(id) : v;
+  }
+  return v;                                                     // a URL or a repo path
+}
+
 // Topic taxonomy, mirroring the paths declared in content/topics.md.
 const TOPICS = {
-  gardening: { name: "Gardening", icon: "leaf", color: "#3f6b2e", soft: "#e4ead9", ground: "hatch", photo: "https://images.pexels.com/photos/7728082/pexels-photo-7728082.jpeg?auto=compress&cs=tinysrgb&w=1400", description: "Seasons, seedlings and life outdoors" },
-  music: { name: "Music", icon: "music", color: "#a13a2e", soft: "#f0e1dd", ground: "ink", description: "Practice, listening and the guitar journey" },
-  technology: { name: "Technology", mode: "tech", icon: "terminal", color: "#1c6e63", soft: "#dbe9e6", ground: "grid", description: "Tools, code and thoughtful technology" },
-  selfcare: { name: "Self care", icon: "heart", color: "#3f6470", soft: "#dde7ea", ground: "wash", description: "Looking after the machine: health, mind and upkeep" },
-  adhd: { name: "ADHD", parent: "selfcare", icon: "mind", color: "#5b4a9e", soft: "#e5e1f2", ground: "fade", description: "Understanding attention and living well" },
-  books: { name: "Books", icon: "book", color: "#8a5a12", soft: "#ece0cb", ground: "ruled", description: "Reading, marginalia and ideas worth keeping" },
-  family: { name: "Family", icon: "home", color: "#96355a", soft: "#eddce3", ground: "band", description: "Home life and shared memories" },
-  food: { name: "Food", icon: "fork", color: "#8a4a1a", soft: "#ecddcb", ground: "coarse", photo: "https://images.pexels.com/photos/6605214/pexels-photo-6605214.jpeg?auto=compress&cs=tinysrgb&w=1400", description: "Recipes, experiments and things made for the table" },
-  recipes: { name: "Recipes", parent: "food", mode: "recipes", icon: "fork", color: "#a25a1e", soft: "#f0e2d2", ground: "duo", description: "Things made at home, and how they were made" },
-  eatingout: { name: "Eating out", parent: "food", icon: "cup", color: "#7a5a2e", soft: "#ece1d0", ground: "plain", description: "Meals out worth remembering" },
-  lifestyle: { name: "Lifestyle", icon: "cup", color: "#2f5d8a", soft: "#dde5ee", ground: "verticals", description: "Everyday life, plans and the practical things" },
-  habits: { name: "Habits", icon: "repeat", color: "#6b3f6b", soft: "#e9dfe9", ground: "crosshatch", description: "Practices worth repeating, and what makes them stick" },
-  playlist: { name: "Playlist", mode: "listen", icon: "disc", color: "#6b6a2e", soft: "#e9e8d3", ground: "dots", description: "Records, podcasts and things worth listening to" },
-  motoring: { name: "Motoring", icon: "car", color: "#b0472c", soft: "#f2ded6", ground: "wedge", description: "The Mini, the road, and the days worth the drive" }
+  gardening: { name: "Gardening", icon: "leaf", color: "#3f6b2e", soft: "#e4ead9", ground: "hatch", photo: "7728082", description: "Seasons, seedlings and life outdoors" },
+  music: { name: "Music", icon: "music", color: "#a13a2e", soft: "#f0e1dd", ground: "ink", photo: "", description: "Practice, listening and the guitar journey" },
+  technology: { name: "Technology", mode: "tech", icon: "terminal", color: "#1c6e63", soft: "#dbe9e6", ground: "grid", photo: "", description: "Tools, code and thoughtful technology" },
+  selfcare: { name: "Self care", icon: "heart", color: "#3f6470", soft: "#dde7ea", ground: "wash", photo: "", description: "Looking after the machine: health, mind and upkeep" },
+  adhd: { name: "ADHD", parent: "selfcare", icon: "mind", color: "#5b4a9e", soft: "#e5e1f2", ground: "fade", photo: "", description: "Understanding attention and living well" },
+  books: { name: "Books", icon: "book", color: "#8a5a12", soft: "#ece0cb", ground: "ruled", photo: "", description: "Reading, marginalia and ideas worth keeping" },
+  family: { name: "Family", icon: "home", color: "#96355a", soft: "#eddce3", ground: "band", photo: "", description: "Home life and shared memories" },
+  food: { name: "Food", icon: "fork", color: "#8a4a1a", soft: "#ecddcb", ground: "coarse", photo: "6605214", description: "Recipes, experiments and things made for the table" },
+  recipes: { name: "Recipes", parent: "food", mode: "recipes", icon: "fork", color: "#a25a1e", soft: "#f0e2d2", ground: "duo", photo: "", description: "Things made at home, and how they were made" },
+  eatingout: { name: "Eating out", parent: "food", icon: "cup", color: "#7a5a2e", soft: "#ece1d0", ground: "plain", photo: "", description: "Meals out worth remembering" },
+  lifestyle: { name: "Lifestyle", icon: "cup", color: "#2f5d8a", soft: "#dde5ee", ground: "verticals", photo: "", description: "Everyday life, plans and the practical things" },
+  habits: { name: "Habits", icon: "repeat", color: "#6b3f6b", soft: "#e9dfe9", ground: "crosshatch", photo: "", description: "Practices worth repeating, and what makes them stick" },
+  playlist: { name: "Playlist", mode: "listen", icon: "disc", color: "#6b6a2e", soft: "#e9e8d3", ground: "dots", photo: "", description: "Records, podcasts and things worth listening to" },
+  motoring: { name: "Motoring", icon: "car", color: "#b0472c", soft: "#f2ded6", ground: "wedge", photo: "", description: "The Mini, the road, and the days worth the drive" }
 };
+// Normalise every topic photograph once, at build time, so the app only ever
+// sees a finished URL.
+for (const t of Object.values(TOPICS)) if (t.photo) t.photo = resolvePhoto(t.photo);
+
 const TYPE_MAP = { journal: "Journal", journey: "Journey", note: "Note", quote: "Quote", scrap: "Scrap" };
 
 function walk(dir) {
