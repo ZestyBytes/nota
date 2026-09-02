@@ -65,6 +65,7 @@ function splitFrontmatter(raw) {
 const MEDIA_RE = /\.(jpe?g|png|gif|webp|avif|svg|heic)$/i;
 const VAULT_MEDIA_DIR = "assets/vault";
 const OUT_DIR = dirname(OUT_PATH);
+const REPO_ROOT = join(__dirname, "..", "..");
 
 // relative path under content -> absolute source, plus a basename index, since
 // an Obsidian embed names the file alone with no idea where it sits.
@@ -81,6 +82,16 @@ const vaultMediaByName = new Map();
     if (!vaultMediaByName.has(name)) vaultMediaByName.set(name, rel);
   }
 })(CONTENT_DIR);
+
+// Obsidian's default attachment location is the vault root, and the vault root
+// here is the whole repository, so a photograph attached with the default
+// setting lands above content/ where the walk above never sees it. Index the
+// repository's own top level too, one level only, so that still works.
+for (const name of readdirSync(REPO_ROOT)) {
+  if (!MEDIA_RE.test(name) || !statSync(join(REPO_ROOT, name)).isFile()) continue;
+  vaultMedia.set(name, join(REPO_ROOT, name));
+  if (!vaultMediaByName.has(name)) vaultMediaByName.set(name, name);
+}
 
 const copied = new Set();
 function publishMedia(rel) {
