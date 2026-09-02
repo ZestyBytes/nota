@@ -26,8 +26,13 @@ Name the file after the title, in lower case with hyphens, for example
 Tags are what drive the Topics page. Use these, and nothing else, or the entry
 will simply carry no topic:
 
-`gardening`, `music`, `technology`, `selfcare`, `adhd`, `books`, `family`,
-`food`, `recipes`, `eatingout`, `lifestyle`, `habits`, `playlist`, `motoring`
+`family`, `life`, `selfcare`, `adhd`, `habits`, `music`, `playlist`,
+`practice`, `reading`, `food`, `recipes`, `eatingout`, `technology`,
+`motoring`, `gardening`
+
+`selfcare`, `adhd` and `habits` sit under `life`; `playlist` and `practice`
+under `music`; `recipes` and `eatingout` under `food`. Use the child where one
+fits, and the parent gathers it anyway.
 
 ## Blocks you can use in any note
 

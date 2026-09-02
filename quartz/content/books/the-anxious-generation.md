@@ -6,7 +6,7 @@ cover: "assets/books/the-anxious-generation.jpg"
 status: reading
 progress: 42
 startedAt: 2026-08-20
-tags: [books, adhd]
+tags: [reading, adhd]
 publish: true
 ---
 

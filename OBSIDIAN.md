@@ -61,14 +61,23 @@ at `templates/`) to start a new note in the right shape.
 ## Frontmatter reference
 
 Every type takes `tags: [slug, ...]`, the topic(s) it belongs to. Valid
-slugs today: `gardening`, `music`, `technology`, `selfcare`, `adhd`,
-`books`, `family`, `food`, `recipes`, `eatingout`, `lifestyle`, `habits`,
-`playlist`, `motoring`. Some are sub-topics: `adhd` sits under `selfcare`,
-and `recipes` and `eatingout` under `food`, set by a `parent` on the topic.
-Tag the specific one; the parent gathers its children automatically. Adding
-a new one means adding it to the `TOPICS` object at the top
-of `quartz/scripts/build-data.mjs` (and to `content/topics.md`'s grid if you
-want it browsable).
+slugs today, with children indented under their parent:
+
+```
+family
+life          selfcare, adhd, habits
+music         playlist, practice
+reading
+food          recipes, eatingout
+technology
+motoring
+gardening
+```
+
+Tag a note with a child when it fits one, `recipes` rather than `food`; the
+parent gathers its children's items either way. A topic nothing uses is left
+out of the build entirely, so a child can be declared long before anything is
+filed under it.
 
 **Journal** (`type: journal`): a dated entry.
 ```yaml

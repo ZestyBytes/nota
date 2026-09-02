@@ -4,7 +4,7 @@ type: quote
 author: Eddie Jaku
 book: "[[The Happiest Man on Earth]]"
 page: 83
-tags: [books]
+tags: [reading]
 createdAt: 2026-09-01
 publishedAt: 2026-09-01
 publish: true

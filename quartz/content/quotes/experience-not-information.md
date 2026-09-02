@@ -4,7 +4,7 @@ type: quote
 author: Jonathan Haidt
 book: "[[The Anxious Generation]]"
 page: 83
-tags: [books, adhd]
+tags: [reading, adhd]
 publish: true
 ---
 

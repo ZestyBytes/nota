@@ -4,7 +4,7 @@ type: quote
 author: ""
 book: ""
 page: ""
-tags: [books]
+tags: [reading]
 createdAt: "YYYY-MM-DD"
 publishedAt: "YYYY-MM-DD"
 publish: true

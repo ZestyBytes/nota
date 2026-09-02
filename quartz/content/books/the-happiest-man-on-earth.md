@@ -5,7 +5,7 @@ author: Eddie Jaku
 cover: "assets/books/the-happiest-man-on-earth-cover.jpg"
 status: finished
 progress: 100
-tags: [books]
+tags: [reading]
 publish: true
 ---
 

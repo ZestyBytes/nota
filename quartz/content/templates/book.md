@@ -4,7 +4,7 @@ type: reading
 author: ""
 status: want-to-read
 progress: 0
-tags: [books]
+tags: [reading]
 publish: true
 ---
 

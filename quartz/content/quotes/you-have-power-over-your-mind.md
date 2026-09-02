@@ -4,7 +4,7 @@ type: quote
 author: Marcus Aurelius
 book: "[[Meditations]]"
 location: Book XII
-tags: [books]
+tags: [reading]
 publish: true
 ---
 
