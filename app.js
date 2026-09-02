@@ -411,9 +411,6 @@ function calendar(){
   const label=new Date(state.selectedDate+"T12:00:00").toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
   const near=nearestMonth(state.month,dates);
   const monthKey=`${y}-${String(m+1).padStart(2,"0")}`;
-  const monthEntries=state.data.entries.filter(e=>(e.occurredAt||e.createdAt||"").startsWith(monthKey));
-  const activeDays=new Set(monthEntries.map(e=>e.occurredAt||e.createdAt).filter(Boolean)).size;
-  const monthPhotos=monthEntries.filter(e=>e.image).slice(0,4);
   const jump=!monthCount&&near&&near!==monthKey
     ? `<p class="empty small">Nothing this month. <button class="linkish" data-jump="${near}">Go to ${new Date(near+"-01T12:00:00").toLocaleDateString("en-GB",{month:"long",year:"numeric"})}</button></p>` : "";
   return `<section>${pageHead("A visual journal","Calendar","Move through the archive by day: photographs, notes, plans and small moments gathered into the month they happened.")}
@@ -443,7 +440,6 @@ function calendar(){
         ${dayEntries.length?`<section class="day-part"><h4 class="section-title">Entries</h4><ol class="day-log">${dayEntries.map(dayRow).join("")}</ol></section>`:""}`;
       })()}
     </aside></div>
-    <div class="calendar-overview calendar-overview-after"><div class="calendar-stats"><p><b>${monthCount}</b><span>records</span></p><p><b>${activeDays}</b><span>days kept</span></p><p><b>${monthEntries.reduce((n,e)=>n+(e.images?.length||0),0)}</b><span>photographs</span></p></div>${monthPhotos.length?`<div class="month-filmstrip">${monthPhotos.map(e=>`<button data-entry="${esc(e.id)}" aria-label="Open ${esc(e.title)}"><img src="${esc(e.image)}" alt="" loading="lazy"><span>${esc(e.title)}</span></button>`).join("")}</div>`:`<p class="month-quiet">An unphotographed month—its written record still lives here.</p>`}</div>
   </section>`;
 }
 function coverPlate(b){
@@ -460,7 +456,7 @@ function galleryGrid(){
   if(!sets.length)return `<p class="empty">No photographs in the archive yet.</p>`;
   return `<div class="shot-grid">${sets.map(e=>{
     const n=e.images.length,cover=e.images[0];
-    return `<button class="shot ${n>1?"is-set":""}" data-entry="${esc(e.id)}" style="--topic:${topic(e.topics?.[0]).color}" aria-label="${esc(e.title)}, ${n} photograph${n>1?"s":""}"><img src="${esc(cover.src)}" alt="${esc(cover.alt||"")}" loading="lazy" decoding="async">${n>1?`<span class="shot-count">${icon("photos")}${n}</span>`:""}<span class="shot-cap">${esc(e.title)}</span></button>`;
+    return `<button class="shot ${n>1?"is-set":""}" data-gallery-entry="${esc(e.id)}" style="--topic:${topic(e.topics?.[0]).color}" aria-label="View ${esc(e.title)}, ${n} photograph${n>1?"s":""}"><img src="${esc(cover.src)}" alt="${esc(cover.alt||"")}" loading="lazy" decoding="async">${n>1?`<span class="shot-count">${icon("photos")}${n}</span>`:""}<span class="shot-cap">${esc(e.title)}</span></button>`;
   }).join("")}</div>`;
 }
 // A scrap is a thing caught in passing: a line overheard, a thought, something
@@ -525,10 +521,12 @@ function spacePreview(id,photo){
   }
   if(id==="technology")return `<span class="space-tech-preview" aria-hidden="true"><i>&lt;/&gt;</i><b>build small_</b><em></em><em></em><em></em></span>`;
   if(id==="music")return `<span class="space-music-preview" aria-hidden="true"><i></i><b>33</b></span>`;
+  if(id==="life")return `<span class="space-life-preview" aria-hidden="true"><i></i><i></i><i></i><b>life, lately</b></span>`;
+  if(id==="gardening")return `<span class="space-garden-preview" aria-hidden="true"><i></i><i></i><i></i><b>grow · tend · note</b></span>`;
   return photo?`<img class="topic-photo" src="${esc(photo.src)}" alt="" decoding="async" fetchpriority="high" onload="this.dataset.ready=1" onerror="this.closest('.topic-card').classList.remove('has-photo');this.nextElementSibling?.remove();this.remove()"><span class="topic-shade" aria-hidden="true"></span>`:"";
 }
 function spaceCard({id,t,count,latest,kids}){
-  const photo=topicPhoto(id),special=["reading","technology","music"].includes(id),visual=spacePreview(id,photo);
+  const photo=topicPhoto(id),special=["reading","technology","music","life","gardening"].includes(id),visual=spacePreview(id,photo);
   return `<button class="topic-card space-card space-${id} ground-${t.ground||"plain"} ${photo&&!special?"has-photo":""} ${special?"has-space-preview":""}" data-topic="${id}" style="--topic:${t.color};--soft:${t.soft}">${visual}${!visual&&t.ground==="wedge"?`<span class="topic-flag" aria-hidden="true"></span>`:""}${!visual&&t.icon?`<span class="topic-motif" aria-hidden="true">${icon(t.icon)}</span>`:""}<h2>${esc(t.name)}</h2><p>${esc(t.description)}</p>${kids.length?`<span class="topic-kids">${kids.map(k=>`<span class="kid" data-topic="${k}" style="--topic:${state.data.topics[k].color}">${esc(state.data.topics[k].name)}</span>`).join("")}</span>`:""}</button>`;
 }
 function topics(){
@@ -628,7 +626,7 @@ function journeyPage(id){
 // Tasks lived only as a sidebar on Today and dots on the calendar, so nothing
 // showed what was overdue, and nothing kept what was done.
 function taskPage(){
-  const all=state.data.tasks,open=all.filter(t=>!t.completedAt),done=all.filter(t=>t.completedAt);
+  const all=state.data.tasks,open=all.filter(t=>!t.completedAt),done=all.filter(t=>t.completedAt).sort((a,b)=>(b.completedAt||"").localeCompare(a.completedAt||"")).slice(0,5);
   const overdue=open.filter(t=>t.dueAt&&t.dueAt<todayKey);
   const today=open.filter(t=>t.dueAt===todayKey);
   const ahead=open.filter(t=>t.dueAt&&t.dueAt>todayKey).sort((a,b)=>a.dueAt.localeCompare(b.dueAt));
@@ -640,7 +638,7 @@ function taskPage(){
     ${group("Today",today)}
     ${group("Coming up",ahead)}
     ${group("No date",undated)}
-    ${done.length?`<section class="task-group"><details class="done-tasks"><summary><span class="section-title">Done<span class="task-count">${done.length}</span></span></summary><div class="tasks">${done.map(taskRow).join("")}</div></details></section>`:""}
+    ${done.length?`<section class="task-group"><details class="done-tasks" open><summary><span class="section-title">Recently completed<span class="task-count">${done.length}</span></span></summary><div class="tasks">${done.map(taskRow).join("")}</div></details></section>`:""}
   </section>`;
 }
 // Food is a room rather than another filtered list. Recipes take the large
@@ -760,6 +758,7 @@ let scrollLock=0;
 function modal(inner){scrollLock=window.scrollY;document.getElementById("modal-root").innerHTML=`<div class="modal-backdrop" data-close><div class="modal" role="dialog" aria-modal="true">${inner}</div></div>`;document.body.style.top=`-${scrollLock}px`;document.body.classList.add("modal-open")}
 function closeModal(){if(!document.body.classList.contains("modal-open"))return;document.getElementById("modal-root").innerHTML="";document.body.classList.remove("modal-open");document.body.style.top="";window.scrollTo(0,scrollLock)}
 function bookDetail(id){const b=state.data.books.find(x=>x.id===id);if(!b)return;modal(`<article class="book-detail"><div class="modal-head"><span class="type-label">Reading</span><button class="close" data-close>×</button></div><div class="book-detail-head">${b.cover?`<img src="${b.cover}" alt="">`:coverPlate(b)}<div><h2>${esc(b.title)}</h2><p>${esc(b.author)}</p><span class="status">${esc(b.status.replaceAll("-"," "))} · ${b.progress}%</span></div></div><div class="reading-columns"><section><div class="subhead"><h3>Notes</h3></div>${b.notes?.length?b.notes.map(n=>`<div class="reading-note"><p>${esc(n.text)}</p><small>${esc(n.createdAt)}</small></div>`).join(""):`<p class="empty">No notes yet.</p>`}</section><section><div class="subhead"><h3>Quotes</h3></div>${b.quotes?.length?b.quotes.map(q=>`<blockquote class="reading-quote">“${esc(q.text)}”<cite>${esc(q.page||"")}</cite></blockquote>`).join(""):`<p class="empty">No quotes yet.</p>`}</section></div></article>`)}
+function photoDetail(id){const e=state.data.entries.find(x=>x.id===id),images=e?.images||[];if(!images.length)return;modal(`<article class="photo-view"><div class="modal-head"><div><span class="type-label">${images.length>1?`${images.length} photographs`:"Photograph"}</span><h2>${esc(e.title)}</h2></div><button class="close" data-close>×</button></div>${images.length>1?gallery(images):`<figure><img src="${esc(images[0].src)}" alt="${esc(images[0].alt||"")}">${images[0].alt?`<figcaption>${esc(images[0].alt)}</figcaption>`:""}</figure>`}</article>`)}
 function toast(msg){const el=document.getElementById("toast");el.textContent=msg;el.classList.add("show");setTimeout(()=>el.classList.remove("show"),1800)}
 document.addEventListener("click",async e=>{
   const themeButton=e.target.closest("[data-theme-toggle]");
@@ -780,6 +779,7 @@ document.addEventListener("click",async e=>{
   const close=e.target.closest("[data-close]");if(close&&e.target===close)closeModal();
   const attachment=e.target.closest("[data-view-attachment]");if(attachment){const item=state.data.entries.find(x=>x.id===attachment.dataset.entryId),file=item?.attachments?.[Number(attachment.dataset.viewAttachment)];if(file?.path){try{open(await NotaBackend.attachmentUrl(file.path),"_blank","noopener")}catch(error){toast(error.message)}}return}
   const book=e.target.closest("[data-book]");if(book){bookDetail(book.dataset.book);return}
+  const photos=e.target.closest("[data-gallery-entry]");if(photos){photoDetail(photos.dataset.galleryEntry);return}
   const entry=e.target.closest("[data-entry]");if(entry){e.preventDefault();state.returnTo=entry.dataset.return||location.hash||"#today";state.returnScroll=window.scrollY;location.hash=`entry/${encodeURIComponent(entry.dataset.entry)}`}
   const date=e.target.closest("[data-date]");if(date){state.selectedDate=date.dataset.date;render()}
   const jump=e.target.closest("[data-jump]");
