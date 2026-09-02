@@ -45,6 +45,8 @@ Both faces load via Google Fonts (`index.html` `<link>`), with system fallbacks.
 
 Max width 1220px. Section headers are small tracked mono labels with a trailing rule (`.section-title`), never numbered/kickered above content headings. Filters and library tabs render as bordered mono tab strips, not pill buttons. The desktop nav is a vertical-rule-separated mono strip with ordinal numbers and an underline on the active item. On phones the persistent five destinations are Home, Calendar, Library, Spaces and To-do. Search stays in the desktop header and has a prominent field on Home; it does not displace a daily destination in the phone bar.
 
+The archive follows the device colour scheme by default. A small sun/half-moon control in the masthead lets the reader override it, and that preference is remembered locally. Calendar photographs belong in the monthly contact sheet and selected-day record, not washed behind date numerals.
+
 ## What must not drift back in
 
 - No pastel/soft chip fills; topic color is always committed (fill on tags, outline on chips).

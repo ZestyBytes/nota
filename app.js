@@ -180,6 +180,7 @@ function ageTier(dateStr){if(!dateStr)return"";const days=(now-new Date(dateStr+
 const PLATE_GROUNDS=["wash","ruled","grid","verticals","dots","coarse","hatch","crosshatch","fade","band","duo","plain"];
 function entryPlate(e){
   const t=topic(e.topics?.[0]);
+  if(e.id==="notes/why-i-made-nota")return `<span class="entry-plate manifesto-plate" aria-hidden="true"><b>nota<i>.</i></b><small>why this exists</small></span>`;
   let h=0;for(const c of String(e.id))h=(h*31+c.charCodeAt(0))>>>0;
   const g=PLATE_GROUNDS[h%PLATE_GROUNDS.length];
   return `<span class="entry-plate ground-${g}" style="--topic:${t.color};--soft:${t.soft}" aria-hidden="true">
@@ -405,8 +406,7 @@ function calendar(){
     const items=dayItems(date);monthCount+=items.length;
     const dots=[...new Set(items.flatMap(e=>e.topics||[]))].slice(0,4)
       .map(id=>`<i class="dot" style="background:${topic(id).color}"></i>`).join("");
-    const image=items.find(e=>e.image)?.image;
-    cells.push(`<button class="day ${date===state.selectedDate?"selected":""} ${date===todayKey?"is-today":""} ${items.length?"has-items":""} ${image?"has-day-photo":""}" data-date="${date}" aria-label="${esc(fmtDate(date))}${items.length?`, ${items.length} item${items.length>1?"s":""}`:""}">${image?`<img class="day-photo" src="${esc(image)}" alt="" loading="lazy">`:""}<span class="day-no">${d}</span><span class="dots">${dots}</span>${items.length?`<span class="day-more">${items.length}</span>`:""}</button>`);
+    cells.push(`<button class="day ${date===state.selectedDate?"selected":""} ${date===todayKey?"is-today":""} ${items.length?"has-items":""}" data-date="${date}" aria-label="${esc(fmtDate(date))}${items.length?`, ${items.length} item${items.length>1?"s":""}`:""}"><span class="day-no">${d}</span><span class="dots">${dots}</span>${items.length?`<span class="day-more">${items.length}</span>`:""}</button>`);
   }
   const label=new Date(state.selectedDate+"T12:00:00").toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
   const near=nearestMonth(state.month,dates);
@@ -493,7 +493,7 @@ function topicPhoto(id){
   // camera should be illustrated by your own work, not by stock. `photo:` in
   // build-data is the default underneath, for a topic that has none yet.
   const own=state.data.entries
-    .filter(e=>e.image&&inTopic(e,id))
+    .filter(e=>e.image&&e.topics?.[0]===id)
     .sort((a,b)=>(b.occurredAt||b.createdAt||"").localeCompare(a.occurredAt||a.createdAt||""));
   // With several to choose from it turns over daily, the way the Today widget
   // does: the same all day, a different one tomorrow.
@@ -517,7 +517,7 @@ function spacePreview(id,photo){
 }
 function spaceCard({id,t,count,latest,kids}){
   const photo=topicPhoto(id),special=["reading","technology","music"].includes(id),visual=spacePreview(id,photo);
-  return `<button class="topic-card space-card space-${id} ground-${t.ground||"plain"} ${photo&&!special?"has-photo":""} ${special?"has-space-preview":""}" data-topic="${id}" style="--topic:${t.color};--soft:${t.soft}">${visual}${!visual&&t.ground==="wedge"?`<span class="topic-flag" aria-hidden="true"></span>`:""}${!visual&&t.icon?`<span class="topic-motif" aria-hidden="true">${icon(t.icon)}</span>`:""}<h2>${esc(t.name)}</h2><p>${esc(t.description)}</p>${kids.length?`<span class="topic-kids">${kids.map(k=>`<span class="kid" data-topic="${k}" style="--topic:${state.data.topics[k].color}">${esc(state.data.topics[k].name)}</span>`).join("")}</span>`:""}<span class="topic-foot">Enter space →</span></button>`;
+  return `<button class="topic-card space-card space-${id} ground-${t.ground||"plain"} ${photo&&!special?"has-photo":""} ${special?"has-space-preview":""}" data-topic="${id}" style="--topic:${t.color};--soft:${t.soft}">${visual}${!visual&&t.ground==="wedge"?`<span class="topic-flag" aria-hidden="true"></span>`:""}${!visual&&t.icon?`<span class="topic-motif" aria-hidden="true">${icon(t.icon)}</span>`:""}<h2>${esc(t.name)}</h2><p>${esc(t.description)}</p>${kids.length?`<span class="topic-kids">${kids.map(k=>`<span class="kid" data-topic="${k}" style="--topic:${state.data.topics[k].color}">${esc(state.data.topics[k].name)}</span>`).join("")}</span>`:""}</button>`;
 }
 function topics(){
   const list=Object.entries(state.data.topics).filter(([,t])=>!t.parent).map(([id,t])=>({id,t,count:topicCount(id),latest:topicLatest(id),kids:childTopics(id)}));
@@ -750,6 +750,13 @@ function closeModal(){if(!document.body.classList.contains("modal-open"))return;
 function bookDetail(id){const b=state.data.books.find(x=>x.id===id);if(!b)return;modal(`<article class="book-detail"><div class="modal-head"><span class="type-label">Reading</span><button class="close" data-close>×</button></div><div class="book-detail-head">${b.cover?`<img src="${b.cover}" alt="">`:coverPlate(b)}<div><h2>${esc(b.title)}</h2><p>${esc(b.author)}</p><span class="status">${esc(b.status.replaceAll("-"," "))} · ${b.progress}%</span></div></div><div class="reading-columns"><section><div class="subhead"><h3>Notes</h3></div>${b.notes?.length?b.notes.map(n=>`<div class="reading-note"><p>${esc(n.text)}</p><small>${esc(n.createdAt)}</small></div>`).join(""):`<p class="empty">No notes yet.</p>`}</section><section><div class="subhead"><h3>Quotes</h3></div>${b.quotes?.length?b.quotes.map(q=>`<blockquote class="reading-quote">“${esc(q.text)}”<cite>${esc(q.page||"")}</cite></blockquote>`).join(""):`<p class="empty">No quotes yet.</p>`}</section></div></article>`)}
 function toast(msg){const el=document.getElementById("toast");el.textContent=msg;el.classList.add("show");setTimeout(()=>el.classList.remove("show"),1800)}
 document.addEventListener("click",async e=>{
+  const themeButton=e.target.closest("[data-theme-toggle]");
+  if(themeButton){
+    const current=document.documentElement.dataset.theme||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");
+    document.documentElement.dataset.theme=current==="dark"?"light":"dark";
+    try{localStorage.setItem("nota-theme",document.documentElement.dataset.theme)}catch(error){}
+    syncThemeButton();return;
+  }
   // Tapping the tab you are already on takes you back to the top of it:
   // a same-hash link fires no hashchange, so handle it here.
   const nav=e.target.closest(".main-nav a,.mobile-nav a");
@@ -800,6 +807,8 @@ document.addEventListener("submit",async e=>{
 async function loadRemoteArchive(){const remote=await NotaBackend.loadData();state.data=Object.keys(remote.topics).length?remote:clone(BASE)}
 async function boot(){try{const session=await NotaBackend.init();state.user=session.user;if(state.user)await loadRemoteArchive();else if(NotaBackend.configured&&location.hash==="#writing")state.data={...emptyArchive(),entries:await NotaBackend.loadPublished()};NotaBackend.onAuthChange(user=>{state.user=user;if(!user)render()})}catch(error){console.error(error);toast("Could not connect to storage")}finally{state.booting=false;render()}}
 window.addEventListener("hashchange",async()=>{if(NotaBackend.configured&&!state.user&&location.hash==="#writing")state.data={...emptyArchive(),entries:await NotaBackend.loadPublished()};render()});document.querySelector(".hd-day").textContent=now.toLocaleDateString("en-GB",{weekday:"long"});document.querySelector(".hd-date").textContent=`${now.getDate()} ${now.toLocaleDateString("en-GB",{month:"long"})}`;
+function syncThemeButton(){const dark=(document.documentElement.dataset.theme||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"))==="dark",button=document.querySelector("[data-theme-toggle]");if(button){button.setAttribute("aria-label",dark?"Use light theme":"Use dark theme");button.querySelector("span").textContent=dark?"☼":"◐"}}
+syncThemeButton();
 boot();
 // The shell is served cache-first, so a deployed change would otherwise only
 // appear on the launch after next. When a new worker takes over, reload once

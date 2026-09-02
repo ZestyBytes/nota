@@ -37,7 +37,7 @@ input[type="checkbox"]:focus-visible{outline-offset:3px}
 /* ---------- header ---------- */
 .site-header{
   height:96px;max-width:var(--max);margin:auto;padding:0 28px;
-  display:grid;grid-template-columns:auto 1fr;align-items:center;gap:24px;
+  display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;
   border-bottom:2px solid var(--ink);position:relative;
 }
 .wordmark{display:flex;flex-direction:column;gap:2px;line-height:1}
@@ -54,6 +54,8 @@ input[type="checkbox"]:focus-visible{outline-offset:3px}
 .main-nav a:hover{color:var(--ink)}
 .menu-button{display:none}
 .mobile-nav{display:none}
+.theme-toggle{width:34px;height:34px;display:grid;place-items:center;padding:0;border:1px solid var(--line);border-radius:50%;background:transparent;color:var(--muted);cursor:pointer;font:16px/1 var(--mono)}
+.theme-toggle:hover{color:var(--ink);border-color:var(--ink)}
 
 main{max-width:var(--max);margin:auto;padding:56px 28px 120px}
 
@@ -153,14 +155,14 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px}
 .quote-card cite{font:11px var(--mono);color:var(--muted);font-style:normal;text-transform:uppercase;letter-spacing:.08em}
 
 /* ---------- calendar ---------- */
-.calendar-shell{display:grid;grid-template-columns:minmax(560px,1fr) 360px;gap:60px}
+.calendar-shell{display:grid;grid-template-columns:minmax(520px,1fr) 360px;gap:36px}
 .calendar-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
 .calendar-head h2{font:700 30px var(--mono);margin:0;text-transform:lowercase}
 .icon-button{width:38px;height:38px;border:1.5px solid var(--ink);background:transparent;cursor:pointer;font-family:var(--mono)}
 .icon-button:hover{background:var(--ink);color:var(--paper)}
 .week,.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr)}
 .week span{text-align:center;color:var(--muted);font:10px var(--mono);text-transform:uppercase;letter-spacing:.08em;padding:7px}
-.day{min-height:92px;border:1px solid var(--line);background:var(--surface);padding:9px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:12px;margin:-.5px;font-family:var(--mono)}
+.day{min-height:70px;border:1px solid var(--line);background:var(--surface);padding:7px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:7px;margin:-.5px;font-family:var(--mono)}
 .day:hover{border-color:var(--ink)}
 .day.selected{background:var(--paper-alt);border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
 .day.muted{opacity:.25;background:transparent}
@@ -414,6 +416,15 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px}
   .user-tools{flex-wrap:wrap}
   .sync-state{width:100%}
 }
+
+/* Explicit preference wins over the device setting. Kept at the end so a
+   user who dislikes automatic dark mode gets a genuinely light archive. */
+:root[data-theme="light"]{color-scheme:light;--paper:#eef0e7;--paper-alt:#e6e9dc;--surface:#f7f8f2;--ink:#22261e;--ink-soft:#3a3f32;--muted:#6d7360;--faint:#9aa08c;--line:#cdd1bf;--line-strong:#22261e;--stamp-red:#a13a2e;--stamp-green:#3f6b2e;--tape:rgba(138,90,18,.16)}
+:root[data-theme="dark"]{color-scheme:dark;--paper:#14160f;--paper-alt:#1c1f16;--surface:#1a1d14;--ink:#e6e9dc;--ink-soft:#c7cbba;--muted:#949a85;--faint:#6f7563;--line:#333a2b;--line-strong:#e6e9dc;--stamp-red:#d4705f;--stamp-green:#84b168;--tape:rgba(214,180,110,.13)}
+:root[data-theme="light"] .entry-thumb,:root[data-theme="light"] .book-cover,:root[data-theme="light"] .detail-image,:root[data-theme="light"] .gallery-shot img,:root[data-theme="light"] .shot img,:root[data-theme="light"] .body-figure img{filter:saturate(.82) sepia(.04)}
+:root[data-theme="light"] .kitchen-page{--kitchen-cream:#f2ead9;--kitchen-paper:#fbf7ec;--kitchen-ink:#3f2b20}
+:root[data-theme="light"] .topic-room{--room-paper:#f5f1e7}:root[data-theme="light"] .room-technology{--room-bg:#dce9e5;--room-paper:#eff5f2;--room-ink:#173f38}:root[data-theme="light"] .room-reading{--room-bg:#e8dfcc;--room-paper:#f5eedf;--room-ink:#493a26}:root[data-theme="light"] .room-gardening{--room-bg:#dfe8d8;--room-paper:#f0f3e8;--room-ink:#304328}:root[data-theme="light"] .room-life{--room-bg:#dce6eb;--room-paper:#f2f6f7;--room-ink:#213949}:root[data-theme="light"] .room-family{--room-bg:#e8dce1;--room-paper:#fff8fa;--room-ink:#482b38}
+@media(max-width:800px){.theme-toggle{width:31px;height:31px;flex:none}.header-date{margin-left:auto}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
 
 .line-icon{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
@@ -1196,10 +1207,10 @@ aside .section-title{display:flex;align-items:baseline}
 .spaces-index .page-lede{max-width:670px}
 .space-card{min-height:300px;padding-top:150px}
 .space-card .topic-count{z-index:3}
-.space-card .topic-foot{display:block;margin-top:16px;padding-top:9px;border-top:1px solid currentColor;opacity:.58}
 .space-card.has-space-preview{background:#eee9dc}
 .space-card.has-space-preview:before,.space-card.has-space-preview:after{z-index:5}
-.space-card.has-space-preview h2,.space-card.has-space-preview p,.space-card.has-space-preview .topic-foot{z-index:3}
+.space-card.has-space-preview h2,.space-card.has-space-preview p{z-index:3}
+.space-card.space-reading h2{color:#7a4d0d}.space-card.space-reading p{color:#493b28;opacity:1}
 .space-reading-preview,.space-tech-preview,.space-music-preview{position:absolute;inset:0 0 auto;height:135px;overflow:hidden}
 .space-reading-preview{display:flex;align-items:flex-end;justify-content:center;gap:7px;padding:15px 24px 0;background:repeating-linear-gradient(90deg,#e9dfc9 0 31px,#dfd1b4 32px);border-bottom:12px solid #634523;box-shadow:inset 0 -4px #3d2918}
 .space-reading-preview img{width:58px;height:92px;object-fit:cover;object-position:top;box-shadow:3px 2px 4px rgba(47,31,17,.28);transform:rotate(-2deg)}
@@ -1216,19 +1227,16 @@ aside .section-title{display:flex;align-items:baseline}
 .space-music-preview b{position:absolute;right:17px;bottom:10px;color:#d6c5a3;font:700 9px var(--mono);letter-spacing:.15em}
 
 /* ---------- Calendar: month as a visual journal ---------- */
-.calendar-overview{display:grid;grid-template-columns:260px 1fr;gap:24px;margin:8px 0 34px;padding:18px;border:1px solid var(--line);background:var(--surface)}
+.calendar-overview{display:grid;grid-template-columns:240px 1fr;gap:18px;margin:8px 0 26px;padding:14px;border:1px solid var(--line);background:var(--surface)}
 .calendar-stats{display:grid;grid-template-columns:repeat(3,1fr);border-right:1px solid var(--line)}
 .calendar-stats p{margin:0;padding:8px 12px;border-left:1px solid var(--line)}
 .calendar-stats p:first-child{border-left:0}.calendar-stats b,.calendar-stats span{display:block}.calendar-stats b{font:700 28px var(--mono)}.calendar-stats span{font:7px var(--mono);text-transform:uppercase;letter-spacing:.12em;color:var(--muted)}
 .month-filmstrip{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;min-width:0}
-.month-filmstrip button{position:relative;height:92px;padding:0;border:0;background:var(--paper-alt);cursor:pointer;overflow:hidden}
+.month-filmstrip button{position:relative;height:72px;padding:0;border:0;background:var(--paper-alt);cursor:pointer;overflow:hidden}
 .month-filmstrip img{width:100%;height:100%;object-fit:cover;filter:saturate(.72)}
 .month-filmstrip span{position:absolute;inset:auto 0 0;padding:18px 7px 6px;background:linear-gradient(transparent,rgba(0,0,0,.75));color:#fff;font:7px var(--mono);text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .month-quiet{align-self:center;margin:0;font:italic 14px var(--serif);color:var(--muted)}
-.day{position:relative;overflow:hidden}.day-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.2;filter:saturate(.55)}
-.day.has-day-photo:after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,rgba(247,248,242,.25),rgba(247,248,242,.9));pointer-events:none}
-.day-no,.dots,.day-more{position:relative;z-index:2}.day-more{margin-top:auto;padding:2px 5px;background:var(--surface);border:1px solid var(--line)}
-.day.selected .day-photo{opacity:.32}
+.day-no,.dots,.day-more{position:relative;z-index:2}.day-more{margin-top:auto;padding:1px 5px;background:var(--surface);border:1px solid var(--line)}
 
 /* Entry pages keep one shared reading system, with the room's material at
    their edges: recognisable, but calm enough for long-form prose. */
@@ -1237,7 +1245,8 @@ aside .section-title{display:flex;align-items:baseline}
 .entry-space-technology{background-image:linear-gradient(90deg,color-mix(in srgb,var(--space) 13%,transparent),transparent 25%),linear-gradient(rgba(28,110,99,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(28,110,99,.055) 1px,transparent 1px);background-size:auto,24px 24px,24px 24px}
 .entry-space-reading{background-image:repeating-linear-gradient(to bottom,transparent 0 31px,rgba(138,90,18,.08) 31px 32px)}
 .entry-space-music{box-shadow:inset 6px 0 0 var(--space),inset 14px 0 0 color-mix(in srgb,var(--space) 18%,transparent)}
-.entry-space-gardening{border-radius:22px 2px 22px 2px}.entry-space-family{background-color:color-mix(in srgb,#e8dce1 42%,var(--surface))}.entry-space-life{background-color:color-mix(in srgb,#dce6eb 42%,var(--surface))}
+.entry-space-gardening{border-radius:22px 2px 22px 2px}
+.manifesto-plate{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:#252a22;color:#f1f1e8;border-color:#252a22}.manifesto-plate b{font:700 25px/1 var(--mono);letter-spacing:-.05em}.manifesto-plate b i{font-style:normal;color:var(--stamp-red)}.manifesto-plate small{font:7px var(--mono);text-transform:uppercase;letter-spacing:.14em;color:#aeb5a2}
 
 /* ---------- Home: an introduction, not a dashboard ---------- */
 .home-welcome{position:relative;padding:54px 48px 44px;margin-bottom:24px;background:#252a22;color:#f1f1e8;border:1px solid #252a22;overflow:hidden}
@@ -1253,13 +1262,13 @@ aside .section-title{display:flex;align-items:baseline}
 
 @media(max-width:800px){
   .space-card{min-height:255px;padding-top:130px}.space-reading-preview,.space-tech-preview,.space-music-preview{height:116px}
-  .calendar-overview{grid-template-columns:1fr}.calendar-stats{border-right:0;border-bottom:1px solid var(--line);padding-bottom:12px}.month-filmstrip{grid-template-columns:repeat(4,minmax(0,1fr))}.month-filmstrip button{height:74px}
+  .calendar-overview{grid-template-columns:1fr}.calendar-stats{border-right:0;border-bottom:1px solid var(--line);padding-bottom:10px}.month-filmstrip{grid-template-columns:repeat(4,minmax(0,1fr))}.month-filmstrip button{height:58px}
   .entry-page{padding:22px 18px}.entry-space-link{width:100%;margin:3px 0 0}
 }
 @media(max-width:480px){
   .topic-grid{grid-template-columns:1fr}.space-card{min-height:270px}
   .calendar-overview{margin-left:-6px;margin-right:-6px;padding:12px}.month-filmstrip button:nth-child(n+4){display:none}.month-filmstrip{grid-template-columns:repeat(3,1fr)}
-  .day{min-height:64px;padding:6px;gap:7px}.day-more{font-size:7px}.entry-page{margin-left:-8px;margin-right:-8px}
+  .day{min-height:48px;padding:5px;gap:4px}.day-more{font-size:7px;border:0;padding:0}.entry-page{margin-left:-8px;margin-right:-8px}
   .search-results .entry.has-thumb{grid-template-columns:1fr}.search-results .thumb-wrap{display:none}
   .home-welcome{padding:38px 24px 28px;margin-left:-6px;margin-right:-6px}.home-welcome nav{grid-template-columns:1fr}.home-welcome nav a{border-left:0;border-top:1px solid #51584a}.home-welcome nav a:first-child{border-top:0}.home-search{padding:15px}.home-latest-head{display:block}.home-latest-head>a{display:block;margin:-10px 0 24px}
 }

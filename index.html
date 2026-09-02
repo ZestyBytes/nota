@@ -6,6 +6,7 @@
   <meta name="theme-color" content="#eef0e7" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#14160f" media="(prefers-color-scheme: dark)">
   <meta name="color-scheme" content="light dark">
+  <script>try{const t=localStorage.getItem("nota-theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
   <meta name="description" content="Nota, a record of days, thoughts, things learnt and things worth keeping.">
   <title>nota</title>
   <link rel="manifest" href="manifest.webmanifest">
@@ -43,6 +44,7 @@
     <nav class="main-nav" aria-label="Main navigation">
       <a href="#today"><i>01</i>Home</a><a href="#calendar"><i>02</i>Calendar</a><a href="#library"><i>03</i>Library</a><a href="#topics"><i>04</i>Spaces</a><a href="#tasks"><i>05</i>To-do</a><a href="#search"><i>06</i>Search</a>
     </nav>
+    <button class="theme-toggle" type="button" data-theme-toggle aria-label="Use light theme" title="Change colour theme"><span aria-hidden="true">☼</span></button>
   </header>
   <main id="app" tabindex="-1"></main>
   <!--
