@@ -417,7 +417,6 @@ function calendar(){
   const jump=!monthCount&&near&&near!==monthKey
     ? `<p class="empty small">Nothing this month. <button class="linkish" data-jump="${near}">Go to ${new Date(near+"-01T12:00:00").toLocaleDateString("en-GB",{month:"long",year:"numeric"})}</button></p>` : "";
   return `<section>${pageHead("A visual journal","Calendar","Move through the archive by day: photographs, notes, plans and small moments gathered into the month they happened.")}
-    <div class="calendar-overview"><div class="calendar-stats"><p><b>${monthCount}</b><span>records</span></p><p><b>${activeDays}</b><span>days kept</span></p><p><b>${monthEntries.reduce((n,e)=>n+(e.images?.length||0),0)}</b><span>photographs</span></p></div>${monthPhotos.length?`<div class="month-filmstrip">${monthPhotos.map(e=>`<button data-entry="${esc(e.id)}" aria-label="Open ${esc(e.title)}"><img src="${esc(e.image)}" alt="" loading="lazy"><span>${esc(e.title)}</span></button>`).join("")}</div>`:`<p class="month-quiet">An unphotographed month—its written record still lives below.</p>`}</div>
     <div class="calendar-shell"><div>
       <div class="calendar-head">
         <button class="icon-button" data-month="-1" aria-label="Previous month">&larr;</button>
@@ -443,7 +442,9 @@ function calendar(){
         return `${dayTasks.length?`<section class="day-part"><h4 class="section-title">Due<span class="task-count">${left?`${left} left`:"all done"}</span></h4><div class="tasks day-tasks">${dayTasks.map(taskRow).join("")}</div></section>`:""}
         ${dayEntries.length?`<section class="day-part"><h4 class="section-title">Entries</h4><ol class="day-log">${dayEntries.map(dayRow).join("")}</ol></section>`:""}`;
       })()}
-    </aside></div></section>`;
+    </aside></div>
+    <div class="calendar-overview calendar-overview-after"><div class="calendar-stats"><p><b>${monthCount}</b><span>records</span></p><p><b>${activeDays}</b><span>days kept</span></p><p><b>${monthEntries.reduce((n,e)=>n+(e.images?.length||0),0)}</b><span>photographs</span></p></div>${monthPhotos.length?`<div class="month-filmstrip">${monthPhotos.map(e=>`<button data-entry="${esc(e.id)}" aria-label="Open ${esc(e.title)}"><img src="${esc(e.image)}" alt="" loading="lazy"><span>${esc(e.title)}</span></button>`).join("")}</div>`:`<p class="month-quiet">An unphotographed month—its written record still lives here.</p>`}</div>
+  </section>`;
 }
 function coverPlate(b){
   const t=topic(b.topics?.[0]);
@@ -473,7 +474,18 @@ function scrapBoard(){
     return `<article class="scrap tilt-${i%4}" data-entry="${esc(e.id)}" style="--topic:${t.color};--soft:${t.soft}"><span class="pin" aria-hidden="true"></span><p class="scrap-text">${inline(e.title||"")}</p>${e.excerpt&&e.excerpt!==e.title?`<p class="scrap-note">${esc(e.excerpt)}</p>`:""}<p class="scrap-foot">${e.topics?.length?`<span>${esc(t.name)}</span>`:"<span></span>"}${date?`<time>${date}</time>`:""}</p></article>`;
   }).join("")}</div>`;
 }
-function library(){let body="";if(state.library==="gallery")body=galleryGrid();else if(state.library==="reading")body=`<div class="book-grid">${state.data.books.map((b,i)=>`<article class="book ${b.cover?"":"has-plate"}" data-book="${b.id}"><span class="acc-no">No. ${accNo(b.id)}</span>${b.cover?`<img class="book-cover" src="${b.cover}" alt="" loading="lazy">`:coverPlate(b)}<div class="book-copy"><h3>${esc(b.title)}</h3><p>${esc(b.author)}</p><div class="book-links"><span>${(b.notes||[]).length} notes</span><span>${(b.quotes||[]).length} quotes</span></div><span class="status">${esc(b.status.replaceAll("-"," "))}${b.status==="reading"?` · ${b.progress}%`:""}</span><div class="progress"><i style="width:${b.progress}%"></i></div></div></article>`).join("")||`<p class="empty">Your library is empty.</p>`}</div>`;else if(state.library==="quotes")body=`<div class="quote-list">${[...state.data.entries.filter(e=>e.type==="Quote"),...state.data.books.flatMap(b=>(b.quotes||[]).map(q=>({...q,title:q.text,author:b.title,bookId:b.id})))].map(e=>`<blockquote class="library-quote" ${e.bookId?`data-book="${e.bookId}"`:`data-entry="${e.id}"`}>“${esc(e.title)}”<cite>${esc(e.author)}${e.page?` · ${esc(e.page)}`:""}</cite></blockquote>`).join("")||`<p class="empty">No quotations kept yet.</p>`}</div>`;else if(state.library==="writing")body=writingList();else body=`${journeyStrip()}<div class="entry-list">${state.data.entries.filter(e=>["Note","Journal","Journey"].includes(e.type)).sort((a,b)=>(b.occurredAt||b.createdAt||"").localeCompare(a.occurredAt||a.createdAt||"")).map(e=>entryCard(e)).join("")||`<p class="empty">No notes kept yet.</p>`}</div>`;const tabs={writing:"Highlights",reading:"Books",quotes:"Quotes",notes:"Notes & journals",gallery:"Photos"};return `<section class="library-index">${pageHead("Browse by format","Library","Highlights are the pieces chosen to share. Notes & journals is the complete written record; books, quotes and photos keep their own shelves.")}<div class="library-tabs">${Object.entries(tabs).map(([x,label])=>`<button class="filter ${state.library===x?"active":""}" data-library="${x}">${label}</button>`).join("")}</div>${body}</section>`}
+function library(){
+  let body="";
+  if(state.library==="gallery")body=galleryGrid();
+  else if(state.library==="reading")body=`<div class="book-grid">${state.data.books.map(b=>`<article class="book ${b.cover?"":"has-plate"}" data-book="${b.id}"><span class="acc-no">No. ${accNo(b.id)}</span>${b.cover?`<img class="book-cover" src="${b.cover}" alt="" loading="lazy">`:coverPlate(b)}<div class="book-copy"><h3>${esc(b.title)}</h3><p>${esc(b.author)}</p><div class="book-links"><span>${(b.notes||[]).length} notes</span><span>${(b.quotes||[]).length} quotes</span></div><span class="status">${esc(b.status.replaceAll("-"," "))}${b.status==="reading"?` · ${b.progress}%`:""}</span><div class="progress"><i style="width:${b.progress}%"></i></div></div></article>`).join("")||`<p class="empty">Your library is empty.</p>`}</div>`;
+  else if(state.library==="writing")body=writingList();
+  else {
+    const notes=state.data.entries.filter(e=>["Note","Journal","Quote"].includes(e.type)).sort((a,b)=>(b.occurredAt||b.createdAt||"").localeCompare(a.occurredAt||a.createdAt||""));
+    body=`${journeyStrip()}<div class="entry-list">${notes.map(e=>entryCard(e)).join("")||`<p class="empty">No notes kept yet.</p>`}</div>`;
+  }
+  const tabs={writing:"Highlights",notes:"Notes",reading:"Books",gallery:"Photos"};
+  return `<section class="library-index">${pageHead("Browse by format","Library","Highlights are a small selection chosen to share. Notes gathers notes, journals and quotes; journeys, books and photographs keep their useful shapes.")}<div class="library-tabs">${Object.entries(tabs).map(([x,label])=>`<button class="filter ${state.library===x?"active":""}" data-library="${x}">${label}</button>`).join("")}</div>${body}</section>`;
+}
 // A topic may hold sub-topics: Self care covers ADHD, and later therapy,
 // fitness, the dentist. A parent counts and shows its children's items too.
 function childTopics(id){return Object.entries(state.data.topics).filter(([,t])=>t.parent===id).map(([slug])=>slug)}

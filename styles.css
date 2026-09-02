@@ -889,6 +889,7 @@ body.modal-open{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .journey-last{margin:0;font-size:15px;color:var(--ink-soft)}
 .journey-meta{margin:8px 0 0;font:9px var(--mono);text-transform:uppercase;letter-spacing:.11em;color:var(--faint)}
 @media(min-width:700px){.journey-cards{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1100px){.journey-cards{grid-template-columns:repeat(3,1fr)}}
 
 .journey-facts{margin:10px 0 0;display:flex;flex-wrap:wrap;gap:14px;font:10px var(--mono);text-transform:uppercase;letter-spacing:.12em;color:var(--muted)}
 .journey-thread{list-style:none;margin:22px 0 0;padding:0;border-top:1px solid var(--line)}
@@ -1227,6 +1228,7 @@ aside .section-title{display:flex;align-items:baseline}
 
 /* ---------- Calendar: month as a visual journal ---------- */
 .calendar-overview{display:grid;grid-template-columns:240px 1fr;gap:18px;margin:8px 0 26px;padding:14px;border:1px solid var(--line);background:var(--surface)}
+.calendar-overview-after{margin:34px 0 0}
 .calendar-stats{display:grid;grid-template-columns:repeat(3,1fr);border-right:1px solid var(--line)}
 .calendar-stats p{margin:0;padding:8px 12px;border-left:1px solid var(--line)}
 .calendar-stats p:first-child{border-left:0}.calendar-stats b,.calendar-stats span{display:block}.calendar-stats b{font:700 28px var(--mono)}.calendar-stats span{font:7px var(--mono);text-transform:uppercase;letter-spacing:.12em;color:var(--muted)}
