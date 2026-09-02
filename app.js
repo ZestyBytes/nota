@@ -629,7 +629,7 @@ function journeyBar(p){
 // thirty the row would stop being readable, so the rest are counted instead.
 function journeyDots(n){
   const shown=Math.min(n,30);
-  return `<p class="journey-dots" role="img" aria-label="${n} ${n===1?"entry":"entries"} so far">${Array.from({length:shown},()=>`<i></i>`).join("")}${n>shown?`<em>+${n-shown}</em>`:""}</p>`;
+  return `<p class="journey-dots"><span role="img" aria-label="${n} ${n===1?"entry":"entries"} so far">${Array.from({length:shown},()=>`<i></i>`).join("")}${n>shown?`<i class="more"></i>`:""}</span><em>${n} kept${n>shown?" so far":""}</em></p>`;
 }
 function journeyStrip(bare=false){
   const rows=journeys();

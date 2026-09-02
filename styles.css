@@ -898,9 +898,11 @@ body.modal-open{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .journey-bar i{display:block;height:100%;background:var(--topic,var(--muted));transition:width .4s ease}
 .journey-numbers{margin:6px 0 0;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font:9px var(--mono);text-transform:uppercase;letter-spacing:.09em;color:var(--faint)}
 .journey-numbers b{font:12px var(--mono);letter-spacing:0;color:var(--topic,var(--ink))}
-.journey-dots{margin:11px 0 0;display:flex;flex-wrap:wrap;align-items:center;gap:5px}
-.journey-dots i{width:7px;height:7px;border-radius:50%;background:var(--topic,var(--muted));opacity:.78}
-.journey-dots em{font:9px var(--mono);font-style:normal;letter-spacing:.09em;color:var(--faint);margin-left:3px}
+.journey-dots{margin:11px 0 0;display:flex;align-items:center;gap:10px}
+.journey-dots>span{display:flex;flex-wrap:wrap;align-items:center;gap:6px;min-width:0}
+.journey-dots i{width:9px;height:9px;border-radius:50%;background:var(--topic,var(--muted))}
+.journey-dots i.more{background:none;border:1.5px solid var(--topic,var(--muted));opacity:.5}
+.journey-dots em{font:9px var(--mono);font-style:normal;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);white-space:nowrap}
 .journey-goal{margin:16px 0 0;max-width:460px}
 .journey-goal-note{margin:9px 0 0;font:13px var(--serif);font-style:italic;color:var(--ink-soft)}
 .journey-page>.page-head .journey-dots{margin-top:16px}
