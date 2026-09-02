@@ -449,7 +449,7 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px}
 /* Reserve the exact box an image will fill, and tint it while it loads,
    so a slow photo never reflows the card around it. */
 .entry-thumb,.book-cover,.detail-image{background:var(--paper-alt)}
-.detail-image{aspect-ratio:4/3;object-fit:cover;width:100%}
+.detail-image{display:block;width:auto;max-width:100%;height:auto;max-height:72vh;object-fit:contain;margin-left:auto;margin-right:auto}
 
 /* ---------- pull to refresh ---------- */
 .pull-hint{position:fixed;z-index:9;top:0;left:0;right:0;display:grid;place-items:center;height:0;overflow:hidden;color:var(--muted);font:10px var(--mono);text-transform:uppercase;letter-spacing:.14em;background:var(--paper);transition:height .18s ease}
@@ -1270,12 +1270,8 @@ aside .section-title{display:flex;align-items:baseline}
 
 /* Entry pages keep one shared reading system, with the room's material at
    their edges: recognisable, but calm enough for long-form prose. */
-.entry-page{position:relative;padding:30px;border:1px solid var(--line);background-color:var(--surface);box-shadow:inset 5px 0 0 color-mix(in srgb,var(--space) 62%,transparent)}
+.entry-page{position:relative;padding:30px 0 0;border-top:3px solid color-mix(in srgb,var(--space) 72%,var(--line));background:transparent}
 .entry-space-link{font:700 9px var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--space);margin-left:auto;text-decoration:none;border-bottom:1px solid currentColor;white-space:nowrap}
-.entry-space-technology{background-image:linear-gradient(rgba(28,110,99,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(28,110,99,.05) 1px,transparent 1px);background-size:24px 24px,24px 24px}
-.entry-space-reading{background-image:repeating-linear-gradient(to bottom,transparent 0 31px,rgba(138,90,18,.08) 31px 32px)}
-.entry-space-music{box-shadow:inset 6px 0 0 var(--space),inset 14px 0 0 color-mix(in srgb,var(--space) 18%,transparent)}
-.entry-space-gardening{border-radius:22px 2px 22px 2px}
 .manifesto-plate{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:#252a22;color:#f1f1e8;border-color:#252a22}.manifesto-plate b{font:700 25px/1 var(--mono);letter-spacing:-.05em}.manifesto-plate b i{font-style:normal;color:var(--stamp-red)}.manifesto-plate small{font:7px var(--mono);text-transform:uppercase;letter-spacing:.14em;color:#aeb5a2}
 
 /* ---------- Home: content first, with just enough orientation ---------- */
@@ -1291,12 +1287,13 @@ aside .section-title{display:flex;align-items:baseline}
 
 @media(max-width:800px){
   .space-card{min-height:225px;padding:112px 18px 18px}.space-reading-preview,.space-tech-preview,.space-music-preview,.space-life-preview,.space-garden-preview{height:100px}
-  .entry-page{padding:22px 18px}.entry-space-link{margin-left:0}
+  .entry-page{padding:22px 0 0}.entry-space-link{margin-left:0}
 }
 @media(max-width:480px){
   .topic-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.space-card{min-height:190px;padding:94px 13px 13px}.space-reading-preview,.space-tech-preview,.space-music-preview,.space-life-preview,.space-garden-preview{height:82px}.space-card h2{font-size:19px}.space-card>p,.space-card .topic-kids{display:none}
-  .day{min-height:48px;padding:5px;gap:4px}.day-more{font-size:7px;border:0;padding:0}.entry-page{margin-left:-8px;margin-right:-8px}
+  .day{min-height:48px;padding:5px;gap:4px}.day-more{font-size:7px;border:0;padding:0}
   .search-results .entry.has-thumb{grid-template-columns:1fr}.search-results .thumb-wrap{display:none}
   .home-intro{grid-template-columns:1fr;gap:22px;margin-bottom:30px;padding-bottom:22px}.home-paths{width:100%}.home-paths a{flex:1;min-width:0;padding:10px}.home-search{padding:15px}.home-latest-head{display:block}.home-latest-head>a{display:block;margin:-10px 0 24px}
 }
 .modal:has(.photo-view){width:min(980px,100%)}.photo-view .modal-head{align-items:flex-start}.photo-view .modal-head h2{margin-top:7px;font:600 24px/1.2 var(--serif);text-transform:none}.photo-view>figure{margin:0}.photo-view>figure img{display:block;width:100%;max-height:76vh;object-fit:contain;background:var(--paper-alt)}.photo-view figcaption{margin-top:10px;color:var(--muted);font:10px var(--mono);text-transform:uppercase;letter-spacing:.08em}
+.entry-page .gallery-shot{display:grid;place-items:center;background:var(--paper-alt)}.entry-page .gallery-shot img{width:auto;max-width:100%;height:auto;max-height:72vh;aspect-ratio:auto;object-fit:contain}
