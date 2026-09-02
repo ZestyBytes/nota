@@ -1092,7 +1092,7 @@ aside .section-title{display:flex;align-items:baseline}
 @media(prefers-color-scheme:dark){.topic-room{--room-paper:#30332c}.room-technology{--room-bg:#172724;--room-paper:#243632;--room-ink:#e1ece6}.room-reading{--room-bg:#29251e;--room-paper:#343028;--room-ink:#eee3cd}.room-gardening{--room-bg:#1f291c;--room-paper:#2c3526;--room-ink:#e6ecd9}.room-life{--room-bg:#1d2930;--room-paper:#293840;--room-ink:#e2ebef}.room-family{--room-bg:#302129;--room-paper:#3b2d34;--room-ink:#f1e4e9}}
 
 /* ============================================================
-   Bespoke topic spaces — separate information architecture per subject
+   Bespoke topic spaces: separate information architecture per subject
    ============================================================ */
 .bespoke-topic-page{margin-top:-8px}.bespoke-topic-page>.room-back{margin-bottom:12px}
 .quote-entry-page article{min-height:620px;display:grid;place-content:center;text-align:center;padding:70px;background:#f3ecdc;border:1px solid #b9a98b;position:relative;color:#382c20}.quote-entry-page article:before{content:"";position:absolute;inset:18px;border:1px solid #c9b99a}.quote-entry-page article>span,.quote-entry-page article time{font:700 9px var(--mono);text-transform:uppercase;letter-spacing:.15em;color:#80612f}.quote-entry-page blockquote{max-width:850px;border:0;margin:42px 0 30px;padding:0;font:italic 500 clamp(46px,7vw,82px)/1.12 var(--serif)}.quote-entry-page cite{font:600 18px var(--serif);font-style:normal}.quote-entry-page time{margin-top:48px}

@@ -612,7 +612,7 @@ function kitchenView(items){
         ${recipes.length?recipes.map(e=>`<article class="kitchen-recipe" data-entry="${esc(e.id)}">
           ${e.image?`<figure><img src="${esc(e.image)}" alt="${esc(e.imageAlt||"")}" loading="lazy"><figcaption>Filed ${fmtDate(e.occurredAt||e.createdAt)}</figcaption></figure>`:""}
           <div class="kitchen-recipe-copy"><span class="recipe-index">Recipe · No. ${accNo(e.id)}</span><h2>${esc(e.title)}</h2><p>${esc(e.excerpt)}</p>
-          <div class="recipe-facts"><span>${esc(e.recipe.time||"Unhurried")}</span><span>Serves ${esc(e.recipe.serves||"—")}</span><span>${esc(e.recipe.difficulty||"")}</span></div>
+          <div class="recipe-facts"><span>${esc(e.recipe.time||"Unhurried")}</span><span>Serves ${esc(e.recipe.serves||"any number")}</span><span>${esc(e.recipe.difficulty||"")}</span></div>
           ${e.recipe.ingredients?.length?`<h3>From the pantry</h3><ul>${e.recipe.ingredients.slice(0,6).map(i=>`<li>${inline(i)}</li>`).join("")}</ul>`:""}<span class="open-recipe">Open recipe <b>→</b></span></div>
         </article>`).join(""):`<p class="empty">The recipe box is waiting for its first card.</p>`}
       </section>
