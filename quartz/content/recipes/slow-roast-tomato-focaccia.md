@@ -11,7 +11,7 @@ publishedAt: 2026-08-22
 publish: true
 ---
 
-![Fresh focaccia with tomatoes and herbs](https://images.pexels.com/photos/6605214/pexels-photo-6605214.jpeg?auto=compress&cs=tinysrgb&w=1400)
+![Fresh tomato and rosemary focaccia in its baking tray](assets/posts/slow-roast-tomato-focaccia.jpg)
 
 A forgiving dough, tomatoes from the garden, and enough olive oil to crisp the edges.
 

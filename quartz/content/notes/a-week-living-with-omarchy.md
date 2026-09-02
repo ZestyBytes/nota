@@ -8,6 +8,8 @@ publishedAt: 2026-08-28
 publish: true
 ---
 
+![A calm, minimal computer workspace with tiled windows](assets/posts/a-week-living-with-omarchy.jpg)
+
 Small, deliberate defaults have changed how the computer feels to use. The result is not merely faster; it is calmer.
 
 Related: [[Technology]]

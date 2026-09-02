@@ -177,7 +177,7 @@ function entryPlate(e){
   const g=PLATE_GROUNDS[h%PLATE_GROUNDS.length];
   return `<span class="entry-plate ground-${g}" style="--topic:${t.color};--soft:${t.soft}" aria-hidden="true">
     ${t.icon?`<span class="plate-motif">${icon(t.icon)}</span>`:""}
-    <i class="plate-letter">${esc((e.title||"?").trim()[0]||"?")}</i>
+    <i class="plate-kind">text record</i><i class="plate-number">No. ${accNo(e.id)}</i>
   </span>`;
 }
 function entryCard(e,snippet="",within=""){if(typeof snippet!=="string")snippet="";

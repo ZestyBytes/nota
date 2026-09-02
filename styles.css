@@ -1144,19 +1144,16 @@ aside .section-title{display:flex;align-items:baseline}
 }
 .entry-plate .plate-motif{position:absolute;inset:0;display:grid;place-items:center;color:var(--topic);opacity:.34}
 .entry-plate .plate-motif .line-icon{width:46px;height:46px;stroke-width:1.2}
-.entry-plate .plate-letter{
-  /* set into the corner rather than bled off it: at a deeper offset a "t"
-     lost its ascender and read as a cross */
-  position:absolute;right:.06em;bottom:-.14em;font:700 68px/1 var(--mono);
-  font-style:normal;color:var(--topic);opacity:.16;text-transform:lowercase;user-select:none;
-}
+.entry-plate .plate-kind,.entry-plate .plate-number{position:absolute;font:700 7px/1 var(--mono);font-style:normal;letter-spacing:.12em;text-transform:uppercase;color:var(--topic)}
+.entry-plate .plate-kind{left:8px;top:8px}.entry-plate .plate-number{right:8px;bottom:8px;color:var(--muted)}
 /* the accession number is knocked out white over a photograph; over a pale
    plate it has to go back to ink */
 .entry.has-plate .acc-no{color:var(--faint);text-shadow:none}
+.entry.has-plate>.acc-no{display:none}
 @media(max-width:800px){
   .entry-plate{width:108px;height:92px}
   .entry-plate .plate-motif .line-icon{width:36px;height:36px}
-  .entry-plate .plate-letter{font-size:50px}
+  .entry-plate .plate-kind{left:6px;top:6px}.entry-plate .plate-number{right:6px;bottom:6px}
 }
 @media(prefers-color-scheme:dark){
   .entry-plate{border-color:var(--line)}

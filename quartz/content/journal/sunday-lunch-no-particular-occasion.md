@@ -8,4 +8,6 @@ publishedAt: "2026-08-10"
 publish: true
 ---
 
+![An ordinary family Sunday lunch laid out on a wooden table](assets/posts/sunday-lunch-no-particular-occasion.jpg)
+
 Everyone home at the same time for once. Nothing was planned, and it was better for it.

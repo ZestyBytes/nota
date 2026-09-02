@@ -9,6 +9,8 @@ publishedAt: "2026-09-01"
 publish: true
 ---
 
+![Headphones and a mug waiting beside the door](assets/posts/podcasts-worth-the-time.jpg)
+
 The three I actually keep up with, rather than the twenty sitting unplayed
 in a queue.
 
