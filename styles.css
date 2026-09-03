@@ -408,10 +408,10 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px;min-width:0}
 .space-shelf:before{display:block;margin:0 22px 16px;color:#765f42;content:"ROOMS IN THE ARCHIVE";font:700 10px var(--mono);letter-spacing:.16em}
 .space-shelf+ .space-shelf:before{content:"MORE ROOMS TO EXPLORE"}
 .space-shelf-rail{display:flex;gap:18px;overflow-x:auto;padding:0 22px 10px;scroll-snap-type:x mandatory;scrollbar-width:none}
-.space-shelf-rail::-webkit-scrollbar{display:none}.space-shelf .space-card{flex:0 0 270px;min-height:250px;height:250px;padding-top:128px;scroll-snap-align:start}
+.space-shelf-rail::-webkit-scrollbar{display:none}.space-shelf .space-card{flex:0 0 214px;min-height:260px;height:260px;padding:132px 15px 16px;scroll-snap-align:start;border-left-width:4px}
 .space-shelf .space-card{border-width:1px 1px 4px;box-shadow:0 8px 14px -12px #20251bcc}.space-shelf .space-card:after{content:"ENTER ROOM  →";position:absolute;right:12px;bottom:12px;color:color-mix(in srgb,var(--topic) 70%,#283024);font:700 8px var(--mono);letter-spacing:.08em}.space-shelf .space-card h2{letter-spacing:-.04em}.space-shelf .space-card p{max-width:88%}
 @media(prefers-reduced-motion:no-preference){.space-shelf .space-card:hover{transform:translateY(-4px);box-shadow:0 12px 18px -12px #20251bcc}}
-@media(max-width:600px){.space-shelf{margin-left:-14px;margin-right:-14px;padding-top:16px}.space-shelf-rail{gap:12px;padding-left:16px;padding-right:16px}.space-shelf .space-card{flex-basis:78vw;min-height:220px;height:220px;padding-top:102px}}
+@media(max-width:600px){.space-shelf{margin-left:-14px;margin-right:-14px;padding-top:16px}.space-shelf-rail{gap:12px;padding-left:16px;padding-right:16px}.space-shelf .space-card{flex-basis:154px;min-height:226px;height:226px;padding:100px 11px 13px;border-left-width:4px}.space-shelf .space-card h2{font-size:19px}.space-shelf .space-card p{font-size:11px}.space-shelf .space-card:after{right:9px;bottom:9px;font-size:7px}.space-shelf:before{margin-left:16px}}
 @media(max-width:480px){
   .page-title{font-size:48px}
   .page-head{gap:10px}
