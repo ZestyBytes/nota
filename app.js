@@ -855,6 +855,10 @@ function toast(msg){const el=document.getElementById("toast");el.textContent=msg
 const offlineBanner=document.createElement("div");offlineBanner.className="offline-banner";offlineBanner.setAttribute("role","status");offlineBanner.textContent="Offline · showing the saved archive";document.body.appendChild(offlineBanner);
 function syncConnectivity(){offlineBanner.classList.toggle("show",!navigator.onLine)}
 window.addEventListener("online",syncConnectivity);window.addEventListener("offline",syncConnectivity);syncConnectivity();
+let installEvent=null;
+const installBanner=document.createElement("aside");installBanner.className="install-banner";installBanner.innerHTML=`<span><b>Keep Noted close</b><small>Add it to your home screen for a quicker launch.</small></span><button type="button" data-install>Install</button><button type="button" data-dismiss-install aria-label="Dismiss install prompt">×</button>`;document.body.appendChild(installBanner);
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();installEvent=e;if(!localStorage.getItem("noted-install-dismissed"))installBanner.classList.add("show")});
+window.addEventListener("appinstalled",()=>{installEvent=null;installBanner.classList.remove("show")});
 document.addEventListener("click",async e=>{
   // Back should retrace the route actually taken, not guess at one. The
   // browser already recorded it, one entry per hash move, so use that whenever
@@ -883,6 +887,8 @@ document.addEventListener("click",async e=>{
   const book=e.target.closest("[data-book]");if(book){bookDetail(book.dataset.book);return}
   const photos=e.target.closest("[data-gallery-entry]");if(photos){photoDetail(photos.dataset.galleryEntry);return}
   const clearSearch=e.target.closest("[data-clear-search]");if(clearSearch){state.search="";render();return}
+  const install=e.target.closest("[data-install]");if(install&&installEvent){installEvent.prompt();installEvent.userChoice.finally(()=>{installEvent=null;installBanner.classList.remove("show")});return}
+  const dismissInstall=e.target.closest("[data-dismiss-install]");if(dismissInstall){installBanner.classList.remove("show");try{localStorage.setItem("noted-install-dismissed","1")}catch(error){}return}
   const wander=e.target.closest("[data-wander]");if(wander){const choices=state.data.entries.filter(x=>x.type!=="Task");if(choices.length){const pick=choices[Math.floor(Math.random()*choices.length)];state.returnTo="#today";state.returnScroll=window.scrollY;location.hash=`entry/${encodeURIComponent(pick.id)}`}return}
   const entry=e.target.closest("[data-entry]");if(entry){e.preventDefault();state.returnTo=entry.dataset.return||location.hash||"#today";state.returnScroll=window.scrollY;location.hash=`entry/${encodeURIComponent(entry.dataset.entry)}`}
   const date=e.target.closest("[data-date]");if(date){state.selectedDate=date.dataset.date;render()}
