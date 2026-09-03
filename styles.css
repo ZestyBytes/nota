@@ -799,6 +799,7 @@ body.modal-open{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .backlinks a:hover{text-decoration-color:var(--stamp-red)}
 .backlinks small{display:block;margin-top:3px;font:9px var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
 .related-entries{margin-top:38px;padding-top:24px;border-top:1px solid var(--line)}.related-entries>div{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.related-entries a{display:grid;gap:7px;padding:15px;border:1px solid var(--line);background:var(--paper-alt)}.related-entries small{font:7px var(--mono);text-transform:uppercase;color:var(--muted)}.related-entries b{font:600 15px/1.25 var(--serif)}
+.entry-pager{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:26px;padding-top:22px;border-top:1px solid var(--line)}.entry-pager a{display:grid;min-width:0;gap:7px;padding:15px;border:1px solid var(--line);background:var(--paper-alt);transition:transform .2s ease,background .2s ease}.entry-pager a:last-child{text-align:right}.entry-pager a:hover{transform:translateY(-2px);background:var(--surface)}.entry-pager small{font:8px var(--mono);text-transform:uppercase;color:var(--muted)}.entry-pager b{font:600 15px/1.25 var(--serif);overflow-wrap:anywhere}
 
 /* ============================================================
    Body blocks: callouts, checklists, embeds
