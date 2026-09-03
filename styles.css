@@ -1354,6 +1354,8 @@ aside .section-title{display:flex;align-items:baseline}
 .space-shelf .space-card{border-left:8px solid #35d09a!important;border-right:0!important;border-top:0!important;border-bottom:0!important;background-color:#10221e!important;box-shadow:4px 5px 0 #294a3d,0 10px 14px -12px #17150f!important;color:#e3f2e7!important}
 .space-shelf .space-card h2,.space-shelf .space-card p{color:#d9f2e6!important;text-shadow:none!important}
 .space-shelf .space-card:after{color:#8fe1bd!important}
+/* Uniform book edges: let the artwork carry the identity, not a coloured strip. */
+.space-shelf .space-card{border-left:0!important;border-right:0!important;border-top:0!important;border-bottom:0!important;box-shadow:5px 6px 0 #29402f,0 12px 18px -14px #17150f!important}
 /* Spaces mobile bookshelf: two rows that travel horizontally as one shelf. */
 @media(max-width:800px){
   .spaces-index .topic-grid{display:grid!important;grid-template-columns:none!important;grid-template-rows:repeat(2,190px)!important;grid-auto-flow:column!important;grid-auto-columns:minmax(260px,78vw)!important;gap:12px!important;overflow-x:auto!important;overflow-y:hidden!important;margin-right:-16px!important;padding:2px 16px 18px 0!important;scroll-snap-type:x mandatory!important;scrollbar-width:none!important}
