@@ -1356,6 +1356,16 @@ aside .section-title{display:flex;align-items:baseline}
 .space-shelf .space-card:after{color:#8fe1bd!important}
 /* Uniform book edges: let the artwork carry the identity, not a coloured strip. */
 .space-shelf .space-card{border-left:0!important;border-right:0!important;border-top:0!important;border-bottom:0!important;box-shadow:5px 6px 0 #29402f,0 12px 18px -14px #17150f!important}
+/* Use one dedicated, edge-to-edge jacket per room; never crop from the shared contact sheet. */
+.space-shelf .space-card.space-life{background-image:linear-gradient(to top,#17130de8 0%,transparent 58%),url("assets/posts/space-cover-life.png")!important}
+.space-shelf .space-card.space-technology{background-image:linear-gradient(to top,#17130de8 0%,transparent 58%),url("assets/posts/space-cover-technology.png")!important}
+.space-shelf .space-card.space-music{background-image:linear-gradient(to top,#17130de8 0%,transparent 58%),url("assets/posts/space-cover-music.png")!important}
+.space-shelf .space-card.space-motoring{background-image:linear-gradient(to top,#17130de8 0%,transparent 58%),url("assets/posts/space-cover-motoring.png")!important}
+.space-shelf .space-card.space-gardening{background-image:linear-gradient(to top,#17130de8 0%,transparent 58%),url("assets/posts/space-cover-gardening.png")!important}
+.space-shelf .space-card.space-family{background-image:linear-gradient(to top,#17130de8 0%,transparent 58%),url("assets/posts/space-cover-family.png")!important}
+.space-shelf .space-card.space-reading{background-image:linear-gradient(to top,#17130de8 0%,transparent 58%),url("assets/books/meditations.jpg")!important}
+.space-shelf .space-card.space-food{background-image:linear-gradient(to top,#17130de8 0%,transparent 58%),url("assets/posts/space-cover-food.png")!important}
+.space-shelf .space-card{background-size:100% 100%,cover!important;background-position:center!important;background-repeat:no-repeat!important}
 /* Spaces mobile bookshelf: two rows that travel horizontally as one shelf. */
 @media(max-width:800px){
   .spaces-index .topic-grid{display:grid!important;grid-template-columns:none!important;grid-template-rows:repeat(2,190px)!important;grid-auto-flow:column!important;grid-auto-columns:minmax(260px,78vw)!important;gap:12px!important;overflow-x:auto!important;overflow-y:hidden!important;margin-right:-16px!important;padding:2px 16px 18px 0!important;scroll-snap-type:x mandatory!important;scrollbar-width:none!important}
