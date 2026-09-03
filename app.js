@@ -471,7 +471,7 @@ function calendar(){
       ${jump}
       ${monthItems.length?`<aside class="month-postcard"><div><p class="eyebrow">Month postcard</p><b>${first.toLocaleDateString("en-GB",{month:"long"})}, in ${monthItems.length} ${monthItems.length===1?"record":"records"}</b></div>${monthPhotos.length?`<div>${monthPhotos.map(e=>`<img src="${esc(e.image)}" alt="">`).join("")}</div>`:""}</aside>`:""}
     </div>
-    <aside class="selected-day">
+    <aside class="selected-day" aria-live="polite">
       <p class="eyebrow">${state.selectedDate===todayKey?"Today":"Selected day"}</p>
       <h3>${label}</h3>
       ${(()=>{
@@ -617,7 +617,7 @@ function matchSnippet(e,q){
   const hit=text.slice(i,i+term.length);
   return `${from>0?"&hellip; ":""}${esc(head)}<mark>${esc(hit)}</mark>${esc(tail)}${to<text.length?" &hellip;":""}`;
 }
-function search(){const q=state.search,pool=searchPool(),present=new Set(pool.map(x=>x.type)),types=["all",...["Journal","Note","Reading","Quote","Journey","Task","Event"].filter(t=>present.has(t))],items=searchResults(q);return `<section>${pageHead("Find anything","Search","Search across titles, words, types and topics.")}<div class="search-input-wrap"><input class="search-box" type="search" value="${esc(state.search)}" placeholder="Search noted…" autofocus>${q?`<button type="button" class="search-clear" data-clear-search aria-label="Clear search">Clear</button>`:""}</div><div class="search-filters">${types.map(t=>`<button class="filter ${state.filter===t?"active":""}" data-filter="${t}">${t}</button>`).join("")}</div><div class="entry-list search-results">${items.length?items.map(e=>entryCard(e,matchSnippet(e,q))).join(""):`<p class="empty">No matching records.</p>`}</div></section>`}
+function search(){const q=state.search,pool=searchPool(),present=new Set(pool.map(x=>x.type)),types=["all",...["Journal","Note","Reading","Quote","Journey","Task","Event"].filter(t=>present.has(t))],items=searchResults(q);return `<section>${pageHead("Find anything","Search","Search across titles, words, types and topics.")}<div class="search-input-wrap"><input class="search-box" type="search" value="${esc(state.search)}" placeholder="Search noted…" autofocus>${q?`<button type="button" class="search-clear" data-clear-search aria-label="Clear search">Clear</button>`:""}</div><div class="search-filters">${types.map(t=>`<button class="filter ${state.filter===t?"active":""}" data-filter="${t}">${t}</button>`).join("")}</div><div class="entry-list search-results" aria-live="polite">${items.length?items.map(e=>entryCard(e,matchSnippet(e,q))).join(""):`<p class="empty">No matching records.</p>`}</div></section>`}
 function writing(){
   // Writing is a selection, not a second copy of the archive. An entry joins
   // it by saying so with `writing: true`; publishedAt keeps its own job of
