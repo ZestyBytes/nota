@@ -404,14 +404,14 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px;min-width:0}
   .book-cover-empty{height:150px}
 }
 /* Spaces use the same physical shelf language as Library, with one rail per row. */
-.space-shelf{margin:16px 0 18px;border-bottom:12px solid #624321;background:#eee6d6;padding:16px 0 12px;box-shadow:inset 0 -3px #3e2a18}
-.space-shelf:before{display:block;margin:0 22px 16px;color:#765f42;content:"ROOMS IN THE ARCHIVE";font:700 10px var(--mono);letter-spacing:.16em}
+.space-shelf{margin:12px 0 14px;border-bottom:16px solid #3b2415;background:linear-gradient(90deg,#5b3820,#704827 45%,#4b2d1b);padding:14px 0 12px;box-shadow:inset 0 -4px #26170e,inset 0 1px #a67a4c}
+.space-shelf:before{display:block;margin:0 22px 14px;color:#e4c79c;content:"ROOMS IN THE ARCHIVE";font:700 10px var(--mono);letter-spacing:.16em}
 .space-shelf+ .space-shelf:before{content:"MORE ROOMS TO EXPLORE"}
 .space-shelf-rail{display:flex;gap:14px;overflow-x:auto;padding:0 22px 8px;scroll-snap-type:x mandatory;scrollbar-width:none}
-.space-shelf-rail::-webkit-scrollbar{display:none}.space-shelf .space-card{flex:0 0 196px;min-height:282px;height:282px;padding:158px 14px 17px;scroll-snap-align:start;border-left-width:7px;border-radius:1px}
-.space-shelf .space-card{border-width:1px 1px 4px;box-shadow:6px 8px 0 -4px color-mix(in srgb,var(--topic) 35%,#8d907f),0 8px 14px -12px #20251bcc}.space-shelf .space-card:after{content:"ENTER ROOM  →";position:absolute;right:12px;bottom:12px;color:color-mix(in srgb,var(--topic) 70%,#283024);font:700 8px var(--mono);letter-spacing:.08em}.space-shelf .space-card h2{letter-spacing:-.04em}.space-shelf .space-card p{max-width:88%}
+.space-shelf-rail::-webkit-scrollbar{display:none}.space-shelf .space-card{flex:0 0 168px;min-height:282px;height:282px;padding:158px 13px 17px;scroll-snap-align:start;border:1px solid color-mix(in srgb,var(--topic) 75%,#f3dfb8);border-left:8px solid color-mix(in srgb,var(--topic) 78%,#2b1b12);border-radius:2px;background-color:color-mix(in srgb,var(--topic) 72%,#372318);color:#fff8e9;box-shadow:5px 5px 0 #2e1b10,0 10px 14px -10px #150d09}
+.space-shelf .space-card:after{content:"ENTER ROOM  →";position:absolute;right:12px;bottom:12px;color:#e4c79c;font:700 8px var(--mono);letter-spacing:.08em}.space-shelf .space-card h2{letter-spacing:-.04em;color:#fff8e9;text-shadow:0 1px 2px #24140d}.space-shelf .space-card p{max-width:88%;color:#f5e7cf;opacity:.9}.space-shelf .space-card .topic-kids{display:none}
 @media(prefers-reduced-motion:no-preference){.space-shelf .space-card:hover{transform:translateY(-4px);box-shadow:0 12px 18px -12px #20251bcc}}
-@media(max-width:600px){.space-shelf{margin-left:-14px;margin-right:-14px;margin-top:10px;margin-bottom:12px;padding-top:13px;padding-bottom:9px}.space-shelf-rail{gap:10px;padding-left:16px;padding-right:16px}.space-shelf .space-card{flex-basis:142px;min-height:236px;height:236px;padding:128px 10px 13px;border-left-width:6px;border-radius:1px}.space-shelf .space-card h2{font-size:17px;line-height:1.05}.space-shelf .space-card p{font-size:10px;line-height:1.25}.space-shelf .space-card:after{right:8px;bottom:8px;font-size:7px}.space-shelf:before{margin-left:16px;margin-bottom:11px}}
+@media(max-width:600px){.space-shelf{margin-left:-14px;margin-right:-14px;margin-top:8px;margin-bottom:10px;padding-top:11px;padding-bottom:8px}.space-shelf-rail{gap:9px;padding-left:16px;padding-right:16px}.space-shelf .space-card{flex-basis:128px;min-height:236px;height:236px;padding:128px 9px 13px;border-left-width:7px;border-radius:2px}.space-shelf .space-card h2{font-size:17px;line-height:1.05}.space-shelf .space-card p{font-size:10px;line-height:1.25}.space-shelf .space-card:after{right:7px;bottom:7px;font-size:7px}.space-shelf:before{margin-left:16px;margin-bottom:10px}}
 @media(max-width:480px){
   .page-title{font-size:48px}
   .page-head{gap:10px}
