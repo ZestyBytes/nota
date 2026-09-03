@@ -463,6 +463,7 @@ function calendar(){
         <button class="icon-button" data-month="-1" aria-label="Previous month">&larr;</button>
         <h2>${first.toLocaleDateString("en-GB",{month:"long",year:"numeric"})}</h2>
         <button class="icon-button" data-month="1" aria-label="Next month">&rarr;</button>
+        ${monthKey!==todayKey.slice(0,7)?`<button class="calendar-today" data-jump="${todayKey}" type="button">Today</button>`:""}
       </div>
       <div class="calendar-modes" aria-label="Calendar view"><button class="${state.calendarMode==="month"?"active":""}" data-calendar-mode="month">Month</button><button class="${state.calendarMode==="agenda"?"active":""}" data-calendar-mode="agenda">Agenda</button></div>
       <p class="month-count">${monthCount?`${monthCount} item${monthCount>1?"s":""} this month`:"Nothing recorded this month"}${monthKey!==todayKey.slice(0,7)?` &middot; <button class="linkish" data-jump="${todayKey.slice(0,7)}">This month</button>`:""}</p>
@@ -883,7 +884,7 @@ document.addEventListener("click",async e=>{
   const entry=e.target.closest("[data-entry]");if(entry){e.preventDefault();state.returnTo=entry.dataset.return||location.hash||"#today";state.returnScroll=window.scrollY;location.hash=`entry/${encodeURIComponent(entry.dataset.entry)}`}
   const date=e.target.closest("[data-date]");if(date){state.selectedDate=date.dataset.date;render()}
   const jump=e.target.closest("[data-jump]");
-  if(jump){const [jy,jm]=jump.dataset.jump.split("-").map(Number);state.month=new Date(jy,jm-1,1);render();return}
+  if(jump){const [jy,jm]=jump.dataset.jump.split("-").map(Number);state.month=new Date(jy,jm-1,1);if(jump.dataset.jump===todayKey)state.selectedDate=todayKey;render();return}
   const month=e.target.closest("[data-month]");if(month){state.month=new Date(state.month.getFullYear(),state.month.getMonth()+Number(month.dataset.month),1);render()}
   const calendarMode=e.target.closest("[data-calendar-mode]");if(calendarMode){state.calendarMode=calendarMode.dataset.calendarMode;try{localStorage.setItem("noted-calendar-mode",state.calendarMode)}catch(error){}render();return}
   const lib=e.target.closest("[data-library]");if(lib){state.library=lib.dataset.library;try{localStorage.setItem("noted-library-tab",state.library)}catch(error){}render()}
