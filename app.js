@@ -712,7 +712,7 @@ function taskPage(){
     ${group("Today",today)}
     ${group("Coming up",ahead)}
     ${group("No date",undated)}
-    ${done.length?`<section class="task-group"><details class="done-tasks" open><summary><span class="section-title">Recently completed<span class="task-count">${done.length}</span></span></summary><div class="tasks">${done.map(taskRow).join("")}</div></details></section>`:""}
+    ${done.length?`<section class="task-group"><details class="done-tasks"><summary><span class="section-title">Recently completed<span class="task-count">${done.length}</span></span></summary><div class="tasks">${done.map(taskRow).join("")}</div></details></section>`:""}
     <p class="archive-care"><a href="#health">Check the archive</a></p>
   </section>`;
 }
