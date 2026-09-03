@@ -815,7 +815,17 @@ function afterRender(route,isDetail){
   lastRoute=route;lastDetail=isDetail;
   swipeable(".deck",".deck-dots i");
   swipeable(".gallery",".gallery-dots i",".gallery-caption");
+  setupSpaceShelfMotion(route);
   syncReadingProgress();
+}
+let spaceShelfTimer=null;
+function setupSpaceShelfMotion(route){
+  if(spaceShelfTimer){clearInterval(spaceShelfTimer);spaceShelfTimer=null}
+  if(route!=="topics"||location.hash.split("/").length>1||window.matchMedia?.("(prefers-reduced-motion: reduce)").matches)return;
+  const rails=[...document.querySelectorAll(".space-shelf-rail")];if(!rails.length)return;
+  const paused=new WeakSet();
+  rails.forEach(rail=>["pointerenter","focusin","touchstart"].forEach(ev=>rail.addEventListener(ev,()=>paused.add(rail),{passive:true})));
+  spaceShelfTimer=setInterval(()=>rails.forEach((rail,i)=>{if(paused.has(rail))return;const max=rail.scrollWidth-rail.clientWidth;if(max<4)return;const dir=i%2===0?1:-1;const next=rail.scrollLeft+dir*.45;if(next<=0||next>=max){rail.scrollLeft=dir>0?0:max}else rail.scrollLeft=next}),70);
 }
 function syncReadingProgress(){
   const bar=document.querySelector(".reading-progress i"),page=document.querySelector(".entry-page");
