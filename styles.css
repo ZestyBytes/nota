@@ -1378,6 +1378,12 @@ aside .section-title{display:flex;align-items:baseline}
 .space-shelf .space-card h2{left:50%!important;right:auto!important;bottom:18px!important;writing-mode:vertical-rl;transform:translateX(-50%) rotate(180deg);font-size:18px!important;letter-spacing:-.03em!important;white-space:nowrap}
 .space-shelf .space-card p{display:none!important}
 @media(max-width:600px){.space-shelf .space-card{width:92px!important;flex-basis:92px!important;height:236px!important;min-height:236px!important}.space-shelf .space-card h2{font-size:15px!important;bottom:14px!important}}
+/* Simple one-row library: colour-block books with varied heights and no cover photography. */
+.spaces-index .space-shelf+ .space-shelf{display:none!important}
+.spaces-index .space-shelf .space-card{background-image:none!important;background-color:#1d3a30!important;background-size:auto!important;width:112px!important;flex-basis:112px!important;height:250px!important;min-height:0!important;align-self:end!important}
+.spaces-index .space-shelf .space-card:nth-child(2n){height:226px!important;background-color:#24483a!important}.spaces-index .space-shelf .space-card:nth-child(3n){height:268px!important;background-color:#173126!important}.spaces-index .space-shelf .space-card:nth-child(4n){height:238px!important;background-color:#2b5142!important}
+.spaces-index .space-shelf .space-card h2{color:#e4f1e5!important;text-shadow:none!important}
+@media(max-width:600px){.spaces-index .space-shelf .space-card{width:84px!important;flex-basis:84px!important;height:210px!important}.spaces-index .space-shelf .space-card:nth-child(2n){height:190px!important}.spaces-index .space-shelf .space-card:nth-child(3n){height:226px!important}.spaces-index .space-shelf .space-card:nth-child(4n){height:200px!important}}
 /* Spaces mobile bookshelf: two rows that travel horizontally as one shelf. */
 @media(max-width:800px){
   .spaces-index .topic-grid{display:grid!important;grid-template-columns:none!important;grid-template-rows:repeat(2,190px)!important;grid-auto-flow:column!important;grid-auto-columns:minmax(260px,78vw)!important;gap:12px!important;overflow-x:auto!important;overflow-y:hidden!important;margin-right:-16px!important;padding:2px 16px 18px 0!important;scroll-snap-type:x mandatory!important;scrollbar-width:none!important}
