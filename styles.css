@@ -534,7 +534,7 @@ body.modal-open{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 /* ---------- header date (phone only) ---------- */
 /* The wordmark keeps the left, as it does on desktop; the date reads as a
    right-aligned two-line label rather than one long line fighting it. */
-.header-date{display:none;margin:0;text-align:right;line-height:1}
+.header-date{display:block;margin:0;padding:8px;border:0;background:transparent;text-align:right;line-height:1;cursor:pointer}
 .hd-day{display:block;font:9px/1 var(--mono);letter-spacing:.2em;text-transform:uppercase;color:var(--faint)}
 .hd-date{display:block;margin-top:5px;font:700 13px/1 var(--mono);letter-spacing:.02em;text-transform:uppercase;color:var(--ink-soft)}
 
