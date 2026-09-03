@@ -311,6 +311,7 @@ function entryPage(id){
   const position=sequence.findIndex(x=>x.id===e.id),previous=position>0?sequence[position-1]:null,next=position>=0&&position<sequence.length-1?sequence[position+1]:null;
   if(e.type==="Quote")return `<section class="quote-entry-page" style="--topic:${t.color}"><p class="back-link"><a href="${back}" data-back>Back</a><button class="share-button" data-share="${esc(e.id)}" type="button">Share</button></p><article><span>Commonplace book · No. ${accNo(e.id)}</span><blockquote>“${esc(e.title)}”</blockquote><cite>${esc(e.author||"")}</cite><time>${date?`Filed ${date}`:""}</time></article></section>`;
   return `<section class="entry-page entry-space-${spaceId}" style="--topic:${t.color};--space:${space.color}">
+    <div class="reading-progress" aria-hidden="true"><i></i></div>
     <span class="entry-topic-tab" style="background:${t.color}">${esc(t.name)}</span>
     <p class="back-link"><a href="${back}" data-back>Back</a><button class="share-button" data-share="${esc(e.id)}" type="button">Share</button></p>
     <header class="entry-masthead">
@@ -811,7 +812,16 @@ function afterRender(route,isDetail){
   lastRoute=route;lastDetail=isDetail;
   swipeable(".deck",".deck-dots i");
   swipeable(".gallery",".gallery-dots i",".gallery-caption");
+  syncReadingProgress();
 }
+function syncReadingProgress(){
+  const bar=document.querySelector(".reading-progress i"),page=document.querySelector(".entry-page");
+  if(!bar||!page)return;
+  const top=page.offsetTop,end=top+page.offsetHeight-innerHeight;
+  const value=end<=top?1:Math.max(0,Math.min(1,(scrollY-top)/(end-top)));
+  bar.style.transform=`scaleX(${value})`;
+}
+window.addEventListener("scroll",()=>requestAnimationFrame(syncReadingProgress),{passive:true});
 // Shared wiring for the card deck and the photo gallery: keep the dots in
 // step with the swipe, and let the arrow keys move it too.
 function swipeable(trackSel,dotSel,captionSel){
