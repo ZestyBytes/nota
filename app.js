@@ -465,7 +465,7 @@ function calendar(){
         <button class="icon-button" data-month="1" aria-label="Next month">&rarr;</button>
         ${monthKey!==todayKey.slice(0,7)?`<button class="calendar-today" data-jump="${todayKey}" type="button">Today</button>`:""}
       </div>
-      <div class="calendar-modes" aria-label="Calendar view"><button class="${state.calendarMode==="month"?"active":""}" data-calendar-mode="month">Month</button><button class="${state.calendarMode==="agenda"?"active":""}" data-calendar-mode="agenda">Agenda</button></div>
+      <div class="calendar-modes" aria-label="Calendar view"><button class="${state.calendarMode==="month"?"active":""}" aria-pressed="${state.calendarMode==="month"}" data-calendar-mode="month">Month</button><button class="${state.calendarMode==="agenda"?"active":""}" aria-pressed="${state.calendarMode==="agenda"}" data-calendar-mode="agenda">Agenda</button></div>
       <p class="month-count">${monthCount?`${monthCount} item${monthCount>1?"s":""} this month`:"Nothing recorded this month"}${monthKey!==todayKey.slice(0,7)?` &middot; <button class="linkish" data-jump="${todayKey.slice(0,7)}">This month</button>`:""}</p>
       ${state.calendarMode==="month"?`<div class="week">${["M","T","W","T","F","S","S"].map(x=>`<span>${x}</span>`).join("")}</div><div class="calendar-grid">${cells.join("")}</div>`:`<ol class="calendar-agenda">${monthItems.length?monthItems.map(e=>`<li><time>${fmtDate(e.occurredAt)}</time>${dayRow(e,"div")}</li>`).join(""):`<li class="empty">Nothing recorded this month.</li>`}</ol>`}
       ${jump}
