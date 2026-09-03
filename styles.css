@@ -1319,6 +1319,9 @@ aside .section-title{display:flex;align-items:baseline}
 }
 @media(max-width:480px){
   .topic-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.space-card{min-height:190px;padding:94px 13px 13px}.space-reading-preview,.space-tech-preview,.space-music-preview,.space-life-preview,.space-garden-preview{height:82px}.space-card h2{font-size:19px}.space-card>p,.space-card .topic-kids{display:none}
+}
+@media(max-width:420px){
+  .topic-grid{gap:8px}.space-card{min-height:154px;padding:76px 10px 10px}.space-reading-preview,.space-tech-preview,.space-music-preview,.space-life-preview,.space-garden-preview{height:66px}.space-card h2{font-size:17px}.space-card .enter-space{font-size:8px;letter-spacing:.06em}
   .day{min-height:48px;padding:5px;gap:4px}.day-more{font-size:7px;border:0;padding:0}
   .search-results .entry.has-thumb{grid-template-columns:1fr}.search-results .thumb-wrap{display:none}
   .home-search{padding:15px}.home-latest-head{display:block}.home-latest-head>a{display:block;margin:-10px 0 24px}.home-wander{align-items:flex-start;flex-direction:column;gap:14px}.home-wander button{width:100%}.noted-flow{padding:18px}.noted-flow>div{grid-template-columns:1fr}.noted-flow a{min-height:66px;border-right:1px solid color-mix(in srgb,var(--space) 34%,var(--line));border-bottom:0}.noted-flow a:last-child{border-bottom:1px solid color-mix(in srgb,var(--space) 34%,var(--line))}.noted-flow a:not(:last-child):after{content:"↓";right:calc(50% - 10px);top:auto;bottom:-10px}
