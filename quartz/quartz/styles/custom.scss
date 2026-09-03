@@ -177,8 +177,13 @@ article pre { background: var(--nota-rail) !important; border: 0 !important; bor
   .book-card::before { height: 84px; width: 56px; }
   .book-card small { grid-column: 2; }
   .book-card::after { top: -.2rem; }
-  .topic-grid { grid-template-columns: 1fr; }
-  .topic-card { min-height: 140px; }
+  // Spaces become a deliberate swipeable room deck on small screens. Each
+  // card remains readable and preserves its own atmosphere instead of being
+  // squeezed into a tall single column.
+  .topic-grid { display: flex; gap: .8rem; margin-right: -1rem; overflow-x: auto; padding: .15rem 1rem .9rem 0; scroll-snap-type: x mandatory; scrollbar-width: none; }
+  .topic-grid::-webkit-scrollbar { display: none; }
+  .topic-card { flex: 0 0 min(78vw, 270px); min-height: 220px; scroll-snap-align: start; }
+  .topic-card h2, .topic-card h3 { font-size: 1.8rem; }
   article table { font-size: .68rem; }
   article th, article td { padding: .4rem; }
 }
