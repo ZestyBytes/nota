@@ -1383,6 +1383,7 @@ aside .section-title{display:flex;align-items:baseline}
 .spaces-index .space-shelf .space-card{background-image:none!important;background-color:#1d3a30!important;background-size:auto!important;width:112px!important;flex-basis:112px!important;height:250px!important;min-height:0!important;align-self:end!important}
 .spaces-index .space-shelf .space-card:nth-child(2n){height:226px!important;background-color:#24483a!important}.spaces-index .space-shelf .space-card:nth-child(3n){height:268px!important;background-color:#173126!important}.spaces-index .space-shelf .space-card:nth-child(4n){height:238px!important;background-color:#2b5142!important}
 .spaces-index .space-shelf .space-card h2{color:#e4f1e5!important;text-shadow:none!important}
+.home-tasks{margin-top:42px;padding-top:24px;border-top:1px solid var(--line)}.main-nav a[href="#tasks"],.mobile-nav a[href="#tasks"]{display:none!important}
 @media(max-width:600px){.spaces-index .space-shelf .space-card{width:84px!important;flex-basis:84px!important;height:210px!important}.spaces-index .space-shelf .space-card:nth-child(2n){height:190px!important}.spaces-index .space-shelf .space-card:nth-child(3n){height:226px!important}.spaces-index .space-shelf .space-card:nth-child(4n){height:200px!important}}
 /* Spaces mobile bookshelf: two rows that travel horizontally as one shelf. */
 @media(max-width:800px){

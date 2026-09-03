@@ -388,15 +388,16 @@ function onThisDay(){
   return items.length?`<section class="on-this-day"><div><p class="eyebrow">On this day</p><h2>${items.length===1?"One thing came back":"A few things came back"}</h2></div><div>${items.slice(0,3).map(e=>dayRow(e,"article")).join("")}</div></section>`:"";
 }
 function today(){
-  const recent=[...state.data.entries].sort((a,b)=>(b.occurredAt||b.createdAt||"").localeCompare(a.occurredAt||a.createdAt||"")).slice(0,6);
+  const recent=[...state.data.entries].sort((a,b)=>(b.occurredAt||b.createdAt||"").localeCompare(a.occurredAt||a.createdAt||"")).slice(0,3);
   const open=state.data.tasks.filter(t=>!t.completedAt).length;
   const wander=state.data.entries.filter(e=>e.type!=="Task");
-  return `<section class="home-page"><header class="home-intro"><div><p class="eyebrow">A living personal archive</p><h1 class="page-title">Recently</h1><p class="lede">Stories, photographs, ideas and projects worth returning to.</p></div><nav class="home-paths"><a href="#topics"><b>Spaces</b><span>By subject</span></a><a href="#library"><b>Library</b><span>By format</span></a><a href="#calendar"><b>Calendar</b><span>By date</span></a></nav></header>
+  const tasks=state.data.tasks.filter(t=>!t.completedAt).slice(0,3);
+  return `<section class="home-page"><header class="home-intro"><div><h1 class="page-title">Recently</h1><p class="lede">Stories, photographs, ideas and projects worth returning to.</p></div><nav class="home-paths"><a href="#topics"><b>Spaces</b><span>By subject</span></a><a href="#library"><b>Library</b><span>By format</span></a><a href="#calendar"><b>Calendar</b><span>By date</span></a></nav></header>
     <div class="home-latest-head"><h2 class="section-title">Latest entries</h2>${open?`<a href="#tasks">${open} thing${open===1?"":"s"} to do &rarr;</a>`:""}</div>
     <div class="entry-list">${recent.length?recent.map(e=>entryCard(e)).join(""):`<p class="empty">The archive is ready for its first entry.</p>`}</div>
     ${onThisDay()}
     ${journeyStrip()}
-    ${wander.length?`<aside class="home-wander"><div><span class="eyebrow">A little serendipity</span><b>Open something unexpected</b><p>Take a lucky dip through the archive.</p></div><button type="button" data-wander>Surprise me <span aria-hidden="true">↗</span></button></aside>`:""}
+    ${tasks.length?`<section class="home-tasks"><div class="home-latest-head"><h2 class="section-title">To-do</h2><a href="#tasks">Open list →</a></div><div class="tasks">${tasks.map(taskRow).join("")}</div></section>`:""}
     <form class="home-search" action="#search"><label for="home-query">Find something older</label><div><input id="home-query" type="search" placeholder="Search the whole archive…"><button type="submit">Search</button></div></form>
   </section>`;
 }
