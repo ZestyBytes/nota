@@ -16,5 +16,7 @@ decision, so I do not have to make it again.
 That is the whole pitch, really. It is not that the machine is faster. It is
 that it stops asking.
 
+![The Omarchy account setup screen](assets/posts/omarchy-setup.png)
+
 The test of it is whether I want to extend it, and I did: two plugins so far,
 for the cameras and the mesh. See [[Two plugins, live]].
