@@ -408,6 +408,7 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px;min-width:0}
 .space-shelf:before{display:block;margin:0 22px 14px;color:#e4c79c;content:"ROOMS IN THE ARCHIVE";font:700 10px var(--mono);letter-spacing:.16em}
 .space-shelf+ .space-shelf:before{content:"MORE ROOMS TO EXPLORE"}
 .space-shelf+ .space-shelf{margin-top:-12px;border-top:0}
+.space-shelves{background:#4b2d1b;padding-top:1px;padding-bottom:1px}.space-shelves .space-shelf{margin-top:0;margin-bottom:0;border-bottom-width:14px}.space-shelves .space-shelf+ .space-shelf{border-top:10px solid #2b1a10}
 .space-shelf-rail{display:flex;gap:14px;overflow-x:auto;padding:0 22px 8px;scroll-snap-type:x mandatory;scrollbar-width:none}
 .space-shelf-rail::-webkit-scrollbar{display:none}.space-shelf .space-card{flex:0 0 168px;min-height:282px;height:282px;padding:158px 13px 17px;scroll-snap-align:start;border:1px solid color-mix(in srgb,var(--topic) 55%,#c8c0ad);border-left:8px solid var(--topic);border-radius:1px;background:#f5f0e5;color:#292d25;box-shadow:5px 5px 0 color-mix(in srgb,var(--topic) 28%,#c8c0ad),0 10px 14px -12px #17150f}
 .space-shelf .space-card:after{content:"ENTER ROOM  →";position:absolute;right:12px;bottom:12px;color:var(--topic);font:700 8px var(--mono);letter-spacing:.08em}.space-shelf .space-card h2{letter-spacing:-.04em;color:var(--topic);text-shadow:none}.space-shelf .space-card p{max-width:88%;color:#4f554b;opacity:1}.space-shelf .space-card .topic-kids{display:none}
