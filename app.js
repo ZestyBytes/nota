@@ -5,8 +5,8 @@ const BASE = window.NOTED_DATA || { topics:{}, entries:[], tasks:[], books:[] };
 // which is how the version check knows to stay out of the way locally.
 const BUILD="__BUILD__";
 const now = new Date(), todayKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`;
-let savedSort="items";try{savedSort=localStorage.getItem("noted-topic-sort")||"items"}catch(error){/* private mode: fall back to the default */}
-const state = { route:"today", topicSort:savedSort, month:new Date(now.getFullYear(),now.getMonth(),1), selectedDate:todayKey, library:"writing", search:"", filter:"all", data:clone(BASE), user:null, booting:NotedBackend.configured };
+let savedSort="items",savedCalendar="month",savedLibrary="writing";try{savedSort=localStorage.getItem("noted-topic-sort")||"items";savedCalendar=localStorage.getItem("noted-calendar-mode")||"month";savedLibrary=localStorage.getItem("noted-library-tab")||"writing"}catch(error){/* private mode: fall back to defaults */}
+const state = { route:"today", topicSort:savedSort, calendarMode:savedCalendar, month:new Date(now.getFullYear(),now.getMonth(),1), selectedDate:todayKey, library:savedLibrary, search:"", filter:"all", data:clone(BASE), user:null, booting:NotedBackend.configured };
 function clone(v){return JSON.parse(JSON.stringify(v))}
 function emptyArchive(){return {topics:clone(BASE.topics),entries:[],tasks:[],books:[]}}
 function esc(s=""){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
@@ -279,6 +279,12 @@ function backlinks(e){
   return state.data.entries.filter(x=>x.id!==e.id&&(x.body||"").toLowerCase()
     .match(/\[\[([^\]|]+)(?:\|[^\]]*)?\]\]/g)?.some(m=>m.replace(/^\[\[|\]\]$/g,"").split("|")[0].trim()===title));
 }
+function relatedEntries(e){
+  const tags=new Set(e.topics||[]),shared=x=>x.topics.filter(t=>tags.has(t)).length;
+  return state.data.entries.filter(x=>x.id!==e.id&&x.type!=="Task"&&x.topics?.some(t=>tags.has(t)))
+    .sort((a,b)=>shared(b)-shared(a)||(b.occurredAt||b.createdAt||"").localeCompare(a.occurredAt||a.createdAt||""))
+    .slice(0,3);
+}
 function notedFlow(){
   const steps=[
     ["Write","Obsidian","https://obsidian.md"],
@@ -315,6 +321,7 @@ function entryPage(id){
     ${e.id==="notes/why-i-made-noted"?notedFlow():""}
     ${(()=>{const shown=e.images?.length>1?e.images.map(i=>i.src):[e.image];return e.recipe?`<div class="detail-body recipe-body">${recipeBody(e)}</div>`:e.view==="cards"&&e.body?cardDeck(e.body,shown,e.id):`<div class="detail-body">${e.body?(e.view==="playlist"?playlistBody(e.body):markdown(e.body,shown,e.id)):`<p>${esc(e.excerpt||"Saved in your Noted archive.")}</p>`}</div>`})()}
     ${(()=>{const back=backlinks(e);return back.length?`<section class="backlinks"><h2 class="section-title">Mentioned in</h2><ul>${back.map(b=>`<li><a href="#entry/${encodeURIComponent(b.id)}">${esc(b.title)}</a><small>${esc(b.type)}${b.occurredAt?` &middot; ${esc(fmtDate(b.occurredAt))}`:""}</small></li>`).join("")}</ul></section>`:""})()}
+    ${(()=>{const near=relatedEntries(e);return near.length?`<section class="related-entries"><h2 class="section-title">Continue nearby</h2><div>${near.map(x=>`<a href="#entry/${encodeURIComponent(x.id)}" data-entry="${esc(x.id)}" data-return="#entry/${encodeURIComponent(e.id)}"><small>${esc(topic(x.topics?.[0]).name)} · ${fmtDate(x.occurredAt||x.createdAt)}</small><b>${esc(x.title)}</b></a>`).join("")}</div></section>`:""})()}
     ${e.attachments?.length?`<div class="attachment-list"><p class="eyebrow">Attachments</p>${e.attachments.map((a,i)=>`<div>${icon("paperclip")}<span><b>${esc(a.name)}</b><small>${esc(a.kind)} &middot; ${esc(a.size)}</small></span><button type="button" data-view-attachment="${i}" data-entry-id="${e.id}">View</button></div>`).join("")}</div>`:""}
   </section>`;
 }
@@ -372,6 +379,10 @@ function todayWidget(){
 // stable for the whole day, different tomorrow
 function dayIndex(n){const d=new Date(todayKey+"T12:00:00");return Math.floor((d-new Date(d.getFullYear(),0,0))/864e5)%n}
 function pageHead(kicker,title,lede=""){return `<div class="page-head"><div><p class="eyebrow">${kicker}</p><h1 class="page-title">${title}</h1>${lede?`<p class="lede">${lede}</p>`:""}</div></div>`}
+function onThisDay(){
+  const md=todayKey.slice(5),items=state.data.entries.filter(e=>{const d=e.occurredAt||e.createdAt||"";return d.slice(5)===md&&d.slice(0,4)!==todayKey.slice(0,4)});
+  return items.length?`<section class="on-this-day"><div><p class="eyebrow">On this day</p><h2>${items.length===1?"One thing came back":"A few things came back"}</h2></div><div>${items.slice(0,3).map(e=>dayRow(e,"article")).join("")}</div></section>`:"";
+}
 function today(){
   const recent=[...state.data.entries].sort((a,b)=>(b.occurredAt||b.createdAt||"").localeCompare(a.occurredAt||a.createdAt||"")).slice(0,6);
   const open=state.data.tasks.filter(t=>!t.completedAt).length;
@@ -379,6 +390,7 @@ function today(){
   return `<section class="home-page"><header class="home-intro"><div><p class="eyebrow">A living personal archive</p><h1 class="page-title">Recently</h1><p class="lede">Stories, photographs, ideas and projects worth returning to.</p></div><nav class="home-paths"><a href="#topics"><b>Spaces</b><span>By subject</span></a><a href="#library"><b>Library</b><span>By format</span></a><a href="#calendar"><b>Calendar</b><span>By date</span></a></nav></header>
     <div class="home-latest-head"><h2 class="section-title">Latest entries</h2>${open?`<a href="#tasks">${open} thing${open===1?"":"s"} to do &rarr;</a>`:""}</div>
     <div class="entry-list">${recent.length?recent.map(e=>entryCard(e)).join(""):`<p class="empty">The archive is ready for its first entry.</p>`}</div>
+    ${onThisDay()}
     ${journeyStrip()}
     ${wander.length?`<aside class="home-wander"><div><span class="eyebrow">A little serendipity</span><b>Open something unexpected</b><p>Take a lucky dip through the archive.</p></div><button type="button" data-wander>Surprise me <span aria-hidden="true">↗</span></button></aside>`:""}
     <form class="home-search" action="#search"><label for="home-query">Find something older</label><div><input id="home-query" type="search" placeholder="Search the whole archive…"><button type="submit">Search</button></div></form>
@@ -410,16 +422,16 @@ function monthDistance(a,b){const [ay,am]=a.split("-").map(Number),[by,bm]=b.spl
 // A day panel is a narrow column, and a full entry card in it is mostly air:
 // a mount tag, a taped corner, an accession number and a four line excerpt to
 // say one thing happened. A day reads better as a log, one line each.
-function dayRow(e){
+function dayRow(e,tag="li"){
   const t=topic(e.topics?.[0]);
-  return `<li class="day-row" data-entry="${esc(e.id)}" style="--topic:${t.color}">
+  return `<${tag} class="day-row" data-entry="${esc(e.id)}" style="--topic:${t.color}">
     ${e.image?`<img class="day-row-thumb" src="${esc(e.image)}" alt="" loading="lazy">`:""}
     <span class="day-row-copy">
       <span class="day-row-kind">${esc(e.type)}${e.topics?.length?` &middot; ${esc(t.name)}`:""}</span>
       <b>${e.type==="Quote"?`&ldquo;${esc(e.title)}&rdquo;`:esc(e.title)}</b>
       ${e.excerpt?`<small>${esc(e.excerpt)}</small>`:""}
     </span>
-  </li>`;
+  </${tag}>`;
 }
 function calendar(){
   const y=state.month.getFullYear(),m=state.month.getMonth(),first=new Date(y,m,1);
@@ -437,6 +449,8 @@ function calendar(){
   const label=new Date(state.selectedDate+"T12:00:00").toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
   const near=nearestMonth(state.month,dates);
   const monthKey=`${y}-${String(m+1).padStart(2,"0")}`;
+  const monthItems=[...state.data.entries.filter(e=>(e.occurredAt||"").startsWith(monthKey)),...state.data.tasks.filter(t=>(t.dueAt||"").startsWith(monthKey)).map(t=>({...t,type:"Task",occurredAt:t.dueAt}))].sort((a,b)=>(b.occurredAt||"").localeCompare(a.occurredAt||""));
+  const monthPhotos=monthItems.filter(e=>e.image).slice(0,4);
   const jump=!monthCount&&near&&near!==monthKey
     ? `<p class="empty small">Nothing this month. <button class="linkish" data-jump="${near}">Go to ${new Date(near+"-01T12:00:00").toLocaleDateString("en-GB",{month:"long",year:"numeric"})}</button></p>` : "";
   return `<section>${pageHead("A visual journal","Calendar","Move through the archive by day: photographs, notes, plans and small moments gathered into the month they happened.")}
@@ -446,10 +460,11 @@ function calendar(){
         <h2>${first.toLocaleDateString("en-GB",{month:"long",year:"numeric"})}</h2>
         <button class="icon-button" data-month="1" aria-label="Next month">&rarr;</button>
       </div>
+      <div class="calendar-modes" aria-label="Calendar view"><button class="${state.calendarMode==="month"?"active":""}" data-calendar-mode="month">Month</button><button class="${state.calendarMode==="agenda"?"active":""}" data-calendar-mode="agenda">Agenda</button></div>
       <p class="month-count">${monthCount?`${monthCount} item${monthCount>1?"s":""} this month`:"Nothing recorded this month"}${monthKey!==todayKey.slice(0,7)?` &middot; <button class="linkish" data-jump="${todayKey.slice(0,7)}">This month</button>`:""}</p>
-      <div class="week">${["M","T","W","T","F","S","S"].map(x=>`<span>${x}</span>`).join("")}</div>
-      <div class="calendar-grid">${cells.join("")}</div>
+      ${state.calendarMode==="month"?`<div class="week">${["M","T","W","T","F","S","S"].map(x=>`<span>${x}</span>`).join("")}</div><div class="calendar-grid">${cells.join("")}</div>`:`<ol class="calendar-agenda">${monthItems.length?monthItems.map(e=>`<li><time>${fmtDate(e.occurredAt)}</time>${dayRow(e,"div")}</li>`).join(""):`<li class="empty">Nothing recorded this month.</li>`}</ol>`}
       ${jump}
+      ${monthItems.length?`<aside class="month-postcard"><div><p class="eyebrow">Month postcard</p><b>${first.toLocaleDateString("en-GB",{month:"long"})}, in ${monthItems.length} ${monthItems.length===1?"record":"records"}</b></div>${monthPhotos.length?`<div>${monthPhotos.map(e=>`<img src="${esc(e.image)}" alt="">`).join("")}</div>`:""}</aside>`:""}
     </div>
     <aside class="selected-day">
       <p class="eyebrow">${state.selectedDate===todayKey?"Today":"Selected day"}</p>
@@ -685,15 +700,23 @@ function taskPage(){
   const today=open.filter(t=>t.dueAt===todayKey);
   const ahead=open.filter(t=>t.dueAt&&t.dueAt>todayKey).sort((a,b)=>a.dueAt.localeCompare(b.dueAt));
   const undated=open.filter(t=>!t.dueAt);
-  const group=(label,rows,cls="")=>rows.length?`<section class="task-group ${cls}"><h2 class="section-title">${label}<span class="task-count">${rows.length}</span></h2><div class="tasks">${rows.map(taskRow).join("")}</div></section>`:"";
+  const next=[...overdue,...today,...ahead,...undated][0];
+  const group=(label,rows,cls="")=>{const rest=rows.filter(t=>t.id!==next?.id);return rest.length?`<section class="task-group ${cls}"><h2 class="section-title">${label}<span class="task-count">${rest.length}</span></h2><div class="tasks">${rest.map(taskRow).join("")}</div></section>`:""};
   return `<section class="tasks-page">${pageHead("Still to do","To-do","A calm place for what is waiting—and what has been seen off.")}
+    ${next?`<section class="task-focus"><p class="eyebrow">Next up</p>${taskRow(next)}</section>`:""}
     ${open.length||done.length?"":`<p class="empty">Nothing waiting. Add a note in <code>tasks/</code> with <code>type: task</code>.</p>`}
     ${group("Overdue",overdue,"overdue")}
     ${group("Today",today)}
     ${group("Coming up",ahead)}
     ${group("No date",undated)}
     ${done.length?`<section class="task-group"><details class="done-tasks" open><summary><span class="section-title">Recently completed<span class="task-count">${done.length}</span></span></summary><div class="tasks">${done.map(taskRow).join("")}</div></details></section>`:""}
+    <p class="archive-care"><a href="#health">Check the archive</a></p>
   </section>`;
+}
+function healthPage(){
+  const entries=state.data.entries,missingDate=entries.filter(e=>!e.occurredAt&&!e.createdAt),placeholders=entries.filter(e=>/placeholder|add later|to add/i.test(`${e.title} ${e.body||""}`)),broken=entries.filter(e=>e.image&&!/^(https?:|assets\/)/.test(e.image));
+  const check=(label,items,good)=>`<section class="health-check ${items.length?"attention":"good"}"><span>${items.length||"✓"}</span><div><h2>${label}</h2><p>${items.length?items.slice(0,5).map(x=>esc(x.title)).join(" · "):good}</p></div></section>`;
+  return `<section class="health-page"><p class="back-link"><a href="#tasks" data-back>Back</a></p>${pageHead("Archive care","Health check","A quiet pre-flight check for the files that make Noted.")}<div class="health-grid">${check("Missing dates",missingDate,"Every entry can find its place in the calendar.")}${check("Draft-shaped notes",placeholders,"Nothing currently reads like a placeholder.")}${check("Media paths",broken,"Published media paths look healthy.")}</div><p class="health-note">This check runs entirely in the browser against the published archive.</p></section>`;
 }
 // Food is a room rather than another filtered list. Recipes take the large
 // clipped-card treatment; smaller kitchen notes become a dated notebook down
@@ -775,7 +798,7 @@ function topicView(id){const t=topic(id),kids=childTopics(id),items=state.data.e
   if(t.mode==="tech")body=`<div class="topic-mode tech-mode"><div class="mode-note"><p>Technical notes keep the same Noted structure, with files and dated logs presented in a more useful form.</p></div>${body}</div>`;if(t.mode==="recipes")body=`<div class="topic-mode recipe-mode">${items.map(e=>e.recipe?`<article class="recipe-card" data-entry="${e.id}">${e.image?`<img src="${e.image}" alt="${esc(e.imageAlt)}">`:""}<div><p class="eyebrow">Recipe note</p><h2>${esc(e.title)}</h2><div class="recipe-facts"><span>${esc(e.recipe.time)}</span><span>Serves ${esc(e.recipe.serves)}</span><span>${esc(e.recipe.difficulty)}</span></div><p>${esc(e.excerpt)}</p><h3>You'll need</h3><p>${e.recipe.ingredients.map(esc).join(" · ")}</p></div></article>`:entryCard(e,"",id)).join("")||`<p class="empty">No recipes yet.</p>`}</div>`;const bookSection=books.length?`<h2 class="section-title">Books</h2><div class="book-grid">${books.map((b,i)=>`<article class="book ${b.cover?"":"has-plate"}" data-book="${b.id}"><span class="acc-no">No. ${accNo(b.id)}</span>${b.cover?`<img class="book-cover" src="${b.cover}" alt="" loading="lazy">`:coverPlate(b)}<div class="book-copy"><h3>${esc(b.title)}</h3><p>${esc(b.author)}</p><span class="status">${esc(b.status.replaceAll("-"," "))}${b.status==="reading"?` · ${b.progress}%`:""}</span><div class="progress"><i style="width:${b.progress}%"></i></div></div></article>`).join("")}</div>`:"";return `<section class="topic-page" style="--topic:${t.color};--soft:${t.soft}"><p class="back-link"><a href="${backHref("#topics")}" data-back>Back</a></p><span class="topic-mark topic-mark-page" aria-hidden="true">${esc(t.name[0])}</span><div class="page-head"><div><p class="eyebrow">Topic${t.mode?" · tailored view":""}</p><h1 class="page-title" style="color:${t.color}">${esc(t.name)}</h1><p class="lede">${esc(t.description)}</p>${kids.length?`<p class="topic-kids topic-kids-page">${kids.map(k=>`<span class="kid" data-topic="${k}" style="--topic:${state.data.topics[k].color}">${esc(state.data.topics[k].name)}</span>`).join("")}</p>`:""}${t.parent&&state.data.topics[t.parent]?`<p class="topic-parent">Part of <span class="kid" data-topic="${t.parent}" style="--topic:${state.data.topics[t.parent].color}">${esc(state.data.topics[t.parent].name)}</span></p>`:""}</div></div>${body}${bookSection}</section>`}
 function authScreen(){return `<section class="auth-shell"><div class="auth-intro"><p class="eyebrow">Your private archive</p><h1 class="page-title">Welcome to noted.</h1><p class="lede">Days, thoughts, books and things worth keeping, written in Obsidian and read here.</p></div><form id="auth-form" class="auth-card"><h2>Sign in</h2><div class="field"><label>Email</label><input name="email" type="email" autocomplete="email" required></div><div class="field"><label>Password</label><input name="password" type="password" autocomplete="current-password" minlength="8" required></div><p class="form-error" role="alert"></p><button class="submit" name="intent" value="signin">Sign in</button><p class="auth-note">This is a private Noted archive.</p></form></section>`}
 function userTools(){return state.user?`<footer class="user-tools"><button data-action="logout">Sign out</button></footer>`:""}
-function render(){const app=document.getElementById("app"),hash=location.hash.slice(1)||"today",[route,arg]=hash.split("/"),isPublic=route==="writing";document.body.classList.toggle("auth-view",NotedBackend.configured&&!state.user&&!isPublic);if(state.booting){app.innerHTML=skeletonPage();return}if(NotedBackend.configured&&!state.user&&!isPublic){app.innerHTML=authScreen();return}state.route=route;document.querySelectorAll(".main-nav a,.mobile-nav a").forEach(a=>a.classList.toggle("active",a.getAttribute("href")===`#${route}`));const page=route==="calendar"?calendar():route==="library"?library():route==="entry"?entryPage(decodeURIComponent(arg||"")):route==="topics"?(arg?topicView(arg):topics()):route==="writing"?writing():route==="journey"?journeyPage(arg||""):route==="tasks"?taskPage():route==="search"?search():today();app.innerHTML=page+userTools();app.focus({preventScroll:true});afterRender(route,Boolean(route==="entry"||route==="journey"||(route==="topics"&&arg)))}
+function render(){const app=document.getElementById("app"),hash=location.hash.slice(1)||"today",[route,arg]=hash.split("/"),isPublic=route==="writing";document.body.classList.toggle("auth-view",NotedBackend.configured&&!state.user&&!isPublic);if(state.booting){app.innerHTML=skeletonPage();return}if(NotedBackend.configured&&!state.user&&!isPublic){app.innerHTML=authScreen();return}state.route=route;document.querySelectorAll(".main-nav a,.mobile-nav a").forEach(a=>a.classList.toggle("active",a.getAttribute("href")===`#${route}`));const page=route==="calendar"?calendar():route==="library"?library():route==="entry"?entryPage(decodeURIComponent(arg||"")):route==="topics"?(arg?topicView(arg):topics()):route==="writing"?writing():route==="journey"?journeyPage(arg||""):route==="tasks"?taskPage():route==="health"?healthPage():route==="search"?search():today();app.innerHTML=page+userTools();app.focus({preventScroll:true});afterRender(route,Boolean(route==="entry"||route==="journey"||(route==="topics"&&arg)))}
 // Opening an entry starts at the top of it; coming back restores the place
 // in the list you left. Re-renders inside a route leave the scroll alone.
 let lastRoute=null,lastDetail=false;
@@ -847,7 +870,8 @@ document.addEventListener("click",async e=>{
   const jump=e.target.closest("[data-jump]");
   if(jump){const [jy,jm]=jump.dataset.jump.split("-").map(Number);state.month=new Date(jy,jm-1,1);render();return}
   const month=e.target.closest("[data-month]");if(month){state.month=new Date(state.month.getFullYear(),state.month.getMonth()+Number(month.dataset.month),1);render()}
-  const lib=e.target.closest("[data-library]");if(lib){state.library=lib.dataset.library;render()}
+  const calendarMode=e.target.closest("[data-calendar-mode]");if(calendarMode){state.calendarMode=calendarMode.dataset.calendarMode;try{localStorage.setItem("noted-calendar-mode",state.calendarMode)}catch(error){}render();return}
+  const lib=e.target.closest("[data-library]");if(lib){state.library=lib.dataset.library;try{localStorage.setItem("noted-library-tab",state.library)}catch(error){}render()}
   const filter=e.target.closest("[data-filter]");if(filter){state.filter=filter.dataset.filter;render()}
   const tick=e.target.closest("[data-tick]");
   if(tick){
