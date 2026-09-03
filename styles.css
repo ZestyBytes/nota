@@ -1366,6 +1366,13 @@ aside .section-title{display:flex;align-items:baseline}
 .space-shelf .space-card.space-reading{background-image:linear-gradient(to top,#17130de8 0%,transparent 58%),url("assets/books/meditations.jpg")!important}
 .space-shelf .space-card.space-food{background-image:linear-gradient(to top,#17130de8 0%,transparent 58%),url("assets/posts/space-cover-food.png")!important}
 .space-shelf .space-card{background-size:100% 100%,110% 100%!important;background-position:center!important;background-repeat:no-repeat!important}
+/* Final bookshelf treatment: the jacket is the whole book, with no pale card chrome or hover motion. */
+.space-shelf .space-card{width:168px!important;flex:0 0 168px!important;height:282px!important;min-height:282px!important;overflow:hidden!important;padding:0!important;background-color:transparent!important;border:0!important;box-shadow:none!important;transform:none!important}
+.space-shelf .space-card:hover,.space-shelf .space-card:focus-visible{transform:none!important;box-shadow:none!important}
+.space-shelf .space-card h2{position:absolute;left:16px;right:10px;bottom:30px;margin:0!important;color:#fff8e9!important;font-size:24px!important;line-height:1!important;letter-spacing:-.04em;text-shadow:0 2px 4px #17130d!important}
+.space-shelf .space-card p{position:absolute;left:16px;right:12px;bottom:10px;margin:0!important;color:#fff8e9!important;font-size:10px!important;line-height:1.2!important;text-shadow:0 1px 3px #17130d!important}
+.space-shelf .space-card:after{display:none!important}
+@media(max-width:600px){.space-shelf .space-card{width:128px!important;flex-basis:128px!important;height:236px!important;min-height:236px!important}.space-shelf .space-card h2{left:10px;bottom:27px;font-size:17px!important}.space-shelf .space-card p{left:10px;bottom:9px;font-size:9px!important}}
 /* Spaces mobile bookshelf: two rows that travel horizontally as one shelf. */
 @media(max-width:800px){
   .spaces-index .topic-grid{display:grid!important;grid-template-columns:none!important;grid-template-rows:repeat(2,190px)!important;grid-auto-flow:column!important;grid-auto-columns:minmax(260px,78vw)!important;gap:12px!important;overflow-x:auto!important;overflow-y:hidden!important;margin-right:-16px!important;padding:2px 16px 18px 0!important;scroll-snap-type:x mandatory!important;scrollbar-width:none!important}
