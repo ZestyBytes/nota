@@ -917,9 +917,6 @@ document.addEventListener("keydown",e=>{
   if(location.hash!=="#search")location.hash="search";
   requestAnimationFrame(()=>document.querySelector(".search-box")?.focus());
 });
-let calendarTouchX=0,calendarTouchY=0;
-document.addEventListener("touchstart",e=>{if(state.route!=="calendar"||e.touches.length!==1)return;calendarTouchX=e.touches[0].clientX;calendarTouchY=e.touches[0].clientY},{passive:true});
-document.addEventListener("touchend",e=>{if(state.route!=="calendar"||!calendarTouchX||e.changedTouches.length!==1)return;const dx=e.changedTouches[0].clientX-calendarTouchX,dy=e.changedTouches[0].clientY-calendarTouchY;calendarTouchX=0;if(Math.abs(dx)<70||Math.abs(dx)<Math.abs(dy))return;state.month=new Date(state.month.getFullYear(),state.month.getMonth()+(dx<0?1:-1),1);render()},{passive:true});
 let navTouchX=0,navTouchY=0,navTouchTarget=null;
 document.addEventListener("touchstart",e=>{if(e.touches.length!==1||state.route==="calendar")return;navTouchTarget=e.target;navTouchX=e.touches[0].clientX;navTouchY=e.touches[0].clientY},{passive:true});
 document.addEventListener("touchend",e=>{if(!navTouchX||e.changedTouches.length!==1){navTouchX=0;return}const target=navTouchTarget,dx=e.changedTouches[0].clientX-navTouchX,dy=e.changedTouches[0].clientY-navTouchY;navTouchX=0;if(Math.abs(dx)<90||Math.abs(dx)<Math.abs(dy)||target?.closest(".gallery,.deck,.calendar-grid,.calendar-agenda,input,textarea,button"))return;const routes=["today","calendar","library","topics","tasks"],i=routes.indexOf(state.route);if(i<0)return;const next=routes[i+(dx<0?1:-1)];if(next)location.hash=next},{passive:true});
