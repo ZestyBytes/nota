@@ -908,6 +908,7 @@ document.addEventListener("click",async e=>{
 });
 document.addEventListener("input",e=>{if(e.target.matches(".search-box")){state.search=e.target.value;const pos=e.target.selectionStart;document.querySelector(".search-results").innerHTML=(()=>{const items=searchResults(state.search);return items.length?items.map(e=>entryCard(e,matchSnippet(e,state.search))).join(""):`<p class="empty">No matching records.</p>`})();e.target.setSelectionRange(pos,pos)}});
 document.addEventListener("keydown",e=>{
+  if(e.key==="Escape"&&document.body.classList.contains("modal-open")){e.preventDefault();closeModal();return}
   if(e.key!=="/"||e.metaKey||e.ctrlKey||e.altKey||/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName||""))return;
   e.preventDefault();
   if(location.hash!=="#search")location.hash="search";
