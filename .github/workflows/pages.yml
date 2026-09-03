@@ -36,6 +36,8 @@ jobs:
           sed -i "s/__BUILD__/${GITHUB_SHA::7}/" dist/sw.js dist/app.js
           printf '{"build":"%s"}' "${GITHUB_SHA::7}" > dist/version.json
       - name: Build data.js from Obsidian content
+        run: node quartz/scripts/validate-content.mjs
+      - name: Build data.js from Obsidian content
         run: node quartz/scripts/build-data.mjs --out dist/data.js
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

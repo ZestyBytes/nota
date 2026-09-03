@@ -11,7 +11,9 @@ publish: true
 ![[IMG_5395.jpeg]]
 ![[IMG_5437.jpeg]]
 ![[IMG_5496.jpeg]]
-![[IMG_5405.jpeg]]A place to collect the Barcelona trip properly: the moments we keep retelling,
+![[IMG_5405.jpeg]]
+
+A place to collect the Barcelona trip properly: the moments we keep retelling,
 the places we would return to, what the children noticed, and the photographs
 that would otherwise disappear into the camera roll.
 
