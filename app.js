@@ -578,7 +578,7 @@ function spaceCard({id,t,count,latest,kids}){
   return `<button class="topic-card space-card space-${id} ground-${t.ground||"plain"} ${photo&&!special?"has-photo":""} ${special?"has-space-preview":""}" data-topic="${id}" style="--topic:${t.color};--soft:${t.soft}">${visual}${!visual&&t.ground==="wedge"?`<span class="topic-flag" aria-hidden="true"></span>`:""}<h2>${esc(t.name)}</h2><p>${esc(t.description)}</p>${kids.length?`<span class="topic-kids">${kids.map(k=>`<span class="kid" data-topic="${k}" style="--topic:${state.data.topics[k].color}">${esc(state.data.topics[k].name)}</span>`).join("")}</span>`:""}</button>`;
 }
 function topics(){
-  const list=Object.entries(state.data.topics).filter(([,t])=>!t.parent).map(([id,t])=>({id,t,count:topicCount(id),latest:topicLatest(id),kids:childTopics(id)}));
+    const list=Object.entries(state.data.topics).map(([id,t])=>({id,t,count:topicCount(id),latest:topicLatest(id),kids:childTopics(id)}));
   list.sort((a,b)=>(b.latest||"").localeCompare(a.latest||"")||b.count-a.count);
     const shelves=[list];
   return `<section class="spaces-index">${pageHead("Rooms in the archive","Spaces","Enter by subject. The rooms reorder themselves as the archive grows, bringing the most recently used to the front.")}<div class="space-shelves">${shelves.map((row,i)=>`<section class="space-shelf" aria-label="Spaces shelf ${i+1}"><div class="space-shelf-rail">${row.map(item=>spaceCard(item)).join("")}</div></section>`).join("")}</div></section>`;
