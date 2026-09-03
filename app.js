@@ -5,8 +5,8 @@ const BASE = window.NOTED_DATA || { topics:{}, entries:[], tasks:[], books:[] };
 // which is how the version check knows to stay out of the way locally.
 const BUILD="__BUILD__";
 const now = new Date(), todayKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`;
-let savedSort="items",savedCalendar="month",savedLibrary="writing";try{savedSort=localStorage.getItem("noted-topic-sort")||"items";savedCalendar=localStorage.getItem("noted-calendar-mode")||(window.matchMedia?.("(max-width:600px)").matches?"agenda":"month");savedLibrary=localStorage.getItem("noted-library-tab")||"writing"}catch(error){/* private mode: fall back to defaults */}
-const state = { route:"today", topicSort:savedSort, calendarMode:savedCalendar, month:new Date(now.getFullYear(),now.getMonth(),1), selectedDate:todayKey, library:savedLibrary, search:"", filter:"all", data:clone(BASE), user:null, booting:NotedBackend.configured };
+let savedSort="items",savedCalendar="month",savedLibrary="writing",savedReadingScale=1;try{savedSort=localStorage.getItem("noted-topic-sort")||"items";savedCalendar=localStorage.getItem("noted-calendar-mode")||(window.matchMedia?.("(max-width:600px)").matches?"agenda":"month");savedLibrary=localStorage.getItem("noted-library-tab")||"writing";savedReadingScale=Math.min(1.3,Math.max(1,Number(localStorage.getItem("noted-reading-scale"))||1))}catch(error){/* private mode: fall back to defaults */}
+const state = { route:"today", topicSort:savedSort, calendarMode:savedCalendar, readingScale:savedReadingScale, month:new Date(now.getFullYear(),now.getMonth(),1), selectedDate:todayKey, library:savedLibrary, search:"", filter:"all", data:clone(BASE), user:null, booting:NotedBackend.configured };
 function clone(v){return JSON.parse(JSON.stringify(v))}
 function emptyArchive(){return {topics:clone(BASE.topics),entries:[],tasks:[],books:[]}}
 function esc(s=""){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
@@ -310,8 +310,9 @@ function entryPage(id){
   const sequence=e.journey?journeyEntries(e.journey):ordered(state.data.entries.filter(x=>x.type!=="Task"));
   const position=sequence.findIndex(x=>x.id===e.id),previous=position>0?sequence[position-1]:null,next=position>=0&&position<sequence.length-1?sequence[position+1]:null;
   if(e.type==="Quote")return `<section class="quote-entry-page" style="--topic:${t.color}"><p class="back-link"><a href="${back}" data-back>Back</a><button class="share-button" data-share="${esc(e.id)}" type="button">Share</button></p><article><span>Commonplace book · No. ${accNo(e.id)}</span><blockquote>“${esc(e.title)}”</blockquote><cite>${esc(e.author||"")}</cite><time>${date?`Filed ${date}`:""}</time></article></section>`;
-  return `<section class="entry-page entry-space-${spaceId}" style="--topic:${t.color};--space:${space.color}">
+  return `<section class="entry-page entry-space-${spaceId}" style="--topic:${t.color};--space:${space.color};--reading-scale:${state.readingScale}">
     <div class="reading-progress" aria-hidden="true"><i></i></div>
+    <div class="reading-tools" aria-label="Reading size"><button type="button" data-reading-scale="-1" aria-label="Smaller text">A−</button><span>Read</span><button type="button" data-reading-scale="1" aria-label="Larger text">A+</button></div>
     <span class="entry-topic-tab" style="background:${t.color}">${esc(t.name)}</span>
     <p class="back-link"><a href="${back}" data-back>Back</a><button class="share-button" data-share="${esc(e.id)}" type="button">Share</button></p>
     <header class="entry-masthead">
@@ -880,6 +881,7 @@ document.addEventListener("click",async e=>{
   const book=e.target.closest("[data-book]");if(book){bookDetail(book.dataset.book);return}
   const photos=e.target.closest("[data-gallery-entry]");if(photos){photoDetail(photos.dataset.galleryEntry);return}
   const clearSearch=e.target.closest("[data-clear-search]");if(clearSearch){state.search="";render();return}
+  const readingScale=e.target.closest("[data-reading-scale]");if(readingScale){state.readingScale=Math.min(1.3,Math.max(1,state.readingScale+Number(readingScale.dataset.readingScale)*.15));try{localStorage.setItem("noted-reading-scale",String(state.readingScale))}catch(error){}document.querySelector(".entry-page")?.style.setProperty("--reading-scale",state.readingScale);return}
   const wander=e.target.closest("[data-wander]");if(wander){const choices=state.data.entries.filter(x=>x.type!=="Task");if(choices.length){const pick=choices[Math.floor(Math.random()*choices.length)];state.returnTo="#today";state.returnScroll=window.scrollY;location.hash=`entry/${encodeURIComponent(pick.id)}`}return}
   const entry=e.target.closest("[data-entry]");if(entry){e.preventDefault();state.returnTo=entry.dataset.return||location.hash||"#today";state.returnScroll=window.scrollY;location.hash=`entry/${encodeURIComponent(entry.dataset.entry)}`}
   const date=e.target.closest("[data-date]");if(date){state.selectedDate=date.dataset.date;render()}
