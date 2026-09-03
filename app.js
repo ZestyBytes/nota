@@ -478,7 +478,7 @@ function calendar(){
         if(!dayTasks.length&&!dayEntries.length)return `<p class="empty">Nothing recorded on this day.</p>`;
         const left=dayTasks.filter(t=>!t.completedAt).length;
         return `${dayTasks.length?`<section class="day-part"><h4 class="section-title">Due<span class="task-count">${left?`${left} left`:"all done"}</span></h4><div class="tasks day-tasks">${dayTasks.map(taskRow).join("")}</div></section>`:""}
-        ${dayEntries.length?`<section class="day-part"><h4 class="section-title">Entries</h4><ol class="day-log">${dayEntries.map(dayRow).join("")}</ol></section>`:""}`;
+        ${dayEntries.length?`<section class="day-part"><h4 class="section-title">Entries</h4><ol class="day-log">${dayEntries.map(e=>dayRow(e)).join("")}</ol></section>`:""}`;
       })()}
     </aside></div>
   </section>`;
