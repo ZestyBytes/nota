@@ -917,6 +917,9 @@ document.addEventListener("keydown",e=>{
   if(location.hash!=="#search")location.hash="search";
   requestAnimationFrame(()=>document.querySelector(".search-box")?.focus());
 });
+let calendarTouchX=0,calendarTouchY=0;
+document.addEventListener("touchstart",e=>{if(state.route!=="calendar"||e.touches.length!==1)return;calendarTouchX=e.touches[0].clientX;calendarTouchY=e.touches[0].clientY},{passive:true});
+document.addEventListener("touchend",e=>{if(state.route!=="calendar"||!calendarTouchX||e.changedTouches.length!==1)return;const dx=e.changedTouches[0].clientX-calendarTouchX,dy=e.changedTouches[0].clientY-calendarTouchY;calendarTouchX=0;if(Math.abs(dx)<70||Math.abs(dx)<Math.abs(dy))return;state.month=new Date(state.month.getFullYear(),state.month.getMonth()+(dx<0?1:-1),1);render()},{passive:true});
 document.addEventListener("submit",async e=>{
   e.preventDefault();
   if(e.target.classList.contains("home-search")){state.search=e.target.querySelector("input")?.value||"";location.hash="search";return}
