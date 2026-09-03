@@ -1333,6 +1333,15 @@ aside .section-title{display:flex;align-items:baseline}
 }
 @media(max-width:600px){.related-entries>div,.health-grid{grid-template-columns:1fr}.calendar-agenda>li{grid-template-columns:72px 1fr}.month-postcard{align-items:flex-start;flex-direction:column}.on-this-day{grid-template-columns:1fr;gap:12px}.task-focus{padding:16px}}
 @media(prefers-reduced-motion:reduce){.noted-flow a{animation:none}}
+/* Spaces mobile bookshelf: two rows that travel horizontally as one shelf. */
+@media(max-width:800px){
+  .spaces-index .topic-grid{display:grid!important;grid-template-columns:none!important;grid-template-rows:repeat(2,190px)!important;grid-auto-flow:column!important;grid-auto-columns:minmax(260px,78vw)!important;gap:12px!important;overflow-x:auto!important;overflow-y:hidden!important;margin-right:-16px!important;padding:2px 16px 18px 0!important;scroll-snap-type:x mandatory!important;scrollbar-width:none!important}
+  .spaces-index .topic-grid::-webkit-scrollbar{display:none}
+  .spaces-index .space-card{width:auto!important;min-width:0!important;height:190px!important;min-height:0!important;scroll-snap-align:start!important}
+  .spaces-index .space-card.space-family{background-color:#f0e1e8;background-image:linear-gradient(145deg,#96355a2a,transparent 65%),repeating-linear-gradient(0deg,transparent 0 24px,#96355a16 25px 26px)}
+  .spaces-index .space-card.space-food{background-color:#f2e3cf;background-image:radial-gradient(circle at 18% 28%,#8a4a1c22 0 3px,transparent 4px),radial-gradient(circle at 74% 72%,#a13a2e1c 0 5px,transparent 6px)}
+  .spaces-index .space-card.space-motoring{background-color:#e7e1d7;background-image:repeating-linear-gradient(135deg,transparent 0 25px,#5a514722 26px 27px),linear-gradient(145deg,#c2d0d7,#eee9df 64%)}
+}
 .life-space nav i{align-self:center;padding:0 0 3px;border-bottom:2px solid currentColor;font:700 9px var(--mono);font-style:normal;letter-spacing:.08em}
 .modal:has(.photo-view){width:min(980px,100%)}.photo-view .modal-head{align-items:flex-start}.photo-view .modal-head h2{margin-top:7px;font:600 24px/1.2 var(--serif);text-transform:none}.photo-view>figure{margin:0}.photo-view>figure img{display:block;width:100%;max-height:76vh;object-fit:contain;background:var(--paper-alt)}.photo-view figcaption{margin-top:10px;color:var(--muted);font:10px var(--mono);text-transform:uppercase;letter-spacing:.08em}
 .entry-page .gallery-shot{display:grid;place-items:center;background:var(--paper-alt)}.entry-page .gallery-shot img{width:auto;max-width:100%;height:auto;max-height:72vh;aspect-ratio:auto;object-fit:contain}
