@@ -63,6 +63,7 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px;min-width:0}
 .page-title{margin:0;font:700 clamp(46px,7.4vw,96px)/.92 var(--mono);letter-spacing:-.02em;text-transform:lowercase}
 .lede{max-width:600px;color:var(--ink-soft);font-size:18px;font-style:italic}
 .page-head{display:flex;justify-content:space-between;gap:30px;align-items:flex-end;margin-bottom:52px;flex-wrap:wrap}
+.render-error{padding:48px 0;max-width:620px}.render-error .lede{margin:20px 0}.render-error a{text-decoration:underline;text-underline-offset:4px}
 
 /* postmark-style date block */
 .date-large{
