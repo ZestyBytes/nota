@@ -758,16 +758,19 @@ function spacePreview(id,photo){
 // it on the recto. All of it is already in the archive; nothing new is kept
 // for the shelf.
 function volumeLeaves(id,t,count){
-  const rows=state.data.entries.filter(e=>inTopic(e,id))
-    .sort((a,b)=>(b.occurredAt||b.createdAt||"").localeCompare(a.occurredAt||a.createdAt||"")).slice(0,3);
+  const all=state.data.entries.filter(e=>inTopic(e,id))
+    .sort((a,b)=>(b.occurredAt||b.createdAt||"").localeCompare(a.occurredAt||a.createdAt||""));
+  const rows=all.slice(0,3),rest=all.length-rows.length;
   const shortDate=iso=>fmtDate(iso).replace(/ \d{4}$/,"");
   const list=rows.length
-    ? `<ul>${rows.map(e=>`<li><em>${esc(e.type)} · ${esc(shortDate(e.occurredAt||e.createdAt))}</em><b>${esc(e.title)}</b></li>`).join("")}</ul>`
+    ? `<ul>${rows.map(e=>`<li><em>${esc(e.type)}<i>${esc(shortDate(e.occurredAt||e.createdAt))}</i></em><b>${esc(e.title)}</b></li>`).join("")}</ul>${rest>0?`<span class="vol-more">and ${rest} more inside</span>`:""}`
     : `<span class="vol-none">Nothing filed here yet.</span>`;
+  const filed=topicLatest(id);
   return `<span class="vol-spread" aria-hidden="true">
     <span class="vol-leaf verso">
       <span class="vol-mark">${esc(id.slice(0,3).toUpperCase())} · ${esc(accNo(id).slice(-2))}</span>
       <span class="vol-plate"><span>Noted · space</span><b>${esc(t.name)}</b><i>${esc(t.description)}</i></span>
+      ${filed?`<span class="vol-filed">Last filed ${esc(shortDate(filed))}</span>`:""}
       <span class="vol-tally"><b>${count}</b>things kept</span>
     </span>
     <span class="vol-leaf recto"><h4>Latest in the space</h4>${list}</span>
@@ -813,7 +816,7 @@ function topics(shelf){
   list.forEach(x=>{x.most=most});
   list.sort((a,b)=>(b.latest||"").localeCompare(a.latest||"")||b.count-a.count);
     const shelves=[list];
-  return `<section class="spaces-index">${pageHead("Rooms in the archive","Spaces","Enter by subject. The rooms reorder themselves as the archive grows, bringing the most recently used to the front.")}<div class="space-shelves">${shelves.map((row,i)=>`<section class="space-shelf" aria-label="Spaces shelf ${i+1}"><div class="space-shelf-rail">${row.map(item=>spaceCard(item,shelf)).join("")}</div>${shelf?`<span class="shelf-scrim" aria-hidden="true"></span>`:""}</section>`).join("")}</div></section>`;
+  return `<section class="spaces-index">${pageHead("Rooms in the archive","Spaces","Enter by subject. The rooms reorder themselves as the archive grows, bringing the most recently used to the front.")}<div class="space-shelves">${shelves.map((row,i)=>`<section class="space-shelf" aria-label="Spaces shelf ${i+1}"><div class="space-shelf-rail">${row.map(item=>spaceCard(item,shelf)).join("")}</div></section>`).join("")}</div></section>`;
 }
 // Search reads the whole note, not just its first paragraph. Everything the
 // archive is for is finding a thing again later, and the words that identify
@@ -1153,8 +1156,7 @@ function setupSpaceShelfMotion(route){
 // it. Nothing opens on a pass along the row, and only the button at the foot
 // of the open page leaves the shelf.
 function openVolumes(){
-  const shelf=document.querySelector(".library-space-filter .space-shelf"),
-        rail=shelf?.querySelector(".space-shelf-rail");
+  const rail=document.querySelector(".library-space-filter .space-shelf-rail");
   if(!rail)return;
   const coarse=window.matchMedia?.("(hover:none)").matches;
   let current=null,opening=null,closing=null,settling=0;
@@ -1174,10 +1176,26 @@ function openVolumes(){
       room-=over;
       // The shelf moving under a resting pointer must not hand the next book
       // along an open cover of its own.
-      settling=Date.now()+420;
-      rail.scrollBy({left:over,behavior:"smooth"});
+      settling=Date.now()+340;
+      slide(over);
     }
-    vol.style.setProperty("--deg",String(Math.round(96+59*Math.max(0,Math.min(1,room/284)))));
+    // The cover reaches openW * |cos(angle)| to the left of its hinge, so the
+    // widest swing that still fits the room is 180 minus that angle back.
+    const fit=180-Math.acos(Math.max(0,Math.min(1,room/openW)))*180/Math.PI;
+    vol.style.setProperty("--deg",String(Math.round(Math.max(92,Math.min(155,fit)))));
+  };
+  // Written frame by frame rather than handed to scrollBy: a smooth scroll
+  // requested on this rail does nothing at all, and the shelf has its own
+  // drift writing scrollLeft, so the slide has to be ours to keep in step.
+  const slide=by=>{
+    const from=rail.scrollLeft,start=performance.now(),ms=180;
+    const step=now=>{
+      const k=Math.min(1,(now-start)/ms);
+      rail.scrollLeft=from+by*(1-Math.pow(1-k,3));
+      if(k<1)requestAnimationFrame(step);
+    };
+    if(window.matchMedia?.("(prefers-reduced-motion: reduce)").matches)rail.scrollLeft=from+by;
+    else requestAnimationFrame(step);
   };
   const show=vol=>{
     if(current===vol)return;
@@ -1187,6 +1205,7 @@ function openVolumes(){
       current.querySelector(".vol-go").tabIndex=-1;
     }
     current=vol;
+    if(vol)rail.dataset.holdOpen="1";else delete rail.dataset.holdOpen;
     if(vol){
       vol.classList.add("is-open");
       vol.querySelector(".vol-hit").setAttribute("aria-expanded","true");
@@ -1195,14 +1214,13 @@ function openVolumes(){
       if(vol.getAttribute("aria-hidden")!=="true")vol.querySelector(".vol-go").tabIndex=0;
       place(vol);
     }
-    shelf.classList.toggle("has-open",!!vol);
   };
   // Held for a moment before anything moves, so running the pointer along the
   // shelf leaves every book shut, and a slower close, so crossing the gap
   // between two spines does not slam the first one.
   const enter=e=>{
     const vol=e.target.closest(".vol");if(!vol||coarse||Date.now()<settling)return;
-    clearTimeout(closing);clearTimeout(opening);opening=setTimeout(()=>show(vol),110);
+    clearTimeout(closing);clearTimeout(opening);opening=setTimeout(()=>show(vol),90);
   };
   const leave=e=>{
     if(coarse||!e.target.closest(".vol"))return;
@@ -1294,7 +1312,7 @@ function driftLibraryShelf(){
   const step=now=>{
     if(!rail.isConnected)return;
     const dt=last?Math.min(now-last,100):0;last=now;
-    if(held||now<quietUntil)pos=rail.scrollLeft;
+    if(held||rail.dataset.holdOpen||now<quietUntil)pos=rail.scrollLeft;
     else{
       // Rightwards along the shelf, at reading pace rather than carousel pace.
       pos=fold(pos-dt*.014);

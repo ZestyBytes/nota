@@ -35,8 +35,10 @@
 .library-space-filter .space-shelf-rail{
   align-items:flex-end!important;gap:0!important;
   /* A rail with overflow-x set clips vertically too, so the headroom an open
-     volume rises into has to be part of the rail itself. */
-  padding:46px 0 0!important;
+     volume rises into has to be part of the rail itself. The height is fixed
+     to the tallest trim plus that headroom: a volume grows inside a box that
+     never changes, so nothing below the shelf shifts when a book opens. */
+  padding:46px 0 0!important;height:274px!important;
   mask-image:none!important;touch-action:pan-x!important;
   overflow-x:auto!important;-webkit-overflow-scrolling:touch;
 }
@@ -56,7 +58,7 @@
   background:none!important;box-shadow:none!important;
   --open-w:300px;
   perspective:1400px;transform:none!important;z-index:1;
-  transition:flex-basis .42s cubic-bezier(.2,.7,.2,1),width .42s cubic-bezier(.2,.7,.2,1),height .42s cubic-bezier(.2,.7,.2,1),transform .42s cubic-bezier(.2,.7,.2,1);
+  transition:flex-basis .26s cubic-bezier(.22,.85,.28,1),width .26s cubic-bezier(.22,.85,.28,1),height .26s cubic-bezier(.22,.85,.28,1),transform .26s cubic-bezier(.22,.85,.28,1);
 }
 /* the tape both pseudo-elements carry on a topic card has no place on a book */
 .library-index .library-space-filter .space-shelf .space-card::before,
@@ -91,7 +93,7 @@
     linear-gradient(90deg,#f3ecd9 0 48.4%,rgba(80,58,28,.42) 49.4% 50.6%,rgba(255,255,255,.45) 52%,#f3ecd9 60% 100%);
   color:#33291c;
   box-shadow:inset 0 0 26px rgba(93,72,40,.26),0 20px 30px -22px rgba(18,12,5,.85);
-  opacity:0;transition:opacity .24s ease .18s;overflow:hidden;
+  opacity:0;transition:opacity .16s ease .1s;overflow:hidden;
 }
 /* the block of leaves, seen at the fore-edge */
 .library-space-filter .vol-spread::after{
@@ -101,7 +103,11 @@
 }
 .space-card.is-open .vol-spread{opacity:1}
 .library-space-filter .vol-leaf{padding:14px 12px;display:flex;flex-direction:column;gap:7px;min-width:0}
-.library-space-filter .vol-leaf.recto{padding-bottom:52px}
+.library-space-filter .vol-leaf.recto{position:relative;padding:13px 14px 54px 13px;overflow:hidden}
+/* the rule the button hangs under */
+.library-space-filter .vol-leaf.recto::after{
+  content:"";position:absolute;left:13px;right:14px;bottom:50px;height:1px;background:rgba(151,133,97,.42);
+}
 .library-space-filter .vol-mark{font:700 8px var(--mono);letter-spacing:.14em;color:#7d6f56}
 .library-space-filter .vol-plate{border-top:1px solid #33291c;border-bottom:1px solid #d8cfb4;padding:9px 1px 10px;display:grid;gap:5px}
 .library-space-filter .vol-plate span{font:700 7px var(--mono);text-transform:uppercase;letter-spacing:.13em;color:#7d6f56}
@@ -110,20 +116,31 @@
 .library-space-filter .vol-tally{margin-top:auto;padding-top:8px;border-top:1px solid #d8cfb4;font:700 8px var(--mono);text-transform:uppercase;letter-spacing:.1em;color:#7d6f56}
 .library-space-filter .vol-tally b{display:block;font:500 34px/1 var(--serif);color:#33291c;letter-spacing:-.04em}
 .library-space-filter .vol-leaf h4{margin:0;font:700 7px var(--mono);text-transform:uppercase;letter-spacing:.13em;color:#7d6f56;border-bottom:1px solid #d8cfb4;padding-bottom:5px}
-.library-space-filter .vol-leaf ul{list-style:none;margin:0;padding:0;display:grid}
-.library-space-filter .vol-leaf li{display:grid;gap:1px;padding:7px 0;border-bottom:1px solid rgba(151,133,97,.32)}
+.library-space-filter .vol-leaf ul{list-style:none;margin:0;padding:0;display:grid;align-content:start;overflow:hidden}
+.library-space-filter .vol-leaf li{display:grid;gap:2px;padding:8px 0;border-bottom:1px solid rgba(151,133,97,.28)}
 .library-space-filter .vol-leaf li:last-child{border-bottom:0}
-.library-space-filter .vol-leaf li em{font:400 7px var(--mono);font-style:normal;text-transform:uppercase;letter-spacing:.1em;color:#7d6f56}
-.library-space-filter .vol-leaf li b{font:500 12px/1.2 var(--serif);color:#33291c}
+/* type on the left, date ranged right, the way a contents line sets */
+.library-space-filter .vol-leaf li em{
+  display:flex;justify-content:space-between;gap:8px;
+  font:400 7px var(--mono);font-style:normal;text-transform:uppercase;letter-spacing:.1em;color:#7d6f56;
+}
+.library-space-filter .vol-leaf li em i{font-style:normal;font-variant-numeric:tabular-nums}
+/* a long title takes two lines and stops, so nothing runs under the button */
+.library-space-filter .vol-leaf li b{
+  font:500 12.5px/1.25 var(--serif);color:#33291c;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+.library-space-filter .vol-more{margin-top:8px;font:italic 10.5px var(--serif);color:#7d6f56}
+.library-space-filter .vol-filed{font:700 7px var(--mono);text-transform:uppercase;letter-spacing:.11em;color:#7d6f56}
 .library-space-filter .vol-none{font:italic 11px var(--serif);color:#7d6f56}
 
 /* the one control that leaves the shelf */
 .library-space-filter .vol-go{
-  position:absolute;left:calc(50% + 12px);right:19px;bottom:14px;z-index:4;
+  position:absolute;left:calc(50% + 13px);right:14px;bottom:13px;z-index:4;
   border:1px solid #33291c;background:#33291c;color:#f3ecd9;
   padding:8px 9px;font:700 8px var(--mono);text-transform:uppercase;letter-spacing:.1em;
   cursor:pointer;text-align:center;white-space:nowrap;
-  opacity:0;transition:opacity .2s ease .2s,background .15s,color .15s;
+  opacity:0;transition:opacity .16s ease .14s,background .15s,color .15s;
 }
 .space-card.is-open .vol-go{opacity:1}
 .space-card:not(.is-open) .vol-go{pointer-events:none}
@@ -136,7 +153,7 @@
 .library-space-filter .vol-cover{
   position:absolute;left:0;top:0;bottom:0;width:100%;
   transform-origin:left center;transform-style:preserve-3d;transform:rotateY(0deg);
-  transition:transform .52s cubic-bezier(.35,.9,.3,1) .06s;
+  transition:transform .36s cubic-bezier(.3,.9,.32,1) .03s;
 }
 .space-card.is-open .vol-cover{
   transform:rotateY(calc(var(--deg,155) * -1deg));
@@ -193,22 +210,11 @@
   text-align:center;font:700 8px var(--mono);letter-spacing:.06em;color:rgba(246,240,221,.66);
 }
 
-/* ---------- the frost ---------- */
-/* One open book is the subject; the rest of the row stays legible behind it. */
-.library-space-filter .shelf-scrim{
-  position:absolute;inset:0;z-index:2;pointer-events:none;
-  background:rgba(22,17,9,.42);
-  backdrop-filter:blur(4px) saturate(.62);-webkit-backdrop-filter:blur(4px) saturate(.62);
-  opacity:0;transition:opacity .34s ease;
-}
-.library-space-filter .space-shelf.has-open .shelf-scrim{opacity:1}
-
 @media(prefers-reduced-motion:reduce){
   .library-index .library-space-filter .space-shelf .space-card,
   .library-space-filter .vol-cover,
   .library-space-filter .vol-spread,
-  .library-space-filter .vol-go,
-  .library-space-filter .shelf-scrim{transition-duration:.001ms!important}
+  .library-space-filter .vol-go{transition-duration:.001ms!important}
 }
 
 /* ---------- cloth colours, by topic ---------- */
@@ -238,7 +244,7 @@
    spines and the type comes down with them. */
 @media(max-width:800px){
   .library-space-filter .space-shelf{padding-bottom:14px!important;background-size:100% 14px!important}
-  .library-space-filter .space-shelf-rail{padding:74px 0 0!important}
+  .library-space-filter .space-shelf-rail{padding:66px 0 0!important;height:208px!important}
   .library-index .library-space-filter .space-shelf .space-card{
     width:calc(var(--spine-w,52px) * .6)!important;
     flex-basis:calc(var(--spine-w,52px) * .6)!important;
@@ -248,7 +254,7 @@
   }
   .library-index .library-space-filter .space-shelf .space-card.is-open{
     width:var(--open-w)!important;flex-basis:var(--open-w)!important;
-    height:206px!important;transform:translateY(-9px)!important;
+    height:196px!important;transform:translateY(-6px)!important;
   }
   .library-space-filter .vol-go{left:calc(50% + 9px);right:15px;bottom:11px}
   .library-index .library-space-filter .space-shelf .space-card h2{bottom:15px!important;font-size:8px!important}
@@ -261,6 +267,11 @@
   }
   .library-space-filter .spine-titled .vol-count{bottom:8px;font-size:7px}
   .library-space-filter .vol-leaf{padding:11px 10px;gap:5px}
+  .library-space-filter .vol-leaf.recto{padding:11px 11px 46px 10px}
+  .library-space-filter .vol-leaf.recto::after{left:10px;right:11px;bottom:43px}
+  .library-space-filter .vol-leaf li:nth-child(3),
+  .library-space-filter .vol-more{display:none}
+  .library-space-filter .vol-go{left:calc(50% + 10px);right:11px;bottom:11px;padding:7px}
   .library-space-filter .vol-plate b{font-size:19px}
   .library-space-filter .vol-tally b{font-size:28px}
 }
