@@ -171,7 +171,7 @@ function clawMachine(){
   return `<section class="claw-game" data-claw-game aria-label="Claw machine game">
     <header><span>Seaside amusements</span><strong>THE LUCKY CLAW</strong><b>10p</b></header>
     <div class="claw-window"><div class="claw-track" aria-hidden="true"></div><div class="claw" aria-hidden="true"><i></i><span></span><b></b></div>
-      <div class="toy toy-1" data-toy="Bunny" aria-hidden="true"><i>◆</i></div><div class="toy toy-2" data-toy="Bear" aria-hidden="true"><i>●</i></div><div class="toy toy-3" data-toy="Star" aria-hidden="true"><i>★</i></div><div class="toy toy-4" data-toy="Duck" aria-hidden="true"><i>♥</i></div><div class="prize-chute" aria-hidden="true"><span>PRIZE</span></div>
+      <div class="toy toy-1" data-toy="Kittie Corn" aria-hidden="true"><i>◆</i></div><div class="toy toy-2" data-toy="Needoh" aria-hidden="true"><i>●</i></div><div class="toy toy-3" data-toy="Bao bun" aria-hidden="true"><i>★</i></div><div class="toy toy-4" data-toy="Squishy" aria-hidden="true"><i>♥</i></div><div class="prize-chute" aria-hidden="true"><span>PRIZE</span></div>
     </div><div class="claw-console"><p class="claw-message" aria-live="polite">Hold the button to move. Release to drop.</p><button class="claw-control" type="button"><span></span>HOLD TO MOVE</button><small><b data-claw-wins>0</b> prizes rescued</small></div>
   </section>`;
 }
