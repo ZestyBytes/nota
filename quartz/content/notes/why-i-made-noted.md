@@ -9,66 +9,123 @@ writing: true
 publish: true
 ---
 
-I made Noted because too much of life disappears into places I rarely return
-to: photographs in a camera roll, thoughts in a notes app, books on a shelf,
-jobs on a to-do list, and small memories that never get written down at all.
+I did not set out to build another notes app. I wanted to stop the small,
+important parts of life from disappearing into places I rarely return to.
 
-I wanted one place that could hold all of it without feeling like another
-productivity system. Something personal, playful and calm; a place I would
-actually enjoy revisiting, and could share with family and friends.
+Photographs were sinking through the camera roll. Thoughts were spread across
+notes. Books went back on the shelf with their best lines still inside them.
+Jobs lived in a to-do list, memories in messages, and plenty of ordinary days
+were never written down at all.
 
-## What belongs here
+![The scattered pieces of an ordinary life gathering into one personal archive.](assets/posts/noted-why-collage.png)
 
-Noted is part journal, part library and part personal archive. A school morning
-can sit beside a car story, a recipe, a quotation, a technical log or the next
-step in learning piano. They are different kinds of record, but they all
-belong to the same life.
+## The problem I was trying to solve
 
-The app offers a few ways back into them:
+Nothing was truly lost, but everything was fragmented. Each app was good at
+holding one kind of thing and poor at helping me see the whole of it again.
+The cost was not storage. It was return.
 
-- **Home** explains the archive and shows what was added recently.
-- **Calendar** returns to the things that happened on a particular day.
-- **Library** groups records by what they are: highlights, notes, journeys,
-  books and photographs.
-- **Spaces** groups them by what they are about. Each room has its own design
-  because food, music, technology and family should not feel interchangeable.
-- **To-do** keeps practical things visible without making them the centre of
-  the archive.
+| The thing | Where it tended to vanish |
+|---|---|
+| A small family memory | Messages or the camera roll |
+| A thought worth keeping | A forgotten note |
+| A line from a book | Somewhere between the page and my memory |
+| A recipe that worked | A browser tab or a scrap of paper |
+| A job that mattered | A list I stopped looking at |
 
-## How it works
+I wanted one place where a school morning could sit beside a car story, a
+recipe, a quotation, a technical log or the next step in learning piano. Not
+because they are the same kind of record, but because they belong to the same
+life.
 
-Everything begins as an ordinary Markdown file in **Obsidian**. That means the
-writing is mine, readable without a special service, and easy to keep for the
-long term. Photographs and videos can be added from the same vault.
+> The aim was simple: make the things worth keeping easy to capture, pleasant
+> to revisit, and possible to share without turning my life into a content
+> management project.
 
-On my phone, **Working Copy** lets me commit those files to GitHub. A publish
-flag in a note decides whether it is included on the site, so drafts and
-private material can remain in the vault.
+## What Noted became
 
-When a change reaches GitHub, an automated build reads the Obsidian files from
-the **Quartz 5** content folder. A small JavaScript data builder turns their
-frontmatter, Markdown, links and media into the archive Noted expects. The
-front end is a lightweight custom progressive web app, so it can be installed,
-work from a cache and update itself when a new version is published.
+Noted is part journal, part library and part personal archive. It is not a
+productivity system asking to be maintained. It is a calm, playful way back
+into things I have already lived, noticed, read, made or meant to do.
 
-The finished static files are deployed to **GitHub Pages**. There is no public
-editor and no database required for the published archive: the Markdown files
-remain the source of truth.
+There are several doors into the same collection:
 
-In short:
+- **Home** is the front desk: a quick sense of what is happening and what was
+  added recently.
+- **Calendar** puts records back on the days they belonged to.
+- **Library** groups them by form: writing, highlights, journeys, books and
+  photographs.
+- **Spaces** groups them by subject. Food, music, technology and family each
+  get a room with its own character.
+- **To-do** keeps practical things visible without letting them take over the
+  archive.
 
-`Obsidian → Working Copy → GitHub → build → GitHub Pages`
+The interface is intentionally just for reading and wandering. There is no
+public editor, account or sign-in screen. A link opens straight onto the thing
+I wanted to share.
 
-## Why build it this way
+## Why these particular tools
 
-I like that the technology stays behind the writing. The archive does not own
-the memories; it is simply a way of arranging files I already control.
+The technical choices came after the problem, but building it was also a very
+good technical exercise. I wanted to see how far a personal site could go
+without a paid platform, a database or a complicated publishing system.
 
-It can also grow slowly. A new topic can become its own room. A run of related
-entries can become a journey, and a journey heading somewhere measurable can
-carry a progress bar without any of that being designed in advance. The look
-can change without rewriting the content underneath it.
+**Obsidian is where the notes already are.** Everything begins as an ordinary
+Markdown file in my vault. I do not have to write twice or move an idea into a
+special publishing tool. The files remain readable, portable and mine.
 
-Noted is still becoming itself, which is part of the appeal. It is not meant to
-be a perfect record of everything. It is a place for the things I would be
-sorry to forget.
+**GitHub is the bridge and the history.** It keeps the files, records each
+change and starts the build whenever I publish. It also made the project a
+useful exercise in turning plain content into a small, maintainable web app.
+
+**GitHub Pages is the free front door.** The result is a set of static files,
+so it can be hosted for free. There is no server to run, database to pay for or
+account system to look after.
+
+**The custom interface is the fun part.** Markdown does not decide what the
+archive has to feel like. I can give a recipe a kitchen layout, books a reading
+room and family photographs an album, while all of them still come from the
+same simple files.
+
+## How the pieces fit together
+
+On the phone, an Apple Shortcut hands the changed vault files to **Working
+Copy**, which commits and pushes them to GitHub. That removes the laptop from
+the publishing ritual: I can finish a note, mark it for publication and send
+it from wherever I wrote it.
+
+A small `publish: true` flag is the gate. Drafts and private material can stay
+in the same vault without appearing on the public site.
+
+Once the change reaches GitHub, an automated build reads the Obsidian files
+from the **Quartz 5** content folder. A JavaScript builder translates their
+frontmatter, Markdown, links and media into the data Noted expects. The custom
+progressive web app then turns that data into the archive you are reading.
+
+The result is deliberately uneventful infrastructure: write, choose to share,
+tap the shortcut, and roughly half a minute later the new version is live.
+
+## The useful constraints
+
+Keeping the published site static made several decisions easier:
+
+- **No authentication:** there is nothing to log into because editing happens
+  in Obsidian, not on the website.
+- **No public database:** the Markdown files are the source of truth.
+- **No hosting bill:** GitHub Pages serves the finished files.
+- **No lock-in:** the archive survives even if the interface changes.
+- **Private by default:** only a deliberate publish flag crosses the boundary.
+
+Those constraints are not missing features. They are what let Noted stay small
+enough to understand and personal enough to trust.
+
+## Still becoming itself
+
+The satisfying part is that the content and the presentation can evolve
+separately. A new subject can become its own room. A run of related entries can
+become a journey. A journey heading somewhere measurable can gain a progress
+bar. None of that requires rewriting the memories underneath it.
+
+Noted is not meant to be a perfect record of everything, and it is not a
+startup disguised as a notebook. It is a home for the things I would be sorry
+to forget, plus an excuse to keep learning how to make thoughtful software.

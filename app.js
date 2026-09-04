@@ -396,13 +396,19 @@ function relatedEntries(e){
 }
 function notedFlow(){
   const steps=[
-    ["Write","Obsidian","https://obsidian.md"],
-    ["Commit","Working Copy","https://workingcopyapp.com"],
-    ["Keep","GitHub","https://github.com"],
-    ["Shape","Quartz + builder","https://quartz.jzhao.xyz"],
-    ["Share","GitHub Pages","https://pages.github.com"]
+    ["Write","Obsidian","Markdown in the vault","https://obsidian.md"],
+    ["Publish","Apple Shortcut","One tap from the phone","https://support.apple.com/guide/shortcuts/welcome/ios"],
+    ["Commit","Working Copy","Files and history to GitHub","https://workingcopyapp.com"],
+    ["Build","Quartz + Noted","Notes become the archive","https://quartz.jzhao.xyz"],
+    ["Share","GitHub Pages","A free, static public site","https://pages.github.com"]
   ];
-  return `<aside class="noted-flow" aria-label="How Noted is published"><p class="eyebrow">From a thought to the archive</p><div>${steps.map(([verb,name,url],i)=>`<a href="${url}" target="_blank" rel="noopener" style="--step:${i}"><small>${String(i+1).padStart(2,"0")} · ${verb}</small><b>${name}</b></a>`).join("")}</div><p>Markdown stays the source of truth; the site is simply the view.</p></aside>`;
+  return `<aside class="noted-flow" aria-label="How Noted is published"><p class="eyebrow">From a thought to the archive</p><div>${steps.map(([verb,name,note,url],i)=>`<a href="${url}" target="_blank" rel="noopener" style="--step:${i}"><small>${String(i+1).padStart(2,"0")} · ${verb}</small><b>${name}</b><em>${note}</em></a>`).join("")}</div><p><strong>One deliberate gate:</strong> only a note marked <code>publish: true</code> crosses from the private vault to the public archive.</p></aside>`;
+}
+function notedEssay(e,shown){
+  const marker="## How the pieces fit together",at=String(e.body||"").indexOf(marker);
+  if(at<0)return `<div class="detail-body">${markdown(e.body,shown,e.id)}</div>${notedFlow()}`;
+  const before=e.body.slice(0,at).trim(),after=e.body.slice(at).trim();
+  return `<div class="detail-body noted-essay">${markdown(before,shown,e.id)}</div>${notedFlow()}<div class="detail-body noted-essay">${markdown(after,shown,e.id)}</div>`;
 }
 // Back used to read state.returnTo blind. Any plain link that changed the hash
 // without going through a handler left it stale, so it could end up naming the
@@ -430,8 +436,7 @@ function entryPage(id){
       <div class="entry-context">${chips(e.topics?.slice(1))}${e.journey?(()=>{const rows=journeyEntries(e.journey),n=rows.findIndex(r=>r.id===e.id)+1;return `<p class="journey-of"><a href="#journey/${encodeURIComponent(e.journey)}">${esc(e.journey)}</a><span>${n} of ${rows.length}</span></p>`})():""}<a class="entry-space-link" href="#topics/${encodeURIComponent(spaceId)}" data-topic="${esc(spaceId)}">${esc(space.name)} space &rarr;</a></div>
     </header>
     ${e.images?.length>1?gallery(e.images):e.image?`<img class="detail-image" src="${e.image}" alt="${esc(e.imageAlt||"")}"${dims(e.image)}>`:""}
-    ${e.id==="notes/why-i-made-noted"?notedFlow():""}
-    ${(()=>{const shown=e.images?.length>1?e.images.map(i=>i.src):[e.image];return e.recipe?`<div class="detail-body recipe-body">${recipeBody(e)}</div>`:e.plant?`<div class="detail-body plant-body">${plantBody(e,shown)}</div>`:e.view==="cards"&&e.body?cardDeck(e.body,shown,e.id):`<div class="detail-body">${e.body?(e.view==="playlist"?playlistBody(e.body):markdown(e.body,shown,e.id)):`<p>${esc(e.excerpt||"Saved in your Noted archive.")}</p>`}</div>`})()}
+    ${(()=>{const shown=e.images?.length>1?e.images.map(i=>i.src):[e.image];return e.id==="notes/why-i-made-noted"?notedEssay(e,shown):e.recipe?`<div class="detail-body recipe-body">${recipeBody(e)}</div>`:e.plant?`<div class="detail-body plant-body">${plantBody(e,shown)}</div>`:e.view==="cards"&&e.body?cardDeck(e.body,shown,e.id):`<div class="detail-body">${e.body?(e.view==="playlist"?playlistBody(e.body):markdown(e.body,shown,e.id)):`<p>${esc(e.excerpt||"Saved in your Noted archive.")}</p>`}</div>`})()}
     ${(()=>{const back=backlinks(e);return back.length?`<section class="backlinks"><h2 class="section-title">Mentioned in</h2><ul>${back.map(b=>`<li><a href="#entry/${encodeURIComponent(b.id)}">${esc(b.title)}</a><small>${esc(b.type)}${b.occurredAt?` &middot; ${esc(fmtDate(b.occurredAt))}`:""}</small></li>`).join("")}</ul></section>`:""})()}
     ${(()=>{const near=relatedEntries(e);return near.length?`<section class="related-entries"><h2 class="section-title">Continue nearby</h2><div>${near.map(x=>`<a href="#entry/${encodeURIComponent(x.id)}" data-entry="${esc(x.id)}" data-return="#entry/${encodeURIComponent(e.id)}"><small>${esc(topic(x.topics?.[0]).name)} · ${fmtDate(x.occurredAt||x.createdAt)}</small><b>${esc(x.title)}</b></a>`).join("")}</div></section>`:""})()}
     ${previous||next?`<nav class="entry-pager" aria-label="${e.journey?"Journey entries":"Archive entries"}">${previous?`<a href="#entry/${encodeURIComponent(previous.id)}" data-entry="${esc(previous.id)}" data-return="#entry/${encodeURIComponent(e.id)}"><small>Previous</small><b>← ${esc(previous.title)}</b></a>`:`<span></span>`}${next?`<a href="#entry/${encodeURIComponent(next.id)}" data-entry="${esc(next.id)}" data-return="#entry/${encodeURIComponent(e.id)}"><small>Next</small><b>${esc(next.title)} →</b></a>`:`<span></span>`}</nav>`:""}
