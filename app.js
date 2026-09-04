@@ -840,11 +840,10 @@ function setupSpaceShelfMotion(route){
   rails.forEach(rail=>["pointerenter","focusin","touchstart"].forEach(ev=>rail.addEventListener(ev,()=>paused.add(rail),{passive:true})));
   spaceShelfTimer=setInterval(()=>rails.forEach((rail,i)=>{if(paused.has(rail))return;const max=rail.scrollWidth-rail.clientWidth;if(max<4)return;const dir=i%2===0?1:-1;const next=rail.scrollLeft+dir*.18;if(next<=0||next>=max){rail.scrollLeft=dir>0?0:max}else rail.scrollLeft=next}),80);
 }
-// The library's spines pass by as one long shelf. The row is repeated until
-// it is comfortably wider than the rail, so the run never shows an end, and
-// the drift is slow enough to read a spine as it goes. Hovering or focusing
-// holds it still, and a hand drag still works, since this only moves the
-// rail's own scroll.
+// The library's spines pass by as one long shelf. The row is laid end to end
+// until there is a spare run either side of the visible one, so the shelf
+// drifts on its own from the moment the page opens and a drag runs on for
+// ever in either direction, never reaching an end to bump against.
 function driftLibraryShelf(){
   const rail=document.querySelector(".library-space-filter .space-shelf-rail");
   if(!rail||window.matchMedia?.("(prefers-reduced-motion: reduce)").matches)return;
@@ -852,33 +851,49 @@ function driftLibraryShelf(){
   if(!loop){
     const spines=[...rail.children],before=rail.scrollWidth;
     if(!spines.length||before<4)return;
-    // One repeat is not always enough: a short row has to be laid end to end
-    // several times before there is more shelf than window.
     let copies=0;
-    while(rail.scrollWidth<rail.clientWidth+before&&copies<12){
+    do{
       for(const spine of spines){
         const copy=spine.cloneNode(true);
         copy.setAttribute("aria-hidden","true");copy.tabIndex=-1;
         rail.append(copy);
       }
       copies++;
-    }
-    if(!copies)return;
-    // Measured rather than assumed, so the gap between spines is counted too.
-    loop=(rail.scrollWidth-before)/copies;
+      // Measured rather than assumed, so the gap between spines is counted.
+      loop=(rail.scrollWidth-before)/copies;
+    }while(copies<12&&rail.scrollWidth<rail.clientWidth+2*loop);
     rail.dataset.loop=String(loop);rail.classList.add("shelf-drift");
   }
-  rail.scrollLeft=loop;
-  let held=false,last=0;
-  const hold=on=>()=>{held=on};
+  // Every position is folded back into the middle run, so wherever the shelf
+  // is pushed there is always a whole run of spines waiting on either side.
+  const fold=x=>{let v=x;while(v<loop)v+=loop;while(v>=2*loop)v-=loop;return v};
+  // The position is kept here rather than read back from the rail: a fraction
+  // of a pixel written to scrollLeft comes back rounded, so a drift this slow
+  // would be rounded away to a standstill every frame.
+  let pos=loop,held=false,last=0,written=-1;
+  // A scroll event arrives a frame after the write that caused it, so the
+  // shelf's own writes are recognised by their value rather than by a flag
+  // that is long since back down by the time the event lands. The reading
+  // comes back rounded, hence the tolerance.
+  const put=v=>{written=v;rail.scrollLeft=v};
+  put(pos);
+  rail.addEventListener("scroll",()=>{
+    if(Math.abs(rail.scrollLeft-written)<=1)return;
+    // A hand drag: fold it back before it can run out of shelf.
+    const folded=fold(rail.scrollLeft);pos=folded;
+    if(Math.abs(folded-rail.scrollLeft)>1)put(folded);
+  },{passive:true});
+  const hold=on=>()=>{held=on;if(!on)pos=fold(rail.scrollLeft)};
   ["pointerenter","focusin","touchstart"].forEach(ev=>rail.addEventListener(ev,hold(true),{passive:true}));
   ["pointerleave","focusout","touchend"].forEach(ev=>rail.addEventListener(ev,hold(false),{passive:true}));
   const step=now=>{
     if(!rail.isConnected)return;
     const dt=last?Math.min(now-last,100):0;last=now;
-    // Rightwards along the shelf, at reading pace rather than carousel pace.
-    if(!held)rail.scrollLeft-=dt*.014;
-    if(rail.scrollLeft<=0)rail.scrollLeft+=loop;
+    if(!held){
+      // Rightwards along the shelf, at reading pace rather than carousel pace.
+      pos=fold(pos-dt*.014);
+      put(pos);
+    }
     shelfDriftFrame=requestAnimationFrame(step);
   };
   shelfDriftFrame=requestAnimationFrame(step);
