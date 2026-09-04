@@ -365,6 +365,42 @@ function entryPage(id){
 // The postmark said the same thing as the header date, so the slot went to
 // what is actually in progress. Falls back to the archive count when there
 // is nothing on the go.
+// The archive keeps photographs and Home never showed one. Newest first, and
+// only when there are enough to read as a band rather than as a stray tile.
+function homePhotos(){
+  const shots=state.data.entries
+    .filter(e=>e.image&&e.type!=="Task")
+    .sort((a,b)=>(b.occurredAt||b.createdAt||"").localeCompare(a.occurredAt||a.createdAt||""))
+    .slice(0,8);
+  if(shots.length<3)return "";
+  return `<section class="home-photos">
+    <div class="home-latest-head"><h2 class="section-title">Photographs</h2><a href="#library">All photographs &rarr;</a></div>
+    <div class="photo-band">${shots.map(e=>{
+      const t=topic(e.topics?.[0]);
+      return `<button class="photo-shot" data-entry="${esc(e.id)}" style="--topic:${t.color}" aria-label="${esc(e.title)}">
+        <img src="${esc(e.image)}" alt="${esc(e.imageAlt||"")}" loading="lazy">
+        <span class="shot-copy"><i>${esc(t.name)}</i><b>${esc(e.title)}</b><em>${fmtDate(e.occurredAt||e.createdAt)}</em></span>
+      </button>`;
+    }).join("")}</div>
+  </section>`;
+}
+// What you are in the middle of, rather than what you have finished.
+function homeReading(){
+  const book=(state.data.books||[]).find(b=>b.status==="reading");
+  if(!book)return "";
+  const pct=Math.max(0,Math.min(100,Number(book.progress)||0));
+  return `<section class="home-reading">
+    <div class="home-latest-head"><h2 class="section-title">Currently reading</h2><a href="#library">The shelves &rarr;</a></div>
+    <button class="reading-now" data-book="${esc(book.id)}" aria-label="Open ${esc(book.title)}">
+      ${book.cover?`<img src="${esc(book.cover)}" alt="" loading="lazy">`:coverPlate(book)}
+      <span class="reading-copy">
+        <b>${esc(book.title)}</b><small>${esc(book.author||"")}</small>
+        <span class="reading-meter" role="img" aria-label="${pct}% through"><i style="width:${pct}%"></i></span>
+        <em>${pct}% through</em>
+      </span>
+    </button>
+  </section>`;
+}
 function todayWidget(){
   // Rotates daily rather than showing the same book forever: whatever is
   // current, a quote worth rereading, this day in a previous year, the next
@@ -426,10 +462,11 @@ function today(){
   const wander=state.data.entries.filter(e=>e.type!=="Task");
   const tasks=state.data.tasks.filter(t=>!t.completedAt).slice(0,3);
   return `<section class="home-page">
+    ${homePhotos()}
+    <div class="home-progress">${homeReading()}${journeyStrip()}</div>
     <div class="home-latest-head"><h2 class="section-title">Latest</h2>${open?`<a href="#tasks">${open} thing${open===1?"":"s"} to do &rarr;</a>`:""}</div>
     <div class="entry-list home-latest-list">${recent.length?recent.map(e=>entryCard(e)).join(""):`<p class="empty">The archive is ready for its first entry.</p>`}</div>
     ${onThisDay()}
-    ${journeyStrip()}
     ${tasks.length?`<section class="home-tasks"><div class="home-latest-head"><h2 class="section-title">To-do</h2><a href="#tasks">Open list →</a></div><div class="tasks">${tasks.map(taskRow).join("")}</div></section>`:""}
   </section>`;
 }
@@ -726,7 +763,7 @@ function journeyStrip(bare=false){
   if(!rows.length)return "";
   return `<section class="journey-strip">${bare?"":`<h2 class="section-title">Journeys</h2>`}<div class="journey-cards">${rows.map(({name,rows:items,last})=>{
     const t=topic(items[0].topics?.[0]),days=items.map(i=>i.day).filter(Boolean);
-    return `<article class="journey-card" data-journey="${esc(name)}" style="--topic:${t.color};--soft:${t.soft}"><p class="eyebrow">${esc(t.name)}</p><h3>${esc(name)}</h3><p class="journey-last">${esc(last.title)}</p><p class="journey-meta">${days.length?`Day ${Math.max(...days)} &middot; `:""}${items.length} ${items.length===1?"entry":"entries"}${last.occurredAt?` &middot; ${fmtDate(last.occurredAt)}`:""}</p>${(()=>{const p=journeyProgress(items);return p?journeyBar(p):journeyDots(items.length)})()}</article>`;
+    return `<article class="journey-card" data-journey="${esc(name)}" style="--topic:${t.color};--soft:${t.soft}"><p class="eyebrow">${esc(t.name)}</p><h3>${esc(name)}</h3><p class="journey-last">${esc(last.title)}</p>${(()=>{const p=journeyProgress(items);return p?journeyBar(p):journeyDots(items.length)})()}<p class="journey-meta">${days.length?`Day ${Math.max(...days)} &middot; `:""}${items.length} ${items.length===1?"entry":"entries"}${last.occurredAt?` &middot; ${fmtDate(last.occurredAt)}`:""}</p>${(()=>{const p=journeyProgress(items);return p?journeyBar(p):journeyDots(items.length)})()}</article>`;
   }).join("")}</div></section>`;
 }
 function journeyPage(id){

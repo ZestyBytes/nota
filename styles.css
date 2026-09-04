@@ -1442,3 +1442,50 @@ aside .section-title{display:flex;align-items:baseline}
      neighbour. The whole excerpt is a tap away on the entry itself. */
   .home-latest-list .entry-copy p{display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden}
 }
+
+/* ---------- Home: things to look at, and things in flight ---------- */
+/* Home was four stacked lists in one shape. A band of photographs opens it
+   instead, and what is unfinished sits above what is filed. */
+.home-photos{margin:0 0 34px}
+.photo-band{display:flex;gap:10px;overflow-x:auto;padding:4px 2px 12px;scrollbar-width:none;scroll-snap-type:x proximity}
+.photo-band::-webkit-scrollbar{display:none}
+.photo-shot{position:relative;flex:0 0 min(46vw,192px);height:218px;padding:0;overflow:hidden;cursor:pointer;
+  border:1px solid var(--line);background:var(--paper-alt);text-align:left;scroll-snap-align:start;
+  transition:transform .18s ease,box-shadow .18s ease}
+.photo-shot img{display:block;width:100%;height:100%;object-fit:cover;filter:saturate(.86) sepia(.05)}
+.photo-shot .shot-copy{position:absolute;inset:auto 0 0 0;display:grid;gap:4px;padding:36px 12px 12px;
+  color:#f6f2e6;background:linear-gradient(180deg,transparent,rgba(18,16,10,.84))}
+.photo-shot i{font:700 7px var(--mono);font-style:normal;letter-spacing:.14em;text-transform:uppercase;opacity:.9}
+.photo-shot b{font:600 15px/1.16 var(--serif)}
+.photo-shot em{font:700 7px var(--mono);font-style:normal;letter-spacing:.1em;opacity:.78}
+@media(prefers-reduced-motion:no-preference){
+  .photo-shot:hover{transform:translateY(-3px);box-shadow:0 12px 20px -14px rgba(34,38,30,.6)}
+}
+.photo-shot:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+
+/* the unfinished things, side by side where there is room for them */
+.home-progress{display:grid;gap:26px;margin:0 0 34px}
+.home-progress:empty{display:none;margin:0}
+@media(min-width:900px){
+  .home-progress:has(.home-reading):has(.journey-strip){grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);align-items:start}
+}
+.home-reading .home-latest-head{margin-bottom:12px}
+.reading-now{display:grid;grid-template-columns:96px 1fr;gap:18px;align-items:center;width:100%;
+  padding:18px;border:1px solid var(--line);background:var(--surface);cursor:pointer;text-align:left;
+  transition:transform .18s ease,border-color .18s ease}
+.reading-now>img,.reading-now>.book-plate{width:96px;height:144px;object-fit:cover;box-shadow:4px 5px 10px rgba(25,20,10,.24)}
+.reading-copy{min-width:0}
+.reading-now b{display:block;font:600 22px/1.15 var(--serif);color:var(--ink)}
+.reading-now small{display:block;margin-top:4px;font:italic 13px var(--serif);color:var(--muted)}
+.reading-meter{display:block;position:relative;height:7px;margin-top:15px;background:var(--paper-alt);border:1px solid var(--line)}
+.reading-meter i{position:absolute;inset:0 auto 0 0;background:#8a5a12}
+.reading-now em{display:block;margin-top:7px;font:700 9px var(--mono);font-style:normal;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+@media(prefers-reduced-motion:no-preference){.reading-now:hover{transform:translateY(-2px);border-color:var(--ink)}}
+@media(max-width:520px){
+  .reading-now{grid-template-columns:78px 1fr;gap:14px;padding:14px}
+  .reading-now>img,.reading-now>.book-plate{width:78px;height:117px}
+  .reading-now b{font-size:19px}
+}
+/* a journey card now carries its bar, so the numbers need room under the line */
+.journey-card .journey-progress{margin-top:12px}
+.journey-card .journey-dots{margin-top:12px}
