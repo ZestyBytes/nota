@@ -532,6 +532,7 @@ function today(){
     <div class="home-latest-head"><h2 class="section-title">Latest</h2>${open?`<a href="#tasks">${open} thing${open===1?"":"s"} to do &rarr;</a>`:""}</div>
     <div class="entry-list home-latest-list">${recent.length?recent.map(e=>entryCard(e)).join(""):`<p class="empty">The archive is ready for its first entry.</p>`}</div>
     ${homePhotos()}
+    <div class="home-progress">${homeReading()}${journeyStrip()}</div>
     ${onThisDay()}
     ${tasks.length?`<section class="home-tasks"><div class="home-latest-head"><h2 class="section-title">To-do</h2><a href="#tasks">Open list &rarr;</a></div><div class="tasks home-task-grid">${tasks.map(taskRow).join("")}</div>${more.length?`<details class="more-tasks"><summary>${more.length} more waiting</summary><div class="tasks home-task-grid">${more.map(taskRow).join("")}</div></details>`:""}</section>`:""}
   </section>`;
