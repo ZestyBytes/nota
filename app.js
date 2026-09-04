@@ -398,7 +398,6 @@ function today(){
     ${onThisDay()}
     ${journeyStrip()}
     ${tasks.length?`<section class="home-tasks"><div class="home-latest-head"><h2 class="section-title">To-do</h2><a href="#tasks">Open list →</a></div><div class="tasks">${tasks.map(taskRow).join("")}</div></section>`:""}
-    <form class="home-search" action="#search"><label for="home-query">Find something older</label><div><input id="home-query" type="search" placeholder="Search the whole archive…"><button type="submit">Search</button></div></form>
   </section>`;
 }
 function taskRow(t){const tp=topic(t.topics[0]);return `<div class="task ${t.completedAt?"done":""} ${t.note?"has-note":""}" ${t.note?`data-entry="${esc(t.id)}"`:""}><span class="task-mark" aria-hidden="true">${t.completedAt?icon("check"):""}</span><span class="task-copy"><span class="task-title">${esc(t.title)}</span>${t.note?`<small class="task-note">${esc(t.note)}</small>`:""}${t.completedAt?`<small class="task-due">Done ${esc(fmtDate(t.completedAt))}</small>`:t.dueAt?`<small class="task-due${t.dueAt<todayKey?" late":""}">${t.dueAt<todayKey?"Overdue, was due "+esc(fmtDate(t.dueAt)):t.dueAt===todayKey?"Due today":"Due "+esc(fmtDate(t.dueAt))}</small>`:""}</span><span class="chip" style="--topic:${tp.color};--soft:${tp.soft}">${esc(tp.name)}</span></div>`}
@@ -528,7 +527,7 @@ function library(){
     body=`<div class="entry-list">${notes.map(e=>entryCard(e)).join("")||`<p class="empty">No notes kept yet.</p>`}</div>`;
   }
   const tabs={writing:"Highlights",notes:"Notes",journeys:"Journeys",reading:"Books",gallery:"Photos"};
-  return `<section class="library-index"><div class="library-space-filter">${topics()}</div>${pageHead("Browse by format","Library","Highlights are a small selection chosen to share. Notes gathers notes, journals and quotes; journeys, books and photographs keep their useful shapes.")}<div class="library-tabs">${Object.entries(tabs).map(([x,label])=>`<button class="filter ${state.library===x?"active":""}" data-library="${x}">${label}</button>`).join("")}</div>${body}</section>`;
+  return `<section class="library-index">${pageHead("Browse by format","Library","Highlights are a small selection chosen to share. Notes gathers notes, journals and quotes; journeys, books and photographs keep their useful shapes.")}<div class="library-space-filter">${topics()}</div><div class="library-tabs">${Object.entries(tabs).map(([x,label])=>`<button class="filter ${state.library===x?"active":""}" data-library="${x}">${label}</button>`).join("")}</div>${body}</section>`;
 }
 // A topic may hold sub-topics: Self care covers ADHD, and later therapy,
 // fitness, the dentist. A parent counts and shows its children's items too.
