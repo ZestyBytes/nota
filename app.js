@@ -504,12 +504,14 @@ function homeEvents(){
     .sort((a,b)=>(a.eventAt||a.occurredAt).localeCompare(b.eventAt||b.occurredAt))[0];
   if(!event)return "";
   const date=event.eventAt||event.occurredAt,days=daysFromToday(date);
+  const soon=days===0?"Today":days===1?"Tomorrow":days;
   return `<section class="home-dashboard">
-    <article class="dashboard-event" data-entry="${esc(event.id)}">
+    <article class="dashboard-event${event.image?" has-image":""}" data-entry="${esc(event.id)}">
+      <div class="dashboard-count"><b>${soon}</b>${days>1?`<span>days to go</span>`:""}</div>
       <div class="dashboard-event-copy">
-        <p>Next event · ${esc(fmtDate(date))}${event.startTime?` · ${esc(event.startTime)}`:""}</p>
-        <b>${days===0?"Today":days===1?"Tomorrow":days}${days>1?`<small>days to go</small>`:""}</b>
+        <p>Next event &middot; ${esc(fmtDate(date))}${event.startTime?` &middot; ${esc(event.startTime)}`:""}</p>
         <h2>${esc(event.title)}</h2>
+        ${event.excerpt?`<span>${esc(event.excerpt)}</span>`:""}
       </div>
       ${event.image?`<img src="${esc(event.image)}" alt="${esc(event.imageAlt||"")}" loading="lazy">`:""}
     </article>
