@@ -4,13 +4,13 @@ type: note
 view: plant
 botanical: "Chlorophytum comosum 'Variegatum'"
 light: "Bright, indirect"
-water: "Every 7 days"
-waterEvery: 7
+water: "Every 9 days"
+waterEvery: 9
 lastWatered: "2026-09-04"
 feed: "Monthly in spring and summer"
 humidity: "Not fussy"
 soil: "Ordinary peat-free compost"
-position: "Kitchen worktop"
+position: "Office, by the glass door"
 pets: "Safe"
 tags: [houseplants]
 occurredAt: "2026-09-04"
@@ -30,3 +30,4 @@ The forgiving one. It will put up with a missed watering, a dark corner and a dr
 - Cut the pups off once they have stubby roots and pot them up, or leave them on for the fountain look.
 - Repot when the roots start lifting the plant out of its pot, roughly every couple of years.
 - Safe around cats and dogs, though a cat will happily chew it.
+- In a dim corner the cream stripe fades back towards plain green, and it stops throwing pups. Near the door keeps both.

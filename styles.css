@@ -1538,11 +1538,15 @@ aside .section-title{display:flex;align-items:baseline}
 .plant-notes p{margin:0;font:13px/1.5 var(--serif);color:var(--ink-soft)}
 
 /* The plant entry itself: the facts, then when it next wants water. */
-.plant-facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:0;margin:0 0 22px;border:1.5px solid var(--ink)}
-.plant-facts div{padding:12px 10px;border-left:1px solid var(--line);text-align:center}
+.plant-facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(126px,1fr));gap:0;margin:0 0 22px;border:1.5px solid var(--ink)}
+.plant-facts div{padding:14px 10px 13px;border-left:1px solid var(--line);text-align:center;display:grid;justify-items:center;align-content:start;gap:2px}
 .plant-facts div:first-child{border-left:0}
-.plant-facts dt{font:9px var(--mono);text-transform:uppercase;letter-spacing:.14em;color:var(--muted)}
-.plant-facts dd{margin:6px 0 0;font:600 16px/1.2 var(--serif)}
+.plant-fact-mark .line-icon{width:22px;height:22px;color:#2f7a5a}
+.plant-facts dt{font:9px var(--mono);text-transform:uppercase;letter-spacing:.14em;color:var(--muted);margin-top:4px}
+.plant-facts dd{margin:3px 0 0;font:600 16px/1.2 var(--serif)}
+.plant-level{display:flex;gap:4px;margin-top:8px}
+.plant-level i{width:14px;height:4px;background:var(--line);border:1px solid var(--line)}
+.plant-level i.on{background:#2f7a5a;border-color:#2f7a5a}
 .plant-due{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:4px 12px;margin:0 0 24px;padding:13px 15px;border:1px solid var(--line);background:var(--paper-alt)}
 .plant-due .line-icon{grid-row:span 2;width:22px;height:22px;color:#2f7a5a}
 .plant-due b{font:700 12px var(--mono);letter-spacing:.06em;text-transform:uppercase}

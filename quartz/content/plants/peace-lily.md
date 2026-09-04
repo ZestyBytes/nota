@@ -4,13 +4,13 @@ type: note
 view: plant
 botanical: "Spathiphyllum wallisii"
 light: "Shade to medium, indirect"
-water: "Every 6 days"
-waterEvery: 6
+water: "Every 7 days"
+waterEvery: 7
 lastWatered: "2026-09-04"
 feed: "Monthly in spring and summer"
 humidity: "Mist it, or stand it on pebbles"
 soil: "Moisture retentive, peat-free"
-position: "Kitchen worktop"
+position: "Office, back of the room"
 pets: "Toxic if chewed"
 tags: [houseplants]
 occurredAt: "2026-09-04"
@@ -31,3 +31,4 @@ The one that tells you what it wants. It droops dramatically when thirsty and pi
 - Cut spent flower stems right down at the base rather than halfway.
 - Its leaves come to a fine point that browns easily, so trim any tip that goes with scissors, following the leaf shape.
 - Repot every couple of years, or when it dries out faster than you can keep up with.
+- The best suited of the seven to a room with no window: it will flower in shade, though less often than it would by a window.

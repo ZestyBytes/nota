@@ -4,13 +4,13 @@ type: note
 view: plant
 botanical: "Epipremnum aureum"
 light: "Low to bright, indirect"
-water: "Every 10 days"
-waterEvery: 10
+water: "Every 12 days"
+waterEvery: 12
 lastWatered: "2026-09-04"
 feed: "Monthly in spring and summer"
 humidity: "Not fussy"
 soil: "Ordinary peat-free compost"
-position: "Kitchen worktop"
+position: "Office, mid room"
 pets: "Toxic if chewed"
 tags: [houseplants]
 occurredAt: "2026-09-04"
@@ -19,7 +19,7 @@ publishedAt: "2026-09-04"
 publish: true
 ---
 
-![Devil's ivy trailing across the worktop from a small woven pot](plant-devils-ivy.jpg)
+![Devil's ivy trailing out of a small woven pot](plant-devils-ivy.jpg)
 
 Also called golden pothos, and the reason it earned the name is that it is very hard to see off. Heart shaped leaves splashed with yellow, trailing as far as you let them, and it will root from any cutting with a leaf and a node on it.
 
@@ -30,3 +30,4 @@ Also called golden pothos, and the reason it earned the name is that it is very 
 - Pinch the growing tips to make it bushier, and put the cuttings in water. They root in a fortnight.
 - Trailing stems can be pinned back onto the compost to thicken the plant instead of hanging.
 - Keep it up out of reach of anything that chews leaves.
+- It will grow in near darkness, but the yellow marbling goes with the light. A spot within sight of the glazed door keeps it variegated.

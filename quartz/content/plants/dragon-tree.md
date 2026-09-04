@@ -4,13 +4,13 @@ type: note
 view: plant
 botanical: "Dracaena marginata"
 light: "Medium to bright, indirect"
-water: "Every 14 days"
-waterEvery: 14
+water: "Every 18 days"
+waterEvery: 18
 lastWatered: "2026-09-04"
 feed: "Every couple of months in growth"
 humidity: "Happy in a normal room"
 soil: "Free draining, a little grit"
-position: "Kitchen table"
+position: "Office, back of the room"
 pets: "Toxic if chewed"
 tags: [houseplants]
 occurredAt: "2026-09-04"
@@ -30,3 +30,4 @@ Slow, patient and almost impossible to kill by neglect. Thin woody canes with a 
 - Lower leaves yellowing and dropping is normal ageing, not a problem. Pull them off cleanly.
 - It will take a shady spot but grows leggier and loses the red in the leaf edge.
 - Cut a cane back in spring if it gets too tall; it branches from just below the cut.
+- It copes with shade, but grows leggier and loses the red in the leaf edge. Turn it each time you water or it will lean towards the door.

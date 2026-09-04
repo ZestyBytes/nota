@@ -4,13 +4,13 @@ type: note
 view: plant
 botanical: "Chamaedorea elegans"
 light: "Low to medium, indirect"
-water: "Every 8 days"
-waterEvery: 8
+water: "Every 10 days"
+waterEvery: 10
 lastWatered: "2026-09-04"
 feed: "Twice over the summer, weakly"
 humidity: "Likes a misting"
 soil: "Free draining, peat-free"
-position: "Kitchen worktop"
+position: "Office, back of the room"
 pets: "Safe"
 tags: [houseplants]
 occurredAt: "2026-09-04"
@@ -31,3 +31,4 @@ A Victorian parlour plant, bred for exactly this: a dim room, a cool corner and 
 - Feed sparingly. A palm this small needs very little.
 - Do not cut the growing point out of a frond; take whole fronds off at the base when they brown.
 - Safe with cats and dogs.
+- Made for a room like this. Victorian parlours were dark too, which is the whole reason this palm became a house plant.
