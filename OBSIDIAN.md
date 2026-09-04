@@ -110,6 +110,22 @@ artist with the record underneath.
 **Note** (`type: note`): same shape as Journal, for things that aren't a
 dated diary entry. Same fields.
 
+**Event** (`type: event`): something scheduled rather than something to do.
+It appears on the Calendar and, while it is still ahead, in the Coming up
+countdown on Home.
+```yaml
+title: "Garden birthday party"
+type: event
+eventAt: "2026-09-12"
+startTime: "From 1pm"
+tags: [family]
+createdAt: "2026-09-04"
+publish: true
+```
+Use `eventAt` for the day it happens. A leading photograph or poster becomes
+the event artwork. Events disappear from Coming up after their date, but stay
+in the Calendar and archive as part of the record.
+
 **Journey** (`type: journey`): a note that's part of an ongoing thread
 (learning piano, a project log). Same fields as Journal plus an optional
 `journey: "Learning piano"` label.

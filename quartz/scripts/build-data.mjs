@@ -63,7 +63,7 @@ const TOPICS = {
 // sees a finished URL.
 for (const t of Object.values(TOPICS)) if (t.photo) t.photo = resolvePhoto(t.photo);
 
-const TYPE_MAP = { journal: "Journal", journey: "Journey", note: "Note", quote: "Quote", scrap: "Scrap" };
+const TYPE_MAP = { journal: "Journal", journey: "Journey", note: "Note", quote: "Quote", scrap: "Scrap", event: "Event" };
 
 function walk(dir) {
   const out = [];
@@ -403,11 +403,13 @@ for (const file of files) {
   if (!TYPE_MAP[data.type]) continue; // site pages (index/calendar/library/topics/about) have no recognised type
 
   const { image, imageAlt, imageW, imageH } = firstImage(body);
+  const eventAt = data.type === "event" ? dateOnly(data.eventAt || data.date) || "" : "";
   const entry = {
     id: slug, type: TYPE_MAP[data.type], title: data.title,
     excerpt: firstParagraph(body), body: body.trim(), view: data.view || "", topics,
-    occurredAt: data.occurredAt || "", createdAt: data.createdAt || data.occurredAt || "",
+    occurredAt: eventAt || data.occurredAt || "", createdAt: data.createdAt || data.occurredAt || "",
     publishedAt: data.publishedAt || "", writing: Boolean(data.writing),
+    eventAt, startTime: data.startTime || "",
     // A journey is a thread, not a pile: carry the thread's name and the day
     // number so the app can put its entries back in order.
     journey: unwikilink(data.journey) || "", day: Number(data.day || (String(data.title || "").match(/^Day\s+(\d+)/i)?.[1] ?? 0)) || 0,

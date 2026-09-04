@@ -445,7 +445,7 @@ function entryPage(id){
 // only when there are enough to read as a band rather than as a stray tile.
 function homePhotos(){
   const shots=state.data.entries
-    .filter(e=>e.image&&e.type!=="Task")
+    .filter(e=>e.image&&!["Task","Event"].includes(e.type))
     .sort((a,b)=>(b.occurredAt||b.createdAt||"").localeCompare(a.occurredAt||a.createdAt||""))
     .slice(0,8);
   if(shots.length<3)return "";
@@ -488,6 +488,21 @@ function onThisDay(){
 // link. Six sit in the same band two across, and the remainder fold open where
 // they are rather than on another page.
 const HOME_TASKS=6;
+function daysFromToday(iso){
+  const [ty,tm,td]=todayKey.split("-").map(Number),[y,m,d]=iso.split("-").map(Number);
+  return Math.round((Date.UTC(y,m-1,d)-Date.UTC(ty,tm-1,td))/864e5);
+}
+function homeEvents(){
+  const events=state.data.entries.filter(e=>e.type==="Event"&&(e.eventAt||e.occurredAt)>=todayKey)
+    .sort((a,b)=>(a.eventAt||a.occurredAt).localeCompare(b.eventAt||b.occurredAt)).slice(0,3);
+  if(!events.length)return "";
+  return `<section class="home-events"><h2 class="section-title">Coming up</h2><div class="event-countdowns">${events.map(e=>{const date=e.eventAt||e.occurredAt,days=daysFromToday(date),t=topic(e.topics?.[0]);return `<article class="event-countdown" data-entry="${esc(e.id)}" style="--event:${t.color};--event-soft:${t.soft}">
+    ${e.image?`<img src="${esc(e.image)}" alt="${esc(e.imageAlt||"")}" loading="lazy">`:""}
+    <div class="event-count"><b>${days===0?"Today":days===1?"Tomorrow":days}</b>${days>1?`<span>days to go</span>`:""}</div>
+    <div class="event-copy"><p>${esc(fmtDate(date))}${e.startTime?` · ${esc(e.startTime)}`:""}</p><h3>${esc(e.title)}</h3>${e.excerpt?`<span>${esc(e.excerpt)}</span>`:""}</div>
+    <i aria-hidden="true">→</i>
+  </article>`}).join("")}</div></section>`;
+}
 function today(){
   // Home is a reading surface, not a log of every object in the archive.
   // Journeys have their progress strip below, tasks have their own list, and
@@ -500,6 +515,7 @@ function today(){
   const wander=state.data.entries.filter(e=>e.type!=="Task");
   const tasks=waiting.slice(0,HOME_TASKS),more=waiting.slice(HOME_TASKS);
   return `<section class="home-page">
+    ${homeEvents()}
     <div class="home-latest-head"><h2 class="section-title">Latest</h2>${open?`<a href="#tasks">${open} thing${open===1?"":"s"} to do &rarr;</a>`:""}</div>
     <div class="entry-list home-latest-list">${recent.length?recent.map(e=>entryCard(e)).join(""):`<p class="empty">The archive is ready for its first entry.</p>`}</div>
     ${homePhotos()}
@@ -604,7 +620,7 @@ function coverPlate(b){
 function galleryGrid(){
   // One tile per entry rather than per photograph: four shots of the same day
   // are one thing that happened, and the entry already shows them all.
-  const sets=state.data.entries.filter(e=>e.images?.length)
+  const sets=state.data.entries.filter(e=>e.images?.length&&e.type!=="Event")
     .sort((a,b)=>(b.occurredAt||b.createdAt||"").localeCompare(a.occurredAt||a.createdAt||""));
   if(!sets.length)return `<p class="empty">No photographs in the archive yet.</p>`;
   return `<div class="shot-grid">${sets.map(e=>{
