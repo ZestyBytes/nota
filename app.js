@@ -492,21 +492,34 @@ function onThisDay(){
 // The home page showed three of eleven waiting things and hid the rest behind a
 // link. Six sit in the same band two across, and the remainder fold open where
 // they are rather than on another page.
-const HOME_TASKS=6;
 function daysFromToday(iso){
   const [ty,tm,td]=todayKey.split("-").map(Number),[y,m,d]=iso.split("-").map(Number);
   return Math.round((Date.UTC(y,m-1,d)-Date.UTC(ty,tm-1,td))/864e5);
 }
 function homeEvents(){
-  const events=state.data.entries.filter(e=>e.type==="Event"&&(e.eventAt||e.occurredAt)>=todayKey)
-    .sort((a,b)=>(a.eventAt||a.occurredAt).localeCompare(b.eventAt||b.occurredAt)).slice(0,3);
-  if(!events.length)return "";
-  return `<section class="home-events"><h2 class="section-title">Coming up</h2><div class="event-countdowns">${events.map(e=>{const date=e.eventAt||e.occurredAt,days=daysFromToday(date),t=topic(e.topics?.[0]);return `<article class="event-countdown" data-entry="${esc(e.id)}" style="--event:${t.color};--event-soft:${t.soft}">
-    ${e.image?`<img src="${esc(e.image)}" alt="${esc(e.imageAlt||"")}" loading="lazy">`:""}
-    <div class="event-count"><b>${days===0?"Today":days===1?"Tomorrow":days}</b>${days>1?`<span>days to go</span>`:""}</div>
-    <div class="event-copy"><p>${esc(fmtDate(date))}${e.startTime?` · ${esc(e.startTime)}`:""}</p><h3>${esc(e.title)}</h3>${e.excerpt?`<span>${esc(e.excerpt)}</span>`:""}</div>
-    <i aria-hidden="true">→</i>
-  </article>`}).join("")}</div></section>`;
+  const event=state.data.entries.filter(e=>e.type==="Event"&&(e.eventAt||e.occurredAt)>=todayKey)
+    .sort((a,b)=>(a.eventAt||a.occurredAt).localeCompare(b.eventAt||b.occurredAt))[0];
+  const waiting=openTasksInOrder(),book=(state.data.books||[]).find(b=>b.status==="reading");
+  const latest=state.data.entries.filter(e=>["Journal","Note"].includes(e.type)&&!e.plant)
+    .sort((a,b)=>(b.occurredAt||b.createdAt||"").localeCompare(a.occurredAt||a.createdAt||""))[0];
+  const journey=journeys().sort((a,b)=>(b.last?.occurredAt||"").localeCompare(a.last?.occurredAt||""))[0];
+  const todayCount=dayItems(todayKey).length;
+  if(!event&&!book&&!waiting.length&&!latest&&!journey)return "";
+  const eventCard=event?(()=>{const date=event.eventAt||event.occurredAt,days=daysFromToday(date),t=topic(event.topics?.[0]);return `<article class="dashboard-event" data-entry="${esc(event.id)}" style="--event:${t.color};--event-soft:${t.soft}">
+    <div class="dashboard-event-copy"><p>Next event · ${esc(fmtDate(date))}${event.startTime?` · ${esc(event.startTime)}`:""}</p><b>${days===0?"Today":days===1?"Tomorrow":days}<small>${days>1?"days to go":""}</small></b><h2>${esc(event.title)}</h2>${event.excerpt?`<span>${esc(event.excerpt)}</span>`:""}</div>
+    ${event.image?`<img src="${esc(event.image)}" alt="${esc(event.imageAlt||"")}" loading="lazy">`:""}
+  </article>`})():"";
+  return `<section class="home-dashboard"><h2 class="section-title">Today at a glance</h2>
+    <div class="dashboard-lead">${eventCard}<aside class="dashboard-status">
+      <a href="#tasks"><small>To-do</small><b>${waiting.length}</b><span>${waiting.length===1?"thing waiting":"things waiting"}</span></a>
+      ${book?`<button data-book="${esc(book.id)}"><small>Currently reading</small><b>${esc(book.title)}</b><span>${Math.max(0,Math.min(100,Number(book.progress)||0))}% through</span></button>`:`<a href="#calendar"><small>Calendar</small><b>${todayCount}</b><span>${todayCount===1?"thing today":"things today"}</span></a>`}
+    </aside></div>
+    <div class="dashboard-signals">
+      <a href="#calendar"><small>Today</small><b>${todayCount} ${todayCount===1?"record":"records"}</b><span>Open the daily log →</span></a>
+      ${latest?`<article data-entry="${esc(latest.id)}"><small>Latest ${esc(latest.type.toLowerCase())}</small><b>${esc(latest.title)}</b><span>${esc(topic(latest.topics?.[0]).name)} · ${fmtDate(latest.occurredAt||latest.createdAt)}</span></article>`:""}
+      ${journey?`<article data-journey="${esc(journey.name)}"><small>Journey</small><b>${esc(journey.name)}</b><span>${journey.rows.length} ${journey.rows.length===1?"milestone":"milestones"} · open journey →</span></article>`:""}
+    </div>
+  </section>`;
 }
 function today(){
   // Home is a reading surface, not a log of every object in the archive.
@@ -518,15 +531,12 @@ function today(){
     .slice(0,5);
   const waiting=openTasksInOrder(),open=waiting.length;
   const wander=state.data.entries.filter(e=>e.type!=="Task");
-  const tasks=waiting.slice(0,HOME_TASKS),more=waiting.slice(HOME_TASKS);
   return `<section class="home-page">
     ${homeEvents()}
     <div class="home-latest-head"><h2 class="section-title">Latest</h2>${open?`<a href="#tasks">${open} thing${open===1?"":"s"} to do &rarr;</a>`:""}</div>
     <div class="entry-list home-latest-list">${recent.length?recent.map(e=>entryCard(e)).join(""):`<p class="empty">The archive is ready for its first entry.</p>`}</div>
     ${homePhotos()}
-    <div class="home-progress">${homeReading()}${journeyStrip()}</div>
     ${onThisDay()}
-    ${tasks.length?`<section class="home-tasks"><div class="home-latest-head"><h2 class="section-title">To-do</h2><a href="#tasks">Open list →</a></div><div class="tasks home-task-grid">${tasks.map(taskRow).join("")}</div>${more.length?`<details class="more-tasks"><summary>${more.length} more waiting</summary><div class="tasks home-task-grid">${more.map(taskRow).join("")}</div></details>`:""}</section>`:""}
   </section>`;
 }
 function taskRow(t){const tp=topic(t.topics[0]);return `<div class="task ${t.completedAt?"done":""} ${t.note?"has-note":""}" ${t.note?`data-entry="${esc(t.id)}"`:""}><span class="task-mark" aria-hidden="true">${t.completedAt?icon("check"):""}</span><span class="task-copy"><span class="task-title">${esc(t.title)}</span>${t.note?`<small class="task-note">${esc(t.note)}</small>`:""}${t.completedAt?`<small class="task-due">Done ${esc(fmtDate(t.completedAt))}</small>`:t.dueAt?`<small class="task-due${t.dueAt<todayKey?" late":""}">${t.dueAt<todayKey?"Overdue, was due "+esc(fmtDate(t.dueAt)):t.dueAt===todayKey?"Due today":"Due "+esc(fmtDate(t.dueAt))}</small>`:""}</span><span class="chip" style="--topic:${tp.color};--soft:${tp.soft}">${esc(tp.name)}</span></div>`}
