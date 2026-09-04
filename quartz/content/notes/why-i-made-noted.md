@@ -21,7 +21,7 @@ actually enjoy revisiting, and could share with family and friends.
 
 Noted is part journal, part library and part personal archive. A school morning
 can sit beside a car story, a recipe, a quotation, a technical log or the next
-step in learning guitar. They are different kinds of record, but they all
+step in learning piano. They are different kinds of record, but they all
 belong to the same life.
 
 The app offers a few ways back into them:

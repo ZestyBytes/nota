@@ -41,7 +41,7 @@ an AI to tidy up a rough note. Two things to keep in mind:
 ```
 quartz/content/
   journal/       journal entries
-  journeys/      multi-day journeys (guitar practice, etc.)
+  journeys/      multi-day journeys (piano practice, etc.)
   notes/         general notes
   quotes/        quotations (standalone or linked to a book)
   books/         reading list (type: reading)
@@ -111,8 +111,8 @@ artist with the record underneath.
 dated diary entry. Same fields.
 
 **Journey** (`type: journey`): a note that's part of an ongoing thread
-(learning guitar, a project log). Same fields as Journal plus an optional
-`journey: "Learning guitar"` label.
+(learning piano, a project log). Same fields as Journal plus an optional
+`journey: "Learning piano"` label.
 
 **Quote** (`type: quote`): a standalone quotation, or one linked to a book.
 ```yaml

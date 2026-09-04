@@ -3,7 +3,8 @@ title: "Contact Amit at One Smile Dental"
 type: task
 tags: [selfcare]
 dueAt: "2026-09-30"
-completedAt: null
+done: true
+completedAt: "2026-09-04"
 publish: true
 ---
 
