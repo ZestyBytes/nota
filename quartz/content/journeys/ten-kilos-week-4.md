@@ -1,15 +1,16 @@
 ---
 title: "Week 4: the walking is doing the work"
 type: journey
-journey: "Ten kilos"
-tags: [fitness]
+journey: Ten kilos
+tags:
+  - fitness
 day: 22
-occurredAt: "2026-07-27"
-metric: 89.6
+occurredAt: 2026-07-27
+metric: 106
 publish: true
 ---
 
-89.6kg. Down 2.4 in three weeks, which is faster than I planned for and almost
+106kg. Down 2.4 in three weeks, which is faster than I planned for and almost
 certainly front-loaded.
 
 Nothing clever has happened. The walk is the whole thing: forty minutes after

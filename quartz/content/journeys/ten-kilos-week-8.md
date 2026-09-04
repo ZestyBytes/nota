@@ -1,15 +1,16 @@
 ---
 title: "Week 8: the flat bit"
 type: journey
-journey: "Ten kilos"
-tags: [fitness]
+journey: Ten kilos
+tags:
+  - fitness
 day: 50
-occurredAt: "2026-08-24"
-metric: 87.9
+occurredAt: 2026-08-24
+metric: 105
 publish: true
 ---
 
-87.9kg. Barely moved in a fortnight, and I can feel the pull to declare the
+105kg. Barely moved in a fortnight, and I can feel the pull to declare the
 whole thing broken and start something new instead.
 
 It is not broken. The walks are still happening, the cooking is still
