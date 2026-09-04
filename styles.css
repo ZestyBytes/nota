@@ -948,6 +948,17 @@ body.modal-open{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .journey-bar i{display:block;height:100%;background:var(--topic,var(--muted));transition:width .4s ease}
 .journey-numbers{margin:6px 0 0;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font:9px var(--mono);text-transform:uppercase;letter-spacing:.09em;color:var(--faint)}
 .journey-numbers b{font:12px var(--mono);letter-spacing:0;color:var(--topic,var(--ink))}
+/* Home says the same thing as a journey card in one line: the name, where it
+   is up to, and the bar. The full cards stay in the library. */
+.home-journeys .home-latest-head{margin-bottom:12px}
+.journey-lines{display:grid;gap:0;border-top:1px solid var(--line)}
+.journey-line{display:grid;grid-template-columns:minmax(0,1fr) 96px auto;align-items:center;column-gap:14px;row-gap:2px;width:100%;padding:10px 2px 10px 11px;border:0;border-bottom:1px solid var(--line);border-left:3px solid var(--topic,var(--muted));background:transparent;color:inherit;text-align:left;cursor:pointer}
+.journey-line:hover{background:var(--surface)}
+.journey-line b{min-width:0;font:600 15px/1.25 var(--serif);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.journey-line span{grid-column:1;font:8px var(--mono);text-transform:uppercase;letter-spacing:.11em;color:var(--faint)}
+.journey-line .journey-bar{grid-row:1/3;grid-column:2;height:5px}
+.journey-line em{grid-row:1/3;grid-column:3;font:11px var(--mono);font-style:normal;color:var(--topic,var(--ink))}
+@media(max-width:560px){.journey-line{grid-template-columns:minmax(0,1fr) 64px auto;column-gap:10px}.journey-line em{display:none}}
 .journey-dots{margin:11px 0 0;display:flex;align-items:center;gap:10px}
 .journey-dots>span{display:flex;flex-wrap:wrap;align-items:center;gap:6px;min-width:0}
 .journey-dots i{width:9px;height:9px;border-radius:50%;background:var(--topic,var(--muted))}
@@ -1406,11 +1417,16 @@ aside .section-title{display:flex;align-items:baseline}
 .spaces-index .space-shelf .space-card{background-image:none!important;background-color:#1d3a30!important;background-size:auto!important;width:112px!important;flex-basis:112px!important;height:250px!important;min-height:0!important;align-self:end!important}
 .spaces-index .space-shelf .space-card:nth-child(2n){height:226px!important;background-color:#24483a!important}.spaces-index .space-shelf .space-card:nth-child(3n){height:268px!important;background-color:#173126!important}.spaces-index .space-shelf .space-card:nth-child(4n){height:238px!important;background-color:#2b5142!important}
 .spaces-index .space-shelf .space-card h2{color:#e4f1e5!important;text-shadow:none!important}
-.home-tasks{margin-top:42px;padding-top:24px;border-top:1px solid var(--line)}
+.home-tasks{margin-top:34px;padding-top:20px;border-top:1px solid var(--line)}
 /* Two columns fit twice as much in the same band, and the overflow folds open
    in place instead of sending you to another page to see what is waiting. */
 .home-task-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));column-gap:26px}
-.home-task-grid .task{padding:12px 2px}
+.home-task-grid .task{padding:9px 2px;gap:10px}
+.home-task-grid .task-mark{width:16px;height:16px}
+.home-task-grid .task-mark .line-icon{width:11px;height:11px}
+.home-task-grid .task-title{font-size:12.5px}
+.home-task-grid .task-note,.home-task-grid .task-due{font-size:10px}
+.home-task-grid .chip{font-size:8px;padding:2px 5px}
 .home-tasks .more-tasks summary{list-style:none;cursor:pointer;padding:13px 2px;border-bottom:1px solid var(--line);font:9px var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
 .home-tasks .more-tasks summary::-webkit-details-marker{display:none}
 .home-tasks .more-tasks summary:before{content:"+";display:inline-grid;place-items:center;width:18px;height:18px;margin-right:9px;border:1px solid var(--line);vertical-align:-5px;font-size:12px;color:var(--muted)}
@@ -1525,7 +1541,7 @@ aside .section-title{display:flex;align-items:baseline}
 .home-progress{display:grid;gap:26px;margin:0 0 34px}
 .home-progress:empty{display:none;margin:0}
 @media(min-width:900px){
-  .home-progress:has(.home-reading):has(.journey-strip){grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);align-items:start}
+  .home-progress:has(.home-reading):has(.home-journeys){grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);align-items:start}
 }
 .home-reading .home-latest-head{margin-bottom:12px}
 .reading-now{display:grid;grid-template-columns:96px 1fr;gap:18px;align-items:center;width:100%;

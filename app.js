@@ -489,10 +489,9 @@ function onThisDay(){
   const md=todayKey.slice(5),items=state.data.entries.filter(e=>{const d=e.occurredAt||e.createdAt||"";return d.slice(5)===md&&d.slice(0,4)!==todayKey.slice(0,4)});
   return items.length?`<section class="on-this-day"><div><p class="eyebrow">On this day</p><h2>${items.length===1?"One thing came back":"A few things came back"}</h2></div><div>${items.slice(0,3).map(e=>dayRow(e,"article")).join("")}</div></section>`:"";
 }
-// The home page showed three of eleven waiting things and hid the rest behind a
-// link. Six sit in the same band two across, and the remainder fold open where
-// they are rather than on another page.
-const HOME_TASKS=6;
+// Home shows the first four waiting things in a compact list and folds the
+// rest open in place rather than sending you to another page.
+const HOME_TASKS=4;
 function daysFromToday(iso){
   const [ty,tm,td]=todayKey.split("-").map(Number),[y,m,d]=iso.split("-").map(Number);
   return Math.round((Date.UTC(y,m-1,d)-Date.UTC(ty,tm-1,td))/864e5);
@@ -516,6 +515,24 @@ function homeEvents(){
     </article>
   </section>`;
 }
+// The journey cards are a library treatment: eyebrow, title, last entry,
+// meta and a bar each. On Home one line per journey is enough, with the
+// bar kept because that is the part you actually check.
+function homeJourneys(){
+  const rows=journeys();
+  if(!rows.length)return "";
+  return `<section class="home-journeys">
+    <div class="home-latest-head"><h2 class="section-title">Journeys</h2><a href="#library">All journeys &rarr;</a></div>
+    <div class="journey-lines">${rows.slice(0,4).map(({name,rows:items,last})=>{
+      const t=topic(items[0].topics?.[0]),days=items.map(i=>i.day).filter(Boolean),p=journeyProgress(items);
+      return `<button class="journey-line" data-journey="${esc(name)}" style="--topic:${t.color}">
+        <b>${esc(name)}</b>
+        <span>${days.length?`Day ${Math.max(...days)} &middot; `:""}${items.length} ${items.length===1?"entry":"entries"}${last.occurredAt?` &middot; ${fmtDate(last.occurredAt)}`:""}</span>
+        ${p?`<i class="journey-bar" role="img" aria-label="${p.pct}% of the way there"><i style="width:${p.pct}%"></i></i><em>${fmtMetric(p.latest,p.unit)}</em>`:""}
+      </button>`;
+    }).join("")}</div>
+  </section>`;
+}
 function today(){
   // Home is a reading surface, not a log of every object in the archive.
   // Journeys have their progress strip below, tasks have their own list, and
@@ -532,7 +549,7 @@ function today(){
     <div class="home-latest-head"><h2 class="section-title">Latest</h2>${open?`<a href="#tasks">${open} thing${open===1?"":"s"} to do &rarr;</a>`:""}</div>
     <div class="entry-list home-latest-list">${recent.length?recent.map(e=>entryCard(e)).join(""):`<p class="empty">The archive is ready for its first entry.</p>`}</div>
     ${homePhotos()}
-    <div class="home-progress">${homeReading()}${journeyStrip()}</div>
+    <div class="home-progress">${homeReading()}${homeJourneys()}</div>
     ${onThisDay()}
     ${tasks.length?`<section class="home-tasks"><div class="home-latest-head"><h2 class="section-title">To-do</h2><a href="#tasks">Open list &rarr;</a></div><div class="tasks home-task-grid">${tasks.map(taskRow).join("")}</div>${more.length?`<details class="more-tasks"><summary>${more.length} more waiting</summary><div class="tasks home-task-grid">${more.map(taskRow).join("")}</div></details>`:""}</section>`:""}
   </section>`;
