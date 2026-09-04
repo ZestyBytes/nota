@@ -339,6 +339,16 @@ function waterWord(due){
   if(due.days===1)return "Water tomorrow";
   return `Water in ${due.days} days`;
 }
+// The care bullets are shown as their own list, so drop that section before the
+// rest of the note is set as prose; otherwise it reads twice.
+function withoutSection(body="",heading=""){
+  const lines=String(body).split("\n");
+  const start=lines.findIndex(l=>l.trim().toLowerCase()===`## ${heading}`.toLowerCase());
+  if(start<0)return body;
+  let end=start+1;
+  while(end<lines.length&&!lines[end].trim().startsWith("## "))end++;
+  return [...lines.slice(0,start),...lines.slice(end)].join("\n");
+}
 function plantFacts(p){
   return [["Light",p.light],["Water",p.water||(p.waterEvery?`Every ${p.waterEvery} days`:"")],["Feed",p.feed],["Humidity",p.humidity],["Soil",p.soil],["Position",p.position]].filter(([,v])=>v);
 }
@@ -347,7 +357,7 @@ function plantBody(e,shown){
   return `${facts.length?`<dl class="plant-facts">${facts.map(([k,v])=>`<div><dt>${k}</dt><dd>${esc(String(v))}</dd></div>`).join("")}</dl>`:""}
     ${due?`<p class="plant-due ${due.days<0?"late":due.days===0?"now":""}">${icon("drop")}<b>${esc(waterWord(due))}</b><span>Last watered ${fmtDate(p.lastWatered)} &middot; due ${fmtDate(due.iso)}</span></p>`:""}
     ${p.care?.length?`<section class="plant-care"><h2 class="section-title">Care</h2><ul>${p.care.map(c=>`<li>${icon("check")}<span>${inline(c)}</span></li>`).join("")}</ul></section>`:""}
-    ${e.body?markdown(e.body,shown,e.id):""}
+    ${(()=>{const rest=p.care?.length?withoutSection(e.body,"care"):e.body;return rest.trim()?markdown(rest,shown,e.id):""})()}
     ${p.botanical||p.acquired?`<p class="plant-tail">${p.botanical?`<em>${esc(p.botanical)}</em>`:""}${p.acquired?`<span>In the house since ${fmtDate(p.acquired)}</span>`:""}</p>`:""}`;
 }
 // What else in the archive points at this entry. A one-way link is half a

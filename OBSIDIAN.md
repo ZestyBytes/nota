@@ -46,6 +46,7 @@ quartz/content/
   quotes/        quotations (standalone or linked to a book)
   books/         reading list (type: reading)
   recipes/       recipe notes (a note with view: recipe)
+  plants/        house plants (a note with view: plant)
   scraps/        short undated captures (type: scrap), shown as a pinboard
   attachments/   photographs added from Obsidian land here
   tasks/         to-do items (type: task), create this folder yourself
@@ -71,7 +72,7 @@ reading
 food          recipes, eatingout
 technology
 motoring
-gardening
+gardening      houseplants
 ```
 
 Tag a note with a child when it fits one, `recipes` rather than `food`; the
@@ -163,6 +164,36 @@ sets the time, servings and difficulty as a fact strip, the ingredients as a
 list you can tick off while cooking (remembered on that phone), and the
 method as a section you can collapse. No need to repeat the facts as a table
 in the body.
+
+**Plant** (`view: plant`): a note about a house plant, kept as stock rather
+than as writing. Every field is optional; fill in what you know.
+```yaml
+title: "Monstera, in the front window"
+type: note
+view: plant
+botanical: "Monstera deliciosa"
+light: "Bright, indirect"
+water: "Every 10 days"
+waterEvery: 10             # the same cadence as a plain number of days
+lastWatered: "2026-09-01"
+feed: "Monthly, spring to autumn"
+humidity: "Likes a misting"
+soil: "Peat-free, free draining"
+position: "Front window"
+acquired: "2025-04-12"
+tags: [houseplants]
+publish: true
+```
+Body: a photograph first, then a sentence about the plant, then an optional
+`## Care` section with a `- ` bullet per thing worth remembering. Anything
+after that reads as ordinary prose, so a plant can carry a running log of how
+it is doing.
+
+Give both `waterEvery` and `lastWatered` and the shelf works out when each
+plant next wants water, puts the thirstiest first, and counts how many are
+due. Leave them out and the plant still lists, it simply carries no clock.
+The House plants space (under Gardening) is the stock list: every plant at
+once, with its light and its watering cadence on the card.
 
 **Task** (`type: task`): shows on Today's To-do list. This folder doesn't
 exist in the vault yet, so create `quartz/content/tasks/` and drop task notes

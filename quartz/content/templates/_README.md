@@ -17,6 +17,7 @@ Nothing in this folder is ever published; the build skips it entirely.
 | `playlist.md` | `notes/` |
 | `checklist.md` | `notes/` |
 | `scrap.md` | `scraps/` |
+| `plant.md` | `plants/` |
 
 Name the file after the title, in lower case with hyphens, for example
 `the-first-mini.md`. That name becomes the entry's address on the site.
@@ -28,10 +29,11 @@ will simply carry no topic:
 
 `family`, `life`, `selfcare`, `adhd`, `habits`, `music`, `playlist`,
 `practice`, `reading`, `food`, `recipes`, `eatingout`, `technology`,
-`motoring`, `gardening`
+`motoring`, `gardening`, `houseplants`
 
 `selfcare`, `adhd` and `habits` sit under `life`; `playlist` and `practice`
-under `music`; `recipes` and `eatingout` under `food`. Use the child where one
+under `music`; `recipes` and `eatingout` under `food`; `houseplants` under
+`gardening`. Use the child where one
 fits, and the parent gathers it anyway.
 
 ## Blocks you can use in any note
