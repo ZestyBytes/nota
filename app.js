@@ -484,18 +484,22 @@ function onThisDay(){
   const md=todayKey.slice(5),items=state.data.entries.filter(e=>{const d=e.occurredAt||e.createdAt||"";return d.slice(5)===md&&d.slice(0,4)!==todayKey.slice(0,4)});
   return items.length?`<section class="on-this-day"><div><p class="eyebrow">On this day</p><h2>${items.length===1?"One thing came back":"A few things came back"}</h2></div><div>${items.slice(0,3).map(e=>dayRow(e,"article")).join("")}</div></section>`:"";
 }
+// The home page showed three of eleven waiting things and hid the rest behind a
+// link. Six sit in the same band two across, and the remainder fold open where
+// they are rather than on another page.
+const HOME_TASKS=6;
 function today(){
-  const recent=[...state.data.entries].sort((a,b)=>(b.occurredAt||b.createdAt||"").localeCompare(a.occurredAt||a.createdAt||"")).slice(0,3);
-  const open=state.data.tasks.filter(t=>!t.completedAt).length;
+  const recent=[...state.data.entries].sort((a,b)=>(b.occurredAt||b.createdAt||"").localeCompare(a.occurredAt||a.createdAt||"")).slice(0,5);
+  const waiting=openTasksInOrder(),open=waiting.length;
   const wander=state.data.entries.filter(e=>e.type!=="Task");
-  const tasks=state.data.tasks.filter(t=>!t.completedAt).slice(0,3);
+  const tasks=waiting.slice(0,HOME_TASKS),more=waiting.slice(HOME_TASKS);
   return `<section class="home-page">
     <div class="home-latest-head"><h2 class="section-title">Latest</h2>${open?`<a href="#tasks">${open} thing${open===1?"":"s"} to do &rarr;</a>`:""}</div>
     <div class="entry-list home-latest-list">${recent.length?recent.map(e=>entryCard(e)).join(""):`<p class="empty">The archive is ready for its first entry.</p>`}</div>
     ${homePhotos()}
     <div class="home-progress">${homeReading()}${journeyStrip()}</div>
     ${onThisDay()}
-    ${tasks.length?`<section class="home-tasks"><div class="home-latest-head"><h2 class="section-title">To-do</h2><a href="#tasks">Open list →</a></div><div class="tasks">${tasks.map(taskRow).join("")}</div></section>`:""}
+    ${tasks.length?`<section class="home-tasks"><div class="home-latest-head"><h2 class="section-title">To-do</h2><a href="#tasks">Open list →</a></div><div class="tasks home-task-grid">${tasks.map(taskRow).join("")}</div>${more.length?`<details class="more-tasks"><summary>${more.length} more waiting</summary><div class="tasks home-task-grid">${more.map(taskRow).join("")}</div></details>`:""}</section>`:""}
   </section>`;
 }
 function taskRow(t){const tp=topic(t.topics[0]);return `<div class="task ${t.completedAt?"done":""} ${t.note?"has-note":""}" ${t.note?`data-entry="${esc(t.id)}"`:""}><span class="task-mark" aria-hidden="true">${t.completedAt?icon("check"):""}</span><span class="task-copy"><span class="task-title">${esc(t.title)}</span>${t.note?`<small class="task-note">${esc(t.note)}</small>`:""}${t.completedAt?`<small class="task-due">Done ${esc(fmtDate(t.completedAt))}</small>`:t.dueAt?`<small class="task-due${t.dueAt<todayKey?" late":""}">${t.dueAt<todayKey?"Overdue, was due "+esc(fmtDate(t.dueAt)):t.dueAt===todayKey?"Due today":"Due "+esc(fmtDate(t.dueAt))}</small>`:""}</span><span class="chip" style="--topic:${tp.color};--soft:${tp.soft}">${esc(tp.name)}</span></div>`}
@@ -822,15 +826,24 @@ function journeyPage(id){
     <ol class="journey-thread">${rows.map(r=>`<li><a href="#entry/${encodeURIComponent(r.id)}" data-entry="${esc(r.id)}" data-return="#journey/${encodeURIComponent(name)}"><span class="journey-day">${r.day?`Day ${r.day}`:fmtDate(r.occurredAt)||"&mdash;"}</span><span class="journey-copy"><b>${esc(r.title.replace(/^Day\s+\d+:\s*/i,""))}</b><small>${esc(r.excerpt||"")}</small></span><span class="journey-reading">${typeof r.metric==="number"?fmtMetric(r.metric,rows.map(x=>x.unit).find(Boolean)||""):""}</span>${r.occurredAt?`<time>${fmtDate(r.occurredAt)}</time>`:""}</a></li>`).join("")}</ol>
   </section>`;
 }
+// Overdue first, then due today, then what is coming, then everything with no
+// date at all. Today and the To-do page read from the same order, so the first
+// thing on the home page is the first thing on the list.
+function taskBuckets(){
+  const open=state.data.tasks.filter(t=>!t.completedAt);
+  return {open,
+    overdue:open.filter(t=>t.dueAt&&t.dueAt<todayKey),
+    today:open.filter(t=>t.dueAt===todayKey),
+    ahead:open.filter(t=>t.dueAt&&t.dueAt>todayKey).sort((a,b)=>a.dueAt.localeCompare(b.dueAt)),
+    undated:open.filter(t=>!t.dueAt)};
+}
+function openTasksInOrder(){const b=taskBuckets();return [...b.overdue,...b.today,...b.ahead,...b.undated]}
 // Tasks lived only as a sidebar on Today and dots on the calendar, so nothing
 // showed what was overdue, and nothing kept what was done.
 function taskPage(){
-  const all=state.data.tasks,open=all.filter(t=>!t.completedAt),finished=all.filter(t=>t.completedAt),done=finished.sort((a,b)=>(b.completedAt||"").localeCompare(a.completedAt||"")).slice(0,5);
-  const overdue=open.filter(t=>t.dueAt&&t.dueAt<todayKey);
-  const today=open.filter(t=>t.dueAt===todayKey);
-  const ahead=open.filter(t=>t.dueAt&&t.dueAt>todayKey).sort((a,b)=>a.dueAt.localeCompare(b.dueAt));
-  const undated=open.filter(t=>!t.dueAt);
-  const next=[...overdue,...today,...ahead,...undated][0];
+  const all=state.data.tasks,finished=all.filter(t=>t.completedAt),done=finished.sort((a,b)=>(b.completedAt||"").localeCompare(a.completedAt||"")).slice(0,5);
+  const {open,overdue,today,ahead,undated}=taskBuckets();
+  const next=openTasksInOrder()[0];
   const group=(label,rows,cls="")=>{const rest=rows.filter(t=>t.id!==next?.id);return rest.length?`<section class="task-group ${cls}"><h2 class="section-title">${label}<span class="task-count">${rest.length}</span></h2><div class="tasks">${rest.map(taskRow).join("")}</div></section>`:""};
   return `<section class="tasks-page">${pageHead("Still to do","To-do","A calm place for what is waiting, and what has been seen off.")}
     ${next?`<section class="task-focus"><p class="eyebrow">Next up</p>${taskRow(next)}</section>`:""}
