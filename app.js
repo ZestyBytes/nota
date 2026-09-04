@@ -801,7 +801,7 @@ function volumeRecto(id,all){
   if(shot.length>=2&&shot.length*2>=all.length){
     const s=shot[0];
     return `<span class="vol-leaf recto recto-album">
-      <img data-shot="${esc(s.image)}" alt="${esc(s.imageAlt||"")}" decoding="async" onerror="this.closest('.recto-album')?.classList.add('no-shot');this.remove()">
+      <img data-shot="${esc(s.image)}" alt="${esc(s.imageAlt||"")}" decoding="async" onload="this.classList.add('ready')" onerror="this.closest('.recto-album')?.classList.add('no-shot');this.remove()">
       <span class="vol-caption">
         <em>${esc(s.type)}<i>${esc(shortDate(s.occurredAt||s.createdAt))}</i></em>
         <b>${esc(s.title)}</b>
