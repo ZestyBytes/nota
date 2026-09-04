@@ -10,9 +10,9 @@ publish: true
 
 ![A small kitchen garden in late-summer evening light](assets/posts/kitchen-garden.png)
 
-![[IMG_4041.png]]
-![[IMG_4039.png]]
-![[IMG_3985.jpeg]]
+
+
+
 ![[IMG_4035.jpeg]]
 ![[IMG_4045.jpeg]]
 ![[IMG_4051.jpeg]]
