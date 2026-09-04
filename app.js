@@ -817,6 +817,7 @@ function afterRender(route,isDetail){
   swipeable(".gallery",".gallery-dots i",".gallery-caption");
   setupSpaceShelfMotion(route);
   syncReadingProgress();
+  if(route==="search")requestAnimationFrame(()=>document.querySelector(".search-box")?.focus({preventScroll:true}));
 }
 let spaceShelfTimer=null;
 function setupSpaceShelfMotion(route){
