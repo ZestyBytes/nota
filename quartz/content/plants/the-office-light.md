@@ -8,6 +8,8 @@ publishedAt: "2026-09-04"
 publish: true
 ---
 
+![[plant-peace-lily.jpg]]
+
 All seven live in the office. It has no window: the light comes second hand, through the half glazed door into the utility, and it is daylight rather than sun.
 
 That single fact decides most of the care. Nothing here will ever be scorched, so the usual warning about direct sun does not apply. What does apply is that everything grows more slowly, drinks more slowly, and holds its variegation less well than the label on the pot assumes.

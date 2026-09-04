@@ -556,7 +556,8 @@ function calendar(){
     const items=dayItems(date);monthCount+=items.length;
     const dots=[...new Set(items.flatMap(e=>e.topics||[]))].slice(0,4)
       .map(id=>`<i class="dot" style="background:${topic(id).color}"></i>`).join("");
-    cells.push(`<button class="day ${date===state.selectedDate?"selected":""} ${date===todayKey?"is-today":""} ${items.length?"has-items":""}" data-date="${date}" aria-label="${esc(fmtDate(date))}${items.length?`, ${items.length} item${items.length>1?"s":""}`:""}"><span class="day-no">${d}</span><span class="dots">${dots}</span>${items.length?`<span class="day-more">${items.length}</span>`:""}</button>`);
+    const peek=items.slice(0,2).map(item=>`<span style="--item:${topic(item.topics?.[0]).color}">${esc(item.title)}</span>`).join("");
+    cells.push(`<button class="day ${date===state.selectedDate?"selected":""} ${date===todayKey?"is-today":""} ${items.length?"has-items":""}" data-date="${date}" aria-label="${esc(fmtDate(date))}${items.length?`, ${items.length} item${items.length>1?"s":""}`:""}"><span class="day-no">${d}</span><span class="dots">${dots}</span>${peek?`<span class="day-peek" aria-hidden="true">${peek}</span>`:""}${items.length?`<span class="day-more"><b>${items.length}</b><em> item${items.length===1?"":"s"}</em></span>`:""}</button>`);
   }
   const label=new Date(state.selectedDate+"T12:00:00").toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
   const near=nearestMonth(state.month,dates);

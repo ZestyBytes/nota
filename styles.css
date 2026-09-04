@@ -818,6 +818,8 @@ body.modal-open{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .day.is-today .day-no{position:relative;color:var(--stamp-red)}
 .day.is-today .day-no:after{content:"";position:absolute;left:50%;bottom:-5px;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--stamp-red)}
 .day-more{font:9px var(--mono);color:var(--muted);letter-spacing:.06em}
+.day-more b{font:inherit;font-weight:700}.day-more em{font:inherit;font-style:normal}
+.day-peek{display:none}
 .calendar-grid{touch-action:pan-y}
 .calendar-modes{display:flex;justify-content:flex-end;margin:-8px 0 18px}.calendar-modes button{padding:7px 11px;border:1px solid var(--line);background:transparent;color:var(--muted);font:8px var(--mono);text-transform:uppercase;letter-spacing:.08em}.calendar-modes button+button{border-left:0}.calendar-modes button.active{background:var(--ink);color:var(--paper)}
 .calendar-agenda{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}.calendar-agenda>li{display:grid;grid-template-columns:92px 1fr;align-items:start;border-bottom:1px solid var(--line)}.calendar-agenda>li>time{padding:16px 10px;font:8px var(--mono);color:var(--muted)}.calendar-agenda .day-row{border:0}
@@ -1438,8 +1440,22 @@ aside .section-title{display:flex;align-items:baseline}
     backdrop-filter:blur(26px) saturate(1.5)!important;-webkit-backdrop-filter:blur(26px) saturate(1.5)!important;
   }
   .mobile-nav a{border-radius:17px!important}
-  .mobile-nav a.active{background:color-mix(in srgb,var(--surface) 58%,transparent)!important;box-shadow:inset 0 1px 0 color-mix(in srgb,white 72%,transparent),0 2px 8px -5px rgba(20,24,17,.5)}
+  .mobile-nav a.active{background:transparent!important;box-shadow:none}
+  .mobile-nav a.active:before{display:none}
   .mobile-nav a.active:after{left:36%;right:36%;bottom:4px;border-radius:2px}
+}
+
+/* On a wide calendar, use the otherwise empty day cells to show the first
+   two records. Phones retain the compact topic dots and count. */
+@media(min-width:801px){
+  .calendar-shell{grid-template-columns:minmax(0,1fr) 320px;align-items:start}
+  .day{min-height:104px;align-items:flex-start;text-align:left;padding:9px 10px;gap:5px}
+  .day-no{align-self:flex-end;font-size:15px}
+  .day .dots{display:none}
+  .day-peek{display:grid;width:100%;gap:4px;margin-top:2px;overflow:hidden}
+  .day-peek span{position:relative;display:block;overflow:hidden;padding-left:9px;color:var(--ink-soft);font:10px/1.35 var(--serif);text-overflow:ellipsis;white-space:nowrap}
+  .day-peek span:before{content:"";position:absolute;left:0;top:.42em;width:5px;height:5px;border-radius:1px;background:var(--item,var(--muted))}
+  .day-more{align-self:flex-end;margin-top:auto;background:transparent;border:0;padding:0;color:var(--faint)}
 }
 .spaces-index .space-shelf .space-card:before{content:"";position:absolute;top:0;left:0;right:0;height:8px;background:rgba(255,255,255,.14);box-shadow:0 3px 0 rgba(0,0,0,.16)}
 .spaces-index .space-shelf .space-card:nth-child(5n+1){background-color:#31577a!important}.spaces-index .space-shelf .space-card:nth-child(5n+2){background-color:#254d3e!important}.spaces-index .space-shelf .space-card:nth-child(5n+3){background-color:#6a3b42!important}.spaces-index .space-shelf .space-card:nth-child(5n+4){background-color:#76512c!important}.spaces-index .space-shelf .space-card:nth-child(5n){background-color:#4e416e!important}
