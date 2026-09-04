@@ -140,6 +140,7 @@ function embed(url){
   }
   else if(host==="vimeo.com")src=`https://player.vimeo.com/video/${u.pathname.split("/").filter(Boolean)[0]}`;
   else if(host==="open.spotify.com"){src=`https://open.spotify.com/embed${u.pathname}`;kind="audio"}
+  else if(host==="codepen.io"&&u.pathname==="/Ma5a/pen/YPzzpep")return clawMachine();
   // A pen address is /user/pen/slug, and its embed is the same with "embed"
   // in place of "pen". Anything else on the host is left as a plain link.
   else if(host==="codepen.io"){
@@ -151,6 +152,14 @@ function embed(url){
   }
   if(!src)return "";
   return `<div class="embed embed-${kind}"><iframe src="${esc(src)}" title="Embedded ${kind}" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>`;
+}
+function clawMachine(){
+  return `<section class="claw-game" data-claw-game aria-label="Claw machine game">
+    <header><span>Seaside amusements</span><strong>THE LUCKY CLAW</strong><b>10p</b></header>
+    <div class="claw-window"><div class="claw-track" aria-hidden="true"></div><div class="claw" aria-hidden="true"><i></i><span></span><b></b></div>
+      <div class="toy toy-1" data-toy="Bunny" aria-hidden="true"><i>◆</i></div><div class="toy toy-2" data-toy="Bear" aria-hidden="true"><i>●</i></div><div class="toy toy-3" data-toy="Star" aria-hidden="true"><i>★</i></div><div class="toy toy-4" data-toy="Duck" aria-hidden="true"><i>♥</i></div><div class="prize-chute" aria-hidden="true"><span>PRIZE</span></div>
+    </div><div class="claw-console"><p class="claw-message" aria-live="polite">Hold the button to move. Release to drop.</p><button class="claw-control" type="button"><span></span>HOLD TO MOVE</button><small><b data-claw-wins>0</b> prizes rescued</small></div>
+  </section>`;
 }
 // A pipe table was printing its pipes as prose; render it as a table.
 function table(rows){
@@ -584,7 +593,8 @@ function spacePreview(id,photo){
 }
 function spaceCard({id,t,count,latest,kids}){
   const photo=topicPhoto(id),special=["reading","technology","music","life","gardening"].includes(id),visual=spacePreview(id,photo);
-  return `<button class="topic-card space-card space-${id} ground-${t.ground||"plain"} ${photo&&!special?"has-photo":""} ${special?"has-space-preview":""}" data-topic="${id}" style="--topic:${t.color};--soft:${t.soft}">${visual}${!visual&&t.ground==="wedge"?`<span class="topic-flag" aria-hidden="true"></span>`:""}<h2>${esc(t.name)}</h2><p>${esc(t.description)}</p>${kids.length?`<span class="topic-kids">${kids.map(k=>`<span class="kid" data-topic="${k}" style="--topic:${state.data.topics[k].color}">${esc(state.data.topics[k].name)}</span>`).join("")}</span>`:""}</button>`;
+  const density=count>=20?"full":count>=8?"mid":"slim";
+  return `<button class="topic-card space-card space-${id} density-${density} ground-${t.ground||"plain"} ${photo&&!special?"has-photo":""} ${special?"has-space-preview":""}" data-topic="${id}" data-count="${count}" style="--topic:${t.color};--soft:${t.soft}">${visual}${!visual&&t.ground==="wedge"?`<span class="topic-flag" aria-hidden="true"></span>`:""}<h2>${esc(t.name)}</h2><p>${esc(t.description)}</p>${kids.length?`<span class="topic-kids">${kids.map(k=>`<span class="kid" data-topic="${k}" style="--topic:${state.data.topics[k].color}">${esc(state.data.topics[k].name)}</span>`).join("")}</span>`:""}</button>`;
 }
 function topics(){
     const list=Object.entries(state.data.topics).map(([id,t])=>({id,t,count:topicCount(id),latest:topicLatest(id),kids:childTopics(id)}));
@@ -826,8 +836,19 @@ function afterRender(route,isDetail){
   swipeable(".deck",".deck-dots i");
   swipeable(".gallery",".gallery-dots i",".gallery-caption");
   setupSpaceShelfMotion(route);
+  setupClawGames();
   syncReadingProgress();
   if(route==="search")requestAnimationFrame(()=>document.querySelector(".search-box")?.focus({preventScroll:true}));
+}
+function setupClawGames(){
+  document.querySelectorAll("[data-claw-game]").forEach(game=>{
+    const button=game.querySelector(".claw-control"),claw=game.querySelector(".claw"),message=game.querySelector(".claw-message"),counter=game.querySelector("[data-claw-wins]");if(!button||!claw)return;
+    let x=14,direction=1,moving=false,busy=false,wins=0,frame=0,last=0;const draw=()=>game.style.setProperty("--claw-x",`${x}%`);
+    const tick=time=>{if(!moving)return;if(!last)last=time;const dt=Math.min(32,time-last);last=time;x+=direction*dt*.035;if(x>=84){x=84;direction=-1}else if(x<=8){x=8;direction=1}draw();frame=requestAnimationFrame(tick)};
+    const start=ev=>{if(busy)return;ev.preventDefault();button.setPointerCapture?.(ev.pointerId);moving=true;last=0;message.textContent="Release when the claw is lined up…";frame=requestAnimationFrame(tick)};
+    const drop=()=>{if(!moving||busy)return;moving=false;cancelAnimationFrame(frame);busy=true;button.disabled=true;claw.classList.add("dropping");message.textContent="Down it goes…";setTimeout(()=>{const toys=[...game.querySelectorAll("[data-toy]:not(.won)")],window=game.querySelector(".claw-window"),target=toys.map(t=>({t,pos:t.offsetLeft/window.clientWidth*100})).sort((a,b)=>Math.abs(a.pos-x)-Math.abs(b.pos-x))[0],caught=target&&Math.abs(target.pos-x)<12&&Math.random()>.28;if(caught){target.t.classList.add("caught");message.textContent=`You caught the ${target.t.dataset.toy.toLowerCase()}!`;setTimeout(()=>{target.t.classList.remove("caught");target.t.classList.add("won");counter.textContent=String(++wins)},650)}else message.textContent="So close. The claw wants another go.";setTimeout(()=>{claw.classList.remove("dropping");button.disabled=false;busy=false},900)},720)};
+    button.addEventListener("pointerdown",start);button.addEventListener("pointerup",drop);button.addEventListener("pointercancel",drop);button.addEventListener("keydown",ev=>{if((ev.key===" "||ev.key==="Enter")&&!ev.repeat)start(ev)});button.addEventListener("keyup",ev=>{if(ev.key===" "||ev.key==="Enter")drop()});draw();
+  });
 }
 let spaceShelfTimer=null,shelfDriftFrame=null;
 function setupSpaceShelfMotion(route){
