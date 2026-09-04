@@ -1,0 +1,12 @@
+/* Explicit palette loaded after the legacy stylesheet. */
+.library-space-filter .space-shelf .space-card{background-image:none!important}
+.library-space-filter .space-life{background-color:#376a98!important}
+.library-space-filter .space-technology{background-color:#286657!important}
+.library-space-filter .space-music{background-color:#8a4054!important}
+.library-space-filter .space-motoring{background-color:#b06d32!important}
+.library-space-filter .space-gardening{background-color:#6f8845!important}
+.library-space-filter .space-family{background-color:#b9574f!important}
+.library-space-filter .space-reading{background-color:#496d91!important}
+.library-space-filter .space-food{background-color:#bc6335!important}
+.library-space-filter .space-attention{background-color:#725ca0!important}
+.library-space-filter .space-playlist{background-color:#377e86!important}
