@@ -350,7 +350,7 @@ function withoutSection(body="",heading=""){
   return [...lines.slice(0,start),...lines.slice(end)].join("\n");
 }
 function plantFacts(p){
-  return [["Light",p.light],["Water",p.water||(p.waterEvery?`Every ${p.waterEvery} days`:"")],["Feed",p.feed],["Humidity",p.humidity],["Soil",p.soil],["Position",p.position]].filter(([,v])=>v);
+  return [["Light",p.light],["Water",p.water||(p.waterEvery?`Every ${p.waterEvery} days`:"")],["Feed",p.feed],["Humidity",p.humidity],["Soil",p.soil],["Position",p.position],["Pets",p.pets]].filter(([,v])=>v);
 }
 function plantBody(e,shown){
   const p=e.plant,facts=plantFacts(p),due=waterDue(p);
@@ -860,20 +860,24 @@ function plantsView(items){
     return a.due?-1:b.due?1:(a.e.title||"").localeCompare(b.e.title||"");
   });
   const thirsty=rows.filter(r=>r.due&&r.due.days<=0).length;
+  const week=rows.filter(r=>r.due&&r.due.days<=7).length;
   const photo=plants.find(e=>e.image)?.image||topicPhoto("houseplants")?.src||"";
   const stat=(value,label)=>`<span><b>${value}</b><small>${label}</small></span>`;
+  const rota=rows.filter(r=>r.due);
   return `<div class="plant-shelf">
     <header class="shelf-hero">
       ${photo?`<img src="${esc(photo)}" alt="" fetchpriority="high">`:""}
       <i aria-hidden="true"></i>
-      <div class="shelf-hero-copy"><p>The indoor stock</p><h1>house plants</h1><blockquote>Every one on the windowsill,<br>and what it asks for.</blockquote></div>
-      <div class="shelf-stats">${stat(plants.length,plants.length===1?"plant":"plants")}${stat(thirsty,"want water")}${stat(notes.length,"notes")}</div>
+      <div class="shelf-hero-copy"><p>The indoor stock</p><h1>house plants</h1><blockquote>Every one in the house,<br>and what it asks for.</blockquote></div>
+      <div class="shelf-stats">${stat(plants.length,plants.length===1?"plant":"plants")}${stat(thirsty,"want water")}${stat(week,"due this week")}</div>
     </header>
+    ${rota.length?`<section class="water-rota"><div class="shelf-section-head"><p>Watering rota</p><span>${thirsty?`${thirsty} ${thirsty===1?"plant wants":"plants want"} water now`:"Nothing is thirsty today"}</span></div>
+      <ol>${rota.map(({e,due})=>`<li class="${due.days<0?"late":due.days===0?"now":""}" data-entry="${esc(e.id)}"><b>${esc(e.title)}</b><span>${esc(waterWord(due))}</span><small>every ${e.plant.waterEvery} days</small></li>`).join("")}</ol></section>`:""}
     ${rows.length?`<div class="plant-grid">${rows.map(({e,due})=>{const p=e.plant;return `<article class="plant-card" data-entry="${esc(e.id)}">
-      <span class="plant-photo">${e.image?`<img src="${esc(e.image)}" alt="${esc(e.imageAlt||"")}" loading="lazy">`:`<i aria-hidden="true">${icon("plant")}</i>`}</span>
+      <span class="plant-photo">${e.image?`<img src="${esc(e.image)}" alt="${esc(e.imageAlt||"")}" loading="lazy">`:`<i aria-hidden="true">${icon("plant")}</i>`}<em class="acc-no">No. ${accNo(e.id)}</em></span>
       <div class="plant-copy">
         <h2>${esc(e.title)}</h2>${p.botanical?`<p class="plant-latin">${esc(p.botanical)}</p>`:""}
-        <ul class="plant-chips">${p.light?`<li>${icon("sun")}<span>${esc(p.light)}</span></li>`:""}${p.water||p.waterEvery?`<li>${icon("drop")}<span>${esc(p.water||`Every ${p.waterEvery} days`)}</span></li>`:""}${p.position?`<li>${icon("home")}<span>${esc(p.position)}</span></li>`:""}</ul>
+        <ul class="plant-chips">${p.light?`<li>${icon("sun")}<span>${esc(p.light)}</span></li>`:""}${p.water||p.waterEvery?`<li>${icon("drop")}<span>${esc(p.water||`Every ${p.waterEvery} days`)}</span></li>`:""}${p.position?`<li>${icon("home")}<span>${esc(p.position)}</span></li>`:""}${p.pets?`<li>${icon(/safe/i.test(p.pets)?"check":"alert")}<span>${esc(p.pets)}</span></li>`:""}</ul>
         ${due?`<span class="plant-flag ${due.days<0?"late":due.days===0?"now":""}">${esc(waterWord(due))}</span>`:""}
       </div>
     </article>`}).join("")}</div>`:`<p class="empty">No plants on the shelf yet. Add a note with <code>view: plant</code> and a photograph.</p>`}

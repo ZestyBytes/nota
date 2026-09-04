@@ -180,6 +180,7 @@ feed: "Monthly, spring to autumn"
 humidity: "Likes a misting"
 soil: "Peat-free, free draining"
 position: "Front window"
+pets: "Toxic if chewed"        # or "Safe", shown on the card
 acquired: "2025-04-12"
 tags: [houseplants]
 publish: true
@@ -189,11 +190,15 @@ Body: a photograph first, then a sentence about the plant, then an optional
 after that reads as ordinary prose, so a plant can carry a running log of how
 it is doing.
 
-Give both `waterEvery` and `lastWatered` and the shelf works out when each
-plant next wants water, puts the thirstiest first, and counts how many are
-due. Leave them out and the plant still lists, it simply carries no clock.
-The House plants space (under Gardening) is the stock list: every plant at
-once, with its light and its watering cadence on the card.
+Give both `waterEvery` and `lastWatered` and the space works out when each
+plant next wants water, puts the thirstiest first, counts how many are due,
+and sets the whole lot out as a watering rota. Leave them out and the plant
+still lists, it simply carries no clock. Watering one is a one word edit:
+change its `lastWatered` to today and the rota reorders itself.
+
+The House plants space sits under Gardening and is the stock list: the rota
+first, then a profile card per plant with its light, its cadence, where it
+stands and whether it is safe around animals.
 
 **Task** (`type: task`): shows on Today's To-do list. This folder doesn't
 exist in the vault yet, so create `quartz/content/tasks/` and drop task notes

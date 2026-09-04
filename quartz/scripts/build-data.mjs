@@ -427,7 +427,7 @@ for (const file of files) {
       water: data.water || "", waterEvery: Number(data.waterEvery || 0) || 0,
       lastWatered: dateOnly(data.lastWatered) || "",
       feed: data.feed || "", humidity: data.humidity || "", soil: data.soil || "",
-      position: data.position || "", acquired: dateOnly(data.acquired) || "",
+      position: data.position || "", pets: data.pets || "", acquired: dateOnly(data.acquired) || "",
       care: bulletsAfter(body, "care")
     };
   }

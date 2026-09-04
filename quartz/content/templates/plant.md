@@ -11,6 +11,7 @@ feed: ""
 humidity: ""
 soil: ""
 position: ""
+pets: ""
 acquired: "YYYY-MM-DD"
 tags: [houseplants]
 publish: true

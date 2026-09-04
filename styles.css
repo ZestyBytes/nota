@@ -1499,8 +1499,20 @@ aside .section-title{display:flex;align-items:baseline}
 .shelf-stats span:last-child{border:0}
 .shelf-stats b{font:700 21px var(--mono);color:var(--plant)}
 .shelf-stats small{font:8px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
-.plant-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:1px;background:var(--line);border-top:1px solid var(--line)}
-.plant-card{background:var(--surface);padding:16px;display:grid;gap:14px;cursor:pointer;transition:background .16s ease}
+.water-rota{padding:26px 28px 4px}
+.water-rota ol{margin:0;padding:0;list-style:none;display:flex;flex-wrap:wrap;border:1px solid var(--line);border-width:1px 0 0 1px}
+.water-rota li{flex:1 1 190px;background:var(--surface);padding:12px 14px;display:grid;gap:3px;cursor:pointer;border:1px solid var(--line);border-width:0 1px 1px 0}
+.water-rota li:hover{background:var(--paper-alt)}
+.water-rota li.now{box-shadow:inset 3px 0 0 #2f7a5a}
+.water-rota li.late{box-shadow:inset 3px 0 0 var(--stamp-red)}
+.water-rota b{font:600 15px/1.2 var(--serif)}
+.water-rota span{font:700 10px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.water-rota li.now span{color:#2f7a5a}
+.water-rota li.late span{color:var(--stamp-red)}
+.water-rota small{font:italic 11px var(--serif);color:var(--faint)}
+.plant-photo .acc-no{position:absolute;left:8px;top:8px;font:700 9px var(--mono);font-style:normal;letter-spacing:.08em;padding:3px 6px;background:rgba(247,248,242,.9);color:var(--ink)}
+.plant-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:0;background:var(--surface);border-top:1px solid var(--line)}
+.plant-card{background:var(--surface);border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:16px;display:grid;gap:14px;cursor:pointer;transition:background .16s ease}
 .plant-card:hover{background:var(--paper-alt)}
 .plant-photo{display:block;position:relative;aspect-ratio:4/5;overflow:hidden;background:var(--paper-alt);border:1px solid var(--line)}
 .plant-photo img{width:100%;height:100%;object-fit:cover}
@@ -1515,6 +1527,7 @@ aside .section-title{display:flex;align-items:baseline}
 .plant-flag.now{color:#fff;background:var(--plant);border-color:var(--plant)}
 .plant-flag.late{color:#fff;background:var(--stamp-red);border-color:var(--stamp-red)}
 .plant-notes{padding:28px}
+.plant-grid{padding:0;margin-top:22px}
 .shelf-section-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding-bottom:11px;border-bottom:2px solid var(--ink);margin-bottom:20px}
 .shelf-section-head p{margin:0;font:700 12px var(--mono);letter-spacing:.12em;text-transform:uppercase}
 .shelf-section-head span{font:italic 12px var(--serif);color:var(--muted)}
@@ -1547,13 +1560,21 @@ aside .section-title{display:flex;align-items:baseline}
 @media(max-width:560px){
   .plants-page{margin-left:-14px;margin-right:-14px}
   .plant-shelf{border-left:0;border-right:0}
-  .shelf-hero{min-height:250px;padding:20px}
-  .shelf-hero-copy blockquote{display:none}
-  .shelf-stats{left:16px;right:16px;bottom:16px}
+  /* The stats sat over the title once the hero lost its height, so on a phone
+     they drop below it and the hero grows to fit rather than overlapping. */
+  .shelf-hero{display:block;min-height:0;padding:20px}
+  .shelf-hero-copy{max-width:none}
+  .shelf-hero-copy h1{margin:12px 0 14px}
+  .shelf-hero-copy blockquote{font-size:17px}
+  .shelf-stats{position:relative;z-index:1;inset:auto;margin-top:20px;box-shadow:4px 4px 0 rgba(18,42,32,.28)}
   .shelf-stats span{flex:1;min-width:0;padding:11px}
+  .water-rota{padding:22px 16px 0}
+  .water-rota li{flex:1 1 100%;grid-template-columns:1fr auto;align-items:baseline;padding:11px 13px}
+  .water-rota small{grid-column:1/-1}
   .plant-grid{grid-template-columns:repeat(2,1fr)}
   .plant-card{padding:12px}
   .plant-copy h2{font-size:17px}
+  .plant-chips li{font-size:10px}
   .plant-notes{padding:22px 16px}
 }
 @media(prefers-color-scheme:dark){
