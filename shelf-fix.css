@@ -29,14 +29,14 @@
 .library-space-filter .space-work{background-color:#485b7c!important}
 .library-space-filter .space-projects{background-color:#8c4338!important}
 .library-space-filter .space-travel{background-color:#397b87!important}
-.library-space-filter .space-card:nth-child(8n+1){background-color:#315f91!important}
-.library-space-filter .space-card:nth-child(8n+2){background-color:#184c42!important}
-.library-space-filter .space-card:nth-child(8n+3){background-color:#7d3047!important}
-.library-space-filter .space-card:nth-child(8n+4){background-color:#bb6b2d!important}
-.library-space-filter .space-card:nth-child(8n+5){background-color:#674f91!important}
-.library-space-filter .space-card:nth-child(8n+6){background-color:#b34f48!important}
-.library-space-filter .space-card:nth-child(8n+7){background-color:#3f6689!important}
-.library-space-filter .space-card:nth-child(8n){background-color:#74833b!important}
+html body .library-index .library-space-filter .spaces-index .space-shelf .space-card:nth-child(8n+1){background-color:#315f91!important}
+html body .library-index .library-space-filter .spaces-index .space-shelf .space-card:nth-child(8n+2){background-color:#184c42!important}
+html body .library-index .library-space-filter .spaces-index .space-shelf .space-card:nth-child(8n+3){background-color:#7d3047!important}
+html body .library-index .library-space-filter .spaces-index .space-shelf .space-card:nth-child(8n+4){background-color:#bb6b2d!important}
+html body .library-index .library-space-filter .spaces-index .space-shelf .space-card:nth-child(8n+5){background-color:#674f91!important}
+html body .library-index .library-space-filter .spaces-index .space-shelf .space-card:nth-child(8n+6){background-color:#b34f48!important}
+html body .library-index .library-space-filter .spaces-index .space-shelf .space-card:nth-child(8n+7){background-color:#3f6689!important}
+html body .library-index .library-space-filter .spaces-index .space-shelf .space-card:nth-child(8n){background-color:#74833b!important}
 .library-space-filter .space-shelf .space-card h2{font-size:12px!important;letter-spacing:.02em!important}
 .search-page{padding-top:clamp(18px,4vw,46px)}
 @media(max-width:800px){
