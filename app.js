@@ -489,6 +489,10 @@ function onThisDay(){
   const md=todayKey.slice(5),items=state.data.entries.filter(e=>{const d=e.occurredAt||e.createdAt||"";return d.slice(5)===md&&d.slice(0,4)!==todayKey.slice(0,4)});
   return items.length?`<section class="on-this-day"><div><p class="eyebrow">On this day</p><h2>${items.length===1?"One thing came back":"A few things came back"}</h2></div><div>${items.slice(0,3).map(e=>dayRow(e,"article")).join("")}</div></section>`:"";
 }
+// The home page showed three of eleven waiting things and hid the rest behind a
+// link. Six sit in the same band two across, and the remainder fold open where
+// they are rather than on another page.
+const HOME_TASKS=6;
 function daysFromToday(iso){
   const [ty,tm,td]=todayKey.split("-").map(Number),[y,m,d]=iso.split("-").map(Number);
   return Math.round((Date.UTC(y,m-1,d)-Date.UTC(ty,tm-1,td))/864e5);
@@ -522,12 +526,14 @@ function today(){
     .slice(0,5);
   const waiting=openTasksInOrder(),open=waiting.length;
   const wander=state.data.entries.filter(e=>e.type!=="Task");
+  const tasks=waiting.slice(0,HOME_TASKS),more=waiting.slice(HOME_TASKS);
   return `<section class="home-page">
     ${homeEvents()}
     <div class="home-latest-head"><h2 class="section-title">Latest</h2>${open?`<a href="#tasks">${open} thing${open===1?"":"s"} to do &rarr;</a>`:""}</div>
     <div class="entry-list home-latest-list">${recent.length?recent.map(e=>entryCard(e)).join(""):`<p class="empty">The archive is ready for its first entry.</p>`}</div>
     ${homePhotos()}
     ${onThisDay()}
+    ${tasks.length?`<section class="home-tasks"><div class="home-latest-head"><h2 class="section-title">To-do</h2><a href="#tasks">Open list &rarr;</a></div><div class="tasks home-task-grid">${tasks.map(taskRow).join("")}</div>${more.length?`<details class="more-tasks"><summary>${more.length} more waiting</summary><div class="tasks home-task-grid">${more.map(taskRow).join("")}</div></details>`:""}</section>`:""}
   </section>`;
 }
 function taskRow(t){const tp=topic(t.topics[0]);return `<div class="task ${t.completedAt?"done":""} ${t.note?"has-note":""}" ${t.note?`data-entry="${esc(t.id)}"`:""}><span class="task-mark" aria-hidden="true">${t.completedAt?icon("check"):""}</span><span class="task-copy"><span class="task-title">${esc(t.title)}</span>${t.note?`<small class="task-note">${esc(t.note)}</small>`:""}${t.completedAt?`<small class="task-due">Done ${esc(fmtDate(t.completedAt))}</small>`:t.dueAt?`<small class="task-due${t.dueAt<todayKey?" late":""}">${t.dueAt<todayKey?"Overdue, was due "+esc(fmtDate(t.dueAt)):t.dueAt===todayKey?"Due today":"Due "+esc(fmtDate(t.dueAt))}</small>`:""}</span><span class="chip" style="--topic:${tp.color};--soft:${tp.soft}">${esc(tp.name)}</span></div>`}
