@@ -8,7 +8,12 @@
    row, or a long shelf repeats itself.
 
    Thickness and trim arrive as --spine-w and --spine-h on each card, set in
-   spaceCard(). Everything else is here. */
+   spaceCard(). Everything else is here.
+
+   A spine also opens. The card is the case: it holds the leaves, and the
+   cloth sits on a cover hinged to its left edge, so shut it looks exactly as
+   it always did. Resting on one swings the cover away and frosts the rest of
+   the shelf back behind it. */
 
 /* ---------- the shelf itself ---------- */
 /* No back panel: the paper of the page runs behind the books and the board
@@ -28,14 +33,16 @@
   box-shadow:0 12px 20px -14px rgba(25,14,8,.75)!important;
 }
 .library-space-filter .space-shelf-rail{
-  align-items:flex-end!important;gap:0!important;padding:0!important;
+  align-items:flex-end!important;gap:0!important;
+  /* A rail with overflow-x set clips vertically too, so the headroom an open
+     volume rises into has to be part of the rail itself. */
+  padding:46px 0 0!important;
   mask-image:none!important;touch-action:pan-x!important;
   overflow-x:auto!important;-webkit-overflow-scrolling:touch;
 }
 
-/* ---------- a spine ---------- */
-/* Cloth grain in both directions, a dark roll at the hinge, and light on the
-   crown where a shelf lamp would catch it. */
+/* ---------- a volume ---------- */
+/* The case itself carries no ink: it is the box the cover swings off. */
 .library-index .library-space-filter .space-shelf .space-card{
   position:relative!important;
   width:var(--spine-w,52px)!important;
@@ -43,38 +50,125 @@
   flex:0 0 var(--spine-w,52px)!important;
   height:var(--spine-h,204px)!important;
   min-height:0!important;
-  display:flex!important;align-items:flex-end!important;justify-content:center!important;
-  overflow:hidden!important;
-  padding:0 0 26px!important;
-  border:0!important;border-radius:3px 2px 0 0!important;
-  background-color:var(--topic)!important;
-  background-image:repeating-linear-gradient(90deg,rgba(255,255,255,.05) 0 1px,transparent 1px 3px),
-                   repeating-linear-gradient(0deg,rgba(0,0,0,.06) 0 1px,transparent 1px 3px),
-                   linear-gradient(90deg,rgba(0,0,0,.34) 0 4px,rgba(255,255,255,.09) 5px 9px,transparent 12%,transparent 86%,rgba(0,0,0,.4) 100%)!important;
-  box-shadow:inset 1px 0 rgba(255,255,255,.14),inset -2px 0 rgba(0,0,0,.3),2px 3px 6px rgba(25,14,8,.28)!important;
-  transform:none!important;
+  display:block!important;
+  overflow:visible!important;
+  padding:0!important;border:0!important;border-radius:0!important;
+  background:none!important;box-shadow:none!important;
+  --open-w:300px;
+  perspective:1400px;transform:none!important;z-index:1;
+  transition:flex-basis .42s cubic-bezier(.2,.7,.2,1),width .42s cubic-bezier(.2,.7,.2,1),height .42s cubic-bezier(.2,.7,.2,1),transform .42s cubic-bezier(.2,.7,.2,1);
 }
-/* the crown highlight */
-/* .topic-card puts a strip of tape on both pseudo-elements, so every one of
-   its dimensions has to be undone here or the tape survives as a rotated
-   34px sliver across the crown. */
-.library-index .library-space-filter .space-shelf .space-card::before{
-  content:""!important;display:block!important;position:absolute!important;
-  left:0!important;right:0!important;top:0!important;bottom:auto!important;
-  width:auto!important;height:15px!important;
-  transform:none!important;box-shadow:none!important;z-index:1!important;
-  background:linear-gradient(180deg,rgba(255,255,255,.17),transparent)!important;
-  pointer-events:none;
-}
+/* the tape both pseudo-elements carry on a topic card has no place on a book */
+.library-index .library-space-filter .space-shelf .space-card::before,
 .library-index .library-space-filter .space-shelf .space-card::after{display:none!important;content:none!important}
 .library-index .library-space-filter .space-shelf .space-card p,
 .library-index .library-space-filter .space-shelf .space-card .topic-kids,
 .library-index .library-space-filter .space-shelf .space-card .topic-flag{display:none!important}
 
+/* open: the case widens, lifts off the board and clears the frost */
+.library-index .library-space-filter .space-shelf .space-card.is-open{
+  width:var(--open-w)!important;
+  flex-basis:var(--open-w)!important;
+  height:max(var(--spine-h,204px),250px)!important;
+  transform:translateY(-14px)!important;
+  z-index:6!important;
+}
+
+/* the whole volume is one hit target, sitting over the leaves */
+.library-space-filter .vol-hit{
+  position:absolute;inset:0;z-index:3;
+  border:0;padding:0;background:none;cursor:pointer;-webkit-tap-highlight-color:transparent;
+}
+.space-card.is-open .vol-hit{cursor:default}
+.library-space-filter .vol-hit:focus-visible{outline:2px solid #f3e2b8;outline-offset:-2px}
+.library-space-filter .vol-book{position:absolute;inset:0;transform-style:preserve-3d}
+
+/* ---------- the leaves ---------- */
+.library-space-filter .vol-spread{
+  position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;
+  background:
+    linear-gradient(90deg,rgba(93,72,40,.3) 0 1px,rgba(255,255,255,.5) 3px,transparent 16%,transparent 84%,rgba(93,72,40,.12) 100%),
+    linear-gradient(90deg,#f3ecd9 0 48.4%,rgba(80,58,28,.42) 49.4% 50.6%,rgba(255,255,255,.45) 52%,#f3ecd9 60% 100%);
+  color:#33291c;
+  box-shadow:inset 0 0 26px rgba(93,72,40,.26),0 20px 30px -22px rgba(18,12,5,.85);
+  opacity:0;transition:opacity .24s ease .18s;overflow:hidden;
+}
+/* the block of leaves, seen at the fore-edge */
+.library-space-filter .vol-spread::after{
+  content:"";position:absolute;top:3px;bottom:3px;right:0;width:7px;
+  background:repeating-linear-gradient(90deg,rgba(120,96,54,.32) 0 1px,rgba(255,255,255,.5) 1px 2.5px);
+  box-shadow:inset 2px 0 4px -2px rgba(80,58,28,.5);
+}
+.space-card.is-open .vol-spread{opacity:1}
+.library-space-filter .vol-leaf{padding:14px 12px;display:flex;flex-direction:column;gap:7px;min-width:0}
+.library-space-filter .vol-leaf.recto{padding-bottom:52px}
+.library-space-filter .vol-mark{font:700 8px var(--mono);letter-spacing:.14em;color:#7d6f56}
+.library-space-filter .vol-plate{border-top:1px solid #33291c;border-bottom:1px solid #d8cfb4;padding:9px 1px 10px;display:grid;gap:5px}
+.library-space-filter .vol-plate span{font:700 7px var(--mono);text-transform:uppercase;letter-spacing:.13em;color:#7d6f56}
+.library-space-filter .vol-plate b{font:500 22px/1 var(--serif);letter-spacing:-.02em;color:#33291c}
+.library-space-filter .vol-plate i{font:italic 11px/1.3 var(--serif);color:#7d6f56}
+.library-space-filter .vol-tally{margin-top:auto;padding-top:8px;border-top:1px solid #d8cfb4;font:700 8px var(--mono);text-transform:uppercase;letter-spacing:.1em;color:#7d6f56}
+.library-space-filter .vol-tally b{display:block;font:500 34px/1 var(--serif);color:#33291c;letter-spacing:-.04em}
+.library-space-filter .vol-leaf h4{margin:0;font:700 7px var(--mono);text-transform:uppercase;letter-spacing:.13em;color:#7d6f56;border-bottom:1px solid #d8cfb4;padding-bottom:5px}
+.library-space-filter .vol-leaf ul{list-style:none;margin:0;padding:0;display:grid}
+.library-space-filter .vol-leaf li{display:grid;gap:1px;padding:7px 0;border-bottom:1px solid rgba(151,133,97,.32)}
+.library-space-filter .vol-leaf li:last-child{border-bottom:0}
+.library-space-filter .vol-leaf li em{font:400 7px var(--mono);font-style:normal;text-transform:uppercase;letter-spacing:.1em;color:#7d6f56}
+.library-space-filter .vol-leaf li b{font:500 12px/1.2 var(--serif);color:#33291c}
+.library-space-filter .vol-none{font:italic 11px var(--serif);color:#7d6f56}
+
+/* the one control that leaves the shelf */
+.library-space-filter .vol-go{
+  position:absolute;left:calc(50% + 12px);right:19px;bottom:14px;z-index:4;
+  border:1px solid #33291c;background:#33291c;color:#f3ecd9;
+  padding:8px 9px;font:700 8px var(--mono);text-transform:uppercase;letter-spacing:.1em;
+  cursor:pointer;text-align:center;white-space:nowrap;
+  opacity:0;transition:opacity .2s ease .2s,background .15s,color .15s;
+}
+.space-card.is-open .vol-go{opacity:1}
+.space-card:not(.is-open) .vol-go{pointer-events:none}
+.library-space-filter .vol-go:hover{background:#8a5a12;border-color:#8a5a12;color:#fdfaf0}
+.library-space-filter .vol-go:focus-visible{outline:2px solid #f3e2b8;outline-offset:2px}
+
+/* ---------- the cover ---------- */
+/* Cloth grain in both directions, a dark roll at the hinge, and light on the
+   crown where a shelf lamp would catch it. Inside, marbled endpaper. */
+.library-space-filter .vol-cover{
+  position:absolute;left:0;top:0;bottom:0;width:100%;
+  transform-origin:left center;transform-style:preserve-3d;transform:rotateY(0deg);
+  transition:transform .52s cubic-bezier(.35,.9,.3,1) .06s;
+}
+.space-card.is-open .vol-cover{
+  transform:rotateY(calc(var(--deg,155) * -1deg));
+  box-shadow:0 22px 30px -20px rgba(18,12,5,.9);
+}
+.library-space-filter .vol-face{position:absolute;inset:0;backface-visibility:hidden;overflow:hidden}
+.library-space-filter .vol-face.out{
+  background-color:var(--cloth,var(--topic));
+  background-image:repeating-linear-gradient(90deg,rgba(255,255,255,.05) 0 1px,transparent 1px 3px),
+                   repeating-linear-gradient(0deg,rgba(0,0,0,.06) 0 1px,transparent 1px 3px),
+                   linear-gradient(90deg,rgba(0,0,0,.34) 0 4px,rgba(255,255,255,.09) 5px 9px,transparent 12%,transparent 86%,rgba(0,0,0,.4) 100%);
+  box-shadow:inset 1px 0 rgba(255,255,255,.14),inset -2px 0 rgba(0,0,0,.3),2px 3px 6px rgba(25,14,8,.28);
+  border-radius:3px 2px 0 0;
+}
+.library-space-filter .vol-face.out::before{
+  content:"";position:absolute;left:0;right:0;top:0;height:15px;
+  background:linear-gradient(180deg,rgba(255,255,255,.17),transparent);
+}
+.library-space-filter .vol-face.in{
+  transform:rotateY(180deg);
+  background:radial-gradient(120% 60% at 20% 20%,rgba(255,255,255,.5),transparent 60%),
+             repeating-linear-gradient(115deg,rgba(120,86,42,.16) 0 6px,rgba(174,140,84,.1) 6px 13px,rgba(90,62,30,.12) 13px 19px),
+             #f3ecd9;
+  box-shadow:inset -8px 0 14px -8px rgba(60,42,20,.5);
+  display:grid;place-items:center;padding:14px;
+}
+.library-space-filter .vol-ex{border:1px solid rgba(93,72,40,.45);background:rgba(246,241,227,.86);padding:10px 12px;text-align:center;color:#33291c;transform:rotate(-1.2deg)}
+.library-space-filter .vol-ex span{display:block;font:700 7px var(--mono);text-transform:uppercase;letter-spacing:.16em;color:#7d6f56}
+.library-space-filter .vol-ex b{display:block;font:italic 500 15px/1.2 var(--serif);margin:5px 0}
+.library-space-filter .vol-ex i{display:block;font:400 8px var(--mono);color:#7d6f56}
+
 /* the plain spine: the name runs up it, clear of the board */
-/* Placed the same explicit way as the title panel below, rather than left to
-   the flex box: pinned across the full width of the spine and up from the
-   board, so the label lands in the same place whatever the layout does. */
 .library-index .library-space-filter .space-shelf .space-card h2{
   position:absolute!important;left:0!important;right:0!important;
   top:auto!important;bottom:26px!important;height:auto!important;
@@ -85,48 +179,57 @@
   text-transform:lowercase!important;color:#f2ecdd!important;opacity:.92;
   text-shadow:none!important;border:0!important;
 }
-/* a spine with room for type gets the ruled panel and its count at the foot.
-   Thickness is relative, so this falls to the spaces holding at least half as
-   much as the fattest one: a handful of books, never the whole shelf. */
+/* a spine with room for type gets the ruled panel and its count at the foot */
 .library-index .library-space-filter .space-shelf .space-card.spine-titled h2{
-  position:absolute!important;left:0!important;right:0!important;
   top:17%!important;height:50%!important;bottom:auto!important;
-  display:grid!important;place-items:center;
-  writing-mode:vertical-rl!important;transform:rotate(180deg)!important;
   border-top:1px solid rgba(240,232,208,.55)!important;
   border-bottom:1px solid rgba(240,232,208,.55)!important;
   font:600 13px/1 var(--serif)!important;letter-spacing:.13em!important;
   text-transform:uppercase!important;color:#f6f0dd!important;opacity:1;
 }
-.library-index .library-space-filter .space-shelf .space-card.spine-titled::after{
-  content:attr(data-count)!important;display:block!important;
-  position:absolute!important;left:0!important;right:0!important;
-  top:auto!important;bottom:15px!important;
-  width:auto!important;height:auto!important;
-  transform:none!important;box-shadow:none!important;z-index:1!important;
-  text-align:center!important;font:700 8px/1 var(--mono)!important;letter-spacing:.06em!important;
-  color:rgba(246,240,221,.66)!important;background:none!important;
+.library-space-filter .vol-count{display:none}
+.library-space-filter .spine-titled .vol-count{
+  display:block;position:absolute;left:0;right:0;bottom:15px;
+  text-align:center;font:700 8px var(--mono);letter-spacing:.06em;color:rgba(246,240,221,.66);
+}
+
+/* ---------- the frost ---------- */
+/* One open book is the subject; the rest of the row stays legible behind it. */
+.library-space-filter .shelf-scrim{
+  position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:rgba(22,17,9,.42);
+  backdrop-filter:blur(4px) saturate(.62);-webkit-backdrop-filter:blur(4px) saturate(.62);
+  opacity:0;transition:opacity .34s ease;
+}
+.library-space-filter .space-shelf.has-open .shelf-scrim{opacity:1}
+
+@media(prefers-reduced-motion:reduce){
+  .library-index .library-space-filter .space-shelf .space-card,
+  .library-space-filter .vol-cover,
+  .library-space-filter .vol-spread,
+  .library-space-filter .vol-go,
+  .library-space-filter .shelf-scrim{transition-duration:.001ms!important}
 }
 
 /* ---------- cloth colours, by topic ---------- */
 /* Anything not named here falls back to the topic's own ink, so a new space
    is never invisible and never borrows its neighbour's colour. */
-html body .library-index .library-space-filter .space-shelf .space-card.space-life{background-color:#315f91!important}
-html body .library-index .library-space-filter .space-shelf .space-card.space-technology{background-color:#184c42!important}
-html body .library-index .library-space-filter .space-shelf .space-card.space-music{background-color:#7d3047!important}
-html body .library-index .library-space-filter .space-shelf .space-card.space-practice{background-color:#8a4438!important}
-html body .library-index .library-space-filter .space-shelf .space-card.space-playlist{background-color:#277985!important}
-html body .library-index .library-space-filter .space-shelf .space-card.space-motoring{background-color:#bb6b2d!important}
-html body .library-index .library-space-filter .space-shelf .space-card.space-gardening{background-color:#74833b!important}
-html body .library-index .library-space-filter .space-shelf .space-card.space-family{background-color:#b34f48!important}
-html body .library-index .library-space-filter .space-shelf .space-card.space-reading{background-color:#3f6689!important}
-html body .library-index .library-space-filter .space-shelf .space-card.space-food{background-color:#b9472f!important}
-html body .library-index .library-space-filter .space-shelf .space-card.space-recipes{background-color:#8a5a12!important}
-html body .library-index .library-space-filter .space-shelf .space-card.space-eatingout{background-color:#7a5a2e!important}
-html body .library-index .library-space-filter .space-shelf .space-card.space-adhd{background-color:#674f91!important}
-html body .library-index .library-space-filter .space-shelf .space-card.space-selfcare{background-color:#a95d76!important}
-html body .library-index .library-space-filter .space-shelf .space-card.space-fitness{background-color:#3f826b!important}
-html body .library-index .library-space-filter .space-shelf .space-card.space-habits{background-color:#896044!important}
+.library-space-filter .space-card.space-life{--cloth:#315f91}
+.library-space-filter .space-card.space-technology{--cloth:#184c42}
+.library-space-filter .space-card.space-music{--cloth:#7d3047}
+.library-space-filter .space-card.space-practice{--cloth:#8a4438}
+.library-space-filter .space-card.space-playlist{--cloth:#277985}
+.library-space-filter .space-card.space-motoring{--cloth:#bb6b2d}
+.library-space-filter .space-card.space-gardening{--cloth:#74833b}
+.library-space-filter .space-card.space-family{--cloth:#b34f48}
+.library-space-filter .space-card.space-reading{--cloth:#3f6689}
+.library-space-filter .space-card.space-food{--cloth:#b9472f}
+.library-space-filter .space-card.space-recipes{--cloth:#8a5a12}
+.library-space-filter .space-card.space-eatingout{--cloth:#7a5a2e}
+.library-space-filter .space-card.space-adhd{--cloth:#674f91}
+.library-space-filter .space-card.space-selfcare{--cloth:#a95d76}
+.library-space-filter .space-card.space-fitness{--cloth:#3f826b}
+.library-space-filter .space-card.space-habits{--cloth:#896044}
 
 .search-page{padding-top:clamp(18px,4vw,46px)}
 
@@ -135,22 +238,29 @@ html body .library-index .library-space-filter .space-shelf .space-card.space-ha
    spines and the type comes down with them. */
 @media(max-width:800px){
   .library-space-filter .space-shelf{padding-bottom:14px!important;background-size:100% 14px!important}
-  .library-space-filter .space-shelf-rail{padding:0!important}
+  .library-space-filter .space-shelf-rail{padding:74px 0 0!important}
   .library-index .library-space-filter .space-shelf .space-card{
     width:calc(var(--spine-w,52px) * .6)!important;
     flex-basis:calc(var(--spine-w,52px) * .6)!important;
     min-width:16px!important;
     height:calc(var(--spine-h,204px) * .62)!important;
-    padding-bottom:15px!important;
+    --open-w:min(286px,78vw);
   }
-  .library-index .library-space-filter .space-shelf .space-card h2{bottom:15px!important}
-  .library-index .library-space-filter .space-shelf .space-card::before{height:9px!important}
-  .library-index .library-space-filter .space-shelf .space-card h2{font-size:8px!important}
+  .library-index .library-space-filter .space-shelf .space-card.is-open{
+    width:var(--open-w)!important;flex-basis:var(--open-w)!important;
+    height:206px!important;transform:translateY(-9px)!important;
+  }
+  .library-space-filter .vol-go{left:calc(50% + 9px);right:15px;bottom:11px}
+  .library-index .library-space-filter .space-shelf .space-card h2{bottom:15px!important;font-size:8px!important}
+  .library-space-filter .vol-face.out::before{height:9px!important}
   /* The panel stays on a phone, sized to the shelf: a name as long as
      Technology needs about 59px at 9px caps, and the panel gives it 67. */
   .library-index .library-space-filter .space-shelf .space-card.spine-titled h2{
     top:16%!important;height:60%!important;bottom:auto!important;
     font-size:9px!important;letter-spacing:.05em!important;
   }
-  .library-index .library-space-filter .space-shelf .space-card.spine-titled::after{bottom:8px!important;font-size:7px!important}
+  .library-space-filter .spine-titled .vol-count{bottom:8px;font-size:7px}
+  .library-space-filter .vol-leaf{padding:11px 10px;gap:5px}
+  .library-space-filter .vol-plate b{font-size:19px}
+  .library-space-filter .vol-tally b{font-size:28px}
 }

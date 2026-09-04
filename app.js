@@ -671,7 +671,7 @@ function libraryBody(){
   return body;
 }
 function library(){
-  return `<section class="library-index">${pageHead("Browse by format","Library","Highlights are a small selection chosen to share. Notes gathers notes, journals and quotes; journeys, books, photographs and plants keep their useful shapes.")}<div class="library-space-filter">${topics()}</div><div class="library-tabs">${Object.entries(libraryTabs).map(([x,label])=>`<button class="filter ${state.library===x?"active":""}" data-library="${x}">${label}</button>`).join("")}</div><div class="library-body">${libraryBody()}</div></section>`;
+  return `<section class="library-index">${pageHead("Browse by format","Library","Highlights are a small selection chosen to share. Notes gathers notes, journals and quotes; journeys, books, photographs and plants keep their useful shapes.")}<div class="library-space-filter">${topics(true)}</div><div class="library-tabs">${Object.entries(libraryTabs).map(([x,label])=>`<button class="filter ${state.library===x?"active":""}" data-library="${x}">${label}</button>`).join("")}</div><div class="library-body">${libraryBody()}</div></section>`;
 }
 // Switching filter swaps only the list. Re-rendering the whole page rebuilt the
 // shelf of topics above it, which threw its drift back to the start every time.
@@ -727,7 +727,44 @@ function spacePreview(id,photo){
   if(id==="gardening")return `<span class="space-garden-preview" aria-hidden="true"><i></i><i></i><i></i><b>grow · tend · note</b></span>`;
   return photo?`<img class="topic-photo" src="${esc(photo.src)}" alt="" decoding="async" fetchpriority="high" onload="this.dataset.ready=1" onerror="this.closest('.topic-card').classList.remove('has-photo');this.nextElementSibling?.remove();this.remove()"><span class="topic-shade" aria-hidden="true"></span>`:"";
 }
-function spaceCard({id,t,count,latest,kids,most}){
+// What is printed inside a volume when its cover swings open: the space's
+// own bookplate on the verso, and the three most recent things filed under
+// it on the recto. All of it is already in the archive; nothing new is kept
+// for the shelf.
+function volumeLeaves(id,t,count){
+  const rows=state.data.entries.filter(e=>inTopic(e,id))
+    .sort((a,b)=>(b.occurredAt||b.createdAt||"").localeCompare(a.occurredAt||a.createdAt||"")).slice(0,3);
+  const shortDate=iso=>fmtDate(iso).replace(/ \d{4}$/,"");
+  const list=rows.length
+    ? `<ul>${rows.map(e=>`<li><em>${esc(e.type)} · ${esc(shortDate(e.occurredAt||e.createdAt))}</em><b>${esc(e.title)}</b></li>`).join("")}</ul>`
+    : `<span class="vol-none">Nothing filed here yet.</span>`;
+  return `<span class="vol-spread" aria-hidden="true">
+    <span class="vol-leaf verso">
+      <span class="vol-mark">${esc(id.slice(0,3).toUpperCase())} · ${esc(accNo(id).slice(-2))}</span>
+      <span class="vol-plate"><span>Noted · space</span><b>${esc(t.name)}</b><i>${esc(t.description)}</i></span>
+      <span class="vol-tally"><b>${count}</b>things kept</span>
+    </span>
+    <span class="vol-leaf recto"><h4>Latest in the space</h4>${list}</span>
+  </span>`;
+}
+// On the Library shelf the card is the case rather than the cloth: the cloth
+// rides on a cover hinged to its left edge, which swings away from the leaves
+// when the volume opens. Only the button at the foot of the open page carries
+// data-topic, so resting on a book reads it and never navigates.
+function volumeCard({id,t,count,spineW,spine}){
+  return `<div class="topic-card space-card vol space-${id} ${spineW>=50?"spine-titled":""}" data-space="${id}" data-count="${count}" style="${spine}--topic:${t.color};--soft:${t.soft}">
+    <button class="vol-hit" type="button" aria-expanded="false" aria-label="${esc(t.name)}, ${count} things kept. Open the volume."></button>
+    <span class="vol-book">
+      ${volumeLeaves(id,t,count)}
+      <span class="vol-cover" aria-hidden="true">
+        <span class="vol-face out"><h2>${esc(t.name)}</h2><span class="vol-count">${count}</span></span>
+        <span class="vol-face in"><span class="vol-ex"><span>Ex libris</span><b>${esc(t.name)}</b><i>No. ${accNo(id)}</i></span></span>
+      </span>
+    </span>
+    <button class="vol-go" type="button" data-topic="${id}" tabindex="-1">View the space &rarr;</button>
+  </div>`;
+}
+function spaceCard({id,t,count,latest,kids,most},shelf){
   const photo=topicPhoto(id),special=["reading","technology","music","life","gardening"].includes(id),visual=spacePreview(id,photo);
   // On the Library shelf a spine's thickness is how much the space holds, and
   // its height is one of four trim sizes fixed by the id: ragged, so the row
@@ -741,15 +778,16 @@ function spaceCard({id,t,count,latest,kids,most}){
   const TRIMS=[228,210,196,180];
   let trim=0;for(const c of id)trim=(trim*31+c.charCodeAt(0))>>>0;
   const spine=`--spine-w:${spineW}px;--spine-h:${TRIMS[trim%TRIMS.length]}px;`;
+  if(shelf)return volumeCard({id,t,count,spineW,spine});
   return `<button class="topic-card space-card space-${id} ${spineW>=50?"spine-titled":""} ground-${t.ground||"plain"} ${photo&&!special?"has-photo":""} ${special?"has-space-preview":""}" data-topic="${id}" data-count="${count}" style="${spine}--topic:${t.color};--soft:${t.soft}">${visual}${!visual&&t.ground==="wedge"?`<span class="topic-flag" aria-hidden="true"></span>`:""}<h2>${esc(t.name)}</h2><p>${esc(t.description)}</p>${kids.length?`<span class="topic-kids">${kids.map(k=>`<span class="kid" data-topic="${k}" style="--topic:${state.data.topics[k].color}">${esc(state.data.topics[k].name)}</span>`).join("")}</span>`:""}</button>`;
 }
-function topics(){
+function topics(shelf){
     const list=Object.entries(state.data.topics).map(([id,t])=>({id,t,count:topicCount(id),latest:topicLatest(id),kids:childTopics(id)}));
   const most=Math.max(1,...list.map(x=>x.count));
   list.forEach(x=>{x.most=most});
   list.sort((a,b)=>(b.latest||"").localeCompare(a.latest||"")||b.count-a.count);
     const shelves=[list];
-  return `<section class="spaces-index">${pageHead("Rooms in the archive","Spaces","Enter by subject. The rooms reorder themselves as the archive grows, bringing the most recently used to the front.")}<div class="space-shelves">${shelves.map((row,i)=>`<section class="space-shelf" aria-label="Spaces shelf ${i+1}"><div class="space-shelf-rail">${row.map(item=>spaceCard(item)).join("")}</div></section>`).join("")}</div></section>`;
+  return `<section class="spaces-index">${pageHead("Rooms in the archive","Spaces","Enter by subject. The rooms reorder themselves as the archive grows, bringing the most recently used to the front.")}<div class="space-shelves">${shelves.map((row,i)=>`<section class="space-shelf" aria-label="Spaces shelf ${i+1}"><div class="space-shelf-rail">${row.map(item=>spaceCard(item,shelf)).join("")}</div>${shelf?`<span class="shelf-scrim" aria-hidden="true"></span>`:""}</section>`).join("")}</div></section>`;
 }
 // Search reads the whole note, not just its first paragraph. Everything the
 // archive is for is finding a thing again later, and the words that identify
@@ -1072,16 +1110,94 @@ function setupClawGames(){
     button.addEventListener("pointerdown",start);button.addEventListener("pointerup",drop);button.addEventListener("pointercancel",drop);button.addEventListener("keydown",ev=>{if((ev.key===" "||ev.key==="Enter")&&!ev.repeat)start(ev)});button.addEventListener("keyup",ev=>{if(ev.key===" "||ev.key==="Enter")drop()});draw();
   });
 }
-let spaceShelfTimer=null,shelfDriftFrame=null;
+let spaceShelfTimer=null,shelfDriftFrame=null,volumeCleanup=null;
 function setupSpaceShelfMotion(route){
   if(spaceShelfTimer){clearInterval(spaceShelfTimer);spaceShelfTimer=null}
   if(shelfDriftFrame){cancelAnimationFrame(shelfDriftFrame);shelfDriftFrame=null}
-  if(route==="library")return driftLibraryShelf();
+  if(volumeCleanup){volumeCleanup();volumeCleanup=null}
+  if(route==="library"){openVolumes();return driftLibraryShelf()}
   if(route!=="topics"||location.hash.split("/").length>1||window.matchMedia?.("(prefers-reduced-motion: reduce)").matches)return;
   const rails=[...document.querySelectorAll(".space-shelf-rail")];if(!rails.length)return;
   const paused=new WeakSet();
   rails.forEach(rail=>["pointerenter","focusin","touchstart"].forEach(ev=>rail.addEventListener(ev,()=>paused.add(rail),{passive:true})));
   spaceShelfTimer=setInterval(()=>rails.forEach((rail,i)=>{if(paused.has(rail))return;const max=rail.scrollWidth-rail.clientWidth;if(max<4)return;const dir=i%2===0?1:-1;const next=rail.scrollLeft+dir*.18;if(next<=0||next>=max){rail.scrollLeft=dir>0?0:max}else rail.scrollLeft=next}),80);
+}
+// Resting on a spine opens it: the cover swings off the leaves, the space's
+// own page is printed inside, and the rest of the shelf frosts back behind
+// it. Nothing opens on a pass along the row, and only the button at the foot
+// of the open page leaves the shelf.
+function openVolumes(){
+  const shelf=document.querySelector(".library-space-filter .space-shelf"),
+        rail=shelf?.querySelector(".space-shelf-rail");
+  if(!rail)return;
+  const coarse=window.matchMedia?.("(hover:none)").matches;
+  let current=null,opening=null,closing=null,settling=0;
+  // Where the open page needs room, the shelf gives it. Widening happens to
+  // the right, so a book near the end of the row would open off the edge:
+  // the shelf slides just far enough to bring the whole page back in view.
+  // A cover swung right back needs nearly its own width to the LEFT of its
+  // hinge as well, and that room cannot always be found on a shelf that is
+  // drifting, so the angle is cut to whatever the spine actually has: a book
+  // at the left edge opens towards the reader instead of off the side.
+  const place=vol=>{
+    const rr=rail.getBoundingClientRect(),vr=vol.getBoundingClientRect(),
+          openW=window.matchMedia?.("(max-width:800px)").matches?Math.min(286,window.innerWidth*.78):300,
+          over=vr.left+openW-(rr.right-8);
+    let room=vr.left-rr.left;
+    if(over>0){
+      room-=over;
+      // The shelf moving under a resting pointer must not hand the next book
+      // along an open cover of its own.
+      settling=Date.now()+420;
+      rail.scrollBy({left:over,behavior:"smooth"});
+    }
+    vol.style.setProperty("--deg",String(Math.round(96+59*Math.max(0,Math.min(1,room/284)))));
+  };
+  const show=vol=>{
+    if(current===vol)return;
+    if(current){
+      current.classList.remove("is-open");
+      current.querySelector(".vol-hit").setAttribute("aria-expanded","false");
+      current.querySelector(".vol-go").tabIndex=-1;
+    }
+    current=vol;
+    if(vol){
+      vol.classList.add("is-open");
+      vol.querySelector(".vol-hit").setAttribute("aria-expanded","true");
+      // The drift's copies are hidden from assistive technology, so nothing
+      // inside one of them belongs in the tab order.
+      if(vol.getAttribute("aria-hidden")!=="true")vol.querySelector(".vol-go").tabIndex=0;
+      place(vol);
+    }
+    shelf.classList.toggle("has-open",!!vol);
+  };
+  // Held for a moment before anything moves, so running the pointer along the
+  // shelf leaves every book shut, and a slower close, so crossing the gap
+  // between two spines does not slam the first one.
+  const enter=e=>{
+    const vol=e.target.closest(".vol");if(!vol||coarse||Date.now()<settling)return;
+    clearTimeout(closing);clearTimeout(opening);opening=setTimeout(()=>show(vol),110);
+  };
+  const leave=e=>{
+    if(coarse||!e.target.closest(".vol"))return;
+    clearTimeout(opening);
+    closing=setTimeout(()=>{if(!rail.matches(":hover"))show(null)},180);
+  };
+  const focus=e=>{const vol=e.target.closest(".vol");if(vol)show(vol)};
+  const tap=e=>{if(!e.target.closest(".vol-go")){const vol=e.target.closest(".vol");if(vol)show(vol)}};
+  const away=e=>{if(!e.target.closest(".library-space-filter"))show(null)};
+  const key=e=>{if(e.key==="Escape"&&current){current.querySelector(".vol-hit").blur();show(null)}};
+  rail.addEventListener("pointerenter",enter,true);
+  rail.addEventListener("pointerleave",leave,true);
+  rail.addEventListener("focusin",focus);
+  rail.addEventListener("click",tap);
+  document.addEventListener("pointerdown",away);
+  document.addEventListener("keydown",key);
+  volumeCleanup=()=>{
+    clearTimeout(opening);clearTimeout(closing);
+    document.removeEventListener("pointerdown",away);
+    document.removeEventListener("keydown",key);
+  };
 }
 // The library's spines pass by as one long shelf. The row is laid end to end
 // until there is a spare run either side of the visible one, so the shelf
@@ -1104,6 +1220,8 @@ function driftLibraryShelf(){
       for(const spine of spines){
         const copy=spine.cloneNode(true);
         copy.setAttribute("aria-hidden","true");copy.tabIndex=-1;
+        // A dozen runs of the same shelf must not be a dozen tab stops.
+        copy.querySelectorAll("button").forEach(button=>{button.tabIndex=-1});
         rail.append(copy);
       }
       copies++;
