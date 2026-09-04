@@ -793,6 +793,22 @@ function volumeRecto(id,all){
       }).join("")}</ol>
     </span>`;
   }
+  // A space that is photographed, rather than illustrated, opens on a plate.
+  // The test is journals with pictures in them: Family and Motoring keep the
+  // days they photographed, while Technology's pictures belong to its notes
+  // and its list of what was written is the more useful page.
+  const shot=all.filter(e=>e.image&&e.type==="Journal");
+  if(shot.length>=2&&shot.length*2>=all.length){
+    const s=shot[0];
+    return `<span class="vol-leaf recto recto-album">
+      <img src="${esc(s.image)}" alt="${esc(s.imageAlt||"")}" loading="lazy" decoding="async" onerror="this.closest('.recto-album')?.classList.add('no-shot');this.remove()">
+      <span class="vol-caption">
+        <em>${esc(s.type)}<i>${esc(shortDate(s.occurredAt||s.createdAt))}</i></em>
+        <b>${esc(s.title)}</b>
+        <small>${shot.length} photographs inside</small>
+      </span>
+    </span>`;
+  }
   const rows=all.slice(0,3),rest=all.length-rows.length;
   return `<span class="vol-leaf recto"><h4>Latest in the space</h4>${rows.length
     ? `<ul>${rows.map(e=>`<li><em>${esc(e.type)}<i>${esc(shortDate(e.occurredAt||e.createdAt))}</i></em><b>${esc(e.title)}</b></li>`).join("")}</ul>${rest>0?`<span class="vol-more">and ${rest} more inside</span>`:""}`
