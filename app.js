@@ -401,54 +401,6 @@ function homeReading(){
     </button>
   </section>`;
 }
-function todayWidget(){
-  // Rotates daily rather than showing the same book forever: whatever is
-  // current, a quote worth rereading, this day in a previous year, the next
-  // thing due. Chosen by the date, so it is steady all day and different
-  // tomorrow.
-  const cards=[];
-  const book=state.data.books.find(b=>b.status==="reading");
-  if(book)cards.push(`<button class="side-widget" data-book="${book.id}" aria-label="Open ${esc(book.title)}">
-    <span class="eyebrow">Now reading</span>
-    <span class="widget-row">${book.cover?`<img src="${book.cover}" alt="" loading="lazy">`:coverPlate(book)}<span><b>${esc(book.title)}</b><small>${esc(book.author)}</small></span></span>
-    <span class="widget-bar"><i style="width:${book.progress}%"></i></span>
-    <span class="widget-foot">${book.progress}% through</span>
-  </button>`);
-
-  const quotes=state.data.entries.filter(e=>e.type==="Quote").concat(state.data.books.flatMap(b=>(b.quotes||[]).map(q=>({title:q.text,author:b.author,id:b.id}))));
-  if(quotes.length){
-    const q=quotes[dayIndex(quotes.length)];
-    cards.push(`<div class="side-widget side-widget-static">
-      <span class="eyebrow">A thought to keep</span>
-      <span class="widget-quote">${esc(q.title)}</span>
-      ${q.author?`<span class="widget-foot">${esc(q.author)}</span>`:""}
-    </div>`);
-  }
-
-  const memory=state.data.entries.find(e=>e.occurredAt&&e.occurredAt.slice(5)===todayKey.slice(5)&&e.occurredAt.slice(0,4)<todayKey.slice(0,4));
-  if(memory)cards.push(`<button class="side-widget" data-entry="${esc(memory.id)}">
-    <span class="eyebrow">On this day, ${memory.occurredAt.slice(0,4)}</span>
-    <span class="widget-row"><span><b>${esc(memory.title)}</b><small>${esc(memory.type)}</small></span></span>
-    <span class="widget-foot">${esc(fmtDate(memory.occurredAt))}</span>
-  </button>`);
-
-  const due=state.data.tasks.filter(t=>!t.completedAt&&t.dueAt).sort((a,b)=>a.dueAt.localeCompare(b.dueAt))[0];
-  if(due)cards.push(`<div class="side-widget side-widget-static">
-    <span class="eyebrow">Next up</span>
-    <span class="widget-row"><span><b>${esc(due.title)}</b></span></span>
-    <span class="widget-foot">${due.dueAt<=todayKey?"Due today":"Due "+esc(fmtDate(due.dueAt))}</span>
-  </div>`);
-
-  if(!cards.length){
-    const open=state.data.tasks.filter(t=>!t.completedAt).length;
-    return `<div class="side-widget side-widget-static">
-      <span class="eyebrow">The archive</span>
-      <span class="widget-figure">${state.data.entries.length}</span>
-      <span class="widget-foot">entries kept${open?`, ${open} thing${open>1?"s":""} waiting`:""}</span>
-    </div>`;
-  }
-  return cards[dayIndex(cards.length)];
-}
 // stable for the whole day, different tomorrow
 function dayIndex(n){const d=new Date(todayKey+"T12:00:00");return Math.floor((d-new Date(d.getFullYear(),0,0))/864e5)%n}
 function pageHead(kicker,title,lede=""){return `<div class="page-head"><div><p class="eyebrow">${kicker}</p><h1 class="page-title">${title}</h1>${lede?`<p class="lede">${lede}</p>`:""}</div></div>`}
@@ -462,10 +414,10 @@ function today(){
   const wander=state.data.entries.filter(e=>e.type!=="Task");
   const tasks=state.data.tasks.filter(t=>!t.completedAt).slice(0,3);
   return `<section class="home-page">
-    ${homePhotos()}
-    <div class="home-progress">${homeReading()}${journeyStrip()}</div>
     <div class="home-latest-head"><h2 class="section-title">Latest</h2>${open?`<a href="#tasks">${open} thing${open===1?"":"s"} to do &rarr;</a>`:""}</div>
     <div class="entry-list home-latest-list">${recent.length?recent.map(e=>entryCard(e)).join(""):`<p class="empty">The archive is ready for its first entry.</p>`}</div>
+    ${homePhotos()}
+    <div class="home-progress">${homeReading()}${journeyStrip()}</div>
     ${onThisDay()}
     ${tasks.length?`<section class="home-tasks"><div class="home-latest-head"><h2 class="section-title">To-do</h2><a href="#tasks">Open list →</a></div><div class="tasks">${tasks.map(taskRow).join("")}</div></section>`:""}
   </section>`;

@@ -573,24 +573,7 @@ body.modal-open{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 /* ---------- Today widget ----------
    Sits where the postmark date used to, now that the date lives in the
    header and the stamp would only have repeated it. */
-.side-widget{position:relative;display:flex;flex-direction:column;gap:9px;width:230px;flex:none;text-align:left;background:var(--surface);border:1.5px solid var(--ink);padding:16px 16px 14px;cursor:pointer;font:inherit;color:inherit;transition:transform .16s ease,box-shadow .16s ease}
-.side-widget:before,.side-widget:after{content:"";position:absolute;width:34px;height:14px;top:-7px;background:var(--tape)}
-.side-widget:before{left:16px;transform:rotate(-7deg)}
-.side-widget:after{right:16px;transform:rotate(6deg)}
-.side-widget:hover{transform:translateY(-3px);box-shadow:0 10px 22px -12px rgba(34,38,30,.35)}
-.side-widget-static{cursor:default}
-.side-widget-static:hover{transform:none;box-shadow:none}
-.side-widget .eyebrow{margin:0}
-.widget-row{display:flex;gap:11px;align-items:flex-start}
-.widget-row img{width:42px;height:56px;object-fit:cover;background:var(--paper-alt);filter:saturate(.68) sepia(.08);flex:none}
-.widget-row b{display:block;font:600 15px/1.25 var(--serif)}
-.widget-row small{display:block;margin-top:3px;color:var(--muted);font-style:italic;font-size:12px}
-.widget-bar{display:block;height:3px;background:var(--line)}
-.widget-bar i{display:block;height:100%;background:var(--stamp-red)}
-.widget-foot{font:10px var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
-.widget-figure{font:700 40px/1 var(--mono);letter-spacing:-.02em}
 @media(max-width:720px){
-  .side-widget{width:100%}
   .header-date{max-width:46%}
 }
 
@@ -720,10 +703,6 @@ body.modal-open{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 
 /* the plate stands in for a cover in the Today widget, at a size where only
    the watermark is legible */
-.widget-row .book-plate{width:42px;height:56px;flex:none;padding:0;border-bottom-width:2px}
-.widget-row .book-plate .plate-title{display:none}
-.widget-row .book-plate .plate-rule{inset:4px}
-.widget-row .book-plate .plate-mark{font-size:44px;right:-.04em;bottom:-.24em;opacity:.3}
 
 /* ---------- links and code in a note body ---------- */
 .detail-body a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px;text-decoration-thickness:1.5px}
@@ -754,9 +733,6 @@ body.modal-open{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .shot.is-set:hover{box-shadow:4px -4px 0 -1px var(--paper-alt),5px -5px 0 0 var(--line),0 10px 22px -12px rgba(34,38,30,.35)}
 
 /* the rotating slot's other faces */
-.widget-quote{font:600 17px/1.35 var(--serif);font-style:italic}
-.widget-quote:before{content:"\201C"}
-.widget-quote:after{content:"\201D"}
 
 /* a task carrying a note reads as two lines and opens like an entry */
 .task-copy{display:flex;flex-direction:column;gap:3px;min-width:0}
@@ -793,7 +769,7 @@ body.modal-open{position:fixed;left:0;right:0;width:100%;overflow:hidden}
     --tape:rgba(214,180,110,.13);
   }
   /* shadows read as depth on paper and as murk on a dark ground */
-  .entry:hover,.book:hover,.topic-card:hover,.side-widget:hover,.shot:hover{box-shadow:0 10px 22px -12px rgba(0,0,0,.7)}
+  .entry:hover,.book:hover,.topic-card:hover,.shot:hover{box-shadow:0 10px 22px -12px rgba(0,0,0,.7)}
   .modal-backdrop{background:rgba(0,0,0,.66)}
   .mount-tag{box-shadow:0 3px 6px -2px rgba(0,0,0,.6)}
   .book .acc-no{color:var(--muted);text-shadow:none}
