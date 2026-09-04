@@ -489,36 +489,27 @@ function onThisDay(){
   const md=todayKey.slice(5),items=state.data.entries.filter(e=>{const d=e.occurredAt||e.createdAt||"";return d.slice(5)===md&&d.slice(0,4)!==todayKey.slice(0,4)});
   return items.length?`<section class="on-this-day"><div><p class="eyebrow">On this day</p><h2>${items.length===1?"One thing came back":"A few things came back"}</h2></div><div>${items.slice(0,3).map(e=>dayRow(e,"article")).join("")}</div></section>`:"";
 }
-// The home page showed three of eleven waiting things and hid the rest behind a
-// link. Six sit in the same band two across, and the remainder fold open where
-// they are rather than on another page.
 function daysFromToday(iso){
   const [ty,tm,td]=todayKey.split("-").map(Number),[y,m,d]=iso.split("-").map(Number);
   return Math.round((Date.UTC(y,m-1,d)-Date.UTC(ty,tm-1,td))/864e5);
 }
+// Home opens on the one thing with a date attached: the next event, its
+// countdown and its picture. The tiles that sat beside it repeated what the
+// rest of the page already says.
 function homeEvents(){
   const event=state.data.entries.filter(e=>e.type==="Event"&&(e.eventAt||e.occurredAt)>=todayKey)
     .sort((a,b)=>(a.eventAt||a.occurredAt).localeCompare(b.eventAt||b.occurredAt))[0];
-  const waiting=openTasksInOrder(),book=(state.data.books||[]).find(b=>b.status==="reading");
-  const latest=state.data.entries.filter(e=>["Journal","Note"].includes(e.type)&&!e.plant)
-    .sort((a,b)=>(b.occurredAt||b.createdAt||"").localeCompare(a.occurredAt||a.createdAt||""))[0];
-  const journey=journeys().sort((a,b)=>(b.last?.occurredAt||"").localeCompare(a.last?.occurredAt||""))[0];
-  const todayCount=dayItems(todayKey).length;
-  if(!event&&!book&&!waiting.length&&!latest&&!journey)return "";
-  const eventCard=event?(()=>{const date=event.eventAt||event.occurredAt,days=daysFromToday(date),t=topic(event.topics?.[0]);return `<article class="dashboard-event" data-entry="${esc(event.id)}" style="--event:${t.color};--event-soft:${t.soft}">
-    <div class="dashboard-event-copy"><p>Next event · ${esc(fmtDate(date))}${event.startTime?` · ${esc(event.startTime)}`:""}</p><b>${days===0?"Today":days===1?"Tomorrow":days}<small>${days>1?"days to go":""}</small></b><h2>${esc(event.title)}</h2>${event.excerpt?`<span>${esc(event.excerpt)}</span>`:""}</div>
-    ${event.image?`<img src="${esc(event.image)}" alt="${esc(event.imageAlt||"")}" loading="lazy">`:""}
-  </article>`})():"";
-  return `<section class="home-dashboard"><h2 class="section-title">Today at a glance</h2>
-    <div class="dashboard-lead">${eventCard}<aside class="dashboard-status">
-      <a href="#tasks"><small>To-do</small><b>${waiting.length}</b><span>${waiting.length===1?"thing waiting":"things waiting"}</span></a>
-      ${book?`<button data-book="${esc(book.id)}"><small>Currently reading</small><b>${esc(book.title)}</b><span>${Math.max(0,Math.min(100,Number(book.progress)||0))}% through</span></button>`:`<a href="#calendar"><small>Calendar</small><b>${todayCount}</b><span>${todayCount===1?"thing today":"things today"}</span></a>`}
-    </aside></div>
-    <div class="dashboard-signals">
-      <a href="#calendar"><small>Today</small><b>${todayCount} ${todayCount===1?"record":"records"}</b><span>Open the daily log →</span></a>
-      ${latest?`<article data-entry="${esc(latest.id)}"><small>Latest ${esc(latest.type.toLowerCase())}</small><b>${esc(latest.title)}</b><span>${esc(topic(latest.topics?.[0]).name)} · ${fmtDate(latest.occurredAt||latest.createdAt)}</span></article>`:""}
-      ${journey?`<article data-journey="${esc(journey.name)}"><small>Journey</small><b>${esc(journey.name)}</b><span>${journey.rows.length} ${journey.rows.length===1?"milestone":"milestones"} · open journey →</span></article>`:""}
-    </div>
+  if(!event)return "";
+  const date=event.eventAt||event.occurredAt,days=daysFromToday(date);
+  return `<section class="home-dashboard">
+    <article class="dashboard-event" data-entry="${esc(event.id)}">
+      <div class="dashboard-event-copy">
+        <p>Next event · ${esc(fmtDate(date))}${event.startTime?` · ${esc(event.startTime)}`:""}</p>
+        <b>${days===0?"Today":days===1?"Tomorrow":days}${days>1?`<small>days to go</small>`:""}</b>
+        <h2>${esc(event.title)}</h2>
+      </div>
+      ${event.image?`<img src="${esc(event.image)}" alt="${esc(event.imageAlt||"")}" loading="lazy">`:""}
+    </article>
   </section>`;
 }
 function today(){
