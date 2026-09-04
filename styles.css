@@ -816,7 +816,7 @@ body.modal-open{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .day-more{font:9px var(--mono);color:var(--muted);letter-spacing:.06em}
 .calendar-grid{touch-action:pan-y}
 .calendar-modes{display:flex;justify-content:flex-end;margin:-8px 0 18px}.calendar-modes button{padding:7px 11px;border:1px solid var(--line);background:transparent;color:var(--muted);font:8px var(--mono);text-transform:uppercase;letter-spacing:.08em}.calendar-modes button+button{border-left:0}.calendar-modes button.active{background:var(--ink);color:var(--paper)}
-.calendar-agenda{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}.calendar-agenda>li{display:grid;grid-template-columns:92px 1fr;align-items:start;border-bottom:1px solid var(--line)}.calendar-agenda>li>time{padding:16px 10px;font:8px var(--mono);color:var(--muted)}.calendar-agenda .day-row{border:0}.month-postcard{display:flex;justify-content:space-between;gap:20px;align-items:center;margin-top:28px;padding:18px;border:1px solid var(--line);background:var(--surface)}.month-postcard>div:first-child{display:grid;gap:6px}.month-postcard b{font:600 17px var(--serif)}.month-postcard>div:last-child{display:flex}.month-postcard img{width:58px;height:48px;object-fit:cover;margin-left:-8px;border:3px solid var(--surface);transform:rotate(calc((var(--n,0) - 1)*1deg))}
+.calendar-agenda{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}.calendar-agenda>li{display:grid;grid-template-columns:92px 1fr;align-items:start;border-bottom:1px solid var(--line)}.calendar-agenda>li>time{padding:16px 10px;font:8px var(--mono);color:var(--muted)}.calendar-agenda .day-row{border:0}
 
 /* ---------- wikilinks and backlinks ---------- */
 .wikilink{border:0;background:none;padding:0;font:inherit;color:var(--ink);cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;text-decoration-color:var(--muted)}
@@ -1360,7 +1360,7 @@ aside .section-title{display:flex;align-items:baseline}
   .search-results .entry.has-thumb{grid-template-columns:1fr}.search-results .thumb-wrap{display:none}
   .home-search{padding:15px}.home-latest-head{display:block}.home-latest-head>a{display:block;margin:-10px 0 24px}.home-wander{align-items:flex-start;flex-direction:column;gap:14px}.home-wander button{width:100%}.noted-flow{padding:18px}.noted-flow>div{grid-template-columns:1fr}.noted-flow a{min-height:66px;border-right:1px solid color-mix(in srgb,var(--space) 34%,var(--line));border-bottom:0}.noted-flow a:last-child{border-bottom:1px solid color-mix(in srgb,var(--space) 34%,var(--line))}.noted-flow a:not(:last-child):after{content:"↓";right:calc(50% - 10px);top:auto;bottom:-10px}
 }
-@media(max-width:600px){.related-entries>div,.health-grid{grid-template-columns:1fr}.calendar-agenda>li{grid-template-columns:72px 1fr}.month-postcard{align-items:flex-start;flex-direction:column}.on-this-day{grid-template-columns:1fr;gap:12px}.task-focus{padding:16px}}
+@media(max-width:600px){.related-entries>div,.health-grid{grid-template-columns:1fr}.calendar-agenda>li{grid-template-columns:72px 1fr}.on-this-day{grid-template-columns:1fr;gap:12px}.task-focus{padding:16px}}
 @media(prefers-reduced-motion:reduce){.noted-flow a{animation:none}}
 /* Shared Technology-inspired chrome: artwork differentiates each room, while the shelf system stays calm and consistent. */
 .space-shelf .space-card{border-left:8px solid #35d09a!important;border-right:0!important;border-top:0!important;border-bottom:0!important;background-color:#10221e!important;box-shadow:4px 5px 0 #294a3d,0 10px 14px -12px #17150f!important;color:#e3f2e7!important}
@@ -1579,4 +1579,30 @@ aside .section-title{display:flex;align-items:baseline}
 }
 @media(prefers-color-scheme:dark){
   .shelf-stats{background:rgba(20,26,20,.9)}
+}
+
+/* The house plants band inside the garden room. */
+.garden-plants{padding:26px 34px 6px}
+.garden-plants-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;border-bottom:2px solid var(--garden,#35582a);padding-bottom:12px}
+.garden-plants-head h2{margin:0;border:0;padding:0;font:700 10px var(--mono);text-transform:uppercase;letter-spacing:.15em}
+.garden-plants-head button{border:0;background:none;padding:0;cursor:pointer;font:700 9px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--garden,#35582a)}
+.garden-plant-row{display:flex;gap:14px;overflow-x:auto;padding:18px 0 6px;scrollbar-width:none}
+.garden-plant-row::-webkit-scrollbar{display:none}
+.garden-plant{flex:0 0 128px;border:0;padding:0;background:none;text-align:left;cursor:pointer;display:grid;gap:5px}
+.garden-plant img,.garden-plant i{width:128px;height:128px;object-fit:cover;border:5px solid var(--garden-paper,#edf0df);box-shadow:2px 3px 5px rgba(40,60,32,.18)}
+.garden-plant i{display:grid;place-items:center;background:var(--garden-paper,#edf0df);color:#7d8f6d}
+.garden-plant b{font:600 15px/1.2 var(--serif)}
+.garden-plant small{font:9px var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--garden,#35582a)}
+@media(max-width:760px){
+  .garden-plants{padding:22px 24px 0}
+  /* A photograph is most of what a garden note is, so on a phone it shrinks
+     rather than disappearing. */
+  .garden-bed li{grid-template-columns:70px 10px 1fr 74px}
+  .garden-bed li>img{display:block;width:74px;height:60px;border-width:3px}
+}
+@media(max-width:480px){
+  .garden-bed li{grid-template-columns:10px 1fr 66px}
+  .garden-bed li>img{width:66px;height:56px;grid-column:3;grid-row:1/4;align-self:center}
+  .garden-plant{flex-basis:112px}
+  .garden-plant img,.garden-plant i{width:112px;height:112px}
 }
