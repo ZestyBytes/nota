@@ -793,41 +793,28 @@ function volumeRecto(id,all){
       }).join("")}</ol>
     </span>`;
   }
-  // A space that is photographed, rather than illustrated, opens on a plate.
-  // The test is journals with pictures in them: Family and Motoring keep the
-  // days they photographed, while Technology's pictures belong to its notes
-  // and its list of what was written is the more useful page.
-  const shot=all.filter(e=>e.image&&e.type==="Journal");
-  if(shot.length>=2&&shot.length*2>=all.length){
-    const s=shot[0];
-    return `<span class="vol-leaf recto recto-album">
-      <img data-shot="${esc(s.image)}" alt="${esc(s.imageAlt||"")}" decoding="async" onload="this.classList.add('ready')" onerror="this.closest('.recto-album')?.classList.add('no-shot');this.remove()">
-      <span class="vol-caption">
-        <em>${esc(s.type)}<i>${esc(shortDate(s.occurredAt||s.createdAt))}</i></em>
-        <b>${esc(s.title)}</b>
-        <small>${shot.length} photographs inside</small>
-      </span>
-    </span>`;
-  }
   const rows=all.slice(0,3),rest=all.length-rows.length;
   return `<span class="vol-leaf recto"><h4>Latest in the space</h4>${rows.length
     ? `<ul>${rows.map(e=>`<li><em>${esc(e.type)}<i>${esc(shortDate(e.occurredAt||e.createdAt))}</i></em><b>${esc(e.title)}</b></li>`).join("")}</ul>${rest>0?`<span class="vol-more">and ${rest} more inside</span>`:""}`
     : `<span class="vol-none">Nothing filed here yet.</span>`}</span>`;
 }
-function volumeLeaves(id,t,count){
+// A shelf holds a dozen spines, and the drift lays the row end to end a dozen
+// times over, so printing every volume's leaves up front is a few thousand
+// nodes nobody has asked to read. A volume is set the first time it opens.
+function volumeLeaves(id){
+  const t=state.data.topics[id];if(!t)return "";
+  const count=topicCount(id);
   const all=state.data.entries.filter(e=>inTopic(e,id))
     .sort((a,b)=>(b.occurredAt||b.createdAt||"").localeCompare(a.occurredAt||a.createdAt||""));
   const shortDate=iso=>fmtDate(iso).replace(/ \d{4}$/,"");
   const filed=topicLatest(id);
-  return `<span class="vol-spread" aria-hidden="true">
-    <span class="vol-leaf verso">
+  return `<span class="vol-leaf verso">
       <span class="vol-mark">${esc(id.slice(0,3).toUpperCase())} · ${esc(accNo(id).slice(-2))}</span>
       <span class="vol-plate"><span>Noted · space</span><b>${esc(t.name)}</b><i>${esc(t.description)}</i></span>
       ${filed?`<span class="vol-filed">Last filed ${esc(shortDate(filed))}</span>`:""}
       <span class="vol-tally"><b>${count}</b>things kept</span>
     </span>
-    ${volumeRecto(id,all)}
-  </span>`;
+    ${volumeRecto(id,all)}`;
 }
 // On the Library shelf the card is the case rather than the cloth: the cloth
 // rides on a cover hinged to its left edge, which swings away from the leaves
@@ -837,7 +824,7 @@ function volumeCard({id,t,count,spineW,spine}){
   return `<div class="topic-card space-card vol space-${id} ${spineW>=50?"spine-titled":""}" data-space="${id}" data-count="${count}" style="${spine}--topic:${t.color};--soft:${t.soft}">
     <button class="vol-hit" type="button" aria-expanded="false" aria-label="${esc(t.name)}, ${count} things kept. Open the volume."></button>
     <span class="vol-book">
-      ${volumeLeaves(id,t,count)}
+      <span class="vol-spread" aria-hidden="true"></span>
       <span class="vol-cover" aria-hidden="true">
         <span class="vol-face out"><h2>${esc(t.name)}</h2><span class="vol-count">${count}</span></span>
         <span class="vol-face in"><span class="vol-ex"><span>Ex libris</span><b>${esc(t.name)}</b><i>No. ${accNo(id)}</i></span></span>
@@ -1260,15 +1247,14 @@ function openVolumes(){
     current=vol;
     if(vol)rail.dataset.holdOpen="1";else delete rail.dataset.holdOpen;
     if(vol){
+      const spread=vol.querySelector(".vol-spread");
+      if(!spread.childElementCount)spread.innerHTML=volumeLeaves(vol.dataset.space);
       vol.classList.add("is-open");
       vol.querySelector(".vol-hit").setAttribute("aria-expanded","true");
       // The drift's copies are hidden from assistive technology, so nothing
       // inside one of them belongs in the tab order.
       if(vol.getAttribute("aria-hidden")!=="true")vol.querySelector(".vol-go").tabIndex=0;
       place(vol);
-      // The plate fetches its photograph the first time its book is opened.
-      const shot=vol.querySelector("img[data-shot]");
-      if(shot){shot.src=shot.dataset.shot;delete shot.dataset.shot}
     }
   };
   // Held for a moment before anything moves, so running the pointer along the
