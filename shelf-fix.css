@@ -1,74 +1,133 @@
-/* Compact, classic clothbound spines. This file deliberately follows the
-   legacy stylesheet so old cover-art experiments cannot leak through. */
-.library-space-filter .space-shelf .space-card{
-  width:58px!important;
-  flex:0 0 58px!important;
-  min-width:58px!important;
-  padding:0!important;
-  border:0!important;
-  border-radius:2px 3px 0 0!important;
-  background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,rgba(0,0,0,.025) 1px 3px),repeating-linear-gradient(90deg,rgba(255,255,255,.035) 0 1px,transparent 1px 4px),linear-gradient(90deg,rgba(255,255,255,.16),transparent 15%,transparent 84%,rgba(0,0,0,.22))!important;
-  box-shadow:inset 2px 0 rgba(255,255,255,.1),inset -3px 0 rgba(0,0,0,.16),3px 2px 5px rgba(25,14,8,.24)!important;
-}
+/* Clothbound spines for the Library shelf.
+
+   Three things carry the design, and only one of them is data: the books
+   touch, each spine's thickness is how much that space holds, and a spine
+   wide enough to set type across gets a ruled title panel. The heights are
+   four trim sizes fixed by the topic's id, so the skyline is ragged but
+   never moves. Colour belongs to the topic, never to its position in the
+   row, or a long shelf repeats itself.
+
+   Thickness and trim arrive as --spine-w and --spine-h on each card, set in
+   spaceCard(). Everything else is here. */
+
+/* ---------- the shelf itself ---------- */
+/* No back panel: the paper of the page runs behind the books and the board
+   is the only wood, so it carries the whole thing and wants a real shadow. */
 .library-space-filter .space-shelves,
 .library-space-filter .space-shelf{background:transparent!important}
 .library-space-filter .space-shelves{padding:0!important}
-.library-space-filter .space-shelf{position:relative!important;margin:0!important;padding:18px 0 0!important;border:0!important;border-bottom:15px solid #3b2415!important;box-shadow:inset 0 -4px #24150c,0 5px 9px rgba(38,23,13,.2)!important}
-.library-space-filter .space-shelf-rail{align-items:flex-end!important;gap:2px!important;padding:0 20px!important;mask-image:linear-gradient(90deg,transparent,#000 12px,#000 calc(100% - 12px),transparent)!important}
+.library-space-filter{margin:22px 0 30px}
+.library-space-filter .page-head,
+.library-space-filter .spaces-index>header,
 .library-space-filter .space-shelf::before,
 .library-space-filter .space-shelf::after{display:none!important;content:none!important}
-.library-space-filter .space-shelf .space-card.density-full::before,
-.library-space-filter .space-shelf .space-card.density-full::after,
-.library-space-filter .space-shelf .space-card:nth-child(4n+1)::before,
-.library-space-filter .space-shelf .space-card:nth-child(4n+1)::after{content:""!important;display:block!important;position:absolute!important;left:4px!important;right:4px!important;height:1px!important;background:rgba(236,218,174,.58)!important;box-shadow:0 2px rgba(0,0,0,.16)!important;opacity:1!important;z-index:2!important}
-.library-space-filter .space-shelf .space-card.density-full::before,
-.library-space-filter .space-shelf .space-card:nth-child(4n+1)::before{top:29%!important}
-.library-space-filter .space-shelf .space-card.density-full::after,
-.library-space-filter .space-shelf .space-card:nth-child(4n+1)::after{top:auto!important;bottom:27%!important}
-.library-space-filter .space-shelf .space-card.density-slim{width:42px!important;min-width:42px!important;flex-basis:42px!important;height:142px!important}
-.library-space-filter .space-shelf .space-card.density-mid{width:52px!important;min-width:52px!important;flex-basis:52px!important;height:158px!important}
-.library-space-filter .space-shelf .space-card.density-full{width:64px!important;min-width:64px!important;flex-basis:64px!important;height:174px!important}
-.library-space-filter .space-shelf .space-card.density-slim:nth-child(3n+2){height:136px!important}
-.library-space-filter .space-shelf .space-card.density-mid:nth-child(3n+2){height:150px!important}
-.library-space-filter .space-shelf .space-card.density-full:nth-child(3n+2){height:166px!important}
-.library-space-filter .space-shelf .space-card:nth-child(5n+3){transform:rotate(-1.2deg);transform-origin:bottom center}
-.library-space-filter .space-shelf .space-card::before,
-.library-space-filter .space-shelf .space-card::after{display:none!important;content:none!important}
-.library-space-filter .space-life{background-color:#315f91!important}
-.library-space-filter .space-technology{background-color:#184c42!important}
-.library-space-filter .space-music{background-color:#7d3047!important}
-.library-space-filter .space-motoring{background-color:#bb6b2d!important}
-.library-space-filter .space-gardening{background-color:#74833b!important}
-.library-space-filter .space-family{background-color:#b34f48!important}
-.library-space-filter .space-reading{background-color:#3f6689!important}
-.library-space-filter .space-food{background-color:#b9472f!important}
-.library-space-filter .space-attention{background-color:#674f91!important}
-.library-space-filter .space-playlist{background-color:#277985!important}
-.library-space-filter .space-self-care{background-color:#a95d76!important}
-.library-space-filter .space-fitness{background-color:#3f826b!important}
-.library-space-filter .space-habits{background-color:#896044!important}
-.library-space-filter .space-adhd{background-color:#d09231!important}
-.library-space-filter .space-work{background-color:#485b7c!important}
-.library-space-filter .space-projects{background-color:#8c4338!important}
-.library-space-filter .space-travel{background-color:#397b87!important}
-html body .library-index .library-space-filter .spaces-index .space-shelf .space-card:nth-child(8n+1){background-color:#315f91!important}
-html body .library-index .library-space-filter .spaces-index .space-shelf .space-card:nth-child(8n+2){background-color:#184c42!important}
-html body .library-index .library-space-filter .spaces-index .space-shelf .space-card:nth-child(8n+3){background-color:#7d3047!important}
-html body .library-index .library-space-filter .spaces-index .space-shelf .space-card:nth-child(8n+4){background-color:#bb6b2d!important}
-html body .library-index .library-space-filter .spaces-index .space-shelf .space-card:nth-child(8n+5){background-color:#674f91!important}
-html body .library-index .library-space-filter .spaces-index .space-shelf .space-card:nth-child(8n+6){background-color:#b34f48!important}
-html body .library-index .library-space-filter .spaces-index .space-shelf .space-card:nth-child(8n+7){background-color:#3f6689!important}
-html body .library-index .library-space-filter .spaces-index .space-shelf .space-card:nth-child(8n){background-color:#74833b!important}
-.library-space-filter .space-shelf .space-card h2{font-size:12px!important;letter-spacing:.02em!important}
+.library-space-filter .space-shelf{
+  position:relative!important;margin:0!important;border:0!important;
+  padding:0 0 20px!important;
+  background:linear-gradient(180deg,#8a5c34,#5b3820 34%,#2e1c0e) bottom/100% 20px no-repeat!important;
+  box-shadow:0 12px 20px -14px rgba(25,14,8,.75)!important;
+}
+.library-space-filter .space-shelf-rail{
+  align-items:flex-end!important;gap:0!important;padding:0 22px!important;
+  mask-image:linear-gradient(90deg,transparent,#000 14px,#000 calc(100% - 14px),transparent)!important;
+}
+
+/* ---------- a spine ---------- */
+/* Cloth grain in both directions, a dark roll at the hinge, and light on the
+   crown where a shelf lamp would catch it. */
+.library-index .library-space-filter .space-shelf .space-card{
+  position:relative!important;
+  width:var(--spine-w,52px)!important;
+  min-width:0!important;
+  flex:0 0 var(--spine-w,52px)!important;
+  height:var(--spine-h,204px)!important;
+  min-height:0!important;
+  display:flex!important;align-items:flex-end!important;justify-content:center!important;
+  overflow:hidden!important;
+  padding:0 0 26px!important;
+  border:0!important;border-radius:3px 2px 0 0!important;
+  background-color:var(--topic)!important;
+  background-image:repeating-linear-gradient(90deg,rgba(255,255,255,.05) 0 1px,transparent 1px 3px),
+                   repeating-linear-gradient(0deg,rgba(0,0,0,.06) 0 1px,transparent 1px 3px),
+                   linear-gradient(90deg,rgba(0,0,0,.34) 0 4px,rgba(255,255,255,.09) 5px 9px,transparent 12%,transparent 86%,rgba(0,0,0,.4) 100%)!important;
+  box-shadow:inset 1px 0 rgba(255,255,255,.14),inset -2px 0 rgba(0,0,0,.3),2px 3px 6px rgba(25,14,8,.28)!important;
+  transform:none!important;
+}
+/* the crown highlight */
+.library-index .library-space-filter .space-shelf .space-card::before{
+  content:""!important;display:block!important;position:absolute!important;
+  left:0!important;right:0!important;top:0!important;height:15px!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.17),transparent)!important;
+  pointer-events:none;
+}
+.library-index .library-space-filter .space-shelf .space-card::after{display:none!important;content:none!important}
+.library-index .library-space-filter .space-shelf .space-card p,
+.library-index .library-space-filter .space-shelf .space-card .topic-kids,
+.library-index .library-space-filter .space-shelf .space-card .topic-flag{display:none!important}
+
+/* the plain spine: the name runs up it, clear of the board */
+.library-index .library-space-filter .space-shelf .space-card h2{
+  position:static!important;margin:0!important;padding:0!important;
+  writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;
+  font:700 10px/1 var(--mono)!important;letter-spacing:.05em!important;
+  text-transform:lowercase!important;color:#f2ecdd!important;opacity:.92;
+  text-shadow:none!important;border:0!important;
+}
+/* a spine with room for type gets the ruled panel and its count at the foot.
+   Thickness is relative, so this falls to the spaces holding at least half as
+   much as the fattest one: a handful of books, never the whole shelf. */
+.library-index .library-space-filter .space-shelf .space-card.spine-titled h2{
+  position:absolute!important;left:0!important;right:0!important;
+  top:17%!important;height:50%!important;
+  display:grid!important;place-items:center;
+  border-top:1px solid rgba(240,232,208,.55)!important;
+  border-bottom:1px solid rgba(240,232,208,.55)!important;
+  font:600 13px/1 var(--serif)!important;letter-spacing:.13em!important;
+  text-transform:uppercase!important;color:#f6f0dd!important;opacity:1;
+}
+.library-index .library-space-filter .space-shelf .space-card.spine-titled::after{
+  content:attr(data-count)!important;display:block!important;
+  position:absolute!important;left:0!important;right:0!important;bottom:15px!important;
+  text-align:center!important;font:700 8px/1 var(--mono)!important;letter-spacing:.06em!important;
+  color:rgba(246,240,221,.66)!important;background:none!important;
+}
+
+/* ---------- cloth colours, by topic ---------- */
+/* Anything not named here falls back to the topic's own ink, so a new space
+   is never invisible and never borrows its neighbour's colour. */
+html body .library-index .library-space-filter .space-shelf .space-card.space-life{background-color:#315f91!important}
+html body .library-index .library-space-filter .space-shelf .space-card.space-technology{background-color:#184c42!important}
+html body .library-index .library-space-filter .space-shelf .space-card.space-music{background-color:#7d3047!important}
+html body .library-index .library-space-filter .space-shelf .space-card.space-practice{background-color:#8a4438!important}
+html body .library-index .library-space-filter .space-shelf .space-card.space-playlist{background-color:#277985!important}
+html body .library-index .library-space-filter .space-shelf .space-card.space-motoring{background-color:#bb6b2d!important}
+html body .library-index .library-space-filter .space-shelf .space-card.space-gardening{background-color:#74833b!important}
+html body .library-index .library-space-filter .space-shelf .space-card.space-family{background-color:#b34f48!important}
+html body .library-index .library-space-filter .space-shelf .space-card.space-reading{background-color:#3f6689!important}
+html body .library-index .library-space-filter .space-shelf .space-card.space-food{background-color:#b9472f!important}
+html body .library-index .library-space-filter .space-shelf .space-card.space-recipes{background-color:#8a5a12!important}
+html body .library-index .library-space-filter .space-shelf .space-card.space-eatingout{background-color:#7a5a2e!important}
+html body .library-index .library-space-filter .space-shelf .space-card.space-adhd{background-color:#674f91!important}
+html body .library-index .library-space-filter .space-shelf .space-card.space-selfcare{background-color:#a95d76!important}
+html body .library-index .library-space-filter .space-shelf .space-card.space-fitness{background-color:#3f826b!important}
+html body .library-index .library-space-filter .space-shelf .space-card.space-habits{background-color:#896044!important}
+
 .search-page{padding-top:clamp(18px,4vw,46px)}
+
+/* ---------- on a phone ---------- */
+/* Everything scales together. The panel keeps its place on the thickest
+   spines and the type comes down with them. */
 @media(max-width:800px){
-  .library-space-filter .space-shelf{padding-top:14px!important}
-  .library-space-filter .space-shelf-rail{padding:0 12px!important;gap:1px!important}
-  .library-space-filter .space-shelf .space-card.density-slim{width:36px!important;min-width:36px!important;flex-basis:36px!important;height:126px!important}
-  .library-space-filter .space-shelf .space-card.density-mid{width:44px!important;min-width:44px!important;flex-basis:44px!important;height:140px!important}
-  .library-space-filter .space-shelf .space-card.density-full{width:53px!important;min-width:53px!important;flex-basis:53px!important;height:154px!important}
-  .library-space-filter .space-shelf .space-card.density-slim:nth-child(3n+2){height:119px!important}
-  .library-space-filter .space-shelf .space-card.density-mid:nth-child(3n+2){height:133px!important}
-  .library-space-filter .space-shelf .space-card.density-full:nth-child(3n+2){height:147px!important}
-  .library-space-filter .space-shelf .space-card h2{font-size:11px!important}
+  .library-space-filter .space-shelf{padding-bottom:14px!important;background-size:100% 14px!important}
+  .library-space-filter .space-shelf-rail{padding:0 14px!important}
+  .library-index .library-space-filter .space-shelf .space-card{
+    width:calc(var(--spine-w,52px) * .58)!important;
+    flex-basis:calc(var(--spine-w,52px) * .58)!important;
+    height:calc(var(--spine-h,204px) * .55)!important;
+    padding-bottom:15px!important;
+  }
+  .library-index .library-space-filter .space-shelf .space-card::before{height:9px!important}
+  .library-index .library-space-filter .space-shelf .space-card h2{font-size:8px!important}
+  .library-index .library-space-filter .space-shelf .space-card.spine-titled h2{font-size:10px!important;letter-spacing:.09em!important}
+  .library-index .library-space-filter .space-shelf .space-card.spine-titled::after{bottom:8px!important;font-size:7px!important}
 }

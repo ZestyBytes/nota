@@ -140,6 +140,7 @@ function embed(url){
   }
   else if(host==="vimeo.com")src=`https://player.vimeo.com/video/${u.pathname.split("/").filter(Boolean)[0]}`;
   else if(host==="open.spotify.com"){src=`https://open.spotify.com/embed${u.pathname}`;kind="audio"}
+  else if(host==="codepen.io"&&u.pathname==="/jh3y/pen/WbQNxXb")return memoryKeypad();
   else if(host==="codepen.io"&&u.pathname==="/Ma5a/pen/YPzzpep")return clawMachine();
   // A pen address is /user/pen/slug, and its embed is the same with "embed"
   // in place of "pen". Anything else on the host is left as a plain link.
@@ -152,6 +153,19 @@ function embed(url){
   }
   if(!src)return "";
   return `<div class="embed embed-${kind}"><iframe src="${esc(src)}" title="Embedded ${kind}" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>`;
+}
+function memoryKeypad(){
+  const pads=[
+    ["1","C4",261.63],["2","D4",293.66],["3","E4",329.63],
+    ["4","G4",392],["5","A4",440],["6","B4",493.88],
+    ["7","C5",523.25],["8","D5",587.33],["9","E5",659.25]
+  ];
+  return `<section class="memory-keypad" data-memory-keypad aria-label="Musical memory keypad">
+    <header><span>Sound object / 09</span><strong>MEMORY KEYPAD</strong><i aria-hidden="true"></i></header>
+    <div class="keypad-display"><span data-keypad-status>Ready — press a key</span><b data-keypad-sequence aria-live="polite">—</b></div>
+    <div class="keypad-grid">${pads.map(([key,note,freq])=>`<button type="button" class="keypad-key" data-key="${key}" data-note="${note}" data-frequency="${freq}" aria-label="Play ${note}"><small>${note}</small><b>${key}</b></button>`).join("")}</div>
+    <footer><button type="button" class="keypad-action keypad-record" data-keypad-record><i></i><span>Record</span></button><button type="button" class="keypad-action" data-keypad-play disabled><span>Play back</span><b>▶</b></button><button type="button" class="keypad-clear" data-keypad-clear disabled>Clear</button></footer>
+  </section>`;
 }
 function clawMachine(){
   return `<section class="claw-game" data-claw-game aria-label="Claw machine game">
@@ -591,13 +605,26 @@ function spacePreview(id,photo){
   if(id==="gardening")return `<span class="space-garden-preview" aria-hidden="true"><i></i><i></i><i></i><b>grow · tend · note</b></span>`;
   return photo?`<img class="topic-photo" src="${esc(photo.src)}" alt="" decoding="async" fetchpriority="high" onload="this.dataset.ready=1" onerror="this.closest('.topic-card').classList.remove('has-photo');this.nextElementSibling?.remove();this.remove()"><span class="topic-shade" aria-hidden="true"></span>`:"";
 }
-function spaceCard({id,t,count,latest,kids}){
+function spaceCard({id,t,count,latest,kids,most}){
   const photo=topicPhoto(id),special=["reading","technology","music","life","gardening"].includes(id),visual=spacePreview(id,photo);
-  const density=count>=20?"full":count>=8?"mid":"slim";
-  return `<button class="topic-card space-card space-${id} density-${density} ground-${t.ground||"plain"} ${photo&&!special?"has-photo":""} ${special?"has-space-preview":""}" data-topic="${id}" data-count="${count}" style="--topic:${t.color};--soft:${t.soft}">${visual}${!visual&&t.ground==="wedge"?`<span class="topic-flag" aria-hidden="true"></span>`:""}<h2>${esc(t.name)}</h2><p>${esc(t.description)}</p>${kids.length?`<span class="topic-kids">${kids.map(k=>`<span class="kid" data-topic="${k}" style="--topic:${state.data.topics[k].color}">${esc(state.data.topics[k].name)}</span>`).join("")}</span>`:""}</button>`;
+  // On the Library shelf a spine's thickness is how much the space holds, and
+  // its height is one of four trim sizes fixed by the id: ragged, so the row
+  // reads as books, and stable, so a topic is always the same height. A spine
+  // wide enough to set type across earns a ruled title panel, which works out
+  // at about 26 entries. The shelf stylesheet does the rest.
+  // Thickness is relative to the fattest space, not an absolute count: this
+  // archive holds tens of things, not thousands, and a fixed scale would make
+  // every spine the same slim volume until it had grown for years.
+  const spineW=22+Math.round(56*Math.min(1,count/Math.max(1,most||count)));
+  const TRIMS=[228,210,196,180];
+  let trim=0;for(const c of id)trim=(trim*31+c.charCodeAt(0))>>>0;
+  const spine=`--spine-w:${spineW}px;--spine-h:${TRIMS[trim%TRIMS.length]}px;`;
+  return `<button class="topic-card space-card space-${id} ${spineW>=50?"spine-titled":""} ground-${t.ground||"plain"} ${photo&&!special?"has-photo":""} ${special?"has-space-preview":""}" data-topic="${id}" data-count="${count}" style="${spine}--topic:${t.color};--soft:${t.soft}">${visual}${!visual&&t.ground==="wedge"?`<span class="topic-flag" aria-hidden="true"></span>`:""}<h2>${esc(t.name)}</h2><p>${esc(t.description)}</p>${kids.length?`<span class="topic-kids">${kids.map(k=>`<span class="kid" data-topic="${k}" style="--topic:${state.data.topics[k].color}">${esc(state.data.topics[k].name)}</span>`).join("")}</span>`:""}</button>`;
 }
 function topics(){
     const list=Object.entries(state.data.topics).map(([id,t])=>({id,t,count:topicCount(id),latest:topicLatest(id),kids:childTopics(id)}));
+  const most=Math.max(1,...list.map(x=>x.count));
+  list.forEach(x=>{x.most=most});
   list.sort((a,b)=>(b.latest||"").localeCompare(a.latest||"")||b.count-a.count);
     const shelves=[list];
   return `<section class="spaces-index">${pageHead("Rooms in the archive","Spaces","Enter by subject. The rooms reorder themselves as the archive grows, bringing the most recently used to the front.")}<div class="space-shelves">${shelves.map((row,i)=>`<section class="space-shelf" aria-label="Spaces shelf ${i+1}"><div class="space-shelf-rail">${row.map(item=>spaceCard(item)).join("")}</div></section>`).join("")}</div></section>`;
@@ -836,9 +863,29 @@ function afterRender(route,isDetail){
   swipeable(".deck",".deck-dots i");
   swipeable(".gallery",".gallery-dots i",".gallery-caption");
   setupSpaceShelfMotion(route);
+  setupMemoryKeypads();
   setupClawGames();
   syncReadingProgress();
   if(route==="search")requestAnimationFrame(()=>document.querySelector(".search-box")?.focus({preventScroll:true}));
+}
+let keypadKeyHandler=null;
+function setupMemoryKeypads(){
+  if(keypadKeyHandler){document.removeEventListener("keydown",keypadKeyHandler);keypadKeyHandler=null}
+  document.querySelectorAll("[data-memory-keypad]").forEach(keypad=>{
+    const keys=[...keypad.querySelectorAll(".keypad-key")],record=keypad.querySelector("[data-keypad-record]"),play=keypad.querySelector("[data-keypad-play]"),clear=keypad.querySelector("[data-keypad-clear]"),status=keypad.querySelector("[data-keypad-status]"),sequence=keypad.querySelector("[data-keypad-sequence]");
+    if(!keys.length||!record||!play||!clear)return;
+    let audio=null,isRecording=false,isPlaying=false,started=0,capture=[],timers=[];
+    const context=()=>audio||(audio=new (window.AudioContext||window.webkitAudioContext)());
+    const sound=(button,remember=true)=>{if(isPlaying&&remember)return;const ctx=context();ctx.resume?.();const osc=ctx.createOscillator(),gain=ctx.createGain(),t=ctx.currentTime;osc.type="sine";osc.frequency.value=Number(button.dataset.frequency);gain.gain.setValueAtTime(.0001,t);gain.gain.exponentialRampToValueAtTime(.24,t+.015);gain.gain.exponentialRampToValueAtTime(.0001,t+.42);osc.connect(gain).connect(ctx.destination);osc.start(t);osc.stop(t+.44);button.classList.add("is-pressed");setTimeout(()=>button.classList.remove("is-pressed"),150);if(isRecording&&remember)capture.push({key:button.dataset.key,at:performance.now()-started});};
+    const show=()=>{sequence.textContent=capture.length?capture.map(x=>x.key).join(" · "):"—";play.disabled=clear.disabled=!capture.length};
+    keys.forEach(button=>button.addEventListener("pointerdown",()=>sound(button)));
+    const onKey=ev=>{if(ev.repeat||ev.metaKey||ev.ctrlKey||ev.altKey||/input|textarea|select/i.test(ev.target.tagName))return;const button=keys.find(x=>x.dataset.key===ev.key);if(button){ev.preventDefault();sound(button)}};
+    keypadKeyHandler=onKey;document.addEventListener("keydown",onKey);
+    record.addEventListener("click",()=>{if(isPlaying)return;isRecording=!isRecording;record.classList.toggle("active",isRecording);record.querySelector("span").textContent=isRecording?"Stop":"Record";status.textContent=isRecording?"Recording… play something":"Recording saved";if(isRecording){capture=[];started=performance.now();show()}else show()});
+    play.addEventListener("click",()=>{if(!capture.length||isPlaying)return;if(isRecording)record.click();isPlaying=true;play.disabled=true;status.textContent="Playing back…";capture.forEach(item=>timers.push(setTimeout(()=>{const button=keys.find(x=>x.dataset.key===item.key);if(button)sound(button,false)},item.at)));const end=capture[capture.length-1].at+550;timers.push(setTimeout(()=>{isPlaying=false;play.disabled=false;status.textContent="Ready — add another recording"},end))});
+    clear.addEventListener("click",()=>{timers.forEach(clearTimeout);timers=[];isPlaying=false;capture=[];record.classList.remove("active");record.querySelector("span").textContent="Record";isRecording=false;status.textContent="Ready — press a key";show()});
+    show();
+  });
 }
 function setupClawGames(){
   document.querySelectorAll("[data-claw-game]").forEach(game=>{
