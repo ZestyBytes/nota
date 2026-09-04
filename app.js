@@ -489,7 +489,13 @@ function onThisDay(){
 // they are rather than on another page.
 const HOME_TASKS=6;
 function today(){
-  const recent=[...state.data.entries].sort((a,b)=>(b.occurredAt||b.createdAt||"").localeCompare(a.occurredAt||a.createdAt||"")).slice(0,5);
+  // Home is a reading surface, not a log of every object in the archive.
+  // Journeys have their progress strip below, tasks have their own list, and
+  // plants/books belong on their shelves; Latest is reserved for writing.
+  const recent=state.data.entries
+    .filter(e=>["Journal","Note"].includes(e.type)&&!e.plant)
+    .sort((a,b)=>(b.occurredAt||b.createdAt||"").localeCompare(a.occurredAt||a.createdAt||""))
+    .slice(0,5);
   const waiting=openTasksInOrder(),open=waiting.length;
   const wander=state.data.entries.filter(e=>e.type!=="Task");
   const tasks=waiting.slice(0,HOME_TASKS),more=waiting.slice(HOME_TASKS);
@@ -616,10 +622,22 @@ function scrapBoard(){
     return `<article class="scrap tilt-${i%4}" data-entry="${esc(e.id)}" style="--topic:${t.color};--soft:${t.soft}"><span class="pin" aria-hidden="true"></span><p class="scrap-text">${inline(e.title||"")}</p>${e.excerpt&&e.excerpt!==e.title?`<p class="scrap-note">${esc(e.excerpt)}</p>`:""}<p class="scrap-foot">${e.topics?.length?`<span>${esc(t.name)}</span>`:"<span></span>"}${date?`<time>${date}</time>`:""}</p></article>`;
   }).join("")}</div>`;
 }
-const libraryTabs={writing:"Highlights",notes:"Notes",journeys:"Journeys",reading:"Books",gallery:"Photos"};
+const libraryTabs={writing:"Highlights",notes:"Notes",journeys:"Journeys",reading:"Books",gallery:"Photos",plants:"Plants"};
+function libraryPlants(){
+  const plants=state.data.entries.filter(e=>e.plant).sort((a,b)=>a.title.localeCompare(b.title));
+  if(!plants.length)return `<p class="empty">No plants on the shelf yet. Add a note with <code>view: plant</code> and a photograph.</p>`;
+  return `<div class="plant-grid library-plant-grid">${plants.map(e=>{const p=e.plant,due=waterDue(p);return `<article class="plant-card" data-entry="${esc(e.id)}">
+    <span class="plant-photo">${e.image?`<img src="${esc(e.image)}" alt="${esc(e.imageAlt||"")}" loading="lazy">`:`<i aria-hidden="true">${icon("plant")}</i>`}<em class="acc-no">No. ${accNo(e.id)}</em></span>
+    <div class="plant-copy"><h2>${esc(e.title)}</h2>${p.botanical?`<p class="plant-latin">${esc(p.botanical)}</p>`:""}
+      <ul class="plant-chips">${p.light?`<li>${icon("sun")}<span>${esc(p.light)}</span></li>`:""}${p.water||p.waterEvery?`<li>${icon("drop")}<span>${esc(p.water||`Every ${p.waterEvery} days`)}</span></li>`:""}${p.position?`<li>${icon("home")}<span>${esc(p.position)}</span></li>`:""}</ul>
+      ${due?`<span class="plant-flag ${due.days<0?"late":due.days===0?"now":""}">${esc(waterWord(due))}</span>`:""}
+    </div>
+  </article>`}).join("")}</div>`;
+}
 function libraryBody(){
   let body="";
   if(state.library==="gallery")body=galleryGrid();
+  else if(state.library==="plants")body=libraryPlants();
   else if(state.library==="reading")body=`<div class="book-grid">${state.data.books.map(b=>`<article class="book ${b.cover?"":"has-plate"}" data-book="${b.id}"><span class="acc-no">No. ${accNo(b.id)}</span>${b.cover?`<img class="book-cover" src="${b.cover}" alt="" loading="lazy">`:coverPlate(b)}<div class="book-copy"><h3>${esc(b.title)}</h3><p>${esc(b.author)}</p><div class="book-links"><span>${(b.notes||[]).length} notes</span><span>${(b.quotes||[]).length} quotes</span></div><span class="status">${esc(b.status.replaceAll("-"," "))}${b.status==="reading"?` · ${b.progress}%`:""}</span><div class="progress"><i style="width:${b.progress}%"></i></div></div></article>`).join("")||`<p class="empty">Your library is empty.</p>`}</div>`;
   else if(state.library==="writing")body=writingList();
   else if(state.library==="journeys")body=journeys().length?journeyStrip(true):`<p class="empty">No journeys yet. Add <code>journey: "Name"</code> to a note and its entries thread together here.</p>`;
@@ -630,7 +648,7 @@ function libraryBody(){
   return body;
 }
 function library(){
-  return `<section class="library-index">${pageHead("Browse by format","Library","Highlights are a small selection chosen to share. Notes gathers notes, journals and quotes; journeys, books and photographs keep their useful shapes.")}<div class="library-space-filter">${topics()}</div><div class="library-tabs">${Object.entries(libraryTabs).map(([x,label])=>`<button class="filter ${state.library===x?"active":""}" data-library="${x}">${label}</button>`).join("")}</div><div class="library-body">${libraryBody()}</div></section>`;
+  return `<section class="library-index">${pageHead("Browse by format","Library","Highlights are a small selection chosen to share. Notes gathers notes, journals and quotes; journeys, books, photographs and plants keep their useful shapes.")}<div class="library-space-filter">${topics()}</div><div class="library-tabs">${Object.entries(libraryTabs).map(([x,label])=>`<button class="filter ${state.library===x?"active":""}" data-library="${x}">${label}</button>`).join("")}</div><div class="library-body">${libraryBody()}</div></section>`;
 }
 // Switching filter swaps only the list. Re-rendering the whole page rebuilt the
 // shelf of topics above it, which threw its drift back to the start every time.

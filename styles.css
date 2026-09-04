@@ -84,6 +84,10 @@ input[type="checkbox"]:focus-visible{outline-offset:3px}
   content:"";position:absolute;z-index:-1;top:0;bottom:0;left:50%;
   width:100vw;transform:translateX(-50%);background:var(--paper);
 }
+.site-header:after{
+  content:"";position:absolute;left:50%;bottom:0;width:100vw;height:2px;
+  transform:translateX(-50%);background:var(--stamp-red);opacity:.88;
+}
 
 main{max-width:var(--max);margin:auto;padding:56px 28px 120px;min-width:0}
 
@@ -1420,6 +1424,23 @@ aside .section-title{display:flex;align-items:baseline}
 .main-nav a[href="#topics"],.mobile-nav a[href="#topics"]{display:none!important}.library-space-filter .spaces-index{margin-bottom:28px}.library-space-filter .spaces-index>header{display:none}.library-space-filter .space-shelf{margin-top:0}
 .library-space-filter .page-head,.library-space-filter .space-shelf:before{display:none!important}.library-space-filter{margin:22px 0 28px}.library-space-filter .space-shelf{padding:8px 0 7px!important}.library-space-filter .space-shelf-rail{align-items:end;gap:7px;padding:0 14px 5px!important}.library-space-filter .space-shelf .space-card{width:48px!important;flex-basis:48px!important;height:104px!important}.library-space-filter .space-shelf .space-card:nth-child(2n){height:92px!important}.library-space-filter .space-shelf .space-card:nth-child(3n){height:112px!important}.library-space-filter .space-shelf .space-card:nth-child(4n){height:98px!important}.library-space-filter .space-shelf .space-card h2{font-size:9px!important;bottom:8px!important}.home-latest-list{padding-top:22px!important}.home-page .journey-strip{margin-top:20px!important}.nav-search-link{order:99}.mobile-nav{justify-content:space-between}.mobile-nav a{flex:1 1 25%!important;width:25%!important;max-width:none!important}.spaces-index .space-shelf .space-card:nth-child(8n+1){background-color:#31577a!important}.spaces-index .space-shelf .space-card:nth-child(8n+2){background-color:#254d3e!important}.spaces-index .space-shelf .space-card:nth-child(8n+3){background-color:#733f48!important}.spaces-index .space-shelf .space-card:nth-child(8n+4){background-color:#95652f!important}.spaces-index .space-shelf .space-card:nth-child(8n+5){background-color:#564878!important}.spaces-index .space-shelf .space-card:nth-child(8n+6){background-color:#9b5540!important}.spaces-index .space-shelf .space-card:nth-child(8n+7){background-color:#436c72!important}.spaces-index .space-shelf .space-card:nth-child(8n){background-color:#77713f!important}
 .library-space-filter .space-shelf .space-card{width:40px!important;flex-basis:40px!important;border-radius:1px 1px 0 0!important;box-shadow:inset 3px 0 rgba(255,255,255,.08),inset -3px 0 rgba(0,0,0,.15)!important}.library-space-filter .space-shelf .space-card:before{display:block!important;top:10px!important;height:3px!important;background:#d8c08b!important;box-shadow:0 7px 0 #d8c08b!important;opacity:.75}.library-space-filter .space-shelf .space-card h2{font-size:8px!important}.library-space-filter .space-life{background-color:#31577a!important}.library-space-filter .space-technology{background-color:#275746!important}.library-space-filter .space-music{background-color:#713a49!important}.library-space-filter .space-motoring{background-color:#95652f!important}.library-space-filter .space-gardening{background-color:#607848!important}.library-space-filter .space-family{background-color:#a24f47!important}.library-space-filter .space-reading{background-color:#445d78!important}.library-space-filter .space-food{background-color:#a66332!important}.library-space-filter .space-attention{background-color:#66528a!important}.library-space-filter .space-playlist{background-color:#357178!important}.mobile-nav a.active{background:transparent!important}.mobile-nav a.active:after{content:"";position:absolute;left:32%;right:32%;bottom:2px;height:2px;background:var(--stamp-red)}@media(max-width:800px){.mobile-nav{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;padding:7px 10px!important;gap:0!important}.mobile-nav a{width:auto!important;min-width:0!important;min-height:52px!important;border-radius:0!important}.mobile-nav .nav-icon{width:21px!important;height:21px!important}}
+
+/* A restrained glass dock: enough translucency to feel native on iOS, with
+   a solid fallback and a fine inner highlight so labels remain legible over
+   photographs. The active item is a shallow lens, not a heavy filled tab. */
+.library-plant-grid{margin-top:0}
+@media(max-width:800px){
+  .mobile-nav{
+    padding:6px 8px!important;border-radius:24px!important;
+    background:linear-gradient(180deg,color-mix(in srgb,var(--surface) 90%,white 10%),color-mix(in srgb,var(--surface) 78%,transparent))!important;
+    border-color:color-mix(in srgb,var(--ink) 14%,transparent)!important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.72),0 14px 34px -18px rgba(20,24,17,.72),0 3px 10px -5px rgba(20,24,17,.34)!important;
+    backdrop-filter:blur(26px) saturate(1.5)!important;-webkit-backdrop-filter:blur(26px) saturate(1.5)!important;
+  }
+  .mobile-nav a{border-radius:17px!important}
+  .mobile-nav a.active{background:color-mix(in srgb,var(--surface) 58%,transparent)!important;box-shadow:inset 0 1px 0 color-mix(in srgb,white 72%,transparent),0 2px 8px -5px rgba(20,24,17,.5)}
+  .mobile-nav a.active:after{left:36%;right:36%;bottom:4px;border-radius:2px}
+}
 .spaces-index .space-shelf .space-card:before{content:"";position:absolute;top:0;left:0;right:0;height:8px;background:rgba(255,255,255,.14);box-shadow:0 3px 0 rgba(0,0,0,.16)}
 .spaces-index .space-shelf .space-card:nth-child(5n+1){background-color:#31577a!important}.spaces-index .space-shelf .space-card:nth-child(5n+2){background-color:#254d3e!important}.spaces-index .space-shelf .space-card:nth-child(5n+3){background-color:#6a3b42!important}.spaces-index .space-shelf .space-card:nth-child(5n+4){background-color:#76512c!important}.spaces-index .space-shelf .space-card:nth-child(5n){background-color:#4e416e!important}
 @media(max-width:600px){.spaces-index .space-shelf .space-card{width:84px!important;flex-basis:84px!important;height:210px!important}.spaces-index .space-shelf .space-card:nth-child(2n){height:190px!important}.spaces-index .space-shelf .space-card:nth-child(3n){height:226px!important}.spaces-index .space-shelf .space-card:nth-child(4n){height:200px!important}}
