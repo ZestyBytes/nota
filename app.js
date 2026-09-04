@@ -917,8 +917,13 @@ function driftLibraryShelf(){
   if(!rail||window.matchMedia?.("(prefers-reduced-motion: reduce)").matches)return;
   let loop=Number(rail.dataset.loop||0);
   if(!loop){
-    const spines=[...rail.children],before=rail.scrollWidth;
-    if(!spines.length||before<4)return;
+    const spines=[...rail.children];
+    if(!spines.length)return;
+    // Measure the run itself, never scrollWidth: a rail wider than its books
+    // reports scrollWidth as its own width, so the run came out as zero and
+    // the fold below span for ever on it.
+    const run=()=>{const last=rail.lastElementChild;return last?last.offsetLeft+last.offsetWidth:0};
+    if(run()<4)return;
     let copies=0;
     do{
       for(const spine of spines){
@@ -927,11 +932,13 @@ function driftLibraryShelf(){
         rail.append(copy);
       }
       copies++;
-      // Measured rather than assumed, so the gap between spines is counted.
-      loop=(rail.scrollWidth-before)/copies;
-    }while(copies<12&&rail.scrollWidth<rail.clientWidth+2*loop);
+      // The distance from a spine to its own clone is the loop, gaps included.
+      if(copies===1)loop=rail.children[spines.length].offsetLeft-spines[0].offsetLeft;
+    }while(copies<12&&loop>0&&run()<rail.clientWidth+2*loop);
     rail.dataset.loop=String(loop);rail.classList.add("shelf-drift");
   }
+  // Nothing below can run without a positive loop to fold against.
+  if(!(loop>0))return;
   // Every position is folded back into the middle run, so wherever the shelf
   // is pushed there is always a whole run of spines waiting on either side.
   const fold=x=>{let v=x;while(v<loop)v+=loop;while(v>=2*loop)v-=loop;return v};
