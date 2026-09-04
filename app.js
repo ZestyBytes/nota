@@ -126,8 +126,9 @@ function callout(lines){
   const body=paras.map(t=>`<p>${inline(t)}</p>`).join("");
   return `<aside class="callout callout-${esc(CALLOUTS[kind]?kind:"note")}"><p class="callout-head">${icon(CALLOUTS[kind]||"note")}<b>${esc(title)}</b></p>${body}</aside>`;
 }
-// A YouTube, Vimeo or Spotify link becomes the thing itself. Only these three,
-// and only by exact host, so a pasted link cannot load an arbitrary frame.
+// A YouTube, Vimeo, Spotify or CodePen link becomes the thing itself. Only
+// these four, and only by exact host, so a pasted link cannot load an
+// arbitrary frame.
 function embed(url){
   let u;try{u=new URL(url)}catch(error){return ""}
   const host=u.hostname.replace(/^www\./,"");
@@ -139,6 +140,15 @@ function embed(url){
   }
   else if(host==="vimeo.com")src=`https://player.vimeo.com/video/${u.pathname.split("/").filter(Boolean)[0]}`;
   else if(host==="open.spotify.com"){src=`https://open.spotify.com/embed${u.pathname}`;kind="audio"}
+  // A pen address is /user/pen/slug, and its embed is the same with "embed"
+  // in place of "pen". Anything else on the host is left as a plain link.
+  else if(host==="codepen.io"){
+    const [user,kindSeg,slug]=u.pathname.split("/").filter(Boolean);
+    if(user&&slug&&["pen","embed","full","details"].includes(kindSeg)){
+      src=`https://codepen.io/${encodeURIComponent(user)}/embed/${encodeURIComponent(slug)}?default-tab=result`;
+      kind="pen";
+    }
+  }
   if(!src)return "";
   return `<div class="embed embed-${kind}"><iframe src="${esc(src)}" title="Embedded ${kind}" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>`;
 }
@@ -819,14 +829,59 @@ function afterRender(route,isDetail){
   syncReadingProgress();
   if(route==="search")requestAnimationFrame(()=>document.querySelector(".search-box")?.focus({preventScroll:true}));
 }
-let spaceShelfTimer=null;
+let spaceShelfTimer=null,shelfDriftFrame=null;
 function setupSpaceShelfMotion(route){
   if(spaceShelfTimer){clearInterval(spaceShelfTimer);spaceShelfTimer=null}
+  if(shelfDriftFrame){cancelAnimationFrame(shelfDriftFrame);shelfDriftFrame=null}
+  if(route==="library")return driftLibraryShelf();
   if(route!=="topics"||location.hash.split("/").length>1||window.matchMedia?.("(prefers-reduced-motion: reduce)").matches)return;
   const rails=[...document.querySelectorAll(".space-shelf-rail")];if(!rails.length)return;
   const paused=new WeakSet();
   rails.forEach(rail=>["pointerenter","focusin","touchstart"].forEach(ev=>rail.addEventListener(ev,()=>paused.add(rail),{passive:true})));
   spaceShelfTimer=setInterval(()=>rails.forEach((rail,i)=>{if(paused.has(rail))return;const max=rail.scrollWidth-rail.clientWidth;if(max<4)return;const dir=i%2===0?1:-1;const next=rail.scrollLeft+dir*.18;if(next<=0||next>=max){rail.scrollLeft=dir>0?0:max}else rail.scrollLeft=next}),80);
+}
+// The library's spines pass by as one long shelf. The row is repeated until
+// it is comfortably wider than the rail, so the run never shows an end, and
+// the drift is slow enough to read a spine as it goes. Hovering or focusing
+// holds it still, and a hand drag still works, since this only moves the
+// rail's own scroll.
+function driftLibraryShelf(){
+  const rail=document.querySelector(".library-space-filter .space-shelf-rail");
+  if(!rail||window.matchMedia?.("(prefers-reduced-motion: reduce)").matches)return;
+  let loop=Number(rail.dataset.loop||0);
+  if(!loop){
+    const spines=[...rail.children],before=rail.scrollWidth;
+    if(!spines.length||before<4)return;
+    // One repeat is not always enough: a short row has to be laid end to end
+    // several times before there is more shelf than window.
+    let copies=0;
+    while(rail.scrollWidth<rail.clientWidth+before&&copies<12){
+      for(const spine of spines){
+        const copy=spine.cloneNode(true);
+        copy.setAttribute("aria-hidden","true");copy.tabIndex=-1;
+        rail.append(copy);
+      }
+      copies++;
+    }
+    if(!copies)return;
+    // Measured rather than assumed, so the gap between spines is counted too.
+    loop=(rail.scrollWidth-before)/copies;
+    rail.dataset.loop=String(loop);rail.classList.add("shelf-drift");
+  }
+  rail.scrollLeft=loop;
+  let held=false,last=0;
+  const hold=on=>()=>{held=on};
+  ["pointerenter","focusin","touchstart"].forEach(ev=>rail.addEventListener(ev,hold(true),{passive:true}));
+  ["pointerleave","focusout","touchend"].forEach(ev=>rail.addEventListener(ev,hold(false),{passive:true}));
+  const step=now=>{
+    if(!rail.isConnected)return;
+    const dt=last?Math.min(now-last,100):0;last=now;
+    // Rightwards along the shelf, at reading pace rather than carousel pace.
+    if(!held)rail.scrollLeft-=dt*.014;
+    if(rail.scrollLeft<=0)rail.scrollLeft+=loop;
+    shelfDriftFrame=requestAnimationFrame(step);
+  };
+  shelfDriftFrame=requestAnimationFrame(step);
 }
 function syncReadingProgress(){
   const bar=document.querySelector(".reading-progress i"),page=document.querySelector(".entry-page");

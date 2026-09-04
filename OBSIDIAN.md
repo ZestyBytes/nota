@@ -213,10 +213,10 @@ the page, and the ticks are remembered on that device:
 A `- [x]` starts ticked. Mix a box line with ordinary bullets and the whole
 list stays an ordinary list, so a stray box in prose changes nothing.
 
-**Video and music.** A YouTube, Vimeo or Spotify link alone on its own line
-becomes the player itself. Only those three, matched by exact host, so a
-pasted link cannot load an arbitrary frame. A link inside a sentence stays a
-link.
+**Video, music and pens.** A YouTube, Vimeo, Spotify or CodePen link alone on
+its own line becomes the thing itself: the player, or the running pen. Only
+those four, matched by exact host, so a pasted link cannot load an arbitrary
+frame. A link inside a sentence stays a link.
 
 **Journeys.** A note in `journeys/` with `type: journey` and a `journey:` name
 belongs to a thread. Give every entry in the same undertaking the same name,

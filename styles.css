@@ -410,7 +410,10 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px;min-width:0}
 .space-shelf+ .space-shelf{margin-top:-12px;border-top:0}
 .space-shelves{background:#4b2d1b;padding-top:1px;padding-bottom:1px}.space-shelves .space-shelf{margin-top:0;margin-bottom:0;border-bottom-width:14px}.space-shelves .space-shelf+ .space-shelf{border-top:10px solid #2b1a10}
 .space-shelf-rail{display:flex;gap:14px;overflow-x:auto;padding:0 22px 8px;scroll-snap-type:x mandatory;scrollbar-width:none;mask-image:linear-gradient(90deg,transparent 0,#000 18px,#000 calc(100% - 18px),transparent 100%)}
-.space-shelf-rail::-webkit-scrollbar{display:none}.space-shelf .space-card{flex:0 0 168px;min-height:282px;height:282px;padding:158px 13px 17px;scroll-snap-align:start;border:0;border-left:8px solid #35d09a;border-radius:0;background:#10221e;color:#e3f2e7;box-shadow:4px 5px 0 #294a3d,0 10px 14px -12px #17150f}
+.space-shelf-rail::-webkit-scrollbar{display:none}
+/* A drifting shelf cannot snap: the snap would drag every frame back to a spine. */
+.shelf-drift{scroll-snap-type:none;scroll-behavior:auto}
+.space-shelf .space-card{flex:0 0 168px;min-height:282px;height:282px;padding:158px 13px 17px;scroll-snap-align:start;border:0;border-left:8px solid #35d09a;border-radius:0;background:#10221e;color:#e3f2e7;box-shadow:4px 5px 0 #294a3d,0 10px 14px -12px #17150f}
 .space-shelf .space-card:after{content:"ENTER ROOM  →";position:absolute;right:12px;bottom:12px;color:#8fe1bd;font:700 8px var(--mono);letter-spacing:.08em}.space-shelf .space-card h2{letter-spacing:-.04em;color:#d9f2e6;text-shadow:none}.space-shelf .space-card p{max-width:88%;color:#c3d8ca;opacity:1}.space-shelf .space-card .topic-kids{display:none}
 /* Consistent illustrated jackets for the room books. The six-panel artwork is
    intentionally cropped per topic so the collection feels related, not tiled. */
@@ -867,6 +870,9 @@ body.modal-open{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .embed iframe{display:block;width:100%;border:0}
 .embed-video iframe{aspect-ratio:16/9;height:auto}
 .embed-audio iframe{height:152px}
+/* A pen has no fixed shape of its own, so give it a tall stage that suits an
+   upright cabinet as well as a widget, rather than a video's letterbox. */
+.embed-pen iframe{height:480px}
 
 @media(prefers-color-scheme:dark){
   /* the callout inks are mixed for paper; lift them off a dark ground the
@@ -1411,3 +1417,19 @@ aside .section-title{display:flex;align-items:baseline}
 /* Cover art must come last so legacy topic previews cannot override it. */
 .spaces-index .space-shelf+ .space-shelf{display:none!important}.spaces-index .space-shelf .space-card{background-image:none!important;background-color:#1d3a30!important;background-size:auto!important;width:112px!important;flex:0 0 112px!important;height:250px!important;min-height:0!important;padding:0!important;align-self:end!important;box-shadow:none!important;border:0!important}.spaces-index .space-shelf .space-card:nth-child(2n){height:226px!important;background-color:#24483a!important}.spaces-index .space-shelf .space-card:nth-child(3n){height:268px!important;background-color:#173126!important}.spaces-index .space-shelf .space-card:nth-child(4n){height:238px!important;background-color:#2b5142!important}.spaces-index .space-shelf .space-card h2{left:50%!important;right:auto!important;bottom:18px!important;color:#e4f1e5!important;text-shadow:none!important;writing-mode:vertical-rl;transform:translateX(-50%) rotate(180deg)!important;font-size:18px!important;white-space:nowrap}.spaces-index .space-shelf .space-card p,.spaces-index .space-shelf .space-card:after{display:none!important}@media(max-width:800px){.spaces-index .topic-grid{display:flex!important;grid-template:none!important;overflow-x:auto!important;overflow-y:hidden!important}.spaces-index .space-shelf .space-card{width:84px!important;flex-basis:84px!important;height:210px!important}.spaces-index .space-shelf .space-card:nth-child(2n){height:190px!important}.spaces-index .space-shelf .space-card:nth-child(3n){height:226px!important}.spaces-index .space-shelf .space-card:nth-child(4n){height:200px!important}.spaces-index .space-shelf .space-card h2{font-size:15px!important;bottom:14px!important}}
 .space-shelf .space-card{background-image:linear-gradient(to top,#17130de8 0%,#17130d88 28%,transparent 58%),url("assets/posts/space-covers.png")!important;background-size:100% 100%,300% 200%!important;background-repeat:no-repeat;background-position:center,0 0!important;color:#fff8e9}.space-shelf .space-card h2,.space-shelf .space-card p{color:#fff8e9;text-shadow:0 1px 3px #17130d}.space-shelf .space-card .space-reading-preview,.space-shelf .space-card .space-tech-preview,.space-shelf .space-card .space-music-preview,.space-shelf .space-card .space-life-preview,.space-shelf .space-card .space-garden-preview,.space-shelf .space-card .topic-photo,.space-shelf .space-card .topic-shade{display:none}.space-shelf .space-card.space-life{background-position:center,0 0!important}.space-shelf .space-card.space-technology{background-position:center,50% 0!important}.space-shelf .space-card.space-family{background-position:center,100% 0!important}.space-shelf .space-card.space-gardening{background-position:center,0 100%!important}.space-shelf .space-card.space-food{background-position:center,50% 100%!important}.space-shelf .space-card.space-music{background-position:center,100% 100%!important}
+
+/* ---------- entry cards on a phone ---------- */
+/* A picture beside the copy leaves a column too narrow to set type in once the
+   card itself is only three quarters of a phone wide: four words to a line,
+   and a card that runs for a screen and a half. Below this the picture goes
+   across the top and the words get the whole width. */
+@media(max-width:600px){
+  .entry.has-thumb{grid-template-columns:1fr!important;gap:0}
+  .thumb-wrap{grid-column:1;grid-row:1;width:100%;justify-self:stretch;margin-bottom:15px}
+  .entry-thumb,.thumb-wrap .entry-plate{width:100%!important;height:170px!important}
+  .entry-copy{grid-column:1;grid-row:2}
+  /* The latest deck is a row of cards read side by side, so they want a
+     common height rather than one card three times the length of its
+     neighbour. The whole excerpt is a tap away on the entry itself. */
+  .home-latest-list .entry-copy p{display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden}
+}
