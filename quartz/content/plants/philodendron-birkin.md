@@ -26,7 +26,7 @@ The showiest one in the house: dark leaves ruled with fine cream pinstripes, no 
 ## Care
 
 - Water when the top two centimetres of compost feel dry, then let it drain properly. Sitting wet is the one thing that will kill it.
-- Bright but filtered light. Direct sun scorches the pale stripes first.
+- Filtered daylight is exactly right; it is one of the few here that would rather have more of it than the room can offer.
 - Wipe the leaves with a damp cloth every few weeks; the pinstripes disappear under dust.
 - Turn the pot a quarter each time you water so it grows evenly rather than leaning.
 - If a leaf comes out entirely green, cut it back to the stem or it will take over.

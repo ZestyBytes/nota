@@ -26,7 +26,7 @@ A Victorian parlour plant, bred for exactly this: a dim room, a cool corner and 
 ## Care
 
 - Keep the compost lightly moist but never wet. Soggy roots are the usual cause of death.
-- It genuinely prefers shade. Direct sun yellows the fronds.
+- It genuinely prefers shade, so the office suits it better than a windowsill would.
 - Brown tips are dry air. Mist it, or group it with the other plants so they share the humidity.
 - Feed sparingly. A palm this small needs very little.
 - Do not cut the growing point out of a frond; take whole fronds off at the base when they brown.

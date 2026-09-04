@@ -27,7 +27,7 @@ The one that tells you what it wants. It droops dramatically when thirsty and pi
 
 - Water when the leaves just begin to soften, before they collapse. Repeated dramatic wilting costs it leaves.
 - Brown crispy tips mean dry air or tap water. A weekly mist and stood water both help.
-- Never put it in direct sun; the leaves bleach and scorch.
+- Sun would bleach and scorch it, which is one worry the office removes entirely. Shade is where it wants to be.
 - Cut spent flower stems right down at the base rather than halfway.
 - Its leaves come to a fine point that browns easily, so trim any tip that goes with scissors, following the leaf shape.
 - Repot every couple of years, or when it dries out faster than you can keep up with.

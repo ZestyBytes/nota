@@ -26,7 +26,7 @@ Not a fern at all, but a relative of the edible asparagus, which is why it grows
 ## Care
 
 - The thirstiest of the lot. Keep it evenly moist and it stays green; let it dry out and it drops needles everywhere.
-- Yellowing sprays usually mean too little water or too much direct sun.
+- Yellowing sprays here will mean too little water rather than too much sun. There is no sun in the office to give it.
 - Cut old or bare stems right down at the base. New ones come up from the crown.
 - It grows from fat water storing tubers, so it will forgive one missed week but not a fortnight.
 - Mist it, or give it a shower under the tap now and then, which also sees off any red spider mite.

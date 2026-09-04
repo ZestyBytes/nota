@@ -26,7 +26,7 @@ Also called golden pothos, and the reason it earned the name is that it is very 
 ## Care
 
 - Let the top few centimetres dry out between waterings. Yellow leaves usually mean too much water, not too little.
-- It grows in almost any light, but the yellow marbling fades in a dark spot and comes back in a brighter one.
+- The yellow marbling fades in a dark spot and comes back in a brighter one, so it is worth swapping it towards the door for a few weeks if it goes plain.
 - Pinch the growing tips to make it bushier, and put the cuttings in water. They root in a fortnight.
 - Trailing stems can be pinned back onto the compost to thicken the plant instead of hanging.
 - Keep it up out of reach of anything that chews leaves.
