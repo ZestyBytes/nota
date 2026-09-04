@@ -1,12 +1,45 @@
-/* Explicit palette loaded after the legacy stylesheet. */
-.library-space-filter .space-shelf .space-card{background-image:none!important}
-.library-space-filter .space-life{background-color:#376a98!important}
-.library-space-filter .space-technology{background-color:#286657!important}
-.library-space-filter .space-music{background-color:#8a4054!important}
-.library-space-filter .space-motoring{background-color:#b06d32!important}
-.library-space-filter .space-gardening{background-color:#6f8845!important}
-.library-space-filter .space-family{background-color:#b9574f!important}
-.library-space-filter .space-reading{background-color:#496d91!important}
-.library-space-filter .space-food{background-color:#bc6335!important}
-.library-space-filter .space-attention{background-color:#725ca0!important}
-.library-space-filter .space-playlist{background-color:#377e86!important}
+/* Compact, classic clothbound spines. This file deliberately follows the
+   legacy stylesheet so old cover-art experiments cannot leak through. */
+.library-space-filter .space-shelf .space-card{
+  width:58px!important;
+  flex:0 0 58px!important;
+  min-width:58px!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:2px 3px 0 0!important;
+  background-image:linear-gradient(90deg,rgba(255,255,255,.12),transparent 13%,transparent 84%,rgba(0,0,0,.2))!important;
+  box-shadow:inset 2px 0 rgba(255,255,255,.1),inset -3px 0 rgba(0,0,0,.16),3px 2px 5px rgba(25,14,8,.24)!important;
+}
+.library-space-filter .space-shelf .space-card::before,
+.library-space-filter .space-shelf .space-card::after{display:none!important;content:none!important}
+.library-space-filter .space-life{background-color:#315f91!important}
+.library-space-filter .space-technology{background-color:#184c42!important}
+.library-space-filter .space-music{background-color:#7d3047!important}
+.library-space-filter .space-motoring{background-color:#bb6b2d!important}
+.library-space-filter .space-gardening{background-color:#74833b!important}
+.library-space-filter .space-family{background-color:#b34f48!important}
+.library-space-filter .space-reading{background-color:#3f6689!important}
+.library-space-filter .space-food{background-color:#b9472f!important}
+.library-space-filter .space-attention{background-color:#674f91!important}
+.library-space-filter .space-playlist{background-color:#277985!important}
+.library-space-filter .space-self-care{background-color:#a95d76!important}
+.library-space-filter .space-fitness{background-color:#3f826b!important}
+.library-space-filter .space-habits{background-color:#896044!important}
+.library-space-filter .space-adhd{background-color:#d09231!important}
+.library-space-filter .space-work{background-color:#485b7c!important}
+.library-space-filter .space-projects{background-color:#8c4338!important}
+.library-space-filter .space-travel{background-color:#397b87!important}
+.library-space-filter .space-card:nth-child(8n+1){background-color:#315f91!important}
+.library-space-filter .space-card:nth-child(8n+2){background-color:#184c42!important}
+.library-space-filter .space-card:nth-child(8n+3){background-color:#7d3047!important}
+.library-space-filter .space-card:nth-child(8n+4){background-color:#bb6b2d!important}
+.library-space-filter .space-card:nth-child(8n+5){background-color:#674f91!important}
+.library-space-filter .space-card:nth-child(8n+6){background-color:#b34f48!important}
+.library-space-filter .space-card:nth-child(8n+7){background-color:#3f6689!important}
+.library-space-filter .space-card:nth-child(8n){background-color:#74833b!important}
+.library-space-filter .space-shelf .space-card h2{font-size:12px!important;letter-spacing:.02em!important}
+.search-page{padding-top:clamp(18px,4vw,46px)}
+@media(max-width:800px){
+  .library-space-filter .space-shelf .space-card{width:48px!important;flex-basis:48px!important;min-width:48px!important}
+  .library-space-filter .space-shelf .space-card h2{font-size:11px!important}
+}
