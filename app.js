@@ -966,8 +966,8 @@ function driftLibraryShelf(){
     const dt=last?Math.min(now-last,100):0;last=now;
     if(held||now<quietUntil)pos=fold(rail.scrollLeft);
     else{
-      // Leftwards along the shelf, at reading pace rather than carousel pace.
-      pos=fold(pos+dt*.014);
+      // Rightwards along the shelf, at reading pace rather than carousel pace.
+      pos=fold(pos-dt*.014);
       put(pos);
     }
     shelfDriftFrame=requestAnimationFrame(step);
