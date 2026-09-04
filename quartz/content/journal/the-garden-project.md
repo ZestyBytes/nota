@@ -8,7 +8,7 @@ publishedAt: 2026-09-03
 publish: true
 ---
 
-![[garden-before-hammock.jpeg|August 2024: the lawn worn through to soil, and a hammock nobody used]]
+![[garden-before-hammock.jpeg|August 2024: the lawn worn through to soil, the bamboo closing in the far corner, and a hammock nobody used]]
 
 For two summers this was a garden the children ran across rather than one
 anyone sat in. The lawn was worn down to soil wherever people actually
@@ -17,7 +17,10 @@ little difference.
 
 ![[garden-before-sprinkler.jpeg|The sprinkler on, thirteen days later, to about the same effect]]
 
-So this spring we took the whole thing out and started again.
+So this spring I took the whole thing out and started again. Nearly all of
+it, anyway. The bamboo was well past what I could do with a spade and a
+Saturday, so Eden Tree Care came and took it out, and the far corner opened
+right up.
 
 ![[IMG_3985.jpeg|The plan, marked up in red]]
 
