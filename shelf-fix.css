@@ -73,7 +73,7 @@
 /* the plain spine: the name runs up it, clear of the board */
 .library-index .library-space-filter .space-shelf .space-card h2{
   position:static!important;margin:0!important;padding:0!important;
-  writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;
+  writing-mode:vertical-rl!important;transform:rotate(180deg)!important;white-space:nowrap;
   font:700 10px/1 var(--mono)!important;letter-spacing:.05em!important;
   text-transform:lowercase!important;color:#f2ecdd!important;opacity:.92;
   text-shadow:none!important;border:0!important;
@@ -83,8 +83,9 @@
    much as the fattest one: a handful of books, never the whole shelf. */
 .library-index .library-space-filter .space-shelf .space-card.spine-titled h2{
   position:absolute!important;left:0!important;right:0!important;
-  top:15%!important;height:60%!important;
+  top:17%!important;height:50%!important;
   display:grid!important;place-items:center;
+  writing-mode:vertical-rl!important;transform:rotate(180deg)!important;
   border-top:1px solid rgba(240,232,208,.55)!important;
   border-bottom:1px solid rgba(240,232,208,.55)!important;
   font:600 13px/1 var(--serif)!important;letter-spacing:.13em!important;
@@ -140,7 +141,7 @@ html body .library-index .library-space-filter .space-shelf .space-card.space-ha
      name up its spine, whatever its thickness. */
   .library-index .library-space-filter .space-shelf .space-card.spine-titled h2{
     position:static!important;height:auto!important;border:0!important;
-    display:block!important;
+    display:block!important;transform:rotate(180deg)!important;
     font:700 8px/1 var(--mono)!important;letter-spacing:.05em!important;
     text-transform:lowercase!important;color:#f2ecdd!important;
   }
