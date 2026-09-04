@@ -56,7 +56,8 @@ const TOPICS = {
   eatingout:  { name: "Eating out", parent: "food", icon: "cup", color: "#7a5a2e", soft: "#ece1d0", ground: "plain", photo: "", description: "Meals out worth remembering" },
   technology: { name: "Technology", mode: "tech", icon: "terminal", color: "#1c6e63", soft: "#dbe9e6", ground: "grid", photo: "", description: "Tools, code and thoughtful technology" },
   motoring:   { name: "Motoring", icon: "car", color: "#b0472c", soft: "#f2ded6", ground: "wedge", photo: "", description: "The Mini, the road, and the days worth the drive" },
-  gardening:  { name: "Gardening", icon: "leaf", color: "#3f6b2e", soft: "#e4ead9", ground: "hatch", photo: "", description: "Seasons, seedlings and life outdoors" }
+  gardening:  { name: "Gardening", icon: "leaf", color: "#3f6b2e", soft: "#e4ead9", ground: "hatch", photo: "", description: "Seasons, seedlings and life outdoors" },
+  houseplants:{ name: "House plants", parent: "gardening", mode: "plants", icon: "plant", color: "#2f7a5a", soft: "#dcece5", ground: "dots", photo: "", description: "The indoor stock: what each one is, and what it asks for" }
 };
 // Normalise every topic photograph once, at build time, so the app only ever
 // sees a finished URL.
@@ -343,6 +344,19 @@ for (const file of files) {
     target: numberOrNull(data.target), unit: String(data.unit || "").trim(),
     image, imageAlt, images: allImages(body), attachments: []
   };
+  // A plant note is a record of a living thing rather than a piece of writing:
+  // what it is, where it stands, and what it asks for. The watering cadence is
+  // kept as a plain number of days so the shelf can work out what is due.
+  if (data.view === "plant") {
+    entry.plant = {
+      botanical: data.botanical || "", light: data.light || "",
+      water: data.water || "", waterEvery: Number(data.waterEvery || 0) || 0,
+      lastWatered: dateOnly(data.lastWatered) || "",
+      feed: data.feed || "", humidity: data.humidity || "", soil: data.soil || "",
+      position: data.position || "", acquired: dateOnly(data.acquired) || "",
+      care: bulletsAfter(body, "care")
+    };
+  }
   if (data.view === "recipe") {
     entry.recipe = {
       time: data.time || "", serves: String(data.serves || ""), difficulty: data.difficulty || "",

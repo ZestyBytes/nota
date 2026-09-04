@@ -191,7 +191,7 @@ function rootTopic(id){
   }
   return current||"life";
 }
-function icon(name){const paths={leaf:'<path d="M20.4 3.6c-9.4 0-14.8 4.3-14.8 10.5a4.7 4.7 0 0 0 4.7 4.7c6.7 0 10.1-6.5 10.1-15.2Z"/><path d="M4.2 20.4c2.5-5.8 6.7-9.9 12.5-12.6"/>',music:'<path d="M9 18V5l10-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/>',terminal:'<path d="M4.6 5.2h14.8a1.8 1.8 0 0 1 1.8 1.8v10a1.8 1.8 0 0 1-1.8 1.8H4.6a1.8 1.8 0 0 1-1.8-1.8V7a1.8 1.8 0 0 1 1.8-1.8Z"/><path d="M7.4 9.6l2.9 2.4-2.9 2.4M13.2 14.4h4.2"/>',mind:'<path d="M12 21s-8-4.5-8-11a4 4 0 0 1 7-2.6A4 4 0 0 1 20 10c0 6.5-8 11-8 11Z"/><path d="M7 13h3l1.5-3 2 6 1.5-3h3"/>',book:'<path d="M4 5a3 3 0 0 1 3-3h12v18H7a3 3 0 0 1 0-6h12"/>',home:'<path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10M9 20v-6h6v6"/>',fork:'<path d="M7 3v7m-3-7v4a3 3 0 0 0 6 0V3M7 10v11M17 3v18m0-18c3 3 3 8 0 10"/>',paperclip:'<path d="m21 11-8.5 8.5a6 6 0 0 1-8.5-8.5l9-9a4 4 0 0 1 5.7 5.7l-9 9a2 2 0 0 1-2.9-2.9L15 5.6"/>',quote:'<path d="M9 11H5a4 4 0 0 1 4-4v8a4 4 0 0 1-4 4M19 11h-4a4 4 0 0 1 4-4v8a4 4 0 0 1-4 4"/>',note:'<path d="M4 3h16v18H4zM8 8h8M8 12h8M8 16h5"/>',check:'<path d="m5 12 5 5 9-9"/>',photos:'<rect x="7" y="3" width="14" height="14" rx="1.5"/><path d="M17 21H4.5A1.5 1.5 0 0 1 3 19.5V7"/>',car:'<path d="M3.6 15.8v-2.2l1.9-4.5A2.3 2.3 0 0 1 7.6 7.7h8.8a2.3 2.3 0 0 1 2.1 1.4l1.9 4.5v2.2Z"/><path d="M4.4 13.6h15.2M9.5 7.9v5.7M14.5 7.9v5.7"/><path d="M9.1 16.3a2.05 2.05 0 1 1-4.1 0 2.05 2.05 0 0 1 4.1 0ZM19 16.3a2.05 2.05 0 1 1-4.1 0 2.05 2.05 0 0 1 4.1 0Z"/>',disc:'<path d="M20.7 12a8.7 8.7 0 1 1-17.4 0 8.7 8.7 0 0 1 17.4 0ZM14.4 12a2.4 2.4 0 1 1-4.8 0 2.4 2.4 0 0 1 4.8 0Z"/><path d="M17.6 12A5.6 5.6 0 0 0 12 6.4"/>',repeat:'<path d="M4 9.6A4.6 4.6 0 0 1 8.6 5h9"/><path d="m14.8 2.4 2.9 2.6-2.9 2.6"/><path d="M20 14.4A4.6 4.6 0 0 1 15.4 19h-9"/><path d="m9.2 16.4-2.9 2.6 2.9 2.6"/>',heart:'<path d="M12 20.3s-7.6-4.4-7.6-10a4.2 4.2 0 0 1 7.6-2.6 4.2 4.2 0 0 1 7.6 2.6c0 5.6-7.6 10-7.6 10Z"/>',weights:'<path d="M3.4 9.6v4.8M6.6 7.2v9.6M17.4 7.2v9.6M20.6 9.6v4.8M6.6 12h10.8"/>',cup:'<path d="M5 8.4h11v5.8a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4Z"/><path d="M16 9.8h2.2a2.3 2.3 0 0 1 0 4.6H16"/><path d="M7.6 4.4v1.9M11 3.9v2.4M14.4 4.4v1.9"/>',alert:'<path d="M12 3.6 21 19H3Z"/><path d="M12 9.6v4.2"/><path d="M12 16.6h.01"/>',help:'<circle cx="12" cy="12" r="8.6"/><path d="M9.6 9.6a2.5 2.5 0 0 1 4.8.8c0 1.7-2.4 1.9-2.4 3.4"/><path d="M12 17.2h.01"/>'};return `<svg class="line-icon" viewBox="0 0 24 24" aria-hidden="true">${paths[name]||paths.note}</svg>`}
+function icon(name){const paths={leaf:'<path d="M20.4 3.6c-9.4 0-14.8 4.3-14.8 10.5a4.7 4.7 0 0 0 4.7 4.7c6.7 0 10.1-6.5 10.1-15.2Z"/><path d="M4.2 20.4c2.5-5.8 6.7-9.9 12.5-12.6"/>',music:'<path d="M9 18V5l10-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/>',terminal:'<path d="M4.6 5.2h14.8a1.8 1.8 0 0 1 1.8 1.8v10a1.8 1.8 0 0 1-1.8 1.8H4.6a1.8 1.8 0 0 1-1.8-1.8V7a1.8 1.8 0 0 1 1.8-1.8Z"/><path d="M7.4 9.6l2.9 2.4-2.9 2.4M13.2 14.4h4.2"/>',mind:'<path d="M12 21s-8-4.5-8-11a4 4 0 0 1 7-2.6A4 4 0 0 1 20 10c0 6.5-8 11-8 11Z"/><path d="M7 13h3l1.5-3 2 6 1.5-3h3"/>',book:'<path d="M4 5a3 3 0 0 1 3-3h12v18H7a3 3 0 0 1 0-6h12"/>',home:'<path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10M9 20v-6h6v6"/>',fork:'<path d="M7 3v7m-3-7v4a3 3 0 0 0 6 0V3M7 10v11M17 3v18m0-18c3 3 3 8 0 10"/>',paperclip:'<path d="m21 11-8.5 8.5a6 6 0 0 1-8.5-8.5l9-9a4 4 0 0 1 5.7 5.7l-9 9a2 2 0 0 1-2.9-2.9L15 5.6"/>',quote:'<path d="M9 11H5a4 4 0 0 1 4-4v8a4 4 0 0 1-4 4M19 11h-4a4 4 0 0 1 4-4v8a4 4 0 0 1-4 4"/>',note:'<path d="M4 3h16v18H4zM8 8h8M8 12h8M8 16h5"/>',check:'<path d="m5 12 5 5 9-9"/>',photos:'<rect x="7" y="3" width="14" height="14" rx="1.5"/><path d="M17 21H4.5A1.5 1.5 0 0 1 3 19.5V7"/>',car:'<path d="M3.6 15.8v-2.2l1.9-4.5A2.3 2.3 0 0 1 7.6 7.7h8.8a2.3 2.3 0 0 1 2.1 1.4l1.9 4.5v2.2Z"/><path d="M4.4 13.6h15.2M9.5 7.9v5.7M14.5 7.9v5.7"/><path d="M9.1 16.3a2.05 2.05 0 1 1-4.1 0 2.05 2.05 0 0 1 4.1 0ZM19 16.3a2.05 2.05 0 1 1-4.1 0 2.05 2.05 0 0 1 4.1 0Z"/>',disc:'<path d="M20.7 12a8.7 8.7 0 1 1-17.4 0 8.7 8.7 0 0 1 17.4 0ZM14.4 12a2.4 2.4 0 1 1-4.8 0 2.4 2.4 0 0 1 4.8 0Z"/><path d="M17.6 12A5.6 5.6 0 0 0 12 6.4"/>',repeat:'<path d="M4 9.6A4.6 4.6 0 0 1 8.6 5h9"/><path d="m14.8 2.4 2.9 2.6-2.9 2.6"/><path d="M20 14.4A4.6 4.6 0 0 1 15.4 19h-9"/><path d="m9.2 16.4-2.9 2.6 2.9 2.6"/>',heart:'<path d="M12 20.3s-7.6-4.4-7.6-10a4.2 4.2 0 0 1 7.6-2.6 4.2 4.2 0 0 1 7.6 2.6c0 5.6-7.6 10-7.6 10Z"/>',weights:'<path d="M3.4 9.6v4.8M6.6 7.2v9.6M17.4 7.2v9.6M20.6 9.6v4.8M6.6 12h10.8"/>',cup:'<path d="M5 8.4h11v5.8a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4Z"/><path d="M16 9.8h2.2a2.3 2.3 0 0 1 0 4.6H16"/><path d="M7.6 4.4v1.9M11 3.9v2.4M14.4 4.4v1.9"/>',alert:'<path d="M12 3.6 21 19H3Z"/><path d="M12 9.6v4.2"/><path d="M12 16.6h.01"/>',plant:'<path d="M12 21v-8"/><path d="M12 13c0-3.6 2.5-6.4 6.4-6.4 0 3.9-2.8 6.4-6.4 6.4Z"/><path d="M12 15c-3.3 0-5.6-2.3-5.6-5.6C9.7 9.4 12 11.7 12 15Z"/><path d="M7.6 17h8.8l-.9 4H8.5Z"/>',sun:'<circle cx="12" cy="12" r="4.2"/><path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M18.5 5.5l-1.7 1.7M7.2 16.8l-1.7 1.7"/>',drop:'<path d="M12 3.2s6 6.3 6 10.1a6 6 0 0 1-12 0c0-3.8 6-10.1 6-10.1Z"/>',help:'<circle cx="12" cy="12" r="8.6"/><path d="M9.6 9.6a2.5 2.5 0 0 1 4.8.8c0 1.7-2.4 1.9-2.4 3.4"/><path d="M12 17.2h.01"/>'};return `<svg class="line-icon" viewBox="0 0 24 24" aria-hidden="true">${paths[name]||paths.note}</svg>`}
 function chips(ids=[]){return ids.map(id=>{const t=topic(id);return `<span class="chip" style="--topic:${t.color};--soft:${t.soft}">${esc(t.name)}</span>`}).join("")}
 // Specimen-label date: 01 SEP 2026. The card had no date at all before.
 const MONTHS=["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
@@ -304,6 +304,35 @@ function recipeBody(e){
     ${r.ingredients?.length?`<section class="recipe-part"><h2 class="section-title">You will need</h2><ul class="ingredients">${r.ingredients.map((i,n)=>`<li class="${done.includes(n)?"got":""}" data-tick="${n}" data-recipe="${e.id}"><span class="tick" aria-hidden="true">${icon("check")}</span><span>${inline(i)}</span></li>`).join("")}</ul></section>`:""}
     ${r.method?.length?`<section class="recipe-part"><details class="method" open><summary><span class="section-title">Method</span><span class="method-count">${r.method.length} steps</span></summary><ol class="steps">${r.method.map(m=>`<li>${inline(m)}</li>`).join("")}</ol></details></section>`:""}`;
 }
+// A plant is a living thing on a shelf rather than a piece of writing: what it
+// is, what it wants, and when it was last seen to. The watering cadence is kept
+// as a plain number of days, so the shelf can work out what is due without the
+// note having to say so.
+function waterDue(p){
+  if(!p?.waterEvery||!p.lastWatered)return null;
+  const last=new Date(p.lastWatered+"T12:00:00");if(isNaN(last))return null;
+  const due=new Date(last.getTime()+p.waterEvery*864e5);
+  const days=Math.round((due-new Date(todayKey+"T12:00:00"))/864e5);
+  return {iso:due.toISOString().slice(0,10),days};
+}
+function waterWord(due){
+  if(!due)return "";
+  if(due.days<0)return `${Math.abs(due.days)} ${Math.abs(due.days)===1?"day":"days"} overdue`;
+  if(due.days===0)return "Water today";
+  if(due.days===1)return "Water tomorrow";
+  return `Water in ${due.days} days`;
+}
+function plantFacts(p){
+  return [["Light",p.light],["Water",p.water||(p.waterEvery?`Every ${p.waterEvery} days`:"")],["Feed",p.feed],["Humidity",p.humidity],["Soil",p.soil],["Position",p.position]].filter(([,v])=>v);
+}
+function plantBody(e,shown){
+  const p=e.plant,facts=plantFacts(p),due=waterDue(p);
+  return `${facts.length?`<dl class="plant-facts">${facts.map(([k,v])=>`<div><dt>${k}</dt><dd>${esc(String(v))}</dd></div>`).join("")}</dl>`:""}
+    ${due?`<p class="plant-due ${due.days<0?"late":due.days===0?"now":""}">${icon("drop")}<b>${esc(waterWord(due))}</b><span>Last watered ${fmtDate(p.lastWatered)} &middot; due ${fmtDate(due.iso)}</span></p>`:""}
+    ${p.care?.length?`<section class="plant-care"><h2 class="section-title">Care</h2><ul>${p.care.map(c=>`<li>${icon("check")}<span>${inline(c)}</span></li>`).join("")}</ul></section>`:""}
+    ${e.body?markdown(e.body,shown,e.id):""}
+    ${p.botanical||p.acquired?`<p class="plant-tail">${p.botanical?`<em>${esc(p.botanical)}</em>`:""}${p.acquired?`<span>In the house since ${fmtDate(p.acquired)}</span>`:""}</p>`:""}`;
+}
 // What else in the archive points at this entry. A one-way link is half a
 // connection; the other half is knowing you were mentioned.
 function backlinks(e){
@@ -355,7 +384,7 @@ function entryPage(id){
     </header>
     ${e.images?.length>1?gallery(e.images):e.image?`<img class="detail-image" src="${e.image}" alt="${esc(e.imageAlt||"")}">`:""}
     ${e.id==="notes/why-i-made-noted"?notedFlow():""}
-    ${(()=>{const shown=e.images?.length>1?e.images.map(i=>i.src):[e.image];return e.recipe?`<div class="detail-body recipe-body">${recipeBody(e)}</div>`:e.view==="cards"&&e.body?cardDeck(e.body,shown,e.id):`<div class="detail-body">${e.body?(e.view==="playlist"?playlistBody(e.body):markdown(e.body,shown,e.id)):`<p>${esc(e.excerpt||"Saved in your Noted archive.")}</p>`}</div>`})()}
+    ${(()=>{const shown=e.images?.length>1?e.images.map(i=>i.src):[e.image];return e.recipe?`<div class="detail-body recipe-body">${recipeBody(e)}</div>`:e.plant?`<div class="detail-body plant-body">${plantBody(e,shown)}</div>`:e.view==="cards"&&e.body?cardDeck(e.body,shown,e.id):`<div class="detail-body">${e.body?(e.view==="playlist"?playlistBody(e.body):markdown(e.body,shown,e.id)):`<p>${esc(e.excerpt||"Saved in your Noted archive.")}</p>`}</div>`})()}
     ${(()=>{const back=backlinks(e);return back.length?`<section class="backlinks"><h2 class="section-title">Mentioned in</h2><ul>${back.map(b=>`<li><a href="#entry/${encodeURIComponent(b.id)}">${esc(b.title)}</a><small>${esc(b.type)}${b.occurredAt?` &middot; ${esc(fmtDate(b.occurredAt))}`:""}</small></li>`).join("")}</ul></section>`:""})()}
     ${(()=>{const near=relatedEntries(e);return near.length?`<section class="related-entries"><h2 class="section-title">Continue nearby</h2><div>${near.map(x=>`<a href="#entry/${encodeURIComponent(x.id)}" data-entry="${esc(x.id)}" data-return="#entry/${encodeURIComponent(e.id)}"><small>${esc(topic(x.topics?.[0]).name)} · ${fmtDate(x.occurredAt||x.createdAt)}</small><b>${esc(x.title)}</b></a>`).join("")}</div></section>`:""})()}
     ${previous||next?`<nav class="entry-pager" aria-label="${e.journey?"Journey entries":"Archive entries"}">${previous?`<a href="#entry/${encodeURIComponent(previous.id)}" data-entry="${esc(previous.id)}" data-return="#entry/${encodeURIComponent(e.id)}"><small>Previous</small><b>← ${esc(previous.title)}</b></a>`:`<span></span>`}${next?`<a href="#entry/${encodeURIComponent(next.id)}" data-entry="${esc(next.id)}" data-return="#entry/${encodeURIComponent(e.id)}"><small>Next</small><b>${esc(next.title)} →</b></a>`:`<span></span>`}</nav>`:""}
@@ -715,7 +744,7 @@ function journeyStrip(bare=false){
   if(!rows.length)return "";
   return `<section class="journey-strip">${bare?"":`<h2 class="section-title">Journeys</h2>`}<div class="journey-cards">${rows.map(({name,rows:items,last})=>{
     const t=topic(items[0].topics?.[0]),days=items.map(i=>i.day).filter(Boolean);
-    return `<article class="journey-card" data-journey="${esc(name)}" style="--topic:${t.color};--soft:${t.soft}"><p class="eyebrow">${esc(t.name)}</p><h3>${esc(name)}</h3><p class="journey-last">${esc(last.title)}</p>${(()=>{const p=journeyProgress(items);return p?journeyBar(p):journeyDots(items.length)})()}<p class="journey-meta">${days.length?`Day ${Math.max(...days)} &middot; `:""}${items.length} ${items.length===1?"entry":"entries"}${last.occurredAt?` &middot; ${fmtDate(last.occurredAt)}`:""}</p>${(()=>{const p=journeyProgress(items);return p?journeyBar(p):journeyDots(items.length)})()}</article>`;
+    return `<article class="journey-card" data-journey="${esc(name)}" style="--topic:${t.color};--soft:${t.soft}"><p class="eyebrow">${esc(t.name)}</p><h3>${esc(name)}</h3><p class="journey-last">${esc(last.title)}</p><p class="journey-meta">${days.length?`Day ${Math.max(...days)} &middot; `:""}${items.length} ${items.length===1?"entry":"entries"}${last.occurredAt?` &middot; ${fmtDate(last.occurredAt)}`:""}</p>${(()=>{const p=journeyProgress(items);return p?journeyBar(p):journeyDots(items.length)})()}</article>`;
   }).join("")}</div></section>`;
 }
 function journeyPage(id){
@@ -794,6 +823,36 @@ function kitchenView(items){
     </div>
   </div>`;
 }
+// The house plants are a stock list, not a feed: every plant on the shelf at
+// once, the ones that want water first, and each card carrying the two things
+// you actually need standing in front of it, light and how often to water.
+function plantsView(items){
+  const plants=items.filter(e=>e.plant),notes=items.filter(e=>!e.plant);
+  const rows=plants.map(e=>({e,due:waterDue(e.plant)})).sort((a,b)=>{
+    if(a.due&&b.due)return a.due.days-b.due.days;
+    return a.due?-1:b.due?1:(a.e.title||"").localeCompare(b.e.title||"");
+  });
+  const thirsty=rows.filter(r=>r.due&&r.due.days<=0).length;
+  const photo=plants.find(e=>e.image)?.image||topicPhoto("houseplants")?.src||"";
+  const stat=(value,label)=>`<span><b>${value}</b><small>${label}</small></span>`;
+  return `<div class="plant-shelf">
+    <header class="shelf-hero">
+      ${photo?`<img src="${esc(photo)}" alt="" fetchpriority="high">`:""}
+      <i aria-hidden="true"></i>
+      <div class="shelf-hero-copy"><p>The indoor stock</p><h1>house plants</h1><blockquote>Every one on the windowsill,<br>and what it asks for.</blockquote></div>
+      <div class="shelf-stats">${stat(plants.length,plants.length===1?"plant":"plants")}${stat(thirsty,"want water")}${stat(notes.length,"notes")}</div>
+    </header>
+    ${rows.length?`<div class="plant-grid">${rows.map(({e,due})=>{const p=e.plant;return `<article class="plant-card" data-entry="${esc(e.id)}">
+      <span class="plant-photo">${e.image?`<img src="${esc(e.image)}" alt="${esc(e.imageAlt||"")}" loading="lazy">`:`<i aria-hidden="true">${icon("plant")}</i>`}</span>
+      <div class="plant-copy">
+        <h2>${esc(e.title)}</h2>${p.botanical?`<p class="plant-latin">${esc(p.botanical)}</p>`:""}
+        <ul class="plant-chips">${p.light?`<li>${icon("sun")}<span>${esc(p.light)}</span></li>`:""}${p.water||p.waterEvery?`<li>${icon("drop")}<span>${esc(p.water||`Every ${p.waterEvery} days`)}</span></li>`:""}${p.position?`<li>${icon("home")}<span>${esc(p.position)}</span></li>`:""}</ul>
+        ${due?`<span class="plant-flag ${due.days<0?"late":due.days===0?"now":""}">${esc(waterWord(due))}</span>`:""}
+      </div>
+    </article>`}).join("")}</div>`:`<p class="empty">No plants on the shelf yet. Add a note with <code>view: plant</code> and a photograph.</p>`}
+    ${notes.length?`<section class="plant-notes"><div class="shelf-section-head"><p>Potting bench</p><span>Notes about the indoor garden</span></div>${notes.map(e=>`<article data-entry="${esc(e.id)}"><time>${fmtDate(e.occurredAt||e.createdAt)}</time><h3>${esc(e.title)}</h3><p>${esc(e.excerpt||"")}</p></article>`).join("")}</section>`:""}
+  </div>`;
+}
 const TOPIC_ROOMS={
   family:{label:"The family album",section:"Moments kept together",note:"Shared days, familiar faces, and stories that become family shorthand."},
   life:{label:"The everyday ledger",section:"Recent days",note:"The practical, ordinary and unexpectedly memorable parts of a life."},
@@ -835,6 +894,7 @@ function topicView(id){const t=topic(id),kids=childTopics(id),items=state.data.e
     const rest=items.filter(e=>!bulletsOf(e.body).length);
     body=`<div class="topic-mode listen-mode">${groups.map(({e,rows})=>`<section class="listen-group"><div class="listen-head"><h3><a href="#entry/${encodeURIComponent(e.id)}">${esc(e.title)}</a></h3><span>${rows.length} ${rows.length===1?"entry":"entries"}</span></div><ol class="tracklist">${rows.map(trackRow).join("")}</ol></section>`).join("")||`<p class="empty">Nothing in this topic yet.</p>`}${rest.length?`<div class="entry-list listen-rest">${rest.map(e=>entryCard(e,"",id)).join("")}</div>`:""}</div>`;
   }
+  if(t.mode==="plants")return `<section class="topic-page plants-page" style="--topic:${t.color};--soft:${t.soft}"><p class="back-link room-back"><a href="${backHref("#topics")}" data-back>Back to topics</a></p>${plantsView(items)}</section>`;
   if(t.mode==="kitchen")return `<section class="topic-page kitchen-page" style="--topic:${t.color};--soft:${t.soft}"><p class="back-link kitchen-back"><a href="${backHref("#topics")}" data-back>Back to topics</a></p>${kitchenView(items)}</section>`;
   if(TOPIC_ROOMS[id])return `<section class="topic-page bespoke-topic-page bespoke-${id}" style="--topic:${t.color};--soft:${t.soft}"><p class="back-link room-back"><a href="${backHref("#topics")}" data-back>Back to topics</a></p>${bespokeTopic(id,items,books,kids)}</section>`;
   if(t.mode==="tech")body=`<div class="topic-mode tech-mode"><div class="mode-note"><p>Technical notes keep the same Noted structure, with files and dated logs presented in a more useful form.</p></div>${body}</div>`;if(t.mode==="recipes")body=`<div class="topic-mode recipe-mode">${items.map(e=>e.recipe?`<article class="recipe-card" data-entry="${e.id}">${e.image?`<img src="${e.image}" alt="${esc(e.imageAlt)}">`:""}<div><p class="eyebrow">Recipe note</p><h2>${esc(e.title)}</h2><div class="recipe-facts"><span>${esc(e.recipe.time)}</span><span>Serves ${esc(e.recipe.serves)}</span><span>${esc(e.recipe.difficulty)}</span></div><p>${esc(e.excerpt)}</p><h3>You'll need</h3><p>${e.recipe.ingredients.map(esc).join(" · ")}</p></div></article>`:entryCard(e,"",id)).join("")||`<p class="empty">No recipes yet.</p>`}</div>`;const bookSection=books.length?`<h2 class="section-title">Books</h2><div class="book-grid">${books.map((b,i)=>`<article class="book ${b.cover?"":"has-plate"}" data-book="${b.id}"><span class="acc-no">No. ${accNo(b.id)}</span>${b.cover?`<img class="book-cover" src="${b.cover}" alt="" loading="lazy">`:coverPlate(b)}<div class="book-copy"><h3>${esc(b.title)}</h3><p>${esc(b.author)}</p><span class="status">${esc(b.status.replaceAll("-"," "))}${b.status==="reading"?` · ${b.progress}%`:""}</span><div class="progress"><i style="width:${b.progress}%"></i></div></div></article>`).join("")}</div>`:"";return `<section class="topic-page" style="--topic:${t.color};--soft:${t.soft}"><p class="back-link"><a href="${backHref("#topics")}" data-back>Back</a></p><span class="topic-mark topic-mark-page" aria-hidden="true">${esc(t.name[0])}</span><div class="page-head"><div><p class="eyebrow">Topic${t.mode?" · tailored view":""}</p><h1 class="page-title" style="color:${t.color}">${esc(t.name)}</h1><p class="lede">${esc(t.description)}</p>${kids.length?`<p class="topic-kids topic-kids-page">${kids.map(k=>`<span class="kid" data-topic="${k}" style="--topic:${state.data.topics[k].color}">${esc(state.data.topics[k].name)}</span>`).join("")}</p>`:""}${t.parent&&state.data.topics[t.parent]?`<p class="topic-parent">Part of <span class="kid" data-topic="${t.parent}" style="--topic:${state.data.topics[t.parent].color}">${esc(state.data.topics[t.parent].name)}</span></p>`:""}</div></div>${body}${bookSection}</section>`}
