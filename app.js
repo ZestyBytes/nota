@@ -603,8 +603,21 @@ function libraryBody(){
     const notes=state.data.entries.filter(e=>["Note","Journal","Quote"].includes(e.type)).sort((a,b)=>(b.occurredAt||b.createdAt||"").localeCompare(a.occurredAt||a.createdAt||""));
     body=`<div class="entry-list">${notes.map(e=>entryCard(e)).join("")||`<p class="empty">No notes kept yet.</p>`}</div>`;
   }
-  const tabs={writing:"Highlights",notes:"Notes",journeys:"Journeys",reading:"Books",gallery:"Photos"};
-  return `<section class="library-index">${pageHead("Browse by format","Library","Highlights are a small selection chosen to share. Notes gathers notes, journals and quotes; journeys, books and photographs keep their useful shapes.")}<div class="library-space-filter">${topics()}</div><div class="library-tabs">${Object.entries(tabs).map(([x,label])=>`<button class="filter ${state.library===x?"active":""}" data-library="${x}">${label}</button>`).join("")}</div>${body}</section>`;
+  return body;
+}
+function library(){
+  return `<section class="library-index">${pageHead("Browse by format","Library","Highlights are a small selection chosen to share. Notes gathers notes, journals and quotes; journeys, books and photographs keep their useful shapes.")}<div class="library-space-filter">${topics()}</div><div class="library-tabs">${Object.entries(libraryTabs).map(([x,label])=>`<button class="filter ${state.library===x?"active":""}" data-library="${x}">${label}</button>`).join("")}</div><div class="library-body">${libraryBody()}</div></section>`;
+}
+// Switching filter swaps only the list. Re-rendering the whole page rebuilt the
+// shelf of topics above it, which threw its drift back to the start every time.
+function renderLibraryBody(){
+  const holder=document.querySelector(".library-index .library-body");
+  if(!holder)return render();
+  document.querySelectorAll(".library-tabs [data-library]").forEach(b=>b.classList.toggle("active",b.dataset.library===state.library));
+  holder.innerHTML=libraryBody();
+  swipeable(".deck",".deck-dots i");
+  swipeable(".gallery",".gallery-dots i",".gallery-caption");
+  syncReadingProgress();
 }
 // A topic may hold sub-topics: Self care covers ADHD, and later therapy,
 // fitness, the dentist. A parent counts and shows its children's items too.
@@ -1153,7 +1166,7 @@ document.addEventListener("click",async e=>{
   if(jump){const [jy,jm]=jump.dataset.jump.split("-").map(Number);state.month=new Date(jy,jm-1,1);if(jump.dataset.jump===todayKey)state.selectedDate=todayKey;render();return}
   const month=e.target.closest("[data-month]");if(month){state.month=new Date(state.month.getFullYear(),state.month.getMonth()+Number(month.dataset.month),1);render()}
   const calendarMode=e.target.closest("[data-calendar-mode]");if(calendarMode){state.calendarMode=calendarMode.dataset.calendarMode;try{localStorage.setItem("noted-calendar-mode",state.calendarMode)}catch(error){}render();return}
-  const lib=e.target.closest("[data-library]");if(lib){state.library=lib.dataset.library;try{localStorage.setItem("noted-library-tab",state.library)}catch(error){}render()}
+  const lib=e.target.closest("[data-library]");if(lib){state.library=lib.dataset.library;try{localStorage.setItem("noted-library-tab",state.library)}catch(error){}renderLibraryBody()}
   const filter=e.target.closest("[data-filter]");if(filter){state.filter=filter.dataset.filter;render()}
   const tick=e.target.closest("[data-tick]");
   if(tick){
