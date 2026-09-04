@@ -14,21 +14,23 @@ no levels, no tutorial, no story, just a grabber that is strong enough to
 lift a bear about three quarters of the time and weak enough to drop it just
 before the chute.
 
-I found a pixel one on CodePen this afternoon and lost a genuinely
-embarrassing amount of the evening to it. It is a whole cabinet in a browser
-tab, drawn in the blue and cream of a seaside arcade, with a row of very
-patient soft toys waiting to be almost picked up.
+So I built one into the archive. It is a whole cabinet in a browser tab,
+drawn in the blue and cream of a seaside arcade, with a row of very patient
+soft toys waiting to be almost picked up.
 
 https://codepen.io/Ma5a/pen/YPzzpep
 
-Press to move, release to stop. That is the entire control scheme, and it is
-the right one: the game is not about aiming, it is about timing your nerve.
-The claw does the rest, which is to say it does whatever it likes.
+Press and hold to move, release to stop. That is the entire control scheme,
+and it is the right one: the game is not about aiming, it is about timing
+your nerve. The claw does the rest, which is to say it does whatever it
+likes.
 
 > [!tip] The trick, such as it is
 > Go for the toy nearest the chute rather than the one you want. A short trip
 > drops fewer bears than a long one.
 
-What I like about it is how little it needs to work. No score, nothing saved,
-no reason to come back except that you did not get the bear last time. Half
-the arcades I remember were built on exactly that.
+The idea came from [masahito's pixel claw machine](https://codepen.io/Ma5a/pen/YPzzpep),
+which is the better looking of the two and worth a few minutes of anyone's
+evening. What I like about both is how little they need to work. No score,
+nothing saved, no reason to come back except that you did not get the bear
+last time. Half the arcades I remember were built on exactly that.

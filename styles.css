@@ -1327,7 +1327,10 @@ aside .section-title{display:flex;align-items:baseline}
 .entry-page:before,.entry-page:after{content:"";position:absolute;top:-9px;width:42px;height:17px;background:var(--tape);pointer-events:none;z-index:2}.entry-page:before{left:26%;transform:rotate(-5deg)}.entry-page:after{right:12%;transform:rotate(6deg)}
 .entry-topic-tab{position:absolute;top:-13px;left:clamp(24px,5vw,62px);z-index:3;padding:6px 11px 5px;color:#fff;font:10px/1 var(--mono);text-transform:uppercase;letter-spacing:.11em;transform:rotate(-2deg);box-shadow:0 4px 8px -4px rgba(0,0,0,.45)}
 .entry-space-link{font:700 9px var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--space);margin-left:auto;text-decoration:none;border-bottom:1px solid currentColor;white-space:nowrap}
-.entry-page .entry-masthead{padding-bottom:4px}.entry-page-title{text-wrap:balance}.entry-page .detail-image,.entry-page .gallery-wrap{margin-top:8px;margin-bottom:34px}.entry-page .detail-image{border:7px solid var(--paper);box-shadow:0 8px 20px -16px rgba(0,0,0,.65)}
+.entry-page .entry-masthead{padding-bottom:4px}.entry-page-title{text-wrap:balance}
+/* Without a photograph the 16ch measure leaves a picture-shaped hole beside
+   the title, so a piece with no image gets the fuller measure instead. */
+.entry-page.no-image .entry-page-title{max-width:26ch}.entry-page .detail-image,.entry-page .gallery-wrap{margin-top:8px;margin-bottom:34px}.entry-page .detail-image{border:7px solid var(--paper);box-shadow:0 8px 20px -16px rgba(0,0,0,.65)}
 .entry-page .detail-body{margin-left:auto;margin-right:auto}.entry-page .detail-body:not(.recipe-body)>p:first-child:first-letter{float:left;margin:.08em .10em 0 0;color:var(--space);font:600 3.25em/.72 var(--serif)}
 .entry-page .detail-body h3{display:flex;align-items:center;gap:10px;color:var(--space)}.entry-page .detail-body h3:after{content:"";flex:1;height:1px;background:color-mix(in srgb,var(--space) 28%,var(--line))}
 .manifesto-plate{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:#252a22;color:#f1f1e8;border-color:#252a22}.manifesto-plate b{font:700 25px/1 var(--mono);letter-spacing:-.05em}.manifesto-plate b i{font-style:normal;color:var(--stamp-red)}.manifesto-plate small{font:7px var(--mono);text-transform:uppercase;letter-spacing:.14em;color:#aeb5a2}

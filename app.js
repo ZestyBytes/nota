@@ -343,7 +343,7 @@ function entryPage(id){
   const sequence=e.journey?journeyEntries(e.journey):ordered(state.data.entries.filter(x=>x.type!=="Task"));
   const position=sequence.findIndex(x=>x.id===e.id),previous=position>0?sequence[position-1]:null,next=position>=0&&position<sequence.length-1?sequence[position+1]:null;
   if(e.type==="Quote")return `<section class="quote-entry-page" style="--topic:${t.color}"><p class="back-link"><a href="${back}" data-back>Back</a><button class="share-button" data-share="${esc(e.id)}" type="button">Share</button></p><article><span>Commonplace book · No. ${accNo(e.id)}</span><blockquote>“${esc(e.title)}”</blockquote><cite>${esc(e.author||"")}</cite><time>${date?`Filed ${date}`:""}</time></article></section>`;
-  return `<section class="entry-page entry-space-${spaceId}" style="--topic:${t.color};--space:${space.color}">
+  return `<section class="entry-page entry-space-${spaceId} ${e.image||e.images?.length?"has-image":"no-image"}" style="--topic:${t.color};--space:${space.color}">
     <div class="reading-progress" aria-hidden="true"><i></i></div>
     <span class="entry-topic-tab" style="background:${t.color}">${esc(t.name)}</span>
     <p class="back-link"><a href="${back}" data-back>Back</a><button class="share-button" data-share="${esc(e.id)}" type="button">Share</button></p>
@@ -957,13 +957,17 @@ function driftLibraryShelf(){
   // stands the drift down for a few seconds and it picks up from wherever
   // they left the shelf, so scrolling it yourself always wins.
   const HANDS_OFF=2600;
-  const yield_=()=>{quietUntil=performance.now()+HANDS_OFF;pos=fold(rail.scrollLeft)};
+  const yield_=()=>{quietUntil=performance.now()+HANDS_OFF;pos=rail.scrollLeft};
   ["wheel","touchstart","touchmove","pointerdown","keydown"].forEach(ev=>rail.addEventListener(ev,yield_,{passive:true}));
   rail.addEventListener("scroll",()=>{
     if(Math.abs(rail.scrollLeft-written)<=1)return;
     yield_();
-    // Fold a hand-moved shelf back before it can run out of spines.
-    if(Math.abs(pos-rail.scrollLeft)>1)put(pos);
+    // Only rewrap at the very ends. Folding a hand-moved shelf back to the
+    // middle on every scroll event wrote scrollLeft mid-gesture, which stops
+    // a flick dead, so in the middle of the run the hand is left alone.
+    const max=rail.scrollWidth-rail.clientWidth;
+    if(rail.scrollLeft<=2)put(pos=rail.scrollLeft+loop);
+    else if(rail.scrollLeft>=max-2)put(pos=rail.scrollLeft-loop);
   },{passive:true});
   const hold=on=>()=>{held=on;if(!on)pos=fold(rail.scrollLeft)};
   ["pointerenter","focusin"].forEach(ev=>rail.addEventListener(ev,hold(true),{passive:true}));
@@ -971,7 +975,7 @@ function driftLibraryShelf(){
   const step=now=>{
     if(!rail.isConnected)return;
     const dt=last?Math.min(now-last,100):0;last=now;
-    if(held||now<quietUntil)pos=fold(rail.scrollLeft);
+    if(held||now<quietUntil)pos=rail.scrollLeft;
     else{
       // Rightwards along the shelf, at reading pace rather than carousel pace.
       pos=fold(pos-dt*.014);
