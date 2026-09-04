@@ -870,28 +870,36 @@ function driftLibraryShelf(){
   // The position is kept here rather than read back from the rail: a fraction
   // of a pixel written to scrollLeft comes back rounded, so a drift this slow
   // would be rounded away to a standstill every frame.
-  let pos=loop,held=false,last=0,written=-1;
+  let pos=loop,held=false,last=0,written=-1,quietUntil=0;
   // A scroll event arrives a frame after the write that caused it, so the
   // shelf's own writes are recognised by their value rather than by a flag
   // that is long since back down by the time the event lands. The reading
   // comes back rounded, hence the tolerance.
   const put=v=>{written=v;rail.scrollLeft=v};
   put(pos);
+  // A shelf that writes its own position every frame would fight a hand,
+  // killing a flick before its momentum has run out. Any push from the reader
+  // stands the drift down for a few seconds and it picks up from wherever
+  // they left the shelf, so scrolling it yourself always wins.
+  const HANDS_OFF=2600;
+  const yield_=()=>{quietUntil=performance.now()+HANDS_OFF;pos=fold(rail.scrollLeft)};
+  ["wheel","touchstart","touchmove","pointerdown","keydown"].forEach(ev=>rail.addEventListener(ev,yield_,{passive:true}));
   rail.addEventListener("scroll",()=>{
     if(Math.abs(rail.scrollLeft-written)<=1)return;
-    // A hand drag: fold it back before it can run out of shelf.
-    const folded=fold(rail.scrollLeft);pos=folded;
-    if(Math.abs(folded-rail.scrollLeft)>1)put(folded);
+    yield_();
+    // Fold a hand-moved shelf back before it can run out of spines.
+    if(Math.abs(pos-rail.scrollLeft)>1)put(pos);
   },{passive:true});
   const hold=on=>()=>{held=on;if(!on)pos=fold(rail.scrollLeft)};
-  ["pointerenter","focusin","touchstart"].forEach(ev=>rail.addEventListener(ev,hold(true),{passive:true}));
-  ["pointerleave","focusout","touchend"].forEach(ev=>rail.addEventListener(ev,hold(false),{passive:true}));
+  ["pointerenter","focusin"].forEach(ev=>rail.addEventListener(ev,hold(true),{passive:true}));
+  ["pointerleave","focusout"].forEach(ev=>rail.addEventListener(ev,hold(false),{passive:true}));
   const step=now=>{
     if(!rail.isConnected)return;
     const dt=last?Math.min(now-last,100):0;last=now;
-    if(!held){
-      // Rightwards along the shelf, at reading pace rather than carousel pace.
-      pos=fold(pos-dt*.014);
+    if(held||now<quietUntil)pos=fold(rail.scrollLeft);
+    else{
+      // Leftwards along the shelf, at reading pace rather than carousel pace.
+      pos=fold(pos+dt*.014);
       put(pos);
     }
     shelfDriftFrame=requestAnimationFrame(step);
