@@ -291,7 +291,7 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px;min-width:0}
 
 .entry-detail .detail-body{font:20px/1.75 var(--serif);max-width:520px}
 .entry-detail .detail-title{font:600 40px/1.08 var(--serif)}
-.detail-image{width:calc(100% + 64px);height:270px;object-fit:cover;margin:-32px -32px 25px;filter:saturate(.8) sepia(.06)}
+.detail-image{filter:saturate(.8) sepia(.06)}
 .attachment-list{border-top:1px solid var(--line);padding-top:18px;margin:30px 0}
 .attachment-list>div{display:flex;align-items:center;gap:12px;border:1px solid var(--line);padding:12px}
 .attachment-list span{display:grid}
@@ -394,7 +394,7 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px;min-width:0}
   .terminal-list div{grid-template-columns:90px 1fr}
   .terminal-list span{display:none}
   .reading-columns{grid-template-columns:1fr}
-  .detail-image{width:calc(100% + 44px);margin-left:-22px;margin-right:-22px}
+
   .entry.has-thumb{grid-template-columns:1fr 108px}
   .entry-thumb{width:108px;height:92px}
   .auth-view main{padding:34px 20px}
@@ -585,7 +585,7 @@ body.modal-open{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 
 /* ---------- images inside a note body ---------- */
 .body-figure{margin:26px 0;padding:0}
-.body-figure img{display:block;width:100%;background:var(--paper-alt);filter:saturate(.9)}
+.body-figure img{display:block;width:auto;max-width:100%;height:auto;max-height:72vh;margin-left:auto;margin-right:auto;background:var(--paper-alt);filter:saturate(.9)}
 .body-figure figcaption{margin-top:9px;font:11px var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
 
 /* ---------- track list (view: playlist) ----------

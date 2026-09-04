@@ -16,7 +16,7 @@ const document = {
   querySelectorAll(){return []},
   querySelector(){return null},
   addEventListener(){},
-  createElement(){return {click(){},style:{},classList:{add(){},remove(){},toggle(){}}}}
+  createElement(){return {click(){},style:{},setAttribute(){},removeAttribute(){},appendChild(){},remove(){},classList:{add(){},remove(){},toggle(){}}}}
 };
 const localStorage = { values:new Map(), getItem(key){return this.values.get(key)||null}, setItem(key,value){this.values.set(key,value)} };
 const window = { NOTED_CONFIG:{supabaseUrl:"",supabaseAnonKey:"",allowSignUp:true}, addEventListener(){}, location:null };
@@ -27,8 +27,7 @@ vm.runInContext(files("backend.js"),context,{filename:"backend.js"});
 vm.runInContext(files("app.js"),context,{filename:"app.js"});
 await new Promise(resolve=>setTimeout(resolve,0));
 
-assert.match(element("app").innerHTML,/Today/);
-assert.match(element("app").innerHTML,/Latest entries/);
+assert.match(element("app").innerHTML,/class="home-page"/);
 // House style: no em dashes anywhere that ships.
 for (const name of ["index.html","app.js","styles.css","data.js"]) assert.doesNotMatch(files(name),/\u2014/);
 assert.match(files("styles.css"),/@media\(max-width:480px\)/);

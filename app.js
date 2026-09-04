@@ -107,7 +107,7 @@ const VIDEO_RE=/\.(mp4|mov|m4v|webm)(\?|$)/i;
 function media(src,caption){
   const body=VIDEO_RE.test(src)
     ? `<video controls preload="metadata" playsinline src="${esc(src)}"></video>`
-    : `<img src="${esc(src)}" alt="${esc(caption)}" loading="lazy">`;
+    : `<img src="${esc(src)}" alt="${esc(caption)}"${dims(src)} loading="lazy">`;
   return `<figure class="body-figure${VIDEO_RE.test(src)?" body-video":""}">${body}${caption?`<figcaption>${esc(caption)}</figcaption>`:""}</figure>`;
 }
 // Obsidian writes asides as "> [!note] Title". Rendered as a plain quotation
@@ -162,7 +162,7 @@ function memoryKeypad(){
   ];
   return `<section class="memory-keypad" data-memory-keypad aria-label="Musical memory keypad">
     <header><span>Sound object / 09</span><strong>MEMORY KEYPAD</strong><i aria-hidden="true"></i></header>
-    <div class="keypad-display"><span data-keypad-status>Ready — press a key</span><b data-keypad-sequence aria-live="polite">—</b></div>
+    <div class="keypad-display"><span data-keypad-status>Ready, press a key</span><b data-keypad-sequence aria-live="polite">&middot;</b></div>
     <div class="keypad-grid">${pads.map(([key,note,freq])=>`<button type="button" class="keypad-key" data-key="${key}" data-note="${note}" data-frequency="${freq}" aria-label="Play ${note}"><small>${note}</small><b>${key}</b></button>`).join("")}</div>
     <footer><button type="button" class="keypad-action keypad-record" data-keypad-record><i></i><span>Record</span></button><button type="button" class="keypad-action" data-keypad-play disabled><span>Play back</span><b>▶</b></button><button type="button" class="keypad-clear" data-keypad-clear disabled>Clear</button></footer>
   </section>`;
@@ -220,6 +220,23 @@ function entryPlate(e){
     <strong class="plate-topic">${esc(t.name)}</strong>
     <i class="plate-kind">text record</i><i class="plate-number">No. ${accNo(e.id)}</i>
   </span>`;
+}
+// Build time reads every photograph's real pixel size. Handing those to the
+// browser as width and height lets it reserve the right box before the file
+// arrives, so the writing no longer jumps down the page when a photograph
+// loads. Rebuilt only when the archive itself changes.
+let sizeMap=null,sizeMapFor=null;
+function dims(src){
+  if(sizeMapFor!==state.data.entries){
+    sizeMap=new Map();
+    for(const e of state.data.entries){
+      if(e.image&&e.imageW)sizeMap.set(e.image,[e.imageW,e.imageH]);
+      for(const i of e.images||[])if(i.width)sizeMap.set(i.src,[i.width,i.height]);
+    }
+    sizeMapFor=state.data.entries;
+  }
+  const d=sizeMap.get(src);
+  return d?` width="${d[0]}" height="${d[1]}"`:"";
 }
 function entryCard(e,snippet="",within=""){if(typeof snippet!=="string")snippet="";
   const tagId=(e.topics||[]).find(id=>id!==within&&topic(id).parent!==within),
@@ -289,7 +306,7 @@ function playlistBody(body=""){
 // second image is not left buried below the text.
 function gallery(images){
   return `<div class="gallery-wrap"><div class="gallery" tabindex="0" role="group" aria-label="${images.length} photographs">${
-    images.map((im,i)=>`<figure class="gallery-shot"><img src="${esc(im.src)}" alt="${esc(im.alt||"")}" loading="${i?"lazy":"eager"}"><span class="gallery-no">${String(i+1).padStart(2,"0")} / ${String(images.length).padStart(2,"0")}</span></figure>`).join("")
+    images.map((im,i)=>`<figure class="gallery-shot"><img src="${esc(im.src)}" alt="${esc(im.alt||"")}"${dims(im.src)} loading="${i?"lazy":"eager"}"><span class="gallery-no">${String(i+1).padStart(2,"0")} / ${String(images.length).padStart(2,"0")}</span></figure>`).join("")
   }</div><div class="gallery-dots" aria-hidden="true">${images.map((_,i)=>`<i class="${i?"":"on"}"></i>`).join("")}</div><p class="gallery-caption">${esc(images[0].alt||"")}</p></div>`;
 }
 // A recipe is read standing up in a kitchen: the facts first, then the
@@ -382,7 +399,7 @@ function entryPage(id){
       ${e.author?`<p class="entry-page-author">${esc(e.author)}</p>`:""}
       <div class="entry-context">${chips(e.topics?.slice(1))}${e.journey?(()=>{const rows=journeyEntries(e.journey),n=rows.findIndex(r=>r.id===e.id)+1;return `<p class="journey-of"><a href="#journey/${encodeURIComponent(e.journey)}">${esc(e.journey)}</a><span>${n} of ${rows.length}</span></p>`})():""}<a class="entry-space-link" href="#topics/${encodeURIComponent(spaceId)}" data-topic="${esc(spaceId)}">${esc(space.name)} space &rarr;</a></div>
     </header>
-    ${e.images?.length>1?gallery(e.images):e.image?`<img class="detail-image" src="${e.image}" alt="${esc(e.imageAlt||"")}">`:""}
+    ${e.images?.length>1?gallery(e.images):e.image?`<img class="detail-image" src="${e.image}" alt="${esc(e.imageAlt||"")}"${dims(e.image)}>`:""}
     ${e.id==="notes/why-i-made-noted"?notedFlow():""}
     ${(()=>{const shown=e.images?.length>1?e.images.map(i=>i.src):[e.image];return e.recipe?`<div class="detail-body recipe-body">${recipeBody(e)}</div>`:e.plant?`<div class="detail-body plant-body">${plantBody(e,shown)}</div>`:e.view==="cards"&&e.body?cardDeck(e.body,shown,e.id):`<div class="detail-body">${e.body?(e.view==="playlist"?playlistBody(e.body):markdown(e.body,shown,e.id)):`<p>${esc(e.excerpt||"Saved in your Noted archive.")}</p>`}</div>`})()}
     ${(()=>{const back=backlinks(e);return back.length?`<section class="backlinks"><h2 class="section-title">Mentioned in</h2><ul>${back.map(b=>`<li><a href="#entry/${encodeURIComponent(b.id)}">${esc(b.title)}</a><small>${esc(b.type)}${b.occurredAt?` &middot; ${esc(fmtDate(b.occurredAt))}`:""}</small></li>`).join("")}</ul></section>`:""})()}
@@ -773,7 +790,7 @@ function taskPage(){
   const undated=open.filter(t=>!t.dueAt);
   const next=[...overdue,...today,...ahead,...undated][0];
   const group=(label,rows,cls="")=>{const rest=rows.filter(t=>t.id!==next?.id);return rest.length?`<section class="task-group ${cls}"><h2 class="section-title">${label}<span class="task-count">${rest.length}</span></h2><div class="tasks">${rest.map(taskRow).join("")}</div></section>`:""};
-  return `<section class="tasks-page">${pageHead("Still to do","To-do","A calm place for what is waiting—and what has been seen off.")}
+  return `<section class="tasks-page">${pageHead("Still to do","To-do","A calm place for what is waiting, and what has been seen off.")}
     ${next?`<section class="task-focus"><p class="eyebrow">Next up</p>${taskRow(next)}</section>`:""}
     ${open.length||done.length?"":`<p class="empty">Nothing waiting. Add a note in <code>tasks/</code> with <code>type: task</code>.</p>`}
     ${group("Overdue",overdue,"overdue")}
@@ -901,7 +918,7 @@ function topicView(id){const t=topic(id),kids=childTopics(id),items=state.data.e
 function authScreen(){return `<section class="auth-shell"><div class="auth-intro"><p class="eyebrow">Your private archive</p><h1 class="page-title">Welcome to noted.</h1><p class="lede">Days, thoughts, books and things worth keeping, written in Obsidian and read here.</p></div><form id="auth-form" class="auth-card"><h2>Sign in</h2><div class="field"><label>Email</label><input name="email" type="email" autocomplete="email" required></div><div class="field"><label>Password</label><input name="password" type="password" autocomplete="current-password" minlength="8" required></div><p class="form-error" role="alert"></p><button class="submit" name="intent" value="signin">Sign in</button><p class="auth-note">This is a private Noted archive.</p></form></section>`}
 function userTools(){return state.user?`<footer class="user-tools"><button data-action="logout">Sign out</button></footer>`:""}
 function renderUnsafe(){const app=document.getElementById("app"),hash=location.hash.slice(1)||"today",[route,arg]=hash.split("/"),isPublic=route==="writing";document.body.classList.toggle("auth-view",NotedBackend.configured&&!state.user&&!isPublic);if(state.booting){app.innerHTML=skeletonPage();return}if(NotedBackend.configured&&!state.user&&!isPublic){app.innerHTML=authScreen();return}state.route=route;document.querySelectorAll(".main-nav a,.mobile-nav a").forEach(a=>a.classList.toggle("active",a.getAttribute("href")===`#${route}`));const page=route==="calendar"?calendar():route==="library"?library():route==="entry"?entryPage(decodeURIComponent(arg||"")):route==="topics"?(arg?topicView(arg):topics()):route==="writing"?writing():route==="journey"?journeyPage(arg||""):route==="tasks"?taskPage():route==="health"?healthPage():route==="search"?search():today();app.innerHTML=page+userTools();app.focus({preventScroll:true});afterRender(route,Boolean(route==="entry"||route==="journey"||(route==="topics"&&arg)))}
-function render(){try{return renderUnsafe()}catch(error){console.error("Noted render failed",error);const app=document.getElementById("app");if(app)app.innerHTML=`<section class="render-error"><p class="eyebrow">Archive check</p><h1 class="page-title">This page needs a little repair.</h1><p class="lede">One of the saved records could not be displayed. Your notes are still safe—try returning home or refreshing.</p><p><a class="back-link" href="#today">Return home</a></p></section>`}}
+function render(){try{return renderUnsafe()}catch(error){console.error("Noted render failed",error);const app=document.getElementById("app");if(app)app.innerHTML=`<section class="render-error"><p class="eyebrow">Archive check</p><h1 class="page-title">This page needs a little repair.</h1><p class="lede">One of the saved records could not be displayed. Your notes are still safe: try returning home or refreshing.</p><p><a class="back-link" href="#today">Return home</a></p></section>`}}
 // Opening an entry starts at the top of it; coming back restores the place
 // in the list you left. Re-renders inside a route leave the scroll alone.
 let lastRoute=null,lastDetail=false;
@@ -926,13 +943,13 @@ function setupMemoryKeypads(){
     let audio=null,isRecording=false,isPlaying=false,started=0,capture=[],timers=[];
     const context=()=>audio||(audio=new (window.AudioContext||window.webkitAudioContext)());
     const sound=(button,remember=true)=>{if(isPlaying&&remember)return;const ctx=context();ctx.resume?.();const osc=ctx.createOscillator(),gain=ctx.createGain(),t=ctx.currentTime;osc.type="sine";osc.frequency.value=Number(button.dataset.frequency);gain.gain.setValueAtTime(.0001,t);gain.gain.exponentialRampToValueAtTime(.24,t+.015);gain.gain.exponentialRampToValueAtTime(.0001,t+.42);osc.connect(gain).connect(ctx.destination);osc.start(t);osc.stop(t+.44);button.classList.add("is-pressed");setTimeout(()=>button.classList.remove("is-pressed"),150);if(isRecording&&remember)capture.push({key:button.dataset.key,at:performance.now()-started});};
-    const show=()=>{sequence.textContent=capture.length?capture.map(x=>x.key).join(" · "):"—";play.disabled=clear.disabled=!capture.length};
+    const show=()=>{sequence.textContent=capture.length?capture.map(x=>x.key).join(" · "):"\u00b7";play.disabled=clear.disabled=!capture.length};
     keys.forEach(button=>button.addEventListener("pointerdown",()=>sound(button)));
     const onKey=ev=>{if(ev.repeat||ev.metaKey||ev.ctrlKey||ev.altKey||/input|textarea|select/i.test(ev.target.tagName))return;const button=keys.find(x=>x.dataset.key===ev.key);if(button){ev.preventDefault();sound(button)}};
     keypadKeyHandler=onKey;document.addEventListener("keydown",onKey);
     record.addEventListener("click",()=>{if(isPlaying)return;isRecording=!isRecording;record.classList.toggle("active",isRecording);record.querySelector("span").textContent=isRecording?"Stop":"Record";status.textContent=isRecording?"Recording… play something":"Recording saved";if(isRecording){capture=[];started=performance.now();show()}else show()});
-    play.addEventListener("click",()=>{if(!capture.length||isPlaying)return;if(isRecording)record.click();isPlaying=true;play.disabled=true;status.textContent="Playing back…";capture.forEach(item=>timers.push(setTimeout(()=>{const button=keys.find(x=>x.dataset.key===item.key);if(button)sound(button,false)},item.at)));const end=capture[capture.length-1].at+550;timers.push(setTimeout(()=>{isPlaying=false;play.disabled=false;status.textContent="Ready — add another recording"},end))});
-    clear.addEventListener("click",()=>{timers.forEach(clearTimeout);timers=[];isPlaying=false;capture=[];record.classList.remove("active");record.querySelector("span").textContent="Record";isRecording=false;status.textContent="Ready — press a key";show()});
+    play.addEventListener("click",()=>{if(!capture.length||isPlaying)return;if(isRecording)record.click();isPlaying=true;play.disabled=true;status.textContent="Playing back…";capture.forEach(item=>timers.push(setTimeout(()=>{const button=keys.find(x=>x.dataset.key===item.key);if(button)sound(button,false)},item.at)));const end=capture[capture.length-1].at+550;timers.push(setTimeout(()=>{isPlaying=false;play.disabled=false;status.textContent="Ready, add another recording"},end))});
+    clear.addEventListener("click",()=>{timers.forEach(clearTimeout);timers=[];isPlaying=false;capture=[];record.classList.remove("active");record.querySelector("span").textContent="Record";isRecording=false;status.textContent="Ready, press a key";show()});
     show();
   });
 }

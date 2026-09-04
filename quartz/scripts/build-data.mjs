@@ -7,7 +7,7 @@
 //
 // Usage: node quartz/scripts/build-data.mjs [--out <path>]
 
-import { readdirSync, statSync, readFileSync, mkdirSync, writeFileSync, copyFileSync, existsSync } from "node:fs";
+import { readdirSync, statSync, readFileSync, mkdirSync, writeFileSync, copyFileSync, existsSync, openSync, readSync, closeSync } from "node:fs";
 import { join, relative, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parse as parseYaml } from "yaml";
@@ -171,9 +171,83 @@ function resolveBodyMedia(body, file) {
 
 // A clip travels as the same markdown as a photograph, so the card thumbnail
 // and the gallery have to skip it: an <img> pointed at a .mov shows nothing.
+// The real pixel dimensions of a photograph, read from its header. Without
+// them a photograph reserves no space until it arrives, and the text jumps
+// down the page when it does; with them the browser holds the right box from
+// the first paint. Only the handful of bytes at the front of the file are
+// read, so this costs nothing at build time.
+function imageSize(file) {
+  let fd;
+  try {
+    fd = openSync(file, "r");
+    const head = Buffer.alloc(65536);
+    const read = readSync(fd, head, 0, head.length, 0);
+    const buf = head.subarray(0, read);
+
+    // PNG: IHDR is always the first chunk
+    if (buf.length > 24 && buf.readUInt32BE(0) === 0x89504e47)
+      return { width: buf.readUInt32BE(16), height: buf.readUInt32BE(20) };
+
+    // GIF: logical screen descriptor, little endian
+    if (buf.length > 10 && buf.toString("latin1", 0, 3) === "GIF")
+      return { width: buf.readUInt16LE(6), height: buf.readUInt16LE(8) };
+
+    // WEBP: lossy, lossless and extended all carry it in the first chunk
+    if (buf.length > 30 && buf.toString("latin1", 0, 4) === "RIFF" && buf.toString("latin1", 8, 12) === "WEBP") {
+      const kind = buf.toString("latin1", 12, 16);
+      if (kind === "VP8 ") return { width: buf.readUInt16LE(26) & 0x3fff, height: buf.readUInt16LE(28) & 0x3fff };
+      if (kind === "VP8L") {
+        const bits = buf.readUInt32LE(21);
+        return { width: (bits & 0x3fff) + 1, height: ((bits >> 14) & 0x3fff) + 1 };
+      }
+      if (kind === "VP8X") return { width: (buf.readUIntLE(24, 3) & 0xffffff) + 1, height: (buf.readUIntLE(27, 3) & 0xffffff) + 1 };
+    }
+
+    // JPEG: walk the segments to the start-of-frame, which is where the size is
+    if (buf.length > 4 && buf[0] === 0xff && buf[1] === 0xd8) {
+      let i = 2;
+      while (i + 9 < buf.length) {
+        if (buf[i] !== 0xff) { i++; continue; }
+        const marker = buf[i + 1];
+        if (marker === 0xd8 || marker === 0x01 || (marker >= 0xd0 && marker <= 0xd7)) { i += 2; continue; }
+        const len = buf.readUInt16BE(i + 2);
+        // every SOFn except the four that are not frame headers
+        if (marker >= 0xc0 && marker <= 0xcf && marker !== 0xc4 && marker !== 0xc8 && marker !== 0xcc)
+          return { width: buf.readUInt16BE(i + 7), height: buf.readUInt16BE(i + 5) };
+        i += 2 + len;
+      }
+    }
+  } catch (error) {
+    /* unreadable or a format we do not parse: the page still works, it just
+       reserves no space for this one */
+  } finally {
+    if (fd !== undefined) try { closeSync(fd) } catch (error) {}
+  }
+  return null;
+}
+
+// A published path such as assets/vault/attachments/IMG_5839.jpeg back to the
+// file the deploy actually copied, so its header can be read.
+const sizeCache = new Map();
+function sizeOf(src) {
+  if (!src || /^https?:/i.test(src)) return null;          // remote: unknowable here
+  if (sizeCache.has(src)) return sizeCache.get(src);
+  const candidates = [join(OUT_DIR, src), join(REPO_ROOT, src)];
+  let size = null;
+  for (const file of candidates) {
+    if (!existsSync(file)) continue;
+    size = imageSize(file);
+    if (size) break;
+  }
+  sizeCache.set(src, size);
+  return size;
+}
+
 function firstImage(body) {
   const m = [...body.matchAll(/!\[([^\]]*)\]\(([^)]+)\)/g)].find(x => !VIDEO_RE.test(x[2]));
-  return m ? { image: m[2], imageAlt: m[1] } : { image: "", imageAlt: "" };
+  if (!m) return { image: "", imageAlt: "" };
+  const size = sizeOf(m[2]);
+  return { image: m[2], imageAlt: m[1], imageW: size?.width || 0, imageH: size?.height || 0 };
 }
 
 // Every image in the body, in order, so an entry can carry a gallery rather
@@ -182,7 +256,7 @@ function allImages(body) {
   const out = [];
   const re = /!\[([^\]]*)\]\(([^)]+)\)/g;
   let m;
-  while ((m = re.exec(body))) if (!VIDEO_RE.test(m[2])) out.push({ src: m[2], alt: m[1] });
+  while ((m = re.exec(body))) if (!VIDEO_RE.test(m[2])) out.push({ src: m[2], alt: m[1], ...(sizeOf(m[2]) || {}) });
   return out;
 }
 
@@ -328,7 +402,7 @@ for (const file of files) {
 
   if (!TYPE_MAP[data.type]) continue; // site pages (index/calendar/library/topics/about) have no recognised type
 
-  const { image, imageAlt } = firstImage(body);
+  const { image, imageAlt, imageW, imageH } = firstImage(body);
   const entry = {
     id: slug, type: TYPE_MAP[data.type], title: data.title,
     excerpt: firstParagraph(body), body: body.trim(), view: data.view || "", topics,
@@ -342,7 +416,7 @@ for (const file of files) {
     // metric is the reading taken at that check-in.
     metric: numberOrNull(data.metric), start: numberOrNull(data.start),
     target: numberOrNull(data.target), unit: String(data.unit || "").trim(),
-    image, imageAlt, images: allImages(body), attachments: []
+    image, imageAlt, imageW, imageH, images: allImages(body), attachments: []
   };
   // A plant note is a record of a living thing rather than a piece of writing:
   // what it is, where it stands, and what it asks for. The watering cadence is

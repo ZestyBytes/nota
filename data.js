@@ -126,9 +126,312 @@ window.NOTED_DATA = {
       "ground": "wedge",
       "photo": "",
       "description": "The Mini, the road, and the days worth the drive"
+    },
+    "gardening": {
+      "name": "Gardening",
+      "icon": "leaf",
+      "color": "#3f6b2e",
+      "soft": "#e4ead9",
+      "ground": "hatch",
+      "photo": "",
+      "description": "Seasons, seedlings and life outdoors"
     }
   },
   "entries": [
+    {
+      "id": "journal/the-claw-machine",
+      "type": "Journal",
+      "title": "The claw machine always wins",
+      "excerpt": "Every arcade has one, and every arcade has a small crowd around it losing politely. The claw machine is the purest bit of games design in the building: no levels, no tutorial, no story, just a grabber that is strong enough to lift a bear about three quarters of the time and weak enough to drop it just before the chute.",
+      "body": "Every arcade has one, and every arcade has a small crowd around it losing\npolitely. The claw machine is the purest bit of games design in the building:\nno levels, no tutorial, no story, just a grabber that is strong enough to\nlift a bear about three quarters of the time and weak enough to drop it just\nbefore the chute.\n\nSo I built one into the archive. It is a whole cabinet in a browser tab,\ndrawn in the blue and cream of a seaside arcade, with a row of very patient\nsoft toys waiting to be almost picked up.\n\nhttps://codepen.io/Ma5a/pen/YPzzpep\n\nPress and hold to move, release to stop. That is the entire control scheme,\nand it is the right one: the game is not about aiming, it is about timing\nyour nerve. The claw does the rest, which is to say it does whatever it\nlikes.\n\n> [!tip] The trick, such as it is\n> Go for the toy nearest the chute rather than the one you want. A short trip\n> drops fewer bears than a long one.\n\nThe idea came from [masahito's pixel claw machine](https://codepen.io/Ma5a/pen/YPzzpep),\nwhich is the better looking of the two and worth a few minutes of anyone's\nevening. What I like about both is how little they need to work. No score,\nnothing saved, no reason to come back except that you did not get the bear\nlast time. Half the arcades I remember were built on exactly that.\n\n![](assets/vault/attachments/IMG_5936.jpeg)",
+      "view": "",
+      "topics": [
+        "technology"
+      ],
+      "occurredAt": "2026-09-04",
+      "createdAt": "2026-09-04",
+      "publishedAt": "2026-09-04",
+      "writing": false,
+      "journey": "",
+      "day": 0,
+      "metric": null,
+      "start": null,
+      "target": null,
+      "unit": "",
+      "image": "assets/vault/attachments/IMG_5936.jpeg",
+      "imageAlt": "",
+      "imageW": 1178,
+      "imageH": 1178,
+      "images": [
+        {
+          "src": "assets/vault/attachments/IMG_5936.jpeg",
+          "alt": "",
+          "width": 1178,
+          "height": 1178
+        }
+      ],
+      "attachments": []
+    },
+    {
+      "id": "journal/what-i-want-from-the-garden",
+      "type": "Journal",
+      "title": "What I want from the garden",
+      "excerpt": "Not a perfect garden and not another maintenance plan. I want herbs close to the kitchen, tomatoes that taste of summer, somewhere for the children to dig, and enough notes to remember what worked when spring comes round again.",
+      "body": "![A small kitchen garden in late-summer evening light](assets/posts/kitchen-garden.png)\n\n\n\n\n![](assets/vault/attachments/IMG_4035.jpeg)\n![](assets/vault/attachments/IMG_4045.jpeg)\n![](assets/vault/attachments/IMG_4051.jpeg)\n\nNot a perfect garden and not another maintenance plan. I want herbs close to\nthe kitchen, tomatoes that taste of summer, somewhere for the children to dig,\nand enough notes to remember what worked when spring comes round again.\n\n## The first patch\n\nStart small: clear one bed, decide what we genuinely eat, and leave room for\nthe garden to become itself rather than filling every corner immediately.",
+      "view": "",
+      "topics": [
+        "gardening"
+      ],
+      "occurredAt": "2026-09-03",
+      "createdAt": "2026-09-03",
+      "publishedAt": "2026-09-03",
+      "writing": false,
+      "journey": "",
+      "day": 0,
+      "metric": null,
+      "start": null,
+      "target": null,
+      "unit": "",
+      "image": "assets/posts/kitchen-garden.png",
+      "imageAlt": "A small kitchen garden in late-summer evening light",
+      "imageW": 1200,
+      "imageH": 800,
+      "images": [
+        {
+          "src": "assets/posts/kitchen-garden.png",
+          "alt": "A small kitchen garden in late-summer evening light",
+          "width": 1200,
+          "height": 800
+        },
+        {
+          "src": "assets/vault/attachments/IMG_4035.jpeg",
+          "alt": "",
+          "width": 4032,
+          "height": 3024
+        },
+        {
+          "src": "assets/vault/attachments/IMG_4045.jpeg",
+          "alt": "",
+          "width": 4032,
+          "height": 3024
+        },
+        {
+          "src": "assets/vault/attachments/IMG_4051.jpeg",
+          "alt": "",
+          "width": 4032,
+          "height": 3024
+        }
+      ],
+      "attachments": []
+    },
+    {
+      "id": "notes/codex-vs-claude",
+      "type": "Note",
+      "title": "Codex vs Claude",
+      "excerpt": "Not a synthetic benchmark, just a running comparison based on the work I actually ask them to do. The useful question is less “which is smartest?” and more “which one helps me finish this kind of task with the least friction?”",
+      "body": "![Two contrasting developer workbenches side by side](assets/posts/codex-vs-claude.png)\n\nNot a synthetic benchmark, just a running comparison based on the work I\nactually ask them to do. The useful question is less “which is smartest?” and\nmore “which one helps me finish this kind of task with the least friction?”\n\n## Comparison notes\n\n| Task | Codex | Claude |\n| --- | --- | --- |\n| Working across a repository | Add notes here | Add notes here |\n| Explaining an unfamiliar codebase | Add notes here | Add notes here |\n| UI iteration and visual judgement | Add notes here | Add notes here |\n| Quick questions and writing | Add notes here | Add notes here |\n\nI will update this after using both on the same real projects for a few weeks.",
+      "view": "",
+      "topics": [
+        "technology"
+      ],
+      "occurredAt": "2026-09-03",
+      "createdAt": "2026-09-03",
+      "publishedAt": "2026-09-03",
+      "writing": false,
+      "journey": "",
+      "day": 0,
+      "metric": null,
+      "start": null,
+      "target": null,
+      "unit": "",
+      "image": "assets/posts/codex-vs-claude.png",
+      "imageAlt": "Two contrasting developer workbenches side by side",
+      "imageW": 1200,
+      "imageH": 800,
+      "images": [
+        {
+          "src": "assets/posts/codex-vs-claude.png",
+          "alt": "Two contrasting developer workbenches side by side",
+          "width": 1200,
+          "height": 800
+        }
+      ],
+      "attachments": []
+    },
+    {
+      "id": "notes/hyprland-first-impressions",
+      "type": "Note",
+      "title": "Hyprland, first impressions",
+      "excerpt": "Hyprland makes the desktop feel less like a pile of windows and more like a workspace with a rhythm. This is a placeholder for what felt good, what needed taming, and the configuration I want to keep when the novelty wears off.",
+      "body": "![An abstract tiled Linux desktop](assets/posts/hyprland.png)\n\nHyprland makes the desktop feel less like a pile of windows and more like a\nworkspace with a rhythm. This is a placeholder for what felt good, what needed\ntaming, and the configuration I want to keep when the novelty wears off.\n\n## To add\n\n- The setup I started with\n- Key bindings that became muscle memory\n- What broke, and whether it was worth fixing\n- A link to the finished dotfiles",
+      "view": "",
+      "topics": [
+        "technology"
+      ],
+      "occurredAt": "2026-09-03",
+      "createdAt": "2026-09-03",
+      "publishedAt": "2026-09-03",
+      "writing": false,
+      "journey": "",
+      "day": 0,
+      "metric": null,
+      "start": null,
+      "target": null,
+      "unit": "",
+      "image": "assets/posts/hyprland.png",
+      "imageAlt": "An abstract tiled Linux desktop",
+      "imageW": 1200,
+      "imageH": 800,
+      "images": [
+        {
+          "src": "assets/posts/hyprland.png",
+          "alt": "An abstract tiled Linux desktop",
+          "width": 1200,
+          "height": 800
+        }
+      ],
+      "attachments": []
+    },
+    {
+      "id": "notes/interests-lately",
+      "type": "Note",
+      "title": "Interests, lately",
+      "excerpt": "The things I make time for without needing to be told: cars, thoughtful technology, music, books and watching someone bring a seemingly impossible project back to life.",
+      "body": "![A weekend table of cars, music, books and coffee](assets/posts/interests.png)\n\nThe things I make time for without needing to be told: cars, thoughtful\ntechnology, music, books and watching someone bring a seemingly impossible\nproject back to life.\n\nMat Armstrong's weekly YouTube releases have become appointment viewing. The\nbest part is not only the finished car; it is seeing the sequence of problems,\nwrong turns and small wins that make the result feel earned.\n\n## Add later\n\n- Favourite Mat Armstrong builds and why they worked\n- Channels, podcasts and newsletters I actually return to\n- Interests I want to spend more time doing rather than only watching",
+      "view": "",
+      "topics": [
+        "life",
+        "motoring",
+        "music"
+      ],
+      "occurredAt": "2026-09-03",
+      "createdAt": "2026-09-03",
+      "publishedAt": "2026-09-03",
+      "writing": false,
+      "journey": "",
+      "day": 0,
+      "metric": null,
+      "start": null,
+      "target": null,
+      "unit": "",
+      "image": "assets/posts/interests.png",
+      "imageAlt": "A weekend table of cars, music, books and coffee",
+      "imageW": 1200,
+      "imageH": 800,
+      "images": [
+        {
+          "src": "assets/posts/interests.png",
+          "alt": "A weekend table of cars, music, books and coffee",
+          "width": 1200,
+          "height": 800
+        }
+      ],
+      "attachments": []
+    },
+    {
+      "id": "notes/side-projects-worth-finishing",
+      "type": "Note",
+      "title": "Side projects worth finishing",
+      "excerpt": "Not every idea needs to become a product. This is a small register of the projects that are still interesting after the first burst of enthusiasm, and the next concrete step for each one.",
+      "body": "![A side project taking shape on the kitchen table](assets/posts/side-projects.png)\n\nNot every idea needs to become a product. This is a small register of the\nprojects that are still interesting after the first burst of enthusiasm, and\nthe next concrete step for each one.\n\n## Current shortlist\n\n- **Noted**: keep making the archive easier and more enjoyable to revisit.\n- **Next project**: describe the smallest version that would still be useful.\n- **Experiment**: something deliberately disposable, built only to learn.\n\nThe rule: one visible next step, and permission to archive anything that no\nlonger feels worth finishing.",
+      "view": "",
+      "topics": [
+        "technology",
+        "life"
+      ],
+      "occurredAt": "2026-09-03",
+      "createdAt": "2026-09-03",
+      "publishedAt": "2026-09-03",
+      "writing": false,
+      "journey": "",
+      "day": 0,
+      "metric": null,
+      "start": null,
+      "target": null,
+      "unit": "",
+      "image": "assets/posts/side-projects.png",
+      "imageAlt": "A side project taking shape on the kitchen table",
+      "imageW": 1200,
+      "imageH": 800,
+      "images": [
+        {
+          "src": "assets/posts/side-projects.png",
+          "alt": "A side project taking shape on the kitchen table",
+          "width": 1200,
+          "height": 800
+        }
+      ],
+      "attachments": []
+    },
+    {
+      "id": "notes/window-tiling",
+      "type": "Note",
+      "title": "Window tiling that stays out of the way",
+      "excerpt": "The appeal of tiling is not fitting the maximum number of windows on screen. It is reducing the tiny decisions: where a window belongs, how large it should be, and what gets hidden when the next thing opens.",
+      "body": "![Paper and translucent panels arranged into a tiled grid](assets/posts/window-tiling.png)\n\nThe appeal of tiling is not fitting the maximum number of windows on screen.\nIt is reducing the tiny decisions: where a window belongs, how large it should\nbe, and what gets hidden when the next thing opens.\n\nThis note can become a practical guide to the layouts, shortcuts and rules\nthat make tiling useful without turning the desktop into a hobby of its own.\n\n## Questions to answer\n\n- Which layout works best for writing, coding and browsing?\n- What should float rather than tile?\n- Which shortcuts are genuinely worth learning?",
+      "view": "",
+      "topics": [
+        "technology"
+      ],
+      "occurredAt": "2026-09-03",
+      "createdAt": "2026-09-03",
+      "publishedAt": "2026-09-03",
+      "writing": false,
+      "journey": "",
+      "day": 0,
+      "metric": null,
+      "start": null,
+      "target": null,
+      "unit": "",
+      "image": "assets/posts/window-tiling.png",
+      "imageAlt": "Paper and translucent panels arranged into a tiled grid",
+      "imageW": 1200,
+      "imageH": 800,
+      "images": [
+        {
+          "src": "assets/posts/window-tiling.png",
+          "alt": "Paper and translucent panels arranged into a tiled grid",
+          "width": 1200,
+          "height": 800
+        }
+      ],
+      "attachments": []
+    },
+    {
+      "id": "notes/work-that-fits",
+      "type": "Note",
+      "title": "Work that fits",
+      "excerpt": "A holding page for thinking about work without turning Noted into LinkedIn. What kinds of problems are satisfying, what drains energy, and what a good week looks like when the job supports the rest of life rather than swallowing it.",
+      "body": "![A calm morning workspace beside the window](assets/posts/work-that-fits.png)\n\nA holding page for thinking about work without turning Noted into LinkedIn.\nWhat kinds of problems are satisfying, what drains energy, and what a good\nweek looks like when the job supports the rest of life rather than swallowing\nit.\n\n## Prompts\n\n- Work I am proud of\n- Skills I want to become known for\n- Conditions that help me do good work\n- Things I no longer want to optimise for",
+      "view": "",
+      "topics": [
+        "life",
+        "technology"
+      ],
+      "occurredAt": "2026-09-03",
+      "createdAt": "2026-09-03",
+      "publishedAt": "2026-09-03",
+      "writing": false,
+      "journey": "",
+      "day": 0,
+      "metric": null,
+      "start": null,
+      "target": null,
+      "unit": "",
+      "image": "assets/posts/work-that-fits.png",
+      "imageAlt": "A calm morning workspace beside the window",
+      "imageW": 1200,
+      "imageH": 800,
+      "images": [
+        {
+          "src": "assets/posts/work-that-fits.png",
+          "alt": "A calm morning workspace beside the window",
+          "width": 1200,
+          "height": 800
+        }
+      ],
+      "attachments": []
+    },
     {
       "id": "journal/school-starts",
       "type": "Journal",
@@ -151,44 +454,14 @@ window.NOTED_DATA = {
       "unit": "",
       "image": "assets/vault/attachments/IMG_5839.jpeg",
       "imageAlt": "",
+      "imageW": 3024,
+      "imageH": 4032,
       "images": [
         {
           "src": "assets/vault/attachments/IMG_5839.jpeg",
-          "alt": ""
-        }
-      ],
-      "attachments": []
-    },
-    {
-      "id": "journal/the-tooth-and-a-bag-of-peas",
-      "type": "Journal",
-      "title": "The tooth, and a bag of peas",
-      "excerpt": "A bad night with a tooth, seen off with a bag of frozen peas held against my face at two in the morning. Not a long term plan.",
-      "body": "A bad night with a tooth, seen off with a bag of frozen peas held against my\nface at two in the morning. Not a long term plan.\n\n![](assets/vault/ED742637-A240-41B9-B6DB-876BA58FAC41.jpeg)\n\n> [!todo] Already on the list\n> Contact Amit at One Smile Dental, due 30 September. Approximately £2,500 to\n> correct the top and bottom four teeth.\n\n![](assets/vault/attachments/IMG_5791.png)",
-      "view": "",
-      "topics": [
-        "selfcare"
-      ],
-      "occurredAt": "2026-09-02",
-      "createdAt": "2026-09-02",
-      "publishedAt": "2026-09-02",
-      "writing": false,
-      "journey": "",
-      "day": 0,
-      "metric": null,
-      "start": null,
-      "target": null,
-      "unit": "",
-      "image": "assets/vault/ED742637-A240-41B9-B6DB-876BA58FAC41.jpeg",
-      "imageAlt": "",
-      "images": [
-        {
-          "src": "assets/vault/ED742637-A240-41B9-B6DB-876BA58FAC41.jpeg",
-          "alt": ""
-        },
-        {
-          "src": "assets/vault/attachments/IMG_5791.png",
-          "alt": ""
+          "alt": "",
+          "width": 3024,
+          "height": 4032
         }
       ],
       "attachments": []
@@ -241,18 +514,26 @@ window.NOTED_DATA = {
       "unit": "",
       "image": "assets/journal/jazz-exhaust-roadside.jpg",
       "imageAlt": "The exhaust finally off, laid out on the road beside the Jazz",
+      "imageW": 787,
+      "imageH": 1400,
       "images": [
         {
           "src": "assets/journal/jazz-exhaust-roadside.jpg",
-          "alt": "The exhaust finally off, laid out on the road beside the Jazz"
+          "alt": "The exhaust finally off, laid out on the road beside the Jazz",
+          "width": 787,
+          "height": 1400
         },
         {
           "src": "assets/journal/jazz-exhaust-break.jpg",
-          "alt": "Where it sheared, rusted right through"
+          "alt": "Where it sheared, rusted right through",
+          "width": 1400,
+          "height": 1050
         },
         {
           "src": "assets/journal/jazz-on-the-lift.jpg",
-          "alt": "The Jazz up on the lift at Quikfix"
+          "alt": "The Jazz up on the lift at Quikfix",
+          "width": 1050,
+          "height": 1400
         }
       ],
       "attachments": []
@@ -280,10 +561,14 @@ window.NOTED_DATA = {
       "unit": "",
       "image": "assets/posts/on-repeat.jpg",
       "imageAlt": "A lived-in listening corner with a turntable, records and headphones",
+      "imageW": 1400,
+      "imageH": 1050,
       "images": [
         {
           "src": "assets/posts/on-repeat.jpg",
-          "alt": "A lived-in listening corner with a turntable, records and headphones"
+          "alt": "A lived-in listening corner with a turntable, records and headphones",
+          "width": 1400,
+          "height": 1050
         }
       ],
       "attachments": []
@@ -311,10 +596,14 @@ window.NOTED_DATA = {
       "unit": "",
       "image": "assets/posts/eight-japanese-principles-for-habits.jpg",
       "imageAlt": "Eight everyday objects arranged as a collection of small repeatable practices",
+      "imageW": 1400,
+      "imageH": 1050,
       "images": [
         {
           "src": "assets/posts/eight-japanese-principles-for-habits.jpg",
-          "alt": "Eight everyday objects arranged as a collection of small repeatable practices"
+          "alt": "Eight everyday objects arranged as a collection of small repeatable practices",
+          "width": 1400,
+          "height": 1050
         }
       ],
       "attachments": []
@@ -341,10 +630,14 @@ window.NOTED_DATA = {
       "unit": "",
       "image": "assets/posts/podcasts-worth-the-time.jpg",
       "imageAlt": "Headphones and a mug waiting beside the door",
+      "imageW": 1400,
+      "imageH": 1050,
       "images": [
         {
           "src": "assets/posts/podcasts-worth-the-time.jpg",
-          "alt": "Headphones and a mug waiting beside the door"
+          "alt": "Headphones and a mug waiting beside the door",
+          "width": 1400,
+          "height": 1050
         }
       ],
       "attachments": []
@@ -404,7 +697,7 @@ window.NOTED_DATA = {
       "type": "Note",
       "title": "A week living with Omarchy",
       "excerpt": "A week in, and the thing I keep noticing is what I am not doing. No fiddling with the panel, no hunting for the setting that turns off the animation I did not ask for. The defaults were chosen by someone who had already made the decision, so I do not have to make it again.",
-      "body": "A week in, and the thing I keep noticing is what I am not doing. No fiddling\nwith the panel, no hunting for the setting that turns off the animation I did\nnot ask for. The defaults were chosen by someone who had already made the\ndecision, so I do not have to make it again.\n\nThat is the whole pitch, really. It is not that the machine is faster. It is\nthat it stops asking.\n\nThe test of it is whether I want to extend it, and I did: two plugins so far,\nfor the cameras and the mesh. See [[Two plugins, live]].",
+      "body": "A week in, and the thing I keep noticing is what I am not doing. No fiddling\nwith the panel, no hunting for the setting that turns off the animation I did\nnot ask for. The defaults were chosen by someone who had already made the\ndecision, so I do not have to make it again.\n\nThat is the whole pitch, really. It is not that the machine is faster. It is\nthat it stops asking.\n\n![The Omarchy account setup screen](assets/posts/omarchy-setup.png)\n\nThe test of it is whether I want to extend it, and I did: two plugins so far,\nfor the cameras and the mesh. See [[Two plugins, live]].",
       "view": "",
       "topics": [
         "technology"
@@ -419,17 +712,26 @@ window.NOTED_DATA = {
       "start": null,
       "target": null,
       "unit": "",
-      "image": "",
-      "imageAlt": "",
-      "images": [],
+      "image": "assets/posts/omarchy-setup.png",
+      "imageAlt": "The Omarchy account setup screen",
+      "imageW": 3020,
+      "imageH": 2120,
+      "images": [
+        {
+          "src": "assets/posts/omarchy-setup.png",
+          "alt": "The Omarchy account setup screen",
+          "width": 3020,
+          "height": 2120
+        }
+      ],
       "attachments": []
     },
     {
       "id": "journeys/ten-kilos-week-8",
       "type": "Journey",
       "title": "Week 8: the flat bit",
-      "excerpt": "87.9kg. Barely moved in a fortnight, and I can feel the pull to declare the whole thing broken and start something new instead.",
-      "body": "87.9kg. Barely moved in a fortnight, and I can feel the pull to declare the\nwhole thing broken and start something new instead.\n\nIt is not broken. The walks are still happening, the cooking is still\nhappening, and 4.1kg is gone. This is just the part where the easy weight has\nalready left and the rest takes longer.\n\nSticking with exactly what I am doing for another month before changing\nanything. If the line is still flat at week 12, I will add a second walk at\nlunchtime rather than take anything away.",
+      "excerpt": "105kg. Barely moved in a fortnight, and I can feel the pull to declare the whole thing broken and start something new instead.",
+      "body": "105kg. Barely moved in a fortnight, and I can feel the pull to declare the\nwhole thing broken and start something new instead.\n\nIt is not broken. The walks are still happening, the cooking is still\nhappening, and 4.1kg is gone. This is just the part where the easy weight has\nalready left and the rest takes longer.\n\nSticking with exactly what I am doing for another month before changing\nanything. If the line is still flat at week 12, I will add a second walk at\nlunchtime rather than take anything away.",
       "view": "",
       "topics": [
         "fitness"
@@ -440,7 +742,7 @@ window.NOTED_DATA = {
       "writing": false,
       "journey": "Ten kilos",
       "day": 50,
-      "metric": 87.9,
+      "metric": 105,
       "start": null,
       "target": null,
       "unit": "",
@@ -466,6 +768,58 @@ window.NOTED_DATA = {
       "attachments": []
     },
     {
+      "id": "journal/barcelona",
+      "type": "Journal",
+      "title": "Barcelona",
+      "excerpt": "A place to collect the Barcelona trip properly: the moments we keep retelling, the places we would return to, what the children noticed, and the photographs that would otherwise disappear into the camera roll.",
+      "body": "![](assets/vault/attachments/IMG_5395.jpeg)\n![](assets/vault/attachments/IMG_5437.jpeg)\n![](assets/vault/attachments/IMG_5496.jpeg)\n![](assets/vault/attachments/IMG_5405.jpeg)\n\nA place to collect the Barcelona trip properly: the moments we keep retelling,\nthe places we would return to, what the children noticed, and the photographs\nthat would otherwise disappear into the camera roll.\n\n## Still to add\n\n- Where we stayed and the walks we took most often\n- Favourite meal and best accidental discovery\n- The family photographs that tell the story\n- What we would do differently next time",
+      "view": "",
+      "topics": [
+        "family"
+      ],
+      "occurredAt": "2026-08-22",
+      "createdAt": "2026-08-22",
+      "publishedAt": "2026-09-03",
+      "writing": false,
+      "journey": "",
+      "day": 0,
+      "metric": null,
+      "start": null,
+      "target": null,
+      "unit": "",
+      "image": "assets/vault/attachments/IMG_5395.jpeg",
+      "imageAlt": "",
+      "imageW": 4032,
+      "imageH": 3024,
+      "images": [
+        {
+          "src": "assets/vault/attachments/IMG_5395.jpeg",
+          "alt": "",
+          "width": 4032,
+          "height": 3024
+        },
+        {
+          "src": "assets/vault/attachments/IMG_5437.jpeg",
+          "alt": "",
+          "width": 3024,
+          "height": 4032
+        },
+        {
+          "src": "assets/vault/attachments/IMG_5496.jpeg",
+          "alt": "",
+          "width": 3024,
+          "height": 4032
+        },
+        {
+          "src": "assets/vault/attachments/IMG_5405.jpeg",
+          "alt": "",
+          "width": 3024,
+          "height": 4032
+        }
+      ],
+      "attachments": []
+    },
+    {
       "id": "recipes/slow-roast-tomato-focaccia",
       "type": "Note",
       "title": "Slow-roast tomato focaccia",
@@ -487,10 +841,14 @@ window.NOTED_DATA = {
       "unit": "",
       "image": "assets/posts/slow-roast-tomato-focaccia.jpg",
       "imageAlt": "Fresh tomato and rosemary focaccia in its baking tray",
+      "imageW": 1400,
+      "imageH": 1050,
       "images": [
         {
           "src": "assets/posts/slow-roast-tomato-focaccia.jpg",
-          "alt": "Fresh tomato and rosemary focaccia in its baking tray"
+          "alt": "Fresh tomato and rosemary focaccia in its baking tray",
+          "width": 1400,
+          "height": 1050
         }
       ],
       "attachments": [],
@@ -547,8 +905,8 @@ window.NOTED_DATA = {
       "id": "journeys/ten-kilos-week-4",
       "type": "Journey",
       "title": "Week 4: the walking is doing the work",
-      "excerpt": "89.6kg. Down 2.4 in three weeks, which is faster than I planned for and almost certainly front-loaded.",
-      "body": "89.6kg. Down 2.4 in three weeks, which is faster than I planned for and almost\ncertainly front-loaded.\n\nNothing clever has happened. The walk is the whole thing: forty minutes after\nwork, usually the same loop, usually with a podcast on. Cooking at home has\nbeen easier than expected now that the shopping has changed rather than the\nwillpower.\n\nThe one thing I would tell myself at week 1: weigh in on the same morning, in\nthe same state, and then leave the scales alone for the other six days.",
+      "excerpt": "106kg. Down 2.4 in three weeks, which is faster than I planned for and almost certainly front-loaded.",
+      "body": "106kg. Down 2.4 in three weeks, which is faster than I planned for and almost\ncertainly front-loaded.\n\nNothing clever has happened. The walk is the whole thing: forty minutes after\nwork, usually the same loop, usually with a podcast on. Cooking at home has\nbeen easier than expected now that the shopping has changed rather than the\nwillpower.\n\nThe one thing I would tell myself at week 1: weigh in on the same morning, in\nthe same state, and then leave the scales alone for the other six days.",
       "view": "",
       "topics": [
         "fitness"
@@ -559,7 +917,7 @@ window.NOTED_DATA = {
       "writing": false,
       "journey": "Ten kilos",
       "day": 22,
-      "metric": 89.6,
+      "metric": 106,
       "start": null,
       "target": null,
       "unit": "",
@@ -572,8 +930,8 @@ window.NOTED_DATA = {
       "id": "journeys/ten-kilos-week-1",
       "type": "Journey",
       "title": "Week 1: the first weigh-in",
-      "excerpt": "Standing on the scales properly for the first time in about two years. 92kg, which is roughly what I expected and still not what I wanted to see.",
-      "body": "Standing on the scales properly for the first time in about two years. 92kg,\nwhich is roughly what I expected and still not what I wanted to see.\n\nThe plan is deliberately dull: walk every day, cook at home four nights out of\nseven, and weigh in once a week on a Monday morning before breakfast so the\nnumber means the same thing each time. No app, no points, no photographs of\nfood. Just a line in Noted every Monday.\n\nTen kilos is the goal because 82kg is where I felt best, and because a round\nnumber is easier to stay honest about than a vague intention to be healthier.",
+      "excerpt": "Standing on the scales properly for the first time in about two years. 108kg, which is roughly what I expected and still not what I wanted to see.",
+      "body": "Standing on the scales properly for the first time in about two years. 108kg,\nwhich is roughly what I expected and still not what I wanted to see.\n\nThe plan is deliberately dull: walk every day, cook at home four nights out of\nseven, and weigh in once a week on a Monday morning before breakfast so the\nnumber means the same thing each time. No app, no points, no photographs of\nfood. Just a line in Noted every Monday.\n\nTwenty kilos is the goal because 90kg is where I felt best, and because a round\nnumber is easier to stay honest about than a vague intention to be healthier.",
       "view": "",
       "topics": [
         "fitness"
@@ -584,10 +942,60 @@ window.NOTED_DATA = {
       "writing": false,
       "journey": "Ten kilos",
       "day": 1,
-      "metric": 92,
-      "start": 92,
-      "target": 82,
+      "metric": 108,
+      "start": 108,
+      "target": 90,
       "unit": "kg",
+      "image": "",
+      "imageAlt": "",
+      "images": [],
+      "attachments": []
+    },
+    {
+      "id": "journeys/day-21-the-first-green-shoots",
+      "type": "Journey",
+      "title": "Day 21: the first green shoots",
+      "excerpt": "Three weeks later, the first shoots made the progress visible. A journey can hold the quiet gaps as well as the milestones.",
+      "body": "Three weeks later, the first shoots made the progress visible. A journey can hold the quiet gaps as well as the milestones.",
+      "view": "",
+      "topics": [
+        "gardening"
+      ],
+      "occurredAt": "2026-06-28",
+      "createdAt": "2026-06-28",
+      "publishedAt": "2026-06-28",
+      "writing": false,
+      "journey": "A small kitchen garden (example)",
+      "day": 21,
+      "metric": null,
+      "start": null,
+      "target": null,
+      "unit": "",
+      "image": "",
+      "imageAlt": "",
+      "images": [],
+      "attachments": []
+    },
+    {
+      "id": "journeys/day-1-clear-the-first-patch",
+      "type": "Journey",
+      "title": "Day 1: clear the first patch",
+      "excerpt": "An example of a slower, seasonal journey: clear one manageable patch and decide what would be genuinely useful to grow.",
+      "body": "An example of a slower, seasonal journey: clear one manageable patch and decide what would be genuinely useful to grow.",
+      "view": "",
+      "topics": [
+        "gardening"
+      ],
+      "occurredAt": "2026-06-07",
+      "createdAt": "2026-06-07",
+      "publishedAt": "2026-06-07",
+      "writing": false,
+      "journey": "A small kitchen garden (example)",
+      "day": 1,
+      "metric": null,
+      "start": null,
+      "target": null,
+      "unit": "",
       "image": "",
       "imageAlt": "",
       "images": [],
@@ -616,22 +1024,32 @@ window.NOTED_DATA = {
       "unit": "",
       "image": "assets/journal/first-mini-seafront.jpg",
       "imageAlt": "The Mini on the seafront, the evening I got it home",
+      "imageW": 1400,
+      "imageH": 1050,
       "images": [
         {
           "src": "assets/journal/first-mini-seafront.jpg",
-          "alt": "The Mini on the seafront, the evening I got it home"
+          "alt": "The Mini on the seafront, the evening I got it home",
+          "width": 1400,
+          "height": 1050
         },
         {
           "src": "assets/journal/dads-first-mini.jpg",
-          "alt": "Dad's first Mini, a K reg, from the Bognor Mini Centre"
+          "alt": "Dad's first Mini, a K reg, from the Bognor Mini Centre",
+          "width": 1400,
+          "height": 1050
         },
         {
           "src": "assets/journal/mini-garage-watercolour.jpg",
-          "alt": "An illustration of a Mini in a workshop, drawn in pen and watercolour"
+          "alt": "An illustration of a Mini in a workshop, drawn in pen and watercolour",
+          "width": 1280,
+          "height": 720
         },
         {
           "src": "assets/journal/mini-garage-painting.jpg",
-          "alt": "The same workshop scene, painted"
+          "alt": "The same workshop scene, painted",
+          "width": 1376,
+          "height": 768
         }
       ],
       "attachments": []

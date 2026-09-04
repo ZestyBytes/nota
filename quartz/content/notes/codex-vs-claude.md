@@ -10,7 +10,7 @@ publish: true
 
 ![Two contrasting developer workbenches side by side](assets/posts/codex-vs-claude.png)
 
-Not a synthetic benchmark—just a running comparison based on the work I
+Not a synthetic benchmark, just a running comparison based on the work I
 actually ask them to do. The useful question is less “which is smartest?” and
 more “which one helps me finish this kind of task with the least friction?”
 
