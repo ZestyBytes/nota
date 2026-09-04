@@ -757,14 +757,51 @@ function spacePreview(id,photo){
 // own bookplate on the verso, and the three most recent things filed under
 // it on the recto. All of it is already in the archive; nothing new is kept
 // for the shelf.
+// The right page is whatever the space actually keeps. A space of quotations
+// sets one as a quotation; a space that is really one long journey climbs its
+// steps; everything else lists what was filed last, which is also the fallback
+// when a space holds too little to choose from. Nothing is configured: the
+// page is picked by counting, the way a spine's thickness already is.
+function volumeRecto(id,all){
+  const shortDate=iso=>fmtDate(iso).replace(/ \d{4}$/,"");
+  const quotes=all.filter(e=>e.type==="Quote");
+  if(quotes.length&&quotes.length*3>=all.length){
+    const q=quotes[0],book=state.data.books.find(b=>b.status==="reading"&&inTopic(b,id));
+    return `<span class="vol-leaf recto recto-quote">
+      <h4>From the commonplace book</h4>
+      <blockquote>&ldquo;${esc(q.title)}&rdquo;</blockquote>
+      <cite>${esc(q.author||"")}</cite>
+      ${book?`<span class="vol-reading">Reading · ${esc(book.title)} · ${book.progress}%</span>`:""}
+    </span>`;
+  }
+  // A journey is a run of dated steps under one name, so the longest run in
+  // the space is the one worth setting out.
+  const runs={};
+  for(const e of all)if(e.journey)(runs[e.journey]=runs[e.journey]||[]).push(e);
+  const run=Object.entries(runs).sort((a,b)=>b[1].length-a[1].length)[0];
+  // A parent space inherits its children's entries, so a run only earns the
+  // page when it is at least half of what the space holds: Fitness climbs its
+  // ladder, Life, which merely contains Fitness, does not.
+  if(run&&run[1].length>=2&&run[1].length*2>=all.length){
+    const [name,steps]=run;
+    return `<span class="vol-leaf recto recto-journey">
+      <h4>Journey · ${esc(name)}<i>${steps.length} steps</i></h4>
+      <ol class="vol-ladder">${steps.slice(0,3).map((e,i)=>{
+        const cut=e.title.indexOf(": "),step=cut>0?e.title.slice(0,cut):shortDate(e.occurredAt||e.createdAt),
+              rest=cut>0?e.title.slice(cut+2):e.title;
+        return `<li${i?"":' class="now"'}><em>${esc(step)}</em><b>${esc(rest)}</b></li>`;
+      }).join("")}</ol>
+    </span>`;
+  }
+  const rows=all.slice(0,3),rest=all.length-rows.length;
+  return `<span class="vol-leaf recto"><h4>Latest in the space</h4>${rows.length
+    ? `<ul>${rows.map(e=>`<li><em>${esc(e.type)}<i>${esc(shortDate(e.occurredAt||e.createdAt))}</i></em><b>${esc(e.title)}</b></li>`).join("")}</ul>${rest>0?`<span class="vol-more">and ${rest} more inside</span>`:""}`
+    : `<span class="vol-none">Nothing filed here yet.</span>`}</span>`;
+}
 function volumeLeaves(id,t,count){
   const all=state.data.entries.filter(e=>inTopic(e,id))
     .sort((a,b)=>(b.occurredAt||b.createdAt||"").localeCompare(a.occurredAt||a.createdAt||""));
-  const rows=all.slice(0,3),rest=all.length-rows.length;
   const shortDate=iso=>fmtDate(iso).replace(/ \d{4}$/,"");
-  const list=rows.length
-    ? `<ul>${rows.map(e=>`<li><em>${esc(e.type)}<i>${esc(shortDate(e.occurredAt||e.createdAt))}</i></em><b>${esc(e.title)}</b></li>`).join("")}</ul>${rest>0?`<span class="vol-more">and ${rest} more inside</span>`:""}`
-    : `<span class="vol-none">Nothing filed here yet.</span>`;
   const filed=topicLatest(id);
   return `<span class="vol-spread" aria-hidden="true">
     <span class="vol-leaf verso">
@@ -773,7 +810,7 @@ function volumeLeaves(id,t,count){
       ${filed?`<span class="vol-filed">Last filed ${esc(shortDate(filed))}</span>`:""}
       <span class="vol-tally"><b>${count}</b>things kept</span>
     </span>
-    <span class="vol-leaf recto"><h4>Latest in the space</h4>${list}</span>
+    ${volumeRecto(id,all)}
   </span>`;
 }
 // On the Library shelf the card is the case rather than the cloth: the cloth
