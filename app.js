@@ -392,7 +392,7 @@ function today(){
   const open=state.data.tasks.filter(t=>!t.completedAt).length;
   const wander=state.data.entries.filter(e=>e.type!=="Task");
   const tasks=state.data.tasks.filter(t=>!t.completedAt).slice(0,3);
-  return `<section class="home-page"><header class="home-intro"><div><h1 class="page-title">Recently</h1><p class="lede">Stories, photographs, ideas and projects worth returning to.</p></div><nav class="home-paths"><a href="#topics"><b>Spaces</b><span>By subject</span></a><a href="#library"><b>Library</b><span>By format</span></a><a href="#calendar"><b>Calendar</b><span>By date</span></a></nav></header>
+  return `<section class="home-page">
     <div class="home-latest-head"><h2 class="section-title">Latest</h2>${open?`<a href="#tasks">${open} thing${open===1?"":"s"} to do &rarr;</a>`:""}</div>
     <div class="entry-list home-latest-list">${recent.length?recent.map(e=>entryCard(e)).join(""):`<p class="empty">The archive is ready for its first entry.</p>`}</div>
     ${onThisDay()}
