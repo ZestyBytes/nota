@@ -801,7 +801,7 @@ function volumeRecto(id,all){
   if(shot.length>=2&&shot.length*2>=all.length){
     const s=shot[0];
     return `<span class="vol-leaf recto recto-album">
-      <img src="${esc(s.image)}" alt="${esc(s.imageAlt||"")}" loading="lazy" decoding="async" onerror="this.closest('.recto-album')?.classList.add('no-shot');this.remove()">
+      <img data-shot="${esc(s.image)}" alt="${esc(s.imageAlt||"")}" decoding="async" onerror="this.closest('.recto-album')?.classList.add('no-shot');this.remove()">
       <span class="vol-caption">
         <em>${esc(s.type)}<i>${esc(shortDate(s.occurredAt||s.createdAt))}</i></em>
         <b>${esc(s.title)}</b>
@@ -1266,6 +1266,9 @@ function openVolumes(){
       // inside one of them belongs in the tab order.
       if(vol.getAttribute("aria-hidden")!=="true")vol.querySelector(".vol-go").tabIndex=0;
       place(vol);
+      // The plate fetches its photograph the first time its book is opened.
+      const shot=vol.querySelector("img[data-shot]");
+      if(shot){shot.src=shot.dataset.shot;delete shot.dataset.shot}
     }
   };
   // Held for a moment before anything moves, so running the pointer along the

@@ -172,6 +172,7 @@
 }
 /* A photographed space opens on a plate, bled to the edges of its page. */
 .library-space-filter .recto-album{padding:0 0 54px;gap:0}
+.library-space-filter .recto-album img[data-shot]{visibility:hidden}
 .library-space-filter .recto-album img{
   display:block;width:100%;height:130px;object-fit:cover;object-position:center;
   border-bottom:1px solid rgba(93,72,40,.3);filter:saturate(.84) sepia(.05);
