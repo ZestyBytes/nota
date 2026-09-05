@@ -393,7 +393,13 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px;min-width:0;}
      dark now, in both themes, because that is what body says it is. */
   body{background:#14160f;}
   main{background:var(--paper);min-height:calc(100vh - 70px);}
-  .site-header{height:calc(70px + env(safe-area-inset-top,0px));padding:env(safe-area-inset-top,0px) 18px 0;display:flex;justify-content:space-between;align-items:center;}
+  /* The wordmark has to clear the clock. safe-area-inset-top would be the
+     right value for that and this phone reports it as zero, so it takes a
+     floor: without it the masthead starts at the top of the screen and iOS
+     blurs its top half to keep the time readable. The strip above stays the
+     band's colour because body is that colour, so the padding reads as part
+     of the band rather than as a gap. */
+  .site-header{--sb:max(env(safe-area-inset-top,0px),50px);height:calc(70px + var(--sb));padding:var(--sb) 18px 0;display:flex;justify-content:space-between;align-items:center;}
   /* No burger on a phone: the bottom bar already reaches every route, so
      the space goes to the date instead. */
   .main-nav{display:none;}
