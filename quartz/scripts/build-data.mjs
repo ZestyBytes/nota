@@ -308,6 +308,24 @@ async function geocode(query) {
   }
 }
 
+// A business name is often not in OpenStreetMap while the lane it sits on is,
+// so a failed lookup drops the most specific part of the address and asks
+// again. "The Oving Cow Shed, Woodhorn Lane, Oving" becomes "Woodhorn Lane,
+// Oving", then "Oving", and the first of those to land is close enough to
+// show on a map.
+async function locate(query) {
+  const parts = String(query || "").split(",").map(part => part.trim()).filter(Boolean);
+  for (let i = 0; i < parts.length; i++) {
+    const rest = parts.slice(i);
+    // Falling back as far as "UK" would put a marker in the wrong county, so
+    // stop while there is still a place and something around it.
+    if (i && rest.length < 2) break;
+    const found = await geocode(rest.join(", "));
+    if (found) return found;
+  }
+  return null;
+}
+
 // A place, for entries that are about somewhere. Accepts a bare "lat,lon" or
 // anything carrying an @lat,lon, which is what a Google Maps URL looks like
 // once it has been opened, so a pasted link works without a lookup.
@@ -528,7 +546,7 @@ mkdirSync(dirname(OUT_PATH), { recursive: true });
 // that could not be found so the app never sees a half-built place.
 for (const entry of entries) {
   if (!entry.place || !entry.place.query) continue;
-  const found = await geocode(entry.place.query);
+  const found = await locate(entry.place.query);
   entry.place = found ? { lat: found.lat, lon: found.lon, label: entry.place.label || entry.place.query } : null;
 }
 if (placeCacheDirty) writeFileSync(GEO_CACHE, JSON.stringify(placeCache, null, 2) + "\n");
