@@ -99,10 +99,18 @@ self.addEventListener("fetch",event=>{
   // Versioned shell files belong to this installed build. Serve them from
   // disk; a new worker installs the next build without repeat background fetches.
   event.respondWith(caches.open(CACHE).then(async cache=>{
-    const hit=await cache.match(request,{ignoreSearch:true});
+    // Exact URL first, so a changed ?v= actually misses and goes to the
+    // network. Matching with ignoreSearch made every cache buster inert: the
+    // page would arrive fresh, ask for styles.css?v=something-new, and be
+    // handed the previous build's stylesheet because the query was thrown
+    // away before matching. That is why the CSS kept running a build behind
+    // the HTML that referenced it.
+    const hit=await cache.match(request);
     if(hit)return hit;
     try{return await fresh(request,cache)}catch{
-      return await packMatch(request)|| (request.mode==="navigate"?await cache.match("index.html")||await packMatch(new URL("index.html",self.registration.scope).href):null)||Response.error();
+      // Offline: now the query can be ignored, since anything cached is
+      // better than nothing.
+      return await cache.match(request,{ignoreSearch:true})||await packMatch(request)|| (request.mode==="navigate"?await cache.match("index.html")||await packMatch(new URL("index.html",self.registration.scope).href):null)||Response.error();
     }
   }));
 });
