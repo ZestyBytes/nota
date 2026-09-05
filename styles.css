@@ -81,7 +81,8 @@
 }
 *{box-sizing:border-box;}
 html{scroll-behavior:smooth;}
-body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:16px;line-height:1.6;overflow-x:hidden;}
+html{background:#14160f;}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:16px;line-height:1.6;overflow-x:hidden;min-height:100vh;}
 button,input,select,textarea{font:inherit;color:inherit;}
 button,a{touch-action:manipulation;}
 a{color:inherit;text-decoration:none;}
@@ -528,9 +529,9 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px;min-width:0;}
 .entry-thumb,.book-cover,.detail-image{background:var(--paper-alt);}
 .detail-image{display:block;width:auto;max-width:100%;height:auto;max-height:72vh;object-fit:contain;margin-left:auto;margin-right:auto;}
 /* ---------- pull to refresh ---------- */
-.pull-hint{position:fixed;z-index:9;top:0;left:0;right:0;display:grid;place-items:center;height:0;overflow:hidden;color:var(--muted);font:10px var(--mono);text-transform:uppercase;letter-spacing:.14em;background:var(--paper);transition:height .18s ease;}
-.pull-hint.on{height:38px;}
-.pull-hint.spin{color:var(--ink);}
+.pull-hint{position:fixed;z-index:9;top:0;left:0;right:0;display:grid;place-items:center;padding-top:env(safe-area-inset-top,0px);height:0;overflow:hidden;color:#949a85;font:10px var(--mono);text-transform:uppercase;letter-spacing:.14em;background:#14160f;transition:height .18s ease;}
+.pull-hint.on{height:calc(38px + env(safe-area-inset-top,0px));}
+.pull-hint.spin{color:#e6e9dc;}
 /* ---------- modal scroll lock ----------
    position:fixed rather than overflow:hidden, because iOS ignores the latter on
    body, which let the archive scroll away underneath an open note. */
