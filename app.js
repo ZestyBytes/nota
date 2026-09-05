@@ -1104,13 +1104,7 @@ function authScreen(){return `<section class="auth-shell"><div class="auth-intro
 // that ends an argument. A stale shell and a fresh one look identical until
 // one of them can say what it is, and a phone that keeps serving an old page
 // is otherwise only diagnosable by reading pixels out of a screenshot.
-function buildStamp(){
-  // The measured inset alongside the build, because guessing at this is what
-  // cost a whole evening: if it reads 0 on a phone the page is under the clock.
-  let inset="?";
-  try{inset=getComputedStyle(document.documentElement).getPropertyValue("--cap").trim()||"none"}catch(error){}
-  return `<p class="build-stamp">build ${BUILD.startsWith("__")?"local":esc(BUILD)} &middot; cap ${esc(inset)}</p>`;
-}
+function buildStamp(){return `<p class="build-stamp">build ${BUILD.startsWith("__")?"local":esc(BUILD)}</p>`}
 function userTools(){return (state.user?`<footer class="user-tools"><button data-action="logout">Sign out</button></footer>`:"")+buildStamp()}
 function renderUnsafe(){const app=document.getElementById("app"),hash=location.hash.slice(1)||"today",[route,arg]=hash.split("/"),isPublic=route==="writing";document.body.classList.toggle("auth-view",NotedBackend.configured&&!state.user&&!isPublic);if(state.booting){app.innerHTML=skeletonPage();return}if(NotedBackend.configured&&!state.user&&!isPublic){app.innerHTML=authScreen();return}state.route=route;document.querySelectorAll(".main-nav a,.mobile-nav a").forEach(a=>a.classList.toggle("active",a.getAttribute("href")===`#${route}`));const page=route==="calendar"?calendar():route==="library"?library():route==="entry"?entryPage(decodeURIComponent(arg||"")):route==="topics"?(arg?topicView(arg):topics()):route==="writing"?writing():route==="journey"?journeyPage(arg||""):route==="tasks"?taskPage():route==="health"?healthPage():route==="search"?search():today();app.innerHTML=page+userTools();app.focus({preventScroll:true});afterRender(route)}
 function render(){try{return renderUnsafe()}catch(error){console.error("Noted render failed",error);const app=document.getElementById("app");if(app)app.innerHTML=`<section class="render-error"><p class="eyebrow">Archive check</p><h1 class="page-title">This page needs a little repair.</h1><p class="lede">One of the saved records could not be displayed. Your notes are still safe: try returning home or refreshing.</p><p><a class="back-link" href="#today">Return home</a></p></section>`}}

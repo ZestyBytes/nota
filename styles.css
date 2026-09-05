@@ -92,16 +92,6 @@ html{background:#14160f;}
    writing is under the clock again. This bar does not move. It fills exactly
    the status bar strip, in the band's colour, and everything scrolls beneath
    it. Zero height where there is no notch, so it costs nothing on a desktop. */
-/* The cap over the status bar strip.
-
-   Sized from safe-area-inset-top where that is honest, but never smaller than
-   50px on a phone, because this is the thing that kept collapsing: the inset
-   reports zero on a device that is demonstrably drawing the page under the
-   clock. Screenshots showed the row above the fold blurred behind the time,
-   which is iOS keeping the clock legible over whatever is up there: dark in
-   dark theme, paper in light. A fixed bar covers it whatever the inset claims,
-   and at rest it lies over the masthead, which is the same colour anyway. */
-body:after{content:"";position:fixed;z-index:20;top:0;left:0;right:0;height:env(safe-area-inset-top,0px);background:#14160f;pointer-events:none;}
 body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:16px;line-height:1.6;overflow-x:hidden;min-height:100vh;}
 button,input,select,textarea{font:inherit;color:inherit;}
 button,a{touch-action:manipulation;}
@@ -403,8 +393,6 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px;min-width:0;}
      dark now, in both themes, because that is what body says it is. */
   body{background:#14160f;}
   main{background:var(--paper);min-height:calc(100vh - 70px);}
-  :root{--cap:max(env(safe-area-inset-top,0px),50px);}
-  body:after{height:var(--cap);}
   .site-header{height:calc(70px + env(safe-area-inset-top,0px));padding:env(safe-area-inset-top,0px) 18px 0;display:flex;justify-content:space-between;align-items:center;}
   /* No burger on a phone: the bottom bar already reaches every route, so
      the space goes to the date instead. */
