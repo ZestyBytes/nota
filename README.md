@@ -60,7 +60,7 @@ actually show once you push):
 
 ```sh
 node quartz/scripts/build-data.mjs --out /tmp/noted-preview/data.js
-cp index.html app.js styles.css config.js backend.js manifest.webmanifest icon.svg sw.js /tmp/noted-preview/
+cp index.html app.js offline.js styles.css config.js backend.js manifest.webmanifest icon.svg sw.js /tmp/noted-preview/
 cd /tmp/noted-preview && python3 -m http.server 8787
 ```
 
@@ -128,6 +128,6 @@ the app and building content. It uses the existing Sharp and esbuild dependencie
 to produce WebP images and minified JS/CSS. Repository originals are preserved.
 Library's **Save for offline reading** loads `offline.js` only on request.
 
-Checks: `node tests/smoke.mjs`, `node tests/offline.mjs` and
+Checks: `node tests/smoke.mjs`, `node tests/offline.mjs`, `node tests/styles.mjs` and
 `node quartz/scripts/validate-content.mjs`. Set `NOTED_BUILD_DIR=dist` when
 running smoke checks to exercise the compiled app with published content.

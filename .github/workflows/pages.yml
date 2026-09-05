@@ -31,7 +31,7 @@ jobs:
       - name: Assemble the Noted app for deploy
         run: |
           mkdir -p dist
-          cp index.html app.js offline.js styles.css shelf-fix.css config.js backend.js manifest.webmanifest icon.svg sw.js dist/
+          cp index.html app.js offline.js styles.css config.js backend.js manifest.webmanifest icon.svg sw.js dist/
           cp -r assets dist/
           sed -i "s/__BUILD__/${GITHUB_SHA::7}/" dist/sw.js dist/app.js
           printf '{"build":"%s"}' "${GITHUB_SHA::7}" > dist/version.json

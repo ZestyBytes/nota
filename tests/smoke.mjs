@@ -57,8 +57,9 @@ assert.equal(run("searchResults('').length"),0);
 const snippet=run("matchSnippet(state.data.entries[0],'cafe tomatoes script')");
 assert.match(snippet,/<mark>Tomatoes<\/mark>/);
 assert.doesNotMatch(snippet,/<script>/);
-assert.match(run("homeStream(state.data.entries)"),/stream-feature/);
-assert.equal((run("homeStream(state.data.entries)").match(/class="stream-date"/g)||[]).length,2);
+assert.match(run("homeLatest(state.data.entries)"),/class="latest-rail"/);
+assert.equal((run("homeLatest(state.data.entries)").match(/class="latest-card"/g)||[]).length,2);
+assert.doesNotMatch(run("homeLatest(state.data.entries)"),/stream-date|stream-feature/);
 run(`
   const removed=[];
   const card={classList:{remove(...names){removed.push(...names)},add(name){removed.push(name)}}};
@@ -77,3 +78,14 @@ assert.doesNotMatch(run("librarySpines()"),/vol-spread|aria-hidden="true".*vol-h
 assert.match(run("librarySpines()"),/class="cloth-book"/);
 assert.equal((run("librarySpines()").match(/class="cloth-book"/g)||[]).length,run("Object.keys(state.data.topics).length"));
 console.log('Library spine checks passed');
+
+run(`state.data.entries=Array.from({length:14},(_,i)=>({id:'entry'+i,title:'Entry '+i,type:'Journal',occurredAt:'2026-09-04',topics:[]}));state.data.tasks=Array.from({length:8},(_,i)=>({id:'task'+i,title:'Task '+i,topics:[]}))`);
+const home=run('today()');
+assert.equal((home.match(/class="latest-card"/g)||[]).length,5);
+assert.equal((home.match(/class="home-task-row /g)||[]).length,3);
+assert.match(home,/5 more in the list/);
+assert.match(home,/data-open-library="notes"/);
+run(`state.data.entries=[{id:'weight',title:'Starting',type:'Journey',journey:'Weight',start:108,target:90,metric:108,unit:'kg',occurredAt:'2026-09-04',topics:[]}]`);
+assert.match(run('homeJourneys()'),/Target 90kg/);
+assert.match(run('homeJourneys()'),/data-open-library="journeys"/);
+console.log('Compact Home and visible journey target checks passed');

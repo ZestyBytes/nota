@@ -18,8 +18,8 @@ await pack.put(scope+'data.js',new Response('data'));
 assert.equal(await (await request('image.webp','image')).text(),'photo');
 assert.equal(await (await request('data.js')).text(),'data');
 assert.equal(await (await request('./','','navigate')).text(),'page');
-const shell=await caches.open('noted-shell-__BUILD__');await shell.put(scope+'app.js?v=light',new Response('cached code'));networkCount=0;
-assert.equal(await (await request('app.js?v=light','script')).text(),'cached code');
+const shell=await caches.open('noted-shell-__BUILD__');await shell.put(scope+'app.js?v=home',new Response('cached code'));networkCount=0;
+assert.equal(await (await request('app.js?v=home','script')).text(),'cached code');
 assert.equal(networkCount,0,'A cached shell should not trigger a network request');
 assert.equal(await request('app.js','', 'cors','reload'),undefined,'Explicit pack downloads bypass shell caching');
 let activated;handlers.activate({waitUntil(p){activated=p}});await activated;
@@ -40,7 +40,7 @@ class Panel {
   querySelectorAll(){return []}
 }
 context.window={caches};context.navigator={onLine:true,serviceWorker:{controller:{}}};
-context.document={querySelectorAll(){return [{src:scope+'app.js?v=light'},{href:scope+'shelf-fix.css?v=light'}]},createElement(){return {remove(){}}}};
+context.document={querySelectorAll(){return [{src:scope+'app.js?v=home'},{href:scope+'styles.css?v=home'}]},createElement(){return {remove(){}}}};
 context.crypto=globalThis.crypto;context.AbortController=AbortController;context.setTimeout=setTimeout;context.clearTimeout=clearTimeout;
 const fixture={entries:[{image:'assets/a.webp',occurredAt:'2026-09-04'}]};
 context.panel=new Panel();context.fixture=fixture;

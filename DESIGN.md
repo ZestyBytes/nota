@@ -60,7 +60,7 @@ Topic spaces preferentially use the author's own archive photography and real bo
 
 ## Mobile journal browsing
 
-Home uses a vertical stream grouped by date, with the newest record featured and subsequent records shown as compact two-line previews with optional thumbnails. Search matches all supplied words across the record, normalizes punctuation and accents, and supports Space and inclusive date filters. Failed card photographs collapse to text; failed photograph-strip items are removed.
+Home shows at most five recent entries in a compact horizontal row with a visible next-card edge, dates, two-line previews and optional thumbnails. Scrolling is manual. The next section shows three priority-ordered tasks and three journeys, with actual values and targets visible on phones. Section links open the relevant Library tab. Search matches all supplied words across the record, normalizes punctuation and accents, and supports Space and inclusive date filters. Failed card photographs collapse to text; failed photograph-strip items are removed.
 
 ## Lightweight Library shelf
 
@@ -71,3 +71,12 @@ Library Spaces are now a single row of clothbound spine links. Titles remain upr
 Deployment generates smaller WebP images, capped at 1600 pixels on their longest edge, and minifies JavaScript and CSS. Source images and editable code remain unchanged in the repository. Generated image names include a content hash so replacing a photograph refreshes its cached version.
 
 Library offers an optional offline download for a month or journey. The download contains the app shell, archive text and that selection's local photographs. Downloads are limited to two simultaneous requests, support cancellation and report completion only after all files are saved. Packs survive app updates; removing a pack deletes its dedicated saved copy. Browser storage can still be evicted. Videos and remote embeds remain online-only.
+
+## Stylesheet maintenance
+
+`styles.css` is the sole local stylesheet. The former `shelf-fix.css` is merged
+in, obsolete Home and Library selectors are removed, and overridden declarations
+are consolidated while retaining media-query and feature fallbacks. Each rule
+has its own line, with nested rules indented. Edit the existing component rule
+instead of adding a patch stylesheet. `node tests/styles.mjs` checks compilation
+and the stylesheet references used by the page and service worker.

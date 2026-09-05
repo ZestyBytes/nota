@@ -465,7 +465,7 @@ function homePhotos(){
     .slice(0,8);
   if(shots.length<3)return "";
   return `<section class="home-photos">
-    <div class="home-latest-head"><h2 class="section-title">Photographs</h2><a href="#library">All photographs &rarr;</a></div>
+    <div class="home-latest-head"><h2 class="section-title">Photographs</h2><a href="#library" data-open-library="gallery">All photographs &rarr;</a></div>
     <div class="photo-band">${shots.map(e=>{
       const t=topic(e.topics?.[0]);
       return `<button class="photo-shot" data-entry="${esc(e.id)}" style="--topic:${t.color}" aria-label="${esc(e.title)}">
@@ -481,7 +481,7 @@ function homeReading(){
   if(!book)return "";
   const pct=Math.max(0,Math.min(100,Number(book.progress)||0));
   return `<section class="home-reading">
-    <div class="home-latest-head"><h2 class="section-title">Currently reading</h2><a href="#library">The shelves &rarr;</a></div>
+    <div class="home-latest-head"><h2 class="section-title">Currently reading</h2><a href="#library" data-open-library="reading">The shelves &rarr;</a></div>
     <button class="reading-now" data-book="${esc(book.id)}" aria-label="Open ${esc(book.title)}">
       ${book.cover?`<img src="${esc(book.cover)}" alt="" loading="lazy">`:coverPlate(book)}
       <span class="reading-copy">
@@ -499,9 +499,6 @@ function onThisDay(){
   const md=todayKey.slice(5),items=state.data.entries.filter(e=>{const d=e.occurredAt||e.createdAt||"";return d.slice(5)===md&&d.slice(0,4)!==todayKey.slice(0,4)});
   return items.length?`<section class="on-this-day"><div><p class="eyebrow">On this day</p><h2>${items.length===1?"One thing came back":"A few things came back"}</h2></div><div>${items.slice(0,3).map(e=>dayRow(e,"article")).join("")}</div></section>`:"";
 }
-// Home shows the first four waiting things in a compact list and folds the
-// rest open in place rather than sending you to another page.
-const HOME_TASKS=4;
 function daysFromToday(iso){
   const [ty,tm,td]=todayKey.split("-").map(Number),[y,m,d]=iso.split("-").map(Number);
   return Math.round((Date.UTC(y,m-1,d)-Date.UTC(ty,tm-1,td))/864e5);
@@ -534,23 +531,22 @@ function homeJourneys(){
   const rows=journeys();
   if(!rows.length)return "";
   return `<section class="home-journeys">
-    <div class="home-latest-head"><h2 class="section-title">Journeys</h2><a href="#library">All journeys &rarr;</a></div>
-    <div class="journey-lines">${rows.slice(0,4).map(({name,rows:items,last})=>{
+    <div class="home-latest-head"><h2 class="section-title">Journeys</h2><a href="#library" data-open-library="journeys">All journeys &rarr;</a></div>
+    <div class="journey-lines">${rows.slice(0,3).map(({name,rows:items,last})=>{
       const t=topic(items[0].topics?.[0]),days=items.map(i=>i.day).filter(Boolean),p=journeyProgress(items);
       return `<button class="journey-line" data-journey="${esc(name)}" style="--topic:${t.color}">
         <b>${esc(name)}</b>
         <span>${days.length?`Day ${Math.max(...days)} &middot; `:""}${items.length} ${items.length===1?"entry":"entries"}${last.occurredAt?` &middot; ${fmtDate(last.occurredAt)}`:""}</span>
-        ${p?`<i class="journey-bar" role="img" aria-label="${p.pct}% of the way there"><i style="width:${p.pct}%"></i></i><em>${fmtMetric(p.latest,p.unit)}</em>`:""}
+        ${p?`<i class="journey-bar" role="img" aria-label="${p.pct}% of the way from ${fmtMetric(p.start,p.unit)} to ${fmtMetric(p.target,p.unit)}"><i style="width:${p.pct}%"></i></i><em>${fmtMetric(p.latest,p.unit)} <small>Target ${fmtMetric(p.target,p.unit)}</small></em>`:""}
       </button>`;
     }).join("")}</div>
   </section>`;
 }
-function homeStream(items){
-  let previous="";
-  return items.map((e,i)=>{const date=(e.occurredAt||e.createdAt||"").slice(0,10),heading=date!==previous?`<h3 class="stream-date">${esc(fmtDate(date)||"Undated")}</h3>`:"";previous=date;
-    return `${heading}<a class="stream-entry ${i===0?"stream-feature":""}" href="#entry/${encodeURIComponent(e.id)}" data-entry="${esc(e.id)}"><div class="stream-copy"><span class="stream-topic">${esc(topic(e.topics?.[0]).name)} · ${esc(e.type)}</span><h4>${esc(e.title)}</h4>${e.excerpt?`<p>${esc(e.excerpt)}</p>`:""}</div>${e.image?`<img src="${esc(e.image)}" alt="${esc(e.imageAlt||"")}" loading="${i===0?"eager":"lazy"}">`:""}</a>`;
-  }).join("")+`<a class="stream-more" href="#library">Browse the archive →</a>`;
+function homeLatest(items){
+  return `<div class="latest-rail" role="region" aria-label="Latest entries, scroll horizontally" tabindex="0">${items.map((e,i)=>`<a class="latest-card" href="#entry/${encodeURIComponent(e.id)}" data-entry="${esc(e.id)}"><div class="latest-copy"><span class="latest-meta">${esc(fmtDate(e.occurredAt||e.createdAt))} · ${esc(topic(e.topics?.[0]).name)}</span><h3>${esc(e.title)}</h3>${e.excerpt?`<p>${esc(e.excerpt)}</p>`:""}<span class="latest-open">Read entry →</span></div>${e.image?`<img src="${esc(e.image)}" alt="${esc(e.imageAlt||"")}" loading="${i===0?"eager":"lazy"}" decoding="async">`:""}</a>`).join("")}</div>`;
 }
+function homeTaskRow(t){const due=t.dueAt?`${t.dueAt<todayKey?"Overdue · ":t.dueAt===todayKey?"Today · ":"Due · "}${fmtDate(t.dueAt)}`:"No date set";return `<a class="home-task-row ${t.dueAt&&t.dueAt<todayKey?"is-overdue":""}" href="${t.note?'#entry/'+encodeURIComponent(t.id):'#tasks'}" ${t.note?`data-entry="${esc(t.id)}"`:""}><span><b>${esc(t.title)}</b><small>${esc(due)}</small></span><span aria-hidden="true">→</span></a>`}
+function homeTasks(waiting){if(!waiting.length)return "";return `<section class="home-tasks"><div class="home-latest-head"><h2 class="section-title">To-do</h2><a href="#tasks">${waiting.length} waiting →</a></div><div class="home-task-list">${waiting.slice(0,3).map(homeTaskRow).join("")}</div>${waiting.length>3?`<a class="home-more" href="#tasks">${waiting.length-3} more in the list →</a>`:""}</section>`}
 function today(){
   // Home is a reading surface, not a log of every object in the archive.
   // Journeys have their progress strip below, tasks have their own list, and
@@ -558,18 +554,16 @@ function today(){
   const recent=state.data.entries
     .filter(e=>["Journal","Note"].includes(e.type)&&!e.plant)
     .sort((a,b)=>(b.occurredAt||b.createdAt||"").localeCompare(a.occurredAt||a.createdAt||""))
-    .slice(0,12);
-  const waiting=openTasksInOrder(),open=waiting.length;
-  const wander=state.data.entries.filter(e=>e.type!=="Task");
-  const tasks=waiting.slice(0,HOME_TASKS),more=waiting.slice(HOME_TASKS);
+    .slice(0,5);
+  const waiting=openTasksInOrder();
   return `<section class="home-page">
     ${homeEvents()}
-    <div class="home-latest-head"><h2 class="section-title">Latest</h2>${open?`<a href="#tasks">${open} thing${open===1?"":"s"} to do &rarr;</a>`:""}</div>
-    <div class="journal-stream">${recent.length?homeStream(recent):`<p class="empty">The archive is ready for its first entry.</p>`}</div>
+    <div class="home-latest-head"><h2 class="section-title">Latest</h2><a href="#library" data-open-library="notes">All notes →</a></div>
+    ${recent.length?homeLatest(recent):`<p class="empty">The archive is ready for its first entry.</p>`}
+    <div class="home-progress">${homeTasks(waiting)}${homeJourneys()}</div>
     ${homePhotos()}
-    <div class="home-progress">${homeReading()}${homeJourneys()}</div>
+    ${homeReading()}
     ${onThisDay()}
-    ${tasks.length?`<section class="home-tasks"><div class="home-latest-head"><h2 class="section-title">To-do</h2><a href="#tasks">Open list &rarr;</a></div><div class="tasks home-task-grid">${tasks.map(taskRow).join("")}</div>${more.length?`<details class="more-tasks"><summary>${more.length} more waiting</summary><div class="tasks home-task-grid">${more.map(taskRow).join("")}</div></details>`:""}</section>`:""}
   </section>`;
 }
 function taskRow(t){const tp=topic(t.topics[0]);return `<div class="task ${t.completedAt?"done":""} ${t.note?"has-note":""}" ${t.note?`data-entry="${esc(t.id)}"`:""}><span class="task-mark" aria-hidden="true">${t.completedAt?icon("check"):""}</span><span class="task-copy"><span class="task-title">${esc(t.title)}</span>${t.note?`<small class="task-note">${esc(t.note)}</small>`:""}${t.completedAt?`<small class="task-due">Done ${esc(fmtDate(t.completedAt))}</small>`:t.dueAt?`<small class="task-due${t.dueAt<todayKey?" late":""}">${t.dueAt<todayKey?"Overdue, was due "+esc(fmtDate(t.dueAt)):t.dueAt===todayKey?"Due today":"Due "+esc(fmtDate(t.dueAt))}</small>`:""}</span><span class="chip" style="--topic:${tp.color};--soft:${tp.soft}">${esc(tp.name)}</span></div>`}
@@ -1192,6 +1186,7 @@ let installEvent=null;
 const installBanner=document.createElement("aside");installBanner.className="install-banner";installBanner.innerHTML=`<span><b>Keep Noted close</b><small>Add it to your home screen for a quicker launch.</small></span><button type="button" data-install>Install</button><button type="button" data-dismiss-install aria-label="Dismiss install prompt">×</button>`;document.body.appendChild(installBanner);
 window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();installEvent=e;if(!localStorage.getItem("noted-install-dismissed"))installBanner.classList.add("show")});
 window.addEventListener("appinstalled",()=>{installEvent=null;installBanner.classList.remove("show")});
+document.addEventListener("click",e=>{const link=e.target.closest("[data-open-library]");if(!link)return;state.library=link.dataset.openLibrary;try{localStorage.setItem("noted-library-tab",state.library)}catch{}if(location.hash==="#library")renderLibraryBody()});
 document.addEventListener("click",async e=>{
   const button=e.target.closest("[data-offline-open]");if(!button)return;
   if(NotedBackend.configured){toast("Offline packs are available for the published archive.");return}

@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {createRequire} from 'node:module';
+const require=createRequire(new URL('../quartz/package.json',import.meta.url));
+const {transform}=require('esbuild');
+const read=name=>fs.readFileSync(new URL('../'+name,import.meta.url),'utf8');
+const css=read('styles.css'),html=read('index.html'),worker=read('sw.js');
+const result=await transform(css,{loader:'css',minify:true,target:'es2020'});
+assert.deepEqual(result.warnings,[],'Stylesheet must compile without warnings');
+assert.equal((html.match(/rel="stylesheet" href="styles.css/g)||[]).length,1);
+assert.doesNotMatch(html+worker+read('.github/workflows/pages.yml'),/shelf-fix\.css/);
+assert.doesNotMatch(css,/\.(home-latest-list|home-task-grid|journal-stream|stream-feature|shelf-drift)(?![\w-])/);
+assert.match(css,/\.latest-rail\{[^}]*overflow-x:auto/);
+assert.match(css,/\.latest-rail\{[^}]*scroll-snap-type:x proximity/);
+assert.match(css,/\.journey-line em\{[^}]*display:block/);
+assert.match(css,/@supports not \(/,'Preserve the dock blur fallback');
+console.log(`Stylesheet compilation and delivery checks passed (${Buffer.byteLength(result.code)} minified bytes).`);
