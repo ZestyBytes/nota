@@ -25,7 +25,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Space+Mono:wght@400;700&display=swap">
-  <link rel="stylesheet" href="styles.css?v=pull">
+  <!-- The one rule that has to be true before anything else loads: whatever
+       the browser paints as the canvas is the masthead band, never paper.
+       Inline so a slow or stale styles.css cannot leave a pale top. -->
+  <style>html{background:#14160f}</style>
+  <link rel="stylesheet" href="styles.css?v=launch">
 </head>
 <body>
   <!--
