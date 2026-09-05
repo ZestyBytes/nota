@@ -7,13 +7,15 @@
        matches it rather than the paper below it. Splitting this by scheme left
        a pale strip above the band on a phone in light mode. -->
   <meta name="theme-color" content="#14160f">
-  <!-- Installed on a phone, iOS ignores theme-color and uses these instead,
-       which is why the pale strip survived in the home screen app while
-       Safari looked fixed. black-translucent lets the band itself run up
-       under the clock, so the colour matches exactly; the header already
-       takes safe-area-inset-top as padding to keep the wordmark clear. -->
+  <!-- Installed on a phone, iOS ignores theme-color and reads these instead.
+       Not black-translucent: that runs the page under the clock, and iOS then
+       paints its own grey scrim over whatever is up there so the time stays
+       readable. Measured on the phone, that scrim was the fade, ramping from
+       (126,127,120) at the top down to the band over about 100px. "black"
+       makes iOS reserve the strip and paint it opaque instead, so there is
+       nothing to draw a scrim over. -->
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="color-scheme" content="light dark">
   <script>try{for(const k of Object.keys(localStorage))if(k.startsWith("nota-")){const n="noted-"+k.slice(5);if(localStorage.getItem(n)===null)localStorage.setItem(n,localStorage.getItem(k));localStorage.removeItem(k)}}catch(e){}
@@ -29,7 +31,7 @@
        the browser paints as the canvas is the masthead band, never paper.
        Inline so a slow or stale styles.css cannot leave a pale top. -->
   <style>html{background:#14160f}</style>
-  <link rel="stylesheet" href="styles.css?v=launch">
+  <link rel="stylesheet" href="styles.css?v=statusbar">
 </head>
 <body>
   <!--
