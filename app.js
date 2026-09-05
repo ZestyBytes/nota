@@ -392,17 +392,23 @@ function plantBody(e,shown){
 }
 // What else in the archive points at this entry. A one-way link is half a
 // connection; the other half is knowing you were mentioned.
+// A map for an entry that is about a place. OpenStreetMap's embed needs no
+// key and no account, so nothing here depends on a billing relationship with
+// a mapping company for a personal archive to keep working. The frame is
+// built from two numbers the build has already validated, so nothing pasted
+// into frontmatter reaches the iframe as a URL.
+function placeMap(p){
+  if(!p)return "";
+  const d=0.004, bbox=[p.lon-d,p.lat-d/2,p.lon+d,p.lat+d/2].map(n=>n.toFixed(5)).join(",");
+  const src=`https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${p.lat},${p.lon}`;
+  const out=`https://www.openstreetmap.org/?mlat=${p.lat}&mlon=${p.lon}#map=16/${p.lat}/${p.lon}`;
+  return `<figure class="place-map"><iframe src="${esc(src)}" title="Map of ${esc(p.label||"this place")}" loading="lazy" referrerpolicy="no-referrer"></iframe><figcaption>${p.label?`${esc(p.label)} &middot; `:""}<a href="${esc(out)}" target="_blank" rel="noopener noreferrer">Open the map</a></figcaption></figure>`;
+}
 function backlinks(e){
   const title=(e.title||"").trim().toLowerCase();
   if(!title)return [];
   return state.data.entries.filter(x=>x.id!==e.id&&(x.body||"").toLowerCase()
     .match(/\[\[([^\]|]+)(?:\|[^\]]*)?\]\]/g)?.some(m=>m.replace(/^\[\[|\]\]$/g,"").split("|")[0].trim()===title));
-}
-function relatedEntries(e){
-  const tags=new Set(e.topics||[]),shared=x=>x.topics.filter(t=>tags.has(t)).length;
-  return state.data.entries.filter(x=>x.id!==e.id&&x.type!=="Task"&&x.topics?.some(t=>tags.has(t)))
-    .sort((a,b)=>shared(b)-shared(a)||(b.occurredAt||b.createdAt||"").localeCompare(a.occurredAt||a.createdAt||""))
-    .slice(0,3);
 }
 function notedFlow(){
   const steps=[
@@ -432,8 +438,6 @@ function entryPage(id){
   const back=e?.journey?`#journey/${encodeURIComponent(e.journey)}`:backHref("#today");
   if(!e)return `<section><p class="back-link"><a href="${back}" data-back>Back</a></p><p class="empty">That entry is no longer in the archive.</p></section>`;
   const date=fmtDate(e.occurredAt||e.createdAt||e.dueAt),t=topic(e.topics?.[0]),spaceId=rootTopic(e.topics?.[0]),space=topic(spaceId);
-  const sequence=e.journey?journeyEntries(e.journey):ordered(state.data.entries.filter(x=>x.type!=="Task"));
-  const position=sequence.findIndex(x=>x.id===e.id),previous=position>0?sequence[position-1]:null,next=position>=0&&position<sequence.length-1?sequence[position+1]:null;
   if(e.type==="Quote")return `<section class="quote-entry-page" style="--topic:${t.color}"><p class="back-link"><a href="${back}" data-back>Back</a><button class="share-button" data-share="${esc(e.id)}" type="button">Share</button></p><article><span>Commonplace book · No. ${accNo(e.id)}</span><blockquote>“${esc(e.title)}”</blockquote><cite>${esc(e.author||"")}</cite><time>${date?`Filed ${date}`:""}</time></article></section>`;
   return `<section class="entry-page entry-space-${spaceId} ${e.image||e.images?.length?"has-image":"no-image"}" style="--topic:${t.color};--space:${space.color}">
     <div class="reading-progress" aria-hidden="true"><i></i></div>
@@ -447,10 +451,9 @@ function entryPage(id){
     </header>
     ${e.images?.length>1?gallery(e.images):e.image?`<img class="detail-image" src="${e.image}" alt="${esc(e.imageAlt||"")}"${dims(e.image)}>`:""}
     ${(()=>{const shown=e.images?.length>1?e.images.map(i=>i.src):[e.image];return e.id==="notes/why-i-made-noted"?notedEssay(e,shown):e.recipe?`<div class="detail-body recipe-body">${recipeBody(e)}</div>`:e.plant?`<div class="detail-body plant-body">${plantBody(e,shown)}</div>`:e.view==="cards"&&e.body?cardDeck(e.body,shown,e.id):`<div class="detail-body">${e.body?(e.view==="playlist"?playlistBody(e.body):markdown(e.body,shown,e.id)):`<p>${esc(e.excerpt||"Saved in your Noted archive.")}</p>`}</div>`})()}
+    ${placeMap(e.place)}
     ${(()=>{const back=backlinks(e);return back.length?`<section class="backlinks"><h2 class="section-title">Mentioned in</h2><ul>${back.map(b=>`<li><a href="#entry/${encodeURIComponent(b.id)}">${esc(b.title)}</a><small>${esc(b.type)}${b.occurredAt?` &middot; ${esc(fmtDate(b.occurredAt))}`:""}</small></li>`).join("")}</ul></section>`:""})()}
-    ${(()=>{const near=relatedEntries(e);return near.length?`<section class="related-entries"><h2 class="section-title">Continue nearby</h2><div>${near.map(x=>`<a href="#entry/${encodeURIComponent(x.id)}" data-entry="${esc(x.id)}" data-return="#entry/${encodeURIComponent(e.id)}"><small>${esc(topic(x.topics?.[0]).name)} · ${fmtDate(x.occurredAt||x.createdAt)}</small><b>${esc(x.title)}</b></a>`).join("")}</div></section>`:""})()}
-    ${previous||next?`<nav class="entry-pager" aria-label="${e.journey?"Journey entries":"Archive entries"}">${previous?`<a href="#entry/${encodeURIComponent(previous.id)}" data-entry="${esc(previous.id)}" data-return="#entry/${encodeURIComponent(e.id)}"><small>Previous</small><b>← ${esc(previous.title)}</b></a>`:`<span></span>`}${next?`<a href="#entry/${encodeURIComponent(next.id)}" data-entry="${esc(next.id)}" data-return="#entry/${encodeURIComponent(e.id)}"><small>Next</small><b>${esc(next.title)} →</b></a>`:`<span></span>`}</nav>`:""}
-    ${e.attachments?.length?`<div class="attachment-list"><p class="eyebrow">Attachments</p>${e.attachments.map((a,i)=>`<div>${icon("paperclip")}<span><b>${esc(a.name)}</b><small>${esc(a.kind)} &middot; ${esc(a.size)}</small></span><button type="button" data-view-attachment="${i}" data-entry-id="${e.id}">View</button></div>`).join("")}</div>`:""}
+            ${e.attachments?.length?`<div class="attachment-list"><p class="eyebrow">Attachments</p>${e.attachments.map((a,i)=>`<div>${icon("paperclip")}<span><b>${esc(a.name)}</b><small>${esc(a.kind)} &middot; ${esc(a.size)}</small></span><button type="button" data-view-attachment="${i}" data-entry-id="${e.id}">View</button></div>`).join("")}</div>`:""}
   </section>`;
 }
 // The postmark said the same thing as the header date, so the slot went to

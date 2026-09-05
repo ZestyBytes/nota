@@ -216,6 +216,18 @@ The House plants space sits under Gardening and is the stock list: the rota
 first, then a profile card per plant with its light, its cadence, where it
 stands and whether it is safe around animals.
 
+**Places.** An entry that is about somewhere can carry a map. Add `map:` with
+coordinates, or paste a Google Maps link once it has been opened, since the
+address bar carries an `@lat,lon` the build can read. `mapLabel:` names the pin.
+
+```yaml
+map: "50.8385,-0.7160"
+mapLabel: "The Oving Cow Shed, Chichester"
+```
+
+The map is drawn by OpenStreetMap, which needs no key and no account, so this
+keeps working without a billing relationship with a mapping company.
+
 **Task** (`type: task`): shows on Today's To-do list. This folder doesn't
 exist in the vault yet, so create `quartz/content/tasks/` and drop task notes
 in it.

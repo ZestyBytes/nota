@@ -278,6 +278,20 @@ function plain(text) {
 
 // YAML gives a Date for an unquoted 2026-09-01 and a string for a quoted one.
 // Everything downstream compares plain YYYY-MM-DD, so flatten both to that.
+// A place, for entries that are about somewhere. Accepts a bare "lat,lon" or
+// anything carrying an @lat,lon, which is what a Google Maps URL looks like
+// once it has been opened, so a pasted link works without a lookup.
+function coords(value) {
+  const v = String(value || "").trim();
+  if (!v) return null;
+  const m = v.match(/(-?\d{1,3}\.\d+)[,\s]+(-?\d{1,3}\.\d+)/);
+  if (!m) return null;
+  const lat = Number(m[1]), lon = Number(m[2]);
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
+  if (Math.abs(lat) > 90 || Math.abs(lon) > 180) return null;
+  return { lat, lon };
+}
+
 function numberOrNull(value) {
   if (value === undefined || value === null || value === "") return null;
   const n = Number(value);
@@ -418,6 +432,7 @@ for (const file of files) {
     // metric is the reading taken at that check-in.
     metric: numberOrNull(data.metric), start: numberOrNull(data.start),
     target: numberOrNull(data.target), unit: String(data.unit || "").trim(),
+    place: (() => { const c = coords(data.map); return c ? { ...c, label: data.mapLabel || "", link: /^https?:/i.test(String(data.map || "")) ? String(data.map).trim() : "" } : null; })(),
     image, imageAlt, imageW, imageH, images: allImages(body), attachments: []
   };
   // A plant note is a record of a living thing rather than a piece of writing:
