@@ -19,7 +19,7 @@ const document = {
   createElement(){return {click(){},style:{},setAttribute(){},removeAttribute(){},appendChild(){},remove(){},classList:{add(){},remove(){},toggle(){}}}}
 };
 const localStorage = { values:new Map(), getItem(key){return this.values.get(key)||null}, setItem(key,value){this.values.set(key,value)} };
-const window = { NOTED_CONFIG:{supabaseUrl:"",supabaseAnonKey:"",allowSignUp:true}, addEventListener(){}, location:null };
+const window = { NOTED_CONFIG:{supabaseUrl:"",supabaseAnonKey:"",allowSignUp:true}, addEventListener(){}, removeEventListener(){}, location:null };
 const context = vm.createContext({ window,document,localStorage,location:{hash:"",origin:"http://localhost",pathname:"/"},navigator:{},console,setTimeout,clearTimeout,setInterval(){return 0},clearInterval(){},addEventListener(){},removeEventListener(){},matchMedia(){return {matches:false,addEventListener(){}}},Date,JSON,String,Number,Map,Set,Blob,URL,crypto:globalThis.crypto,confirm(){return false},open(){} });
 window.location=context.location;
 vm.runInContext(files("data.js"),context,{filename:"data.js"});
@@ -89,3 +89,38 @@ run(`state.data.entries=[{id:'weight',title:'Starting',type:'Journey',journey:'W
 assert.match(run('homeJourneys()'),/Target 90kg/);
 assert.match(run('homeJourneys()'),/data-open-library="journeys"/);
 console.log('Compact Home and visible journey target checks passed');
+
+assert.equal(run('wrapShelfPosition(-25,100,300)'),275);
+assert.equal(run('wrapShelfPosition(725,100,300)'),125);
+assert.equal(run('wrapShelfPosition(100,100,300)'),100);
+assert.equal(run('wrapShelfPosition(33,100,0)'),33);
+run(`
+  state.data.topics={garden:{name:'House plants',icon:'plant',color:'#436b34'}};
+  state.data.entries=[{topics:['garden'],occurredAt:'2000-01-01'}];state.data.books=[];state.data.tasks=[];
+`);
+assert.equal(run("spineHistory('garden').wear"),'worn');
+assert.equal(run("spineHistory('garden').recent"),false);
+assert.doesNotMatch(run('librarySpines()'),/>noted\.</);
+assert.match(run('librarySpines()'),/cloth-symbol/);
+run("state.data.entries.push({topics:['garden'],occurredAt:todayKey})");
+assert.equal(run("spineHistory('garden').wear"),'worn');
+assert.equal(run("spineHistory('garden').recent"),true);
+assert.match(run('librarySpines()'),/cloth-bookmark/);
+run(`
+  const oldQuery=document.querySelector;
+  const events={};
+  const rail={children:[],clientWidth:240,scrollLeft:0,classList:{add(){},remove(){}},querySelectorAll(){return []},contains(){return false},addEventListener(k,v){events[k]=v},removeEventListener(k){delete events[k]},prepend(...nodes){this.children.unshift(...nodes)},append(...nodes){this.children.push(...nodes)}};
+  const book=()=>({tabIndex:0,dataset:{},attributes:{},offsetWidth:62,get offsetLeft(){return 12+rail.children.indexOf(this)*69},setAttribute(k,v){this.attributes[k]=v},cloneNode(){return book()},remove(){rail.children.splice(rail.children.indexOf(this),1)}});
+  rail.children=Array.from({length:5},book);
+  document.querySelector=s=>s==='.cloth-shelf'?rail:null;
+  setupClothShelf();
+  if(rail.children.length!==15)throw Error('Loop must have exactly three runs');
+  if(rail.children.filter(b=>b.tabIndex===0).length!==5)throw Error('Copies must not duplicate tab stops');
+  if(rail.children.filter(b=>b.attributes['aria-hidden']==='true').length!==10)throw Error('Copies must be hidden from screen readers');
+  const initial=rail.scrollLeft;rail.scrollLeft=initial-70;events.scrollend();
+  if(rail.scrollLeft!==initial+275)throw Error('Loop did not preserve the visible offset');
+  shelfCleanup();shelfCleanup=null;
+  if(Object.keys(events).length)throw Error('Shelf events were not cleaned up');
+  document.querySelector=oldQuery;
+`);
+console.log('Shelf history, wrap positions, duplicate accessibility and cleanup checks passed');

@@ -706,9 +706,51 @@ function libraryBody(){
   }
   return body;
 }
+function spineHistory(id){
+  const dates=[...state.data.entries,...state.data.books,...state.data.tasks].filter(e=>inTopic(e,id)).map(e=>String(e.occurredAt||e.createdAt||e.startedAt||"").slice(0,10)).filter(d=>/^\d{4}-\d{2}-\d{2}$/.test(d)&&d<=todayKey).sort();
+  const first=dates[0],last=dates[dates.length-1],age=first?Math.max(0,-daysFromToday(first)):0;
+  return {wear:age>=180?"worn":age>=30?"settled":"new",recent:!!last&&-daysFromToday(last)<=14,first};
+}
 function librarySpines(){
   const spaces=Object.entries(state.data.topics).map(([id,t])=>({id,t,count:topicCount(id)})).sort((a,b)=>a.t.name.localeCompare(b.t.name));
-  return `<div class="spine-heading"><h2>Spaces</h2><span>Slide the shelf · tap to enter</span></div><nav class="cloth-shelf" aria-label="Browse spaces">${spaces.map(({id,t,count},i)=>`<a class="cloth-book" href="#topics/${encodeURIComponent(id)}" style="--cloth:${t.color};--trim:${164+(i%3)*12}px" aria-label="${esc(t.name)}, ${count} things kept"><span class="cloth-series" aria-hidden="true">noted.</span><strong>${esc(t.name)}</strong><span class="cloth-count">${count}<span class="sr-only"> things kept</span></span></a>`).join("")}</nav>`;
+  return `<div class="spine-heading"><h2>Spaces</h2><span>Slide the shelf · tap to enter</span></div><nav class="cloth-shelf" aria-label="Browse spaces">${spaces.map(({id,t,count},i)=>{const history=spineHistory(id);return `<a class="cloth-book" data-wear="${history.wear}" href="#topics/${encodeURIComponent(id)}" style="--cloth:${t.color};--trim:${216+(i%3)*10}px" aria-label="${esc(t.name)}, ${count} things kept" title="${esc(t.name)}${history.first?` · Collected since ${fmtDate(history.first)}`:""}">${history.recent?`<span class="cloth-bookmark" aria-hidden="true"></span>`:""}<span class="cloth-symbol" aria-hidden="true">${icon(t.icon||"book")}</span><strong><span>${esc(t.name)}</span></strong><span class="cloth-count">${count}<span class="sr-only"> things kept</span></span></a>`}).join("")}</nav>`;
+}
+// Rebase only after a gesture settles, never during a swipe's momentum.
+function wrapShelfPosition(position,origin,period){return period>0?origin+((position-origin)%period+period)%period:position}
+let shelfCleanup=null;
+function setupClothShelf(){
+  if(shelfCleanup){shelfCleanup();shelfCleanup=null}
+  const rail=document.querySelector(".cloth-shelf");if(!rail)return;
+  const originals=[...rail.children];if(!originals.length)return;
+  let timer,held=false,period=0,origin=0,disposed=false,clones=[];
+  const fitTitles=()=>rail.querySelectorAll(".cloth-book strong").forEach(label=>{
+    label.style.fontSize="19px";
+    const ink=label.querySelector("span"),available=label.clientHeight;
+    if(available&&ink){const length=ink.getBoundingClientRect().height;if(length>available)label.style.fontSize=`${Math.max(10,19*available/length)}px`}
+  });
+  const rebuild=()=>{
+    if(disposed)return;
+    const offset=period?wrapShelfPosition(rail.scrollLeft,origin,period)-origin:rail.scrollLeft;
+    clones.forEach(c=>c.remove());clones=[];period=0;rail.classList.remove("is-looping");
+    fitTitles();
+    const start=originals[0],end=originals[originals.length-1];
+    const run=end.offsetLeft+end.offsetWidth-start.offsetLeft;
+    if(run<=rail.clientWidth){rail.scrollLeft=0;return}
+    const copy=book=>{const c=book.cloneNode(true);c.setAttribute("aria-hidden","true");c.tabIndex=-1;c.dataset.shelfCopy="true";clones.push(c);return c};
+    rail.prepend(...originals.map(copy));rail.append(...originals.map(copy));
+    period=originals[0].offsetLeft-clones[0].offsetLeft;origin=originals[0].offsetLeft;
+    rail.classList.add("is-looping");rail.scrollLeft=origin+offset;fitTitles();
+  };
+  const settle=()=>{clearTimeout(timer);if(held||!period||rail.contains(document.activeElement))return;const next=wrapShelfPosition(rail.scrollLeft,origin,period);if(Math.abs(next-rail.scrollLeft)>1)rail.scrollLeft=next};
+  const schedule=()=>{clearTimeout(timer);timer=setTimeout(settle,180)};
+  const hold=()=>{held=true;clearTimeout(timer)},release=()=>{if(!held)return;held=false;schedule()};
+  rail.addEventListener("scroll",schedule,{passive:true});rail.addEventListener("scrollend",settle);
+  rail.addEventListener("pointerdown",hold,{passive:true});window.addEventListener("pointerup",release,{passive:true});window.addEventListener("pointercancel",release,{passive:true});
+  rail.addEventListener("focusout",schedule);
+  const observer=typeof ResizeObserver!=="undefined"?new ResizeObserver(rebuild):null;
+  rebuild();observer?.observe(rail);
+  document.fonts?.ready.then(()=>{if(!disposed)fitTitles()});
+  shelfCleanup=()=>{disposed=true;clearTimeout(timer);observer?.disconnect();rail.removeEventListener("scroll",schedule);rail.removeEventListener("scrollend",settle);rail.removeEventListener("pointerdown",hold);rail.removeEventListener("focusout",schedule);window.removeEventListener("pointerup",release);window.removeEventListener("pointercancel",release)};
 }
 function library(){
   return `<section class="library-index">${pageHead("Browse by format","Library","Highlights are a small selection chosen to share. Notes gathers notes, journals and quotes; journeys, books, photographs and plants keep their useful shapes.")}<div class="library-space-filter">${librarySpines()}</div><div class="library-tabs">${Object.entries(libraryTabs).map(([x,label])=>`<button class="filter ${state.library===x?"active":""}" data-library="${x}">${label}</button>`).join("")}</div><div class="library-body">${libraryBody()}</div><section class="offline-tools"><button type="button" data-offline-open>Save for offline reading</button><div id="offline-panel"></div></section></section>`;
@@ -1076,6 +1118,7 @@ function afterRender(route){
   lastHash=hash;
   swipeable(".deck",".deck-dots i");
   swipeable(".gallery",".gallery-dots i",".gallery-caption");
+  setupClothShelf();
   setupMemoryKeypads();
   setupClawGames();
   syncReadingProgress();

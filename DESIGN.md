@@ -64,7 +64,11 @@ Home shows at most five recent entries in a compact horizontal row with a visibl
 
 ## Lightweight Library shelf
 
-Library Spaces are now a single row of clothbound spine links. Titles remain upright along the spine, with a small imprint and record count. Widths are generous enough to tap, heights vary slightly, and the topic colour belongs to the book. A tap opens the Space directly. The shelf scrolls by hand and does not clone books, open a 3D spread, or animate at rest. The Books tab keeps its existing reading records and cover art.
+Library Spaces form a manually looping row of clothbound spine links. A small embossed topic symbol replaces the repeated wordmark. Titles have their own reserved area between symbol and count, and are fitted after font loading and resizing. Hover or keyboard focus gently lifts the book and reveals a sliver of pages; a tap opens its Space directly. Reduced motion removes the lift.
+
+When the shelf overflows, one copy of the row at each end makes scrolling loop after a gesture settles. Copies are excluded from the tab order and accessibility tree. There is no autoplay, continuous animation frame or interval. Resize and event listeners are released on navigation.
+
+Wear reflects the oldest dated record in each Space: lightly worn after 30 days, worn edges after 180. Only the cloth decoration changes, never the lettering opacity. A small ribbon marks a Space with a record dated within the last 14 days. Undated Spaces receive no invented age. The Books tab keeps its existing reading records and cover art.
 
 ## Delivery and offline reading
 
