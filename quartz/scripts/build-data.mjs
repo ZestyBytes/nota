@@ -278,6 +278,36 @@ function plain(text) {
 
 // YAML gives a Date for an unquoted 2026-09-01 and a string for a quoted one.
 // Everything downstream compares plain YYYY-MM-DD, so flatten both to that.
+// A place name, resolved to a point at build time. The sandbox this is
+// written in has no outbound network, but the deploy runner does, so a name
+// typed on a phone becomes coordinates without anyone reading them off a map.
+// Cached in the repo so a name is looked up once and every later build is
+// offline again. A failed lookup is not an error: the entry simply has no map.
+const GEO_CACHE = join(__dirname, "..", "content", ".places.json");
+let placeCache = {};
+try { placeCache = JSON.parse(readFileSync(GEO_CACHE, "utf8")) } catch (error) { placeCache = {} }
+let placeCacheDirty = false;
+
+async function geocode(query) {
+  const key = query.trim().toLowerCase();
+  if (!key) return null;
+  if (key in placeCache) return placeCache[key];
+  const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1`;
+  try {
+    const res = await fetch(url, { headers: { "User-Agent": "noted-personal-archive (github.com/ZestyBytes)" } });
+    if (!res.ok) throw new Error(String(res.status));
+    const [hit] = await res.json();
+    const found = hit ? { lat: Number(hit.lat), lon: Number(hit.lon) } : null;
+    placeCache[key] = found;
+    placeCacheDirty = true;
+    console.log(found ? `  geocoded "${query}" -> ${found.lat},${found.lon}` : `  no match for "${query}"`);
+    return found;
+  } catch (error) {
+    console.log(`  lookup failed for "${query}": ${error.message}`);
+    return null;
+  }
+}
+
 // A place, for entries that are about somewhere. Accepts a bare "lat,lon" or
 // anything carrying an @lat,lon, which is what a Google Maps URL looks like
 // once it has been opened, so a pasted link works without a lookup.
@@ -432,7 +462,14 @@ for (const file of files) {
     // metric is the reading taken at that check-in.
     metric: numberOrNull(data.metric), start: numberOrNull(data.start),
     target: numberOrNull(data.target), unit: String(data.unit || "").trim(),
-    place: (() => { const c = coords(data.map); return c ? { ...c, label: data.mapLabel || "", link: /^https?:/i.test(String(data.map || "")) ? String(data.map).trim() : "" } : null; })(),
+    place: (() => {
+      const raw = String(data.map || "").trim();
+      if (!raw) return null;
+      const c = coords(raw);
+      const label = data.mapLabel || "";
+      // coordinates resolve here; a name is looked up after the walk
+      return c ? { ...c, label } : { query: raw, label };
+    })(),
     image, imageAlt, imageW, imageH, images: allImages(body), attachments: []
   };
   // A plant note is a record of a living thing rather than a piece of writing:
@@ -487,5 +524,14 @@ const payload = {
 };
 
 mkdirSync(dirname(OUT_PATH), { recursive: true });
+// Resolve any place given as a name rather than a point, then drop the ones
+// that could not be found so the app never sees a half-built place.
+for (const entry of entries) {
+  if (!entry.place || !entry.place.query) continue;
+  const found = await geocode(entry.place.query);
+  entry.place = found ? { lat: found.lat, lon: found.lon, label: entry.place.label || entry.place.query } : null;
+}
+if (placeCacheDirty) writeFileSync(GEO_CACHE, JSON.stringify(placeCache, null, 2) + "\n");
+
 writeFileSync(OUT_PATH, `window.NOTED_DATA = ${JSON.stringify(payload, null, 2)};\n`);
 console.log(`Wrote ${entries.length} entries, ${tasks.length} tasks, ${books.length} books, ${Object.keys(payload.topics).length} topics -> ${OUT_PATH}`);

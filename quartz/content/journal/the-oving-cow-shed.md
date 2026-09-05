@@ -5,6 +5,8 @@ tags: [family, eatingout]
 occurredAt: "2026-09-05"
 createdAt: "2026-09-05"
 publishedAt: "2026-09-05"
+map: "The Oving Cow Shed, Oving, Chichester, UK"
+mapLabel: "The Oving Cow Shed, Oving"
 publish: true
 ---
 
