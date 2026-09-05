@@ -102,7 +102,7 @@ html{background:#14160f;}
    dark theme, paper in light. A fixed bar covers it whatever the inset claims,
    and at rest it lies over the masthead, which is the same colour anyway. */
 body:after{content:"";position:fixed;z-index:20;top:0;left:0;right:0;height:env(safe-area-inset-top,0px);background:#14160f;pointer-events:none;}
-body{margin:env(safe-area-inset-top,0px) 0 0;background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:16px;line-height:1.6;overflow-x:hidden;min-height:calc(100vh - env(safe-area-inset-top,0px));}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:16px;line-height:1.6;overflow-x:hidden;min-height:100vh;}
 button,input,select,textarea{font:inherit;color:inherit;}
 button,a{touch-action:manipulation;}
 a{color:inherit;text-decoration:none;}
@@ -392,8 +392,12 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px;min-width:0;}
 .user-tools{display:flex;justify-content:flex-end;align-items:center;gap:14px;border-top:1.5px solid var(--ink);margin-top:80px;padding-top:18px;font:11px var(--mono);text-transform:uppercase;letter-spacing:.05em;color:var(--muted);}
 /* ---------- responsive ---------- */
 @media(max-width:800px){
+  /* The cap only. No margin on body: a fixed element inside a body that has
+     a top margin lands that far down the screen instead of at the top of the
+     viewport, which is exactly what happened, measured at 56px off. Nothing
+     needs inseting anyway; the masthead is the same colour as the cap, so at
+     rest the cap simply lies over the top of it. */
   :root{--cap:max(env(safe-area-inset-top,0px),50px);}
-  body{margin-top:var(--cap);min-height:calc(100vh - var(--cap));}
   body:after{height:var(--cap);}
   .site-header{height:calc(70px + env(safe-area-inset-top,0px));padding:env(safe-area-inset-top,0px) 18px 0;display:flex;justify-content:space-between;align-items:center;}
   /* No burger on a phone: the bottom bar already reaches every route, so
