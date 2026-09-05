@@ -110,7 +110,7 @@ a{color:inherit;text-decoration:none;}
 input[type="checkbox"]:focus-visible{outline-offset:3px;}
 #app:focus-visible{outline:none;}
 /* ---------- header ---------- */
-.site-header{height:calc(96px + env(safe-area-inset-top,0px));max-width:var(--max);margin:auto;padding:env(safe-area-inset-top,0px) 28px 0;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;position:relative;}
+.site-header{height:96px;max-width:var(--max);margin:auto;padding:0 28px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;position:relative;}
 .wordmark{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:0;border:0;background:transparent;color:inherit;line-height:1;cursor:pointer;text-align:left;}
 .wordmark:hover .wordmark-mark i,.wordmark:focus-visible .wordmark-mark i{transform:scale(1.35);}
 .wordmark-mark{font:700 30px/1 var(--mono);letter-spacing:-.02em;text-transform:lowercase;}
@@ -393,19 +393,7 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px;min-width:0;}
      dark now, in both themes, because that is what body says it is. */
   body{background:#14160f;}
   main{background:var(--paper);min-height:calc(100vh - 70px);}
-  /* One measurement, two jobs. safe-area-inset-top would be the right value
-     and this phone reports it as zero, so it takes a floor.
-
-     The masthead pads itself by it, so the wordmark clears the clock. And a
-     fixed bar of the same height covers the strip, so nothing can scroll up
-     under the clock and be blurred there. At rest that bar lies over the
-     masthead's own padding, which is the same colour, so it is invisible;
-     scrolled, it is the only thing between the time and the writing. The bar
-     was in the way before only because the masthead had no padding for it to
-     hide in. */
-  :root{--sb:max(env(safe-area-inset-top,0px),50px);}
-  body:after{content:"";position:fixed;z-index:20;top:0;left:0;right:0;height:var(--sb);background:#14160f;pointer-events:none;}
-  .site-header{height:calc(70px + var(--sb));padding:var(--sb) 18px 0;display:flex;justify-content:space-between;align-items:center;}
+  .site-header{height:70px;padding:0 18px;display:flex;justify-content:space-between;align-items:center;}
   /* No burger on a phone: the bottom bar already reaches every route, so
      the space goes to the date instead. */
   .main-nav{display:none;}
