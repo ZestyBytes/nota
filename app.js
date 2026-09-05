@@ -397,22 +397,35 @@ function plantBody(e,shown){
 // a mapping company for a personal archive to keep working. The frame is
 // built from two numbers the build has already validated, so nothing pasted
 // into frontmatter reaches the iframe as a URL.
-// A drawing made of divs. Nothing is fetched and nothing is an image file, so
-// a post can carry a picture of its own subject that costs nothing to load
-// and stays sharp at any size. Each scene is drawn here by name, and a name
-// with no scene draws nothing, so an entry can never put arbitrary markup or
-// an unknown class onto the page.
+// A drawing made of elements. Nothing is fetched and nothing is an image
+// file, so a post can carry a picture of its own subject that costs nothing
+// to load and stays sharp at any size. Each scene is drawn here by name, and
+// a name with no scene draws nothing, so an entry can never put arbitrary
+// markup or an unknown class onto the page.
 const SCENES={
-  milkshakes:{
-    label:"Two milkshakes in takeaway cups, one strawberry and one chocolate",
-    parts:[["strawberry","Strawberry"],["chocolate","Chocolate"]]
+  cowshed:{
+    label:"A cow lying in a green field, drawn in outline",
+    note:["strawberry for me,","chocolate for Ruby."],
+    draw:()=>`<div class="cw-field"></div><div class="cw-cow">`+
+      `<i class="cw-leg cw-lf"></i><i class="cw-leg cw-lb"></i>`+
+      `<i class="cw-tail"></i><i class="cw-tuft"></i>`+
+      `<i class="cw-rump"></i><b class="cw-spot cw-s3"></b>`+
+      `<i class="cw-body"><b class="cw-spot cw-s1"></b><b class="cw-spot cw-s2"></b></i>`+
+      `<i class="cw-head">`+
+        `<b class="cw-ear cw-l"></b><b class="cw-ear cw-r"></b>`+
+        `<b class="cw-horn cw-l"></b><b class="cw-horn cw-r"></b>`+
+        `<b class="cw-skull"></b><b class="cw-hs"></b>`+
+        `<b class="cw-eye cw-l"></b><b class="cw-eye cw-r"></b>`+
+        `<b class="cw-blush cw-l"></b><b class="cw-blush cw-r"></b>`+
+        `<b class="cw-muzzle"><u class="cw-nostril cw-l"></u><u class="cw-nostril cw-r"></u></b>`+
+      `</i></div>`
   }
 };
 function sceneArt(name){
   const scene=SCENES[name];
   if(!scene)return "";
-  const cups=scene.parts.map(([flavour,label])=>`<div class="shake shake-${flavour}"><i class="straw"></i><i class="lid"></i><i class="cup"><b class="shine"></b></i><small>${esc(label)}</small></div>`).join("");
-  return `<figure class="scene scene-${esc(name)}" role="img" aria-label="${esc(scene.label)}"><div class="scene-stage">${cups}</div></figure>`;
+  const note=scene.note?.length?`<p class="cw-note">${scene.note.map(esc).join("<br>")}</p>`:"";
+  return `<figure class="scene scene-${esc(name)}" role="img" aria-label="${esc(scene.label)}">${scene.draw()}${note}</figure>`;
 }
 function placeMap(p){
   if(!p)return "";

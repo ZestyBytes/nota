@@ -8,7 +8,7 @@ publishedAt: "2026-09-05"
 map: "50.835617,-0.719117"
 mapLabel: "The Oving Cow Shed, Oving"
 what3words: "loaf.legend.fuses"
-art: milkshakes
+art: cowshed
 publish: true
 ---
 
