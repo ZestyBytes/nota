@@ -392,11 +392,17 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px;min-width:0;}
 .user-tools{display:flex;justify-content:flex-end;align-items:center;gap:14px;border-top:1.5px solid var(--ink);margin-top:80px;padding-top:18px;font:11px var(--mono);text-transform:uppercase;letter-spacing:.05em;color:var(--muted);}
 /* ---------- responsive ---------- */
 @media(max-width:800px){
-  /* The cap only. No margin on body: a fixed element inside a body that has
-     a top margin lands that far down the screen instead of at the top of the
-     viewport, which is exactly what happened, measured at 56px off. Nothing
-     needs inseting anyway; the masthead is the same colour as the cap, so at
-     rest the cap simply lies over the top of it. */
+  /* iOS reserves the status bar strip and paints it with the page's own
+     background, taken from body. Measured on the phone: the masthead starts
+     at 57css, so the page never reaches that strip at all, and no fixed
+     element inside it ever could. Paper on body meant a paper strip in light
+     theme and a dark one in dark, which is exactly the asymmetry this had.
+
+     So body carries the band's colour and main carries the paper. On a phone
+     main is full width, so nothing changes to look at; the strip is simply
+     dark now, in both themes, because that is what body says it is. */
+  body{background:#14160f;}
+  main{background:var(--paper);min-height:calc(100vh - 70px);}
   :root{--cap:max(env(safe-area-inset-top,0px),50px);}
   body:after{height:var(--cap);}
   .site-header{height:calc(70px + env(safe-area-inset-top,0px));padding:env(safe-area-inset-top,0px) 18px 0;display:flex;justify-content:space-between;align-items:center;}
