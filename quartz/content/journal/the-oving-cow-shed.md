@@ -5,7 +5,7 @@ tags: [family, eatingout]
 occurredAt: "2026-09-05"
 createdAt: "2026-09-05"
 publishedAt: "2026-09-05"
-map: "50.8333995,-0.7067034"
+map: "50.835617,-0.719117"
 mapLabel: "The Oving Cow Shed, Oving"
 publish: true
 ---
