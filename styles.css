@@ -81,8 +81,19 @@
 }
 *{box-sizing:border-box;}
 html{scroll-behavior:smooth;}
+/* The status bar strip belongs to the root, and the root is the band's colour,
+   so it is dark in both themes and whatever iOS chooses to do up there.
+   The page is then inset below it, which is the part that actually matters:
+   with viewport-fit=cover the content was sliding under the clock, and iOS
+   blurs whatever is up there to keep the time legible. In dark that blur is
+   dark and looks right; in light it is paper, which is the pale strip. */
 html{background:#14160f;}
-body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:16px;line-height:1.6;overflow-x:hidden;min-height:100vh;}
+/* The margin alone is not enough: it scrolls away with the page, and then the
+   writing is under the clock again. This bar does not move. It fills exactly
+   the status bar strip, in the band's colour, and everything scrolls beneath
+   it. Zero height where there is no notch, so it costs nothing on a desktop. */
+body:after{content:"";position:fixed;z-index:20;top:0;left:0;right:0;height:env(safe-area-inset-top,0px);background:#14160f;pointer-events:none;}
+body{margin:env(safe-area-inset-top,0px) 0 0;background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:16px;line-height:1.6;overflow-x:hidden;min-height:calc(100vh - env(safe-area-inset-top,0px));}
 button,input,select,textarea{font:inherit;color:inherit;}
 button,a{touch-action:manipulation;}
 a{color:inherit;text-decoration:none;}
