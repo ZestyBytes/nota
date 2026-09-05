@@ -123,7 +123,14 @@ input[type="checkbox"]:focus-visible{outline-offset:3px;}
 .site-header{color-scheme:dark;--paper:#14160f;--paper-alt:#1c1f16;--surface:#1a1d14;--ink:#e6e9dc;--ink-soft:#c7cbba;--muted:#949a85;--faint:#6f7563;--line:#333a2b;--line-strong:#e6e9dc;--stamp-red:#d4705f;--stamp-green:#84b168;color:var(--ink);background:var(--paper);border-bottom:0;}
 /* The header sits on the page measure, but the band should reach both edges,
    so a full-width plate is laid behind it. body hides the overflow. */
-.site-header:before{content:"";position:absolute;z-index:-1;top:0;bottom:0;left:50%;width:100vw;transform:translateX(-50%);background:var(--paper);}
+/* The plate runs well past the top of the header, not just to its edge.
+   Whether iOS reserves the status bar strip itself, hands it to us through
+   safe-area-inset-top, or paints its own translucent scrim over it, the
+   colour underneath is the band's either way. This is deliberately not
+   conditional on any of that: the meta tags and the inset padding are the
+   tidy path, this is the one that cannot be cached into the wrong state by
+   an app that was installed before they existed. */
+.site-header:before{content:"";position:absolute;z-index:-1;top:-240px;bottom:0;left:50%;width:100vw;transform:translateX(-50%);background:var(--paper);}
 .site-header:after{content:"";position:absolute;left:50%;bottom:0;width:100vw;height:2px;transform:translateX(-50%);background:var(--stamp-red);opacity:.88;}
 main{max-width:var(--max);margin:auto;padding:56px 28px 120px;min-width:0;}
 /* ---------- headings / page furniture ---------- */
