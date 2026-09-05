@@ -1950,7 +1950,13 @@ aside .section-title{display:flex;align-items:baseline;}
 .photo-view>figure img{display:block;width:100%;max-height:76vh;object-fit:contain;background:var(--paper-alt);}
 .photo-view figcaption{margin-top:10px;color:var(--muted);font:10px var(--mono);text-transform:uppercase;letter-spacing:.08em;}
 .entry-page .gallery-shot{display:grid;place-items:center;background:var(--paper-alt);}
-.entry-page .gallery-shot img{width:auto;max-width:100%;height:auto;max-height:72vh;aspect-ratio:auto;object-fit:contain;}
+/* The lightbox was falling through to the 4:3 cover rule the cards use, so
+   opening a multi-photo entry from Library, Photos cropped the picture to a
+   shape it is not. A single photograph already contained itself; only the
+   gallery did not, because this rule was scoped to the entry page. */
+.entry-page .gallery-shot img,.photo-view .gallery-shot img{width:auto;max-width:100%;height:auto;max-height:72vh;aspect-ratio:auto;object-fit:contain;}
+.photo-view .gallery{align-items:center;}
+.photo-view .gallery-shot img{max-height:66vh;}
 .space-shelf .space-card.space-reading{background-image:linear-gradient(to top,#17130de8 0%,#17130d88 28%,transparent 58%),url("assets/books/meditations.jpg")!important;}
 .space-shelf .space-card.space-motoring{background-image:linear-gradient(to top,#17130de8 0%,#17130d88 28%,transparent 58%),url("assets/journal/first-mini-seafront.jpg")!important;}
 .space-shelf .space-card.space-reading{background-image:linear-gradient(to top,#17130de8 0%,#17130d88 28%,transparent 58%),url("assets/posts/reading-motoring-covers.png")!important;}
