@@ -84,3 +84,20 @@ are consolidated while retaining media-query and feature fallbacks. Each rule
 has its own line, with nested rules indented. Edit the existing component rule
 instead of adding a patch stylesheet. `node tests/styles.mjs` checks compilation
 and the stylesheet references used by the page and service worker.
+
+## Calendar browsing
+
+The month header has a direct month/year input, previous/next controls and an
+always-visible Today action. Month changes choose a day within the new month:
+today in the current month, the most recent recorded day in past months, the
+first recorded day in future months, or day one when empty.
+
+Month mode shows one selected-day panel with records and due tasks separated.
+Agenda groups records once per day, newest first, and omits that duplicate
+panel. Both views use the same date index: events use their event date, other
+entries their occurrence date or creation date, and tasks their due date.
+
+Date buttons expose selection and today's date to assistive technology. One
+date is in the tab order; arrow keys move by day/week, Home/End by week edge,
+and Page Up/Down by month with leap-year clamping. Touch supports month swipes.
+Header and view controls have 44px touch targets.

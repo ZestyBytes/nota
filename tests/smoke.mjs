@@ -124,3 +124,44 @@ run(`
   document.querySelector=oldQuery;
 `);
 console.log('Shelf history, wrap positions, duplicate accessibility and cleanup checks passed');
+
+// Calendar dates agree in the grid, grouped agenda and selected-day panel.
+run(`
+  state.data.topics={family:{name:'Family',color:'#96355a'}};
+  state.data.entries=[
+    {id:'leap',type:'Journal',title:'Leap day',occurredAt:'2024-02-29',topics:['family']},
+    {id:'event',type:'Event',title:'Party',eventAt:'2024-02-29',occurredAt:'2024-02-01',topics:['family']},
+    {id:'fallback',type:'Note',title:'Dated note',createdAt:'2024-02-12',topics:['family']}
+  ];
+  state.data.tasks=[{id:'task',title:'Bring cake',dueAt:'2024-02-29',completedAt:'2024-02-29',topics:['family']}];
+  state.calendarMode='month';selectCalendarMonth('2024-02');
+`);
+assert.equal(run("state.selectedDate"),'2024-02-29');
+assert.equal(run("dayItems('2024-02-29').length"),3);
+assert.equal(run("dayItems('2024-02-12').length"),1);
+assert.equal(run("dayItems('2024-02-01').length"),0);
+let cal=run('calendar()');
+assert.equal((cal.match(/data-date="2024-02-/g)||[]).length,29);
+assert.equal((cal.match(/tabindex="0"/g)||[]).length,1);
+assert.match(cal,/4 items across 2 days/);
+assert.match(cal,/aria-pressed="true"/);
+assert.match(cal,/data-calendar-month/);
+assert.match(cal,/all done/);
+assert.match(cal,/href="#entry\/leap"/);
+run("state.calendarMode='agenda'");cal=run('calendar()');
+assert.equal((cal.match(/<time datetime=/g)||[]).length,2);
+assert.doesNotMatch(cal,/class="selected-day"/);
+assert.match(cal,/Party/);
+run("selectCalendarMonth('2024-03')");
+assert.equal(run('state.selectedDate'),'2024-03-01');
+assert.match(run('calendar()'),/Visit February 2024/);
+assert.equal(run("selectCalendarMonth('2024-13')"),false);
+assert.equal(run("calendarKeyDate('2024-01-31','PageDown')"),'2024-02-29');
+assert.equal(run("calendarKeyDate('2023-01-31','PageDown')"),'2023-02-28');
+assert.equal(run("calendarKeyDate('2024-02-29','ArrowRight')"),'2024-03-01');
+assert.equal(run("calendarKeyDate('2024-02-29','Home')"),'2024-02-26');
+assert.equal(run("calendarKeyDate('2024-02-29','End')"),'2024-03-03');
+run("selectCalendarMonth(todayKey.slice(0,7));state.calendarMode='month'");
+assert.match(run('calendar()'),/aria-current="date"/);
+assert.match(run('calendar()'),/>Today<\/button>/);
+console.log('Calendar grouping, selection, leap years, navigation and date consistency passed');

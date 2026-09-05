@@ -570,15 +570,33 @@ function taskRow(t){const tp=topic(t.topics[0]);return `<div class="task ${t.com
 // Everything that carries a date belongs on the calendar, not only entries:
 // a task is due on a day too, and a day with four things should look busier
 // than a day with one.
-function dayItems(date){
-  return [...state.data.entries.filter(e=>e.occurredAt===date),
-          ...state.data.tasks.filter(t=>t.dueAt===date).map(t=>({...t,type:"Task",excerpt:t.note||""}))];
+function calendarDate(e){return String(e.type==="Task"?e.dueAt||"":e.eventAt||e.occurredAt||e.createdAt||"").slice(0,10)}
+function calendarIndex(){
+  const index=new Map();
+  for(const e of [...state.data.entries,...state.data.tasks.map(t=>({...t,type:"Task",excerpt:t.note||""}))]){
+    const date=calendarDate(e);if(!/^\d{4}-\d{2}-\d{2}$/.test(date))continue;
+    if(!index.has(date))index.set(date,[]);index.get(date).push(e);
+  }
+  return index;
 }
-function datesWithSomething(){
-  const set=new Set();
-  for(const e of state.data.entries)if(e.occurredAt)set.add(e.occurredAt);
-  for(const t of state.data.tasks)if(t.dueAt)set.add(t.dueAt);
-  return set;
+function dayItems(date){return calendarIndex().get(date)||[]}
+function datesWithSomething(){return new Set(calendarIndex().keys())}
+function selectCalendarMonth(key){
+  if(!/^\d{4}-(0[1-9]|1[0-2])$/.test(key)||Number(key.slice(0,4))<1000)return false;
+  const [year,month]=key.split("-").map(Number);state.month=new Date(year,month-1,1);
+  const dates=[...datesWithSomething()].filter(d=>d.startsWith(key)).sort();
+  state.selectedDate=key===todayKey.slice(0,7)?todayKey:(key<todayKey.slice(0,7)?dates[dates.length-1]:dates[0])||key+"-01";
+  return true;
+}
+function moveCalendarMonth(step){const date=new Date(state.month.getFullYear(),state.month.getMonth()+step,1);return selectCalendarMonth(`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}`)}
+function focusCalendarDate(){requestAnimationFrame(()=>document.querySelector(`[data-date="${state.selectedDate}"]`)?.focus({preventScroll:true}))}
+function calendarKeyDate(date,key){
+  const d=new Date(date+"T12:00:00"),weekday=(d.getDay()+6)%7;
+  const steps={ArrowLeft:-1,ArrowRight:1,ArrowUp:-7,ArrowDown:7,Home:-weekday,End:6-weekday};
+  if(key in steps)d.setDate(d.getDate()+steps[key]);
+  else if(key==="PageUp"||key==="PageDown"){const day=d.getDate();d.setDate(1);d.setMonth(d.getMonth()+(key==="PageUp"?-1:1));d.setDate(Math.min(day,new Date(d.getFullYear(),d.getMonth()+1,0).getDate()))}
+  else return null;
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
 }
 // Paging a month at a time through empty years is no way to find anything, so
 // offer the nearest month that actually holds something.
@@ -594,7 +612,7 @@ function monthDistance(a,b){const [ay,am]=a.split("-").map(Number),[by,bm]=b.spl
 // say one thing happened. A day reads better as a log, one line each.
 function dayRow(e,tag="li"){
   const t=topic(e.topics?.[0]);
-  return `<${tag} class="day-row" data-entry="${esc(e.id)}" style="--topic:${t.color}">
+  return `<${tag} class="day-row" ${tag==="a"?`href="#entry/${encodeURIComponent(e.id)}"`:""} data-entry="${esc(e.id)}" style="--topic:${t.color}">
     ${e.image?`<img class="day-row-thumb" src="${esc(e.image)}" alt="" loading="lazy">`:""}
     <span class="day-row-copy">
       <span class="day-row-kind">${esc(e.type)}${e.topics?.length?` &middot; ${esc(t.name)}`:""}</span>
@@ -603,54 +621,31 @@ function dayRow(e,tag="li"){
     </span>
   </${tag}>`;
 }
+function calendarDayContents(items){
+  const tasks=items.filter(e=>e.type==="Task"),entries=items.filter(e=>e.type!=="Task"),left=tasks.filter(t=>!t.completedAt).length;
+  return `${entries.length?`<section class="day-part"><h4 class="section-title">Entries</h4><div class="day-log">${entries.map(e=>dayRow(e,"a")).join("")}</div></section>`:""}${tasks.length?`<section class="day-part"><h4 class="section-title">Due<span class="task-count">${left?`${left} left`:"all done"}</span></h4><div class="tasks day-tasks">${tasks.map(taskRow).join("")}</div></section>`:""}`;
+}
 function calendar(){
-  const y=state.month.getFullYear(),m=state.month.getMonth(),first=new Date(y,m,1);
+  const y=state.month.getFullYear(),m=state.month.getMonth(),first=new Date(y,m,1),monthKey=`${y}-${String(m+1).padStart(2,"0")}`;
+  const index=calendarIndex(),dates=new Set(index.keys()),monthDates=[...dates].filter(d=>d.startsWith(monthKey)).sort().reverse();
+  if(!state.selectedDate.startsWith(monthKey))state.selectedDate=monthKey===todayKey.slice(0,7)?todayKey:monthDates[0]||monthKey+"-01";
   const start=(first.getDay()+6)%7,days=new Date(y,m+1,0).getDate(),cells=[];
-  const dates=datesWithSomething();
-  for(let i=0;i<start;i++)cells.push(`<button class="day muted" disabled aria-hidden="true"></button>`);
-  let monthCount=0;
+  for(let i=0;i<start;i++)cells.push(`<span class="day muted" aria-hidden="true"></span>`);
+  const monthCount=monthDates.reduce((sum,d)=>sum+index.get(d).length,0);
   for(let d=1;d<=days;d++){
-    const date=`${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
-    const items=dayItems(date);monthCount+=items.length;
-    const dots=[...new Set(items.flatMap(e=>e.topics||[]))].slice(0,4)
-      .map(id=>`<i class="dot" style="background:${topic(id).color}"></i>`).join("");
+    const date=`${monthKey}-${String(d).padStart(2,"0")}`,items=index.get(date)||[];
+    const dots=[...new Set(items.flatMap(e=>e.topics||[]))].slice(0,4).map(id=>`<i class="dot" style="background:${topic(id).color}"></i>`).join("");
     const peek=items.slice(0,2).map(item=>`<span style="--item:${topic(item.topics?.[0]).color}">${esc(item.title)}</span>`).join("");
-    cells.push(`<button class="day ${date===state.selectedDate?"selected":""} ${date===todayKey?"is-today":""} ${items.length?"has-items":""}" data-date="${date}" aria-label="${esc(fmtDate(date))}${items.length?`, ${items.length} item${items.length>1?"s":""}`:""}"><span class="day-no">${d}</span><span class="dots">${dots}</span>${peek?`<span class="day-peek" aria-hidden="true">${peek}</span>`:""}${items.length?`<span class="day-more"><b>${items.length}</b><em> item${items.length===1?"":"s"}</em></span>`:""}</button>`);
+    cells.push(`<button type="button" class="day ${date===state.selectedDate?"selected":""} ${date===todayKey?"is-today":""} ${items.length?"has-items":""}" data-date="${date}" tabindex="${date===state.selectedDate?0:-1}" aria-pressed="${date===state.selectedDate}" ${date===todayKey?'aria-current="date"':""} aria-label="${esc(fmtDate(date))}, ${items.length} ${items.length===1?"item":"items"}"><span class="day-no">${d}</span><span class="dots" aria-hidden="true">${dots}</span>${peek?`<span class="day-peek" aria-hidden="true">${peek}</span>`:""}${items.length?`<span class="day-more" aria-hidden="true"><b>${items.length}</b><em> item${items.length===1?"":"s"}</em></span>`:""}</button>`);
   }
   const label=new Date(state.selectedDate+"T12:00:00").toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
-  const near=nearestMonth(state.month,dates);
-  const monthKey=`${y}-${String(m+1).padStart(2,"0")}`;
-  const monthItems=[...state.data.entries.filter(e=>(e.occurredAt||"").startsWith(monthKey)),...state.data.tasks.filter(t=>(t.dueAt||"").startsWith(monthKey)).map(t=>({...t,type:"Task",occurredAt:t.dueAt}))].sort((a,b)=>(b.occurredAt||"").localeCompare(a.occurredAt||""));
-  const jump=!monthCount&&near&&near!==monthKey
-    ? `<p class="empty small">Nothing this month. <button class="linkish" data-jump="${near}">Go to ${new Date(near+"-01T12:00:00").toLocaleDateString("en-GB",{month:"long",year:"numeric"})}</button></p>` : "";
+  const near=nearestMonth(state.month,dates),selected=index.get(state.selectedDate)||[];
+  const empty=`<div class="calendar-empty"><p>Nothing recorded this month.</p>${near&&near!==monthKey?`<button class="calendar-today" data-jump="${near}">Visit ${new Date(near+"-01T12:00:00").toLocaleDateString("en-GB",{month:"long",year:"numeric"})} →</button>`:""}</div>`;
   return `<section class="calendar-page">
-    <div class="calendar-shell"><div>
-      <div class="calendar-head">
-        <button class="icon-button" data-month="-1" aria-label="Previous month">&larr;</button>
-        <h2>${first.toLocaleDateString("en-GB",{month:"long",year:"numeric"})}</h2>
-        <button class="icon-button" data-month="1" aria-label="Next month">&rarr;</button>
-        ${monthKey!==todayKey.slice(0,7)?`<button class="calendar-today" data-jump="${todayKey}" type="button">Today</button>`:""}
-      </div>
-      <div class="calendar-modes" aria-label="Calendar view"><button class="${state.calendarMode==="month"?"active":""}" aria-pressed="${state.calendarMode==="month"}" data-calendar-mode="month">Month</button><button class="${state.calendarMode==="agenda"?"active":""}" aria-pressed="${state.calendarMode==="agenda"}" data-calendar-mode="agenda">Agenda</button></div>
-      <p class="month-count">${monthCount?`${monthCount} item${monthCount>1?"s":""} this month`:"Nothing recorded this month"}${monthKey!==todayKey.slice(0,7)?` &middot; <button class="linkish" data-jump="${todayKey.slice(0,7)}">This month</button>`:""}</p>
-      ${state.calendarMode==="month"?`<div class="week">${["M","T","W","T","F","S","S"].map(x=>`<span>${x}</span>`).join("")}</div><div class="calendar-grid">${cells.join("")}</div>`:`<ol class="calendar-agenda">${monthItems.length?monthItems.map(e=>`<li><time>${fmtDate(e.occurredAt)}</time>${dayRow(e,"div")}</li>`).join(""):`<li class="empty">Nothing recorded this month.</li>`}</ol>`}
-      ${jump}
-    </div>
-    <aside class="selected-day" aria-live="polite">
-      <p class="eyebrow">${state.selectedDate===todayKey?"Today":"Selected day"}</p>
-      <h3>${label}</h3>
-      ${(()=>{
-        // A day holds two different things. Tasks belong in a list you can read
-        // the state of at a glance, ticked or not; entries are records and stay
-        // as cards. Running them together as one card list said neither.
-        const dayTasks=state.data.tasks.filter(t=>t.dueAt===state.selectedDate);
-        const dayEntries=state.data.entries.filter(e=>e.occurredAt===state.selectedDate);
-        if(!dayTasks.length&&!dayEntries.length)return `<p class="empty">Nothing recorded on this day.</p>`;
-        const left=dayTasks.filter(t=>!t.completedAt).length;
-        return `${dayTasks.length?`<section class="day-part"><h4 class="section-title">Due<span class="task-count">${left?`${left} left`:"all done"}</span></h4><div class="tasks day-tasks">${dayTasks.map(taskRow).join("")}</div></section>`:""}
-        ${dayEntries.length?`<section class="day-part"><h4 class="section-title">Entries</h4><ol class="day-log">${dayEntries.map(e=>dayRow(e)).join("")}</ol></section>`:""}`;
-      })()}
-    </aside></div>
+    <header class="calendar-toolbar"><div class="calendar-head"><button type="button" class="icon-button" data-month="-1" aria-label="Previous month">←</button><h2 id="calendar-heading">${first.toLocaleDateString("en-GB",{month:"long",year:"numeric"})}</h2><button type="button" class="icon-button" data-month="1" aria-label="Next month">→</button></div>
+    <div class="calendar-controls"><label class="calendar-jump">Jump to month<input type="month" data-calendar-month value="${monthKey}" min="1000-01" max="9999-12" aria-label="Jump to month and year"></label><button class="calendar-today" data-jump="${todayKey}" type="button">Today</button><div class="calendar-modes" aria-label="Calendar view">${["month","agenda"].map(mode=>`<button class="${state.calendarMode===mode?"active":""}" aria-pressed="${state.calendarMode===mode}" data-calendar-mode="${mode}">${mode==="month"?"Month":"Agenda"}</button>`).join("")}</div></div></header>
+    <p class="month-count" role="status">${monthCount} ${monthCount===1?"item":"items"} across ${monthDates.length} ${monthDates.length===1?"day":"days"}</p>
+    ${state.calendarMode==="month"?`<div class="calendar-shell"><div><div class="week" aria-hidden="true">${["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map(day=>`<span>${day}</span>`).join("")}</div><p id="calendar-keys" class="sr-only">Use arrow keys to move by day or week, Home and End for the week edges, and Page Up or Page Down to change month.</p><div class="calendar-grid" aria-labelledby="calendar-heading" aria-describedby="calendar-keys">${cells.join("")}</div><p class="calendar-hint">Select a day to read below. Swipe to change month.</p>${!monthCount?empty:""}</div><aside class="selected-day" aria-live="polite"><p class="eyebrow">${state.selectedDate===todayKey?"Today":"Selected day"}</p><h3>${label}</h3>${selected.length?calendarDayContents(selected):`<p class="empty">Nothing recorded on this day.</p>`}</aside></div>`:`${monthCount?`<ol class="calendar-days">${monthDates.map(date=>`<li><h3><time datetime="${date}">${new Date(date+"T12:00:00").toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"long"})}${date===todayKey?" · Today":""}</time><span>${index.get(date).length} ${index.get(date).length===1?"item":"items"}</span></h3>${calendarDayContents(index.get(date))}</li>`).join("")}</ol>`:empty}`}
   </section>`;
 }
 function coverPlate(b){
@@ -1270,11 +1265,11 @@ document.addEventListener("click",async e=>{
   const dismissInstall=e.target.closest("[data-dismiss-install]");if(dismissInstall){installBanner.classList.remove("show");try{localStorage.setItem("noted-install-dismissed","1")}catch(error){}return}
   const wander=e.target.closest("[data-wander]");if(wander){const choices=state.data.entries.filter(x=>x.type!=="Task");if(choices.length){const pick=choices[Math.floor(Math.random()*choices.length)];state.returnTo="#today";location.hash=`entry/${encodeURIComponent(pick.id)}`}return}
   const entry=e.target.closest("[data-entry]");if(entry){e.preventDefault();state.returnTo=entry.dataset.return||location.hash||"#today";location.hash=`entry/${encodeURIComponent(entry.dataset.entry)}`}
-  const date=e.target.closest("[data-date]");if(date){state.selectedDate=date.dataset.date;render()}
+  const date=e.target.closest("[data-date]");if(date){state.selectedDate=date.dataset.date;render();focusCalendarDate();return}
   const jump=e.target.closest("[data-jump]");
-  if(jump){const [jy,jm]=jump.dataset.jump.split("-").map(Number);state.month=new Date(jy,jm-1,1);if(jump.dataset.jump===todayKey)state.selectedDate=todayKey;render();return}
-  const month=e.target.closest("[data-month]");if(month){state.month=new Date(state.month.getFullYear(),state.month.getMonth()+Number(month.dataset.month),1);render()}
-  const calendarMode=e.target.closest("[data-calendar-mode]");if(calendarMode){state.calendarMode=calendarMode.dataset.calendarMode;try{localStorage.setItem("noted-calendar-mode",state.calendarMode)}catch(error){}render();return}
+  if(jump){selectCalendarMonth(jump.dataset.jump.slice(0,7));if(jump.dataset.jump===todayKey)state.selectedDate=todayKey;render();return}
+  const month=e.target.closest("[data-month]");if(month){const step=month.dataset.month;moveCalendarMonth(Number(step));render();document.querySelector(`[data-month="${step}"]`)?.focus({preventScroll:true});return}
+  const calendarMode=e.target.closest("[data-calendar-mode]");if(calendarMode){state.calendarMode=calendarMode.dataset.calendarMode;try{localStorage.setItem("noted-calendar-mode",state.calendarMode)}catch(error){}render();document.querySelector(`[data-calendar-mode="${state.calendarMode}"]`)?.focus({preventScroll:true});return}
   const lib=e.target.closest("[data-library]");if(lib){state.library=lib.dataset.library;try{localStorage.setItem("noted-library-tab",state.library)}catch(error){}renderLibraryBody()}
   const filter=e.target.closest("[data-filter]");if(filter){state.filter=filter.dataset.filter;render()}
   const tick=e.target.closest("[data-tick]");
@@ -1299,6 +1294,8 @@ document.addEventListener("click",async e=>{
 });
 let searchTimer;
 document.addEventListener("input",e=>{if(e.target.matches(".search-box")){state.search=e.target.value;clearTimeout(searchTimer);searchTimer=setTimeout(()=>{if(state.route==="search")updateSearchResults()},90)}});
+document.addEventListener("change",e=>{if(e.target.matches("[data-calendar-month]")&&selectCalendarMonth(e.target.value)){render();document.querySelector("[data-calendar-month]")?.focus({preventScroll:true})}});
+document.addEventListener("keydown",e=>{if(!e.target.matches("[data-date]"))return;const date=calendarKeyDate(e.target.dataset.date,e.key);if(!date)return;e.preventDefault();state.selectedDate=date;const [y,m]=date.split("-").map(Number);state.month=new Date(y,m-1,1);render();focusCalendarDate()});
 document.addEventListener("change",e=>{const key=e.target.dataset.searchField;if(["searchSpace","searchFrom","searchTo"].includes(key)){state[key]=e.target.value;updateSearchResults()}});
 document.addEventListener("click",e=>{if(e.target.closest("[data-reset-search]")){state.searchSpace="";state.searchFrom="";state.searchTo="";state.filter="all";render()}});
 document.addEventListener("keydown",e=>{
@@ -1398,7 +1395,7 @@ addEventListener("touchend",e=>{
   const t=e.changedTouches[0],dx=t.clientX-swipeFrom.x,dy=t.clientY-swipeFrom.y;
   swipeFrom=null;
   if(Math.abs(dx)<60||Math.abs(dx)<Math.abs(dy)*1.6)return;
-  state.month=new Date(state.month.getFullYear(),state.month.getMonth()+(dx<0?1:-1),1);
+  moveCalendarMonth(dx<0?1:-1);
   render();
 },{passive:true});
 
