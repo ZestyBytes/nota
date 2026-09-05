@@ -566,26 +566,28 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px;min-width:0;}
    Everything inside is sized in em against a font-size derived from the
    figure's own width, so the whole drawing scales as one piece instead of a
    fixed-size cow sitting in a shrinking frame. */
-.scene{margin:34px 0 0;padding:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+.scene{margin:40px 0 4px;padding:0;}
 .scene-cowshed{
-  --ink:#2f2d26;--hide:#fdfbf4;--spot:#33312a;
-  --field:#cfdcb8;--sky:#f6f3e7;--blush:#f0a9b8;--snout:#f3bfc6;
+  /* The drawing is built from the page's own ink and paper, so it sits on the
+     entry rather than on a panel of its own, and inverts with the theme
+     instead of staying a lit rectangle on a dark page. */
+  --cw-ink:var(--ink);
+  --cw-hide:var(--surface);
+  --cw-spot:var(--ink);
+  --cw-blush:color-mix(in srgb,#e0798f 58%,var(--surface));
+  --cw-snout:color-mix(in srgb,#eda3b1 52%,var(--surface));
   container-type:inline-size;position:relative;overflow:hidden;aspect-ratio:16/10;
-  background:var(--sky);
+  background:none;
 }
-/* The picture keeps its own cream and green in both themes, the way a
-   postcard does, but the ground is taken down a little on a dark page so it
-   is not a lit rectangle in the middle of the reading. */
-@media(prefers-color-scheme:dark){
-  :root:not([data-theme="light"]) .scene-cowshed{--sky:#dedbcd;--field:#b6c5a0;}
-}
-:root[data-theme="dark"] .scene-cowshed{--sky:#dedbcd;--field:#b6c5a0;}
-/* One flat block with a step in it: the cow gets a line to lie along, and the
-   writing gets somewhere quiet to sit. */
-.scene-cowshed .cw-field{position:absolute;inset:0;background:var(--field);
-  clip-path:polygon(0 88%,20% 88%,20% 68%,100% 68%,100% 100%,0 100%);}
+/* The ground is a hairline with one step in it, in the same rule the rest of
+   the archive is drawn with: enough for the cow to lie along, nothing that
+   reads as a panel. */
+.scene-cowshed .cw-field{position:absolute;left:0;top:68%;width:20%;height:20%;
+  border-right:1px solid var(--line);border-bottom:1px solid var(--line);}
+.scene-cowshed .cw-field:before{content:"";position:absolute;left:100%;top:0;
+  width:400%;height:1px;background:var(--line);}
 .scene-cowshed .cw-note{position:absolute;left:8%;top:14%;width:40%;margin:0;
-  font:1em/1.9 var(--mono);letter-spacing:.06em;color:var(--ink);font-size:11px;}
+  font:1em/1.9 var(--mono);letter-spacing:.06em;color:var(--cw-ink);font-size:11px;}
 .scene-cowshed .cw-cow{position:absolute;right:3%;bottom:calc(32% - 2.3em);
   width:25em;height:15em;font-size:10px;}
 @supports (container-type:inline-size){
@@ -595,27 +597,27 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px;min-width:0;}
 .scene-cowshed .cw-cow i,.scene-cowshed .cw-cow b,.scene-cowshed .cw-cow u{position:absolute;display:block;box-sizing:border-box;}
 /* Folded legs first, so the body paints over the joins and they read as
    tucked under rather than stuck on. */
-.scene-cowshed .cw-leg{background:var(--hide);border:.25em solid var(--ink);}
+.scene-cowshed .cw-leg{background:var(--cw-hide);border:.25em solid var(--cw-ink);}
 .scene-cowshed .cw-lf{left:4.4em;top:9.6em;width:7.4em;height:3em;border-radius:44% 50% 46% 54%;}
 .scene-cowshed .cw-lb{left:11.2em;top:10em;width:7.8em;height:2.8em;border-radius:50% 44% 50% 50%;}
 .scene-cowshed .cw-leg:after{content:"";position:absolute;bottom:-.3em;width:1.7em;height:1.1em;
-  background:var(--ink);border-radius:36% 36% .5em .5em;}
+  background:var(--cw-ink);border-radius:36% 36% .5em .5em;}
 .scene-cowshed .cw-lf:after{left:.3em;}
 .scene-cowshed .cw-lb:after{right:.3em;}
 /* The tail leaves the rump horizontally, curves over and hangs. Its top end
    starts inside the rump, which paints after it, so the join never shows. */
 .scene-cowshed .cw-tail{left:19em;top:4.4em;width:4.4em;height:6.2em;background:none;
-  border:.25em solid var(--ink);border-bottom:0;border-left:0;border-radius:0 70% 0 0;}
-.scene-cowshed .cw-tuft{left:22.6em;top:10em;width:1.3em;height:1.9em;background:var(--ink);
+  border:.25em solid var(--cw-ink);border-bottom:0;border-left:0;border-radius:0 70% 0 0;}
+.scene-cowshed .cw-tuft{left:22.6em;top:10em;width:1.3em;height:1.9em;background:var(--cw-ink);
   border-radius:50% 50% 45% 55%;transform:rotate(10deg);}
 .scene-cowshed .cw-rump{left:14.6em;top:3.6em;width:7em;height:7.4em;
-  background:var(--hide);border:.25em solid var(--ink);border-radius:50% 54% 48% 50%;}
+  background:var(--cw-hide);border:.25em solid var(--cw-ink);border-radius:50% 54% 48% 50%;}
 /* An organic blob rather than an ellipse, which is what stops it reading as a
    shape with a face stuck on it. */
 .scene-cowshed .cw-body{left:2.6em;top:4em;width:16.8em;height:8.4em;
-  background:var(--hide);border:.25em solid var(--ink);
+  background:var(--cw-hide);border:.25em solid var(--cw-ink);
   border-radius:52% 48% 44% 56%/62% 58% 42% 38%;}
-.scene-cowshed .cw-spot{background:var(--spot);}
+.scene-cowshed .cw-spot{background:var(--cw-spot);}
 .scene-cowshed .cw-s1{left:6em;top:5em;width:4.6em;height:3.2em;
   border-radius:56% 44% 62% 38%/54% 62% 38% 46%;}
 .scene-cowshed .cw-s2{left:11.8em;top:6em;width:3.2em;height:2.4em;
@@ -623,27 +625,27 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px;min-width:0;}
 .scene-cowshed .cw-s3{left:16.8em;top:4.6em;width:2.8em;height:2.6em;border-radius:60% 40% 54% 46%;}
 /* Head tipped down and forward, which is most of the "chill". */
 .scene-cowshed .cw-head{left:0;top:3em;width:9.6em;height:8.4em;transform:rotate(-7deg);}
-.scene-cowshed .cw-skull{inset:0;background:var(--hide);border:.25em solid var(--ink);
+.scene-cowshed .cw-skull{inset:0;background:var(--cw-hide);border:.25em solid var(--cw-ink);
   border-radius:54% 46% 46% 54%/58% 56% 44% 42%;}
-.scene-cowshed .cw-ear{width:3.4em;height:2.2em;background:var(--hide);border:.25em solid var(--ink);}
+.scene-cowshed .cw-ear{width:3.4em;height:2.2em;background:var(--cw-hide);border:.25em solid var(--cw-ink);}
 .scene-cowshed .cw-ear.cw-l{left:-1.7em;top:1.8em;border-radius:60% 40% 50% 50%;transform:rotate(-18deg);}
 .scene-cowshed .cw-ear.cw-r{left:7.3em;top:.8em;border-radius:40% 60% 50% 50%;transform:rotate(16deg);}
-.scene-cowshed .cw-horn{width:1.6em;height:1.3em;background:var(--hide);border:.25em solid var(--ink);}
+.scene-cowshed .cw-horn{width:1.6em;height:1.3em;background:var(--cw-hide);border:.25em solid var(--cw-ink);}
 .scene-cowshed .cw-horn.cw-l{left:1.4em;top:-.5em;border-radius:60% 60% 30% 30%;transform:rotate(-22deg);}
 .scene-cowshed .cw-horn.cw-r{left:5.6em;top:-.8em;border-radius:60% 60% 30% 30%;transform:rotate(18deg);}
-.scene-cowshed .cw-hs{left:4.2em;top:.4em;width:3.6em;height:2.8em;background:var(--spot);
+.scene-cowshed .cw-hs{left:4.2em;top:.4em;width:3.6em;height:2.8em;background:var(--cw-spot);
   border-radius:56% 44% 50% 50%/60% 50% 50% 40%;}
 /* Closed eyes: an arc, not a dot. */
-.scene-cowshed .cw-eye{width:1.7em;height:.9em;border:.25em solid var(--ink);
+.scene-cowshed .cw-eye{width:1.7em;height:.9em;border:.25em solid var(--cw-ink);
   border-bottom:0;border-left:0;border-right:0;border-radius:50% 50% 0 0;}
 .scene-cowshed .cw-eye.cw-l{left:1.9em;top:3.8em;}
 .scene-cowshed .cw-eye.cw-r{left:5.6em;top:3.6em;}
-.scene-cowshed .cw-blush{width:1.3em;height:.8em;background:var(--blush);border-radius:50%;opacity:.85;}
+.scene-cowshed .cw-blush{width:1.3em;height:.8em;background:var(--cw-blush);border-radius:50%;opacity:.85;}
 .scene-cowshed .cw-blush.cw-l{left:1.3em;top:5.2em;}
 .scene-cowshed .cw-blush.cw-r{left:6.3em;top:5em;}
-.scene-cowshed .cw-muzzle{left:2.2em;top:5.5em;width:5.4em;height:3.4em;background:var(--snout);
-  border:.25em solid var(--ink);border-radius:46% 54% 50% 50%/40% 40% 60% 60%;}
-.scene-cowshed .cw-nostril{width:.9em;height:.7em;background:var(--ink);border-radius:50%;}
+.scene-cowshed .cw-muzzle{left:2.2em;top:5.5em;width:5.4em;height:3.4em;background:var(--cw-snout);
+  border:.25em solid var(--cw-ink);border-radius:46% 54% 50% 50%/40% 40% 60% 60%;}
+.scene-cowshed .cw-nostril{width:.9em;height:.7em;background:var(--cw-ink);border-radius:50%;}
 .scene-cowshed .cw-nostril.cw-l{left:1.1em;top:1.1em;transform:rotate(-16deg);}
 .scene-cowshed .cw-nostril.cw-r{left:3.1em;top:1.1em;transform:rotate(16deg);}
 /* The breathing is slight on purpose: enough to notice on a second look. */
