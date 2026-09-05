@@ -2,7 +2,7 @@ const CACHE="noted-shell-__BUILD__";
 // Remote images live in their own cache, deliberately not stamped with the
 // build: a deploy replaces the shell, but the covers should survive it.
 const MEDIA="noted-media";
-const SHELL=["./","index.html","styles.css?v=calendar","config.js","backend.js","app.js?v=calendar","data.js","manifest.webmanifest","icon.svg"];
+const SHELL=["./","index.html","styles.css","config.js","backend.js","app.js","data.js","manifest.webmanifest","icon.svg"];
 
 self.addEventListener("install",event=>{
   self.skipWaiting();
@@ -71,6 +71,30 @@ self.addEventListener("fetch",event=>{
   // file in a cache that is thrown away on every deploy, and clips are fetched
   // with range requests, which a stored full response answers badly.
   if(request.destination==="video"||/\.(mp4|mov|m4v|webm)$/i.test(url.pathname))return;
+
+  // The page itself is fetched fresh, everything else can come from disk.
+  // index.html carries the tags iOS reads at launch, and serving it cache
+  // first meant a cold start always used the previous build's set: the status
+  // bar only came right once the app had updated itself and reloaded, which
+  // is the "black, but not initially" this kept producing. Falls back to the
+  // cached page the moment the network is slow or absent, so opening offline
+  // is unchanged.
+  if(request.mode==="navigate"){
+    event.respondWith(caches.open(CACHE).then(async cache=>{
+      const cached=async()=>await cache.match("index.html")||await cache.match("./")||await packMatch(new URL("index.html",self.registration.scope).href);
+      try{
+        const network=await Promise.race([
+          fetch(request,{cache:"no-store"}),
+          new Promise((_,reject)=>setTimeout(()=>reject(new Error("slow")),2500))
+        ]);
+        if(network&&network.ok)cache.put("index.html",network.clone());
+        return network;
+      }catch(error){
+        return await cached()||Response.error();
+      }
+    }));
+    return;
+  }
 
   // Versioned shell files belong to this installed build. Serve them from
   // disk; a new worker installs the next build without repeat background fetches.
