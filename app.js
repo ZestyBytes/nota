@@ -168,11 +168,12 @@ function memoryKeypad(){
   </section>`;
 }
 function clawMachine(){
+  const toys=[["needoh","NeeDoh","squish"],["putty","Crazy Aaron’s","PUTTY"],["squishee","Squishee","•ᴗ•"],["bao","Bao bun","•ᴗ•"],["fidget","Fidget","✿"]];
   return `<section class="claw-game" data-claw-game aria-label="Claw machine game">
-    <header><span>Seaside amusements</span><strong>THE LUCKY CLAW</strong><b>10p</b></header>
+    <header><span>A little pocket arcade</span><strong>THE LUCKY CLAW</strong><b>FREE</b></header>
     <div class="claw-window"><div class="claw-track" aria-hidden="true"></div><div class="claw" aria-hidden="true"><i></i><span></span><b></b></div>
-      <div class="toy toy-1" data-toy="Bunny" aria-hidden="true"><i>◆</i></div><div class="toy toy-2" data-toy="Bear" aria-hidden="true"><i>●</i></div><div class="toy toy-3" data-toy="Star" aria-hidden="true"><i>★</i></div><div class="toy toy-4" data-toy="Duck" aria-hidden="true"><i>♥</i></div><div class="prize-chute" aria-hidden="true"><span>PRIZE</span></div>
-    </div><div class="claw-console"><p class="claw-message" aria-live="polite">Hold the button to move. Release to drop.</p><button class="claw-control" type="button"><span></span>HOLD TO MOVE</button><small><b data-claw-wins>0</b> prizes rescued</small></div>
+      ${toys.map(([kind,name,label],i)=>`<div class="toy toy-${kind}" style="left:${30+i*15}%" data-toy="${name}" role="img" aria-label="${name}"><i>${label}</i></div>`).join("")}<div class="prize-chute" aria-hidden="true"><span>PRIZES ↓</span></div>
+    </div><div class="claw-console"><p class="claw-message" aria-live="polite">Hold to move. Let go over your favourite.</p><button class="claw-control" type="button"><span></span><b data-claw-label>HOLD TO MOVE</b></button><small><b data-claw-wins>0</b> / 5 favourites collected</small><div class="claw-collection" aria-label="Your collected toys"></div></div>
   </section>`;
 }
 // A pipe table was printing its pipes as prose; render it as a table.
@@ -1171,12 +1172,44 @@ function setupMemoryKeypads(){
 }
 function setupClawGames(){
   document.querySelectorAll("[data-claw-game]").forEach(game=>{
-    const button=game.querySelector(".claw-control"),claw=game.querySelector(".claw"),message=game.querySelector(".claw-message"),counter=game.querySelector("[data-claw-wins]");if(!button||!claw)return;
-    let x=14,direction=1,moving=false,busy=false,wins=0,frame=0,last=0;const draw=()=>game.style.setProperty("--claw-x",`${x}%`);
-    const tick=time=>{if(!moving)return;if(!last)last=time;const dt=Math.min(32,time-last);last=time;x+=direction*dt*.035;if(x>=84){x=84;direction=-1}else if(x<=8){x=8;direction=1}draw();frame=requestAnimationFrame(tick)};
-    const start=ev=>{if(busy)return;ev.preventDefault();button.setPointerCapture?.(ev.pointerId);moving=true;last=0;message.textContent="Release when the claw is lined up…";frame=requestAnimationFrame(tick)};
-    const drop=()=>{if(!moving||busy)return;moving=false;cancelAnimationFrame(frame);busy=true;button.disabled=true;claw.classList.add("dropping");message.textContent="Down it goes…";setTimeout(()=>{const toys=[...game.querySelectorAll("[data-toy]:not(.won)")],window=game.querySelector(".claw-window"),target=toys.map(t=>({t,pos:t.offsetLeft/window.clientWidth*100})).sort((a,b)=>Math.abs(a.pos-x)-Math.abs(b.pos-x))[0],caught=target&&Math.abs(target.pos-x)<12&&Math.random()>.28;if(caught){target.t.classList.add("caught");message.textContent=`You caught the ${target.t.dataset.toy.toLowerCase()}!`;setTimeout(()=>{target.t.classList.remove("caught");target.t.classList.add("won");counter.textContent=String(++wins)},650)}else message.textContent="So close. The claw wants another go.";setTimeout(()=>{claw.classList.remove("dropping");button.disabled=false;busy=false},900)},720)};
-    button.addEventListener("pointerdown",start);button.addEventListener("pointerup",drop);button.addEventListener("pointercancel",drop);button.addEventListener("keydown",ev=>{if((ev.key===" "||ev.key==="Enter")&&!ev.repeat)start(ev)});button.addEventListener("keyup",ev=>{if(ev.key===" "||ev.key==="Enter")drop()});draw();
+    if(game.dataset.ready)return;game.dataset.ready="true";
+    const button=game.querySelector(".claw-control"),claw=game.querySelector(".claw"),message=game.querySelector(".claw-message"),counter=game.querySelector("[data-claw-wins]"),label=game.querySelector("[data-claw-label]"),cabinet=game.querySelector(".claw-window"),collection=game.querySelector(".claw-collection");
+    let x=14,y=0,direction=1,moving=false,busy=false,wins=0,frame=0,last=0,held=null;
+    const draw=()=>{
+      game.style.setProperty("--claw-x",`${x}%`);game.style.setProperty("--claw-drop",`${y}px`);
+      if(held){held.style.left=`${x}%`;held.style.top=`${112+y}px`;held.style.bottom="auto"}
+    };
+    const animate=(duration,update)=>new Promise(resolve=>{
+      let began;const step=t=>{if(!game.isConnected){resolve(false);return}began??=t;const progress=Math.min(1,(t-began)/duration);update(progress*progress*(3-2*progress));if(progress<1)requestAnimationFrame(step);else resolve(true)};requestAnimationFrame(step);
+    });
+    const travel=async(nx,ny,duration)=>{const ox=x,oy=y;return animate(duration,p=>{x=ox+(nx-ox)*p;y=oy+(ny-oy)*p;draw()})};
+    const tick=time=>{if(!moving||!game.isConnected)return;if(!last)last=time;const dt=Math.min(32,time-last);last=time;x+=direction*dt*.025;if(x>=91){x=91;direction=-1}else if(x<=10){x=10;direction=1}draw();frame=requestAnimationFrame(tick)};
+    const reset=()=>{game.querySelectorAll("[data-toy]").forEach(t=>{t.classList.remove("won");t.style.top="";t.style.bottom=""});collection.replaceChildren();wins=0;counter.textContent="0";label.textContent="HOLD TO MOVE"};
+    const start=ev=>{if(busy||moving)return;if(ev.type==="pointerdown"&&ev.button!==0)return;ev.preventDefault();if(wins===5)reset();if(ev.pointerId!==undefined)button.setPointerCapture?.(ev.pointerId);moving=true;last=0;message.textContent="Let go when you’re lined up…";frame=requestAnimationFrame(tick)};
+    const drop=async()=>{
+      if(!moving||busy)return;moving=false;cancelAnimationFrame(frame);busy=true;button.disabled=true;
+      const toys=[...game.querySelectorAll("[data-toy]:not(.won)")];
+      const target=toys.map(t=>({t,pos:t.offsetLeft/cabinet.clientWidth*100})).sort((a,b)=>Math.abs(a.pos-x)-Math.abs(b.pos-x))[0];
+      const caught=target&&Math.abs(target.pos-x)*cabinet.clientWidth/100<target.t.offsetWidth*.55;
+      message.textContent="Down we go…";
+      const depth=(caught?target.t.offsetTop:cabinet.clientHeight-76)-112;
+      if(!await travel(x,Math.max(0,depth),750))return;
+      claw.classList.add("closed");if(!await animate(230,()=>{}))return;
+      if(caught){held=target.t;held.dataset.home=held.style.left;message.textContent=`Got the ${held.dataset.toy}!`;draw()}
+      if(!await travel(x,0,800))return;
+      if(held){
+        message.textContent="Special delivery…";
+        if(!await travel(14,0,850))return;
+        claw.classList.remove("closed");const prize=held;held=null;
+        if(!await animate(550,p=>{prize.style.top=`${112+p*(cabinet.clientHeight-145)}px`;prize.style.transform=`translateX(-50%) rotate(${p*18}deg) scale(${1-p*.35})`}))return;
+        const souvenir=prize.cloneNode(true);souvenir.removeAttribute("data-toy");souvenir.removeAttribute("style");souvenir.classList.add("collected");collection.append(souvenir);
+        prize.classList.add("won");prize.style.left=prize.dataset.home;prize.style.top="";prize.style.bottom="";prize.style.transform="";
+        counter.textContent=String(++wins);message.textContent=wins===5?"All five! A lovely little haul. Play again?":`${prize.dataset.toy} is yours. Pick another!`;
+      }else{message.textContent="A little closer… try again!";claw.classList.remove("closed")}
+      label.textContent=wins===5?"PLAY AGAIN":"HOLD TO MOVE";button.disabled=false;busy=false;
+    };
+    button.addEventListener("pointerdown",start);button.addEventListener("pointerup",drop);button.addEventListener("pointercancel",drop);button.addEventListener("lostpointercapture",drop);button.addEventListener("blur",drop);
+    button.addEventListener("keydown",ev=>{if(ev.key===" "||ev.key==="Enter"){ev.preventDefault();if(!ev.repeat)start(ev)}});button.addEventListener("keyup",ev=>{if(ev.key===" "||ev.key==="Enter"){ev.preventDefault();drop()}});draw();
   });
 }
 let spaceShelfTimer=null,shelfDriftFrame=null,volumeCleanup=null;
