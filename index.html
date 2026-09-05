@@ -2,7 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <!-- No viewport-fit=cover. That is what put the page under the clock, and
+       iOS blurs whatever is up there to keep the time legible: dark in dark
+       theme, paper in light, which is the pale strip this app has had all
+       day. Every fix that tried to fill that strip depended on
+       safe-area-inset-top, and this phone reports it as zero, so they all
+       collapsed to nothing. Without cover, iOS keeps the strip to itself and
+       paints it from theme-color, and no page content can reach it. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- The masthead band is the night palette in both themes, so the status bar
        matches it rather than the paper below it. Splitting this by scheme left
        a pale strip above the band on a phone in light mode. -->
@@ -31,7 +38,7 @@
        the browser paints as the canvas is the masthead band, never paper.
        Inline so a slow or stale styles.css cannot leave a pale top. -->
   <style>html{background:#14160f}</style>
-  <link rel="stylesheet" href="styles.css?v=capbar">
+  <link rel="stylesheet" href="styles.css?v=nocover">
 </head>
 <body>
   <!--

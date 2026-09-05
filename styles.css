@@ -99,7 +99,7 @@ button,a{touch-action:manipulation;}
 a{color:inherit;text-decoration:none;}
 .offline-banner{position:fixed;z-index:40;top:0;left:50%;transform:translate(-50%,-130%);padding:7px 13px;border:1px solid var(--line);background:var(--surface);color:var(--muted);font:8px var(--mono);text-transform:uppercase;letter-spacing:.08em;box-shadow:0 4px 14px rgba(34,38,30,.12);transition:transform .2s ease;}
 .offline-banner.show{transform:translate(-50%,0);}
-.install-banner{position:fixed;z-index:39;left:50%;bottom:calc(92px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:14px;width:min(420px,calc(100% - 28px));padding:13px 14px;border:1px solid var(--line);background:var(--surface);box-shadow:0 8px 24px rgba(34,38,30,.16);transform:translate(-50%,20px);opacity:0;pointer-events:none;transition:opacity .2s ease,transform .2s ease;}
+.install-banner{position:fixed;z-index:39;left:50%;bottom:max(92px, calc(92px + env(safe-area-inset-bottom,0px)));display:flex;align-items:center;gap:14px;width:min(420px,calc(100% - 28px));padding:13px 14px;border:1px solid var(--line);background:var(--surface);box-shadow:0 8px 24px rgba(34,38,30,.16);transform:translate(-50%,20px);opacity:0;pointer-events:none;transition:opacity .2s ease,transform .2s ease;}
 .install-banner.show{transform:translate(-50%,0);opacity:1;pointer-events:auto;}
 .install-banner span{display:grid;gap:2px;flex:1;}
 .install-banner b{font:700 9px var(--mono);text-transform:uppercase;letter-spacing:.08em;}
@@ -392,7 +392,7 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px;min-width:0;}
   /* The bar floats clear of the edges rather than sitting on them: a mounted
      slip resting on the sheet, with the paper showing under and around it.
      Frosted so the archive stays visible as it passes beneath. */
-  .mobile-nav{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;z-index:8;left:max(10px,env(safe-area-inset-left));right:max(10px,env(safe-area-inset-right));bottom:calc(9px + env(safe-area-inset-bottom));padding:7px 6px 8px;border-radius:22px;background:color-mix(in srgb,var(--surface) 84%,transparent);backdrop-filter:saturate(1.6) blur(22px);-webkit-backdrop-filter:saturate(1.6) blur(22px);border:1px solid color-mix(in srgb,var(--ink) 16%,transparent);box-shadow:0 10px 28px -14px rgba(34,38,30,.5),0 2px 6px -3px rgba(34,38,30,.28);}
+  .mobile-nav{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;z-index:8;left:max(10px,env(safe-area-inset-left));right:max(10px,env(safe-area-inset-right));bottom:max(9px, calc(9px + env(safe-area-inset-bottom,0px)));padding:7px 6px 8px;border-radius:22px;background:color-mix(in srgb,var(--surface) 84%,transparent);backdrop-filter:saturate(1.6) blur(22px);-webkit-backdrop-filter:saturate(1.6) blur(22px);border:1px solid color-mix(in srgb,var(--ink) 16%,transparent);box-shadow:0 10px 28px -14px rgba(34,38,30,.5),0 2px 6px -3px rgba(34,38,30,.28);}
   /* Without backdrop-filter the bar would be a translucent smear over the
      text passing behind it, so fall back to opaque paper. */
   @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
@@ -407,7 +407,7 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px;min-width:0;}
   .mobile-nav a.active:before{background:var(--stamp-red);}
   .mobile-nav a.active .nav-icon .nav-fill{opacity:.3;}
   .mobile-nav a:active{transform:scale(.93);color:var(--ink);}
-  main{padding:30px 18px calc(112px + env(safe-area-inset-bottom));}
+  main{padding:30px 18px max(112px, calc(112px + env(safe-area-inset-bottom,0px)));}
   .page-head{align-items:flex-start;margin-bottom:34px;}
   .date-large{width:88px;height:88px;}
   .date-large b{font-size:13px;}
