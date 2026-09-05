@@ -558,6 +558,38 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px;min-width:0;}
    quickest way to read the caption as an address rather than a link. */
 .place-map figcaption .w3w{text-transform:none;letter-spacing:.04em;}
 .place-map figcaption .w3w span{color:#e11f26;font-weight:700;letter-spacing:0;}
+/* ---------- CSS art ----------
+   A picture made of elements rather than an image file: nothing to download,
+   nothing to go blurry at any size, and it sits in the page's own palette
+   instead of fighting it. Each scene is drawn by name in app.js. */
+.scene{margin:34px 0 0;padding:30px 0 24px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+.scene-stage{display:flex;justify-content:center;align-items:flex-end;gap:40px;}
+.shake{position:relative;display:flex;flex-direction:column;align-items:center;}
+.shake small{margin-top:14px;font:10px var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--muted);}
+.shake-strawberry{--shake:#f3a3b8;--shake-deep:#cf6b87;}
+.shake-chocolate{--shake:#8d5c3d;--shake-deep:#573520;}
+/* The straw leans out of the lid, so it is positioned rather than stacked,
+   and the lid paints over the hole it goes into. */
+.shake .straw{position:absolute;z-index:1;top:-24px;left:50%;width:7px;height:44px;border-radius:4px;
+  transform:translateX(-1px) rotate(13deg);transform-origin:bottom center;
+  background:linear-gradient(90deg,#d8d3c4,#fffdf6 45%,#c9c3b2);}
+.shake .lid{position:relative;z-index:2;width:88px;height:15px;border-radius:7px 7px 3px 3px;
+  background:linear-gradient(180deg,#fffdf5,#e3ddcc);box-shadow:inset 0 -3px 0 rgba(0,0,0,.07);}
+.shake .cup{position:relative;z-index:2;width:78px;height:102px;overflow:hidden;
+  clip-path:polygon(6% 0,94% 0,79% 100%,21% 100%);
+  background:linear-gradient(180deg,var(--shake),var(--shake-deep));}
+.shake .shine{position:absolute;top:10%;left:17%;width:9px;height:64%;border-radius:6px;
+  background:rgba(255,255,255,.3);}
+@media(prefers-reduced-motion:no-preference){
+  .scene-stage .shake{animation:shake-float 5s ease-in-out infinite;}
+  .scene-stage .shake:nth-child(2){animation-delay:-2.4s;}
+}
+@keyframes shake-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@media(max-width:800px){
+  .scene-stage{gap:30px;}
+  .shake .cup{width:66px;height:88px;}
+  .shake .lid{width:76px;}
+}
 .build-stamp{margin:34px 0 0;text-align:center;font:9px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--faint);opacity:.55;}
 .pull-hint{position:fixed;z-index:9;top:0;left:0;right:0;display:grid;place-items:center;padding-top:env(safe-area-inset-top,0px);height:0;overflow:hidden;color:#949a85;font:10px var(--mono);text-transform:uppercase;letter-spacing:.14em;background:#14160f;transition:height .18s ease;}
 .pull-hint.on{height:calc(38px + env(safe-area-inset-top,0px));}

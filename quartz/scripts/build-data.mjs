@@ -326,6 +326,14 @@ async function locate(query) {
   return null;
 }
 
+// A small piece of CSS art, named on the entry and drawn by the app. Only a
+// plain name is kept, because it lands in a class attribute, and the app
+// draws nothing for a name it does not recognise.
+function artName(value) {
+  const a = String(value || "").trim().toLowerCase();
+  return /^[a-z][a-z0-9-]{0,31}$/.test(a) ? a : "";
+}
+
 // A what3words address, for a place with no street address. Three words is
 // the whole format, so anything else is dropped rather than passed on: the
 // value ends up inside a link, and only a shape this narrow is safe to build
@@ -489,6 +497,7 @@ for (const file of files) {
     // metric is the reading taken at that check-in.
     metric: numberOrNull(data.metric), start: numberOrNull(data.start),
     target: numberOrNull(data.target), unit: String(data.unit || "").trim(),
+    art: artName(data.art),
     place: (() => {
       const raw = String(data.map || "").trim();
       if (!raw) return null;

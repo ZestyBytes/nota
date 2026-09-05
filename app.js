@@ -397,6 +397,23 @@ function plantBody(e,shown){
 // a mapping company for a personal archive to keep working. The frame is
 // built from two numbers the build has already validated, so nothing pasted
 // into frontmatter reaches the iframe as a URL.
+// A drawing made of divs. Nothing is fetched and nothing is an image file, so
+// a post can carry a picture of its own subject that costs nothing to load
+// and stays sharp at any size. Each scene is drawn here by name, and a name
+// with no scene draws nothing, so an entry can never put arbitrary markup or
+// an unknown class onto the page.
+const SCENES={
+  milkshakes:{
+    label:"Two milkshakes in takeaway cups, one strawberry and one chocolate",
+    parts:[["strawberry","Strawberry"],["chocolate","Chocolate"]]
+  }
+};
+function sceneArt(name){
+  const scene=SCENES[name];
+  if(!scene)return "";
+  const cups=scene.parts.map(([flavour,label])=>`<div class="shake shake-${flavour}"><i class="straw"></i><i class="lid"></i><i class="cup"><b class="shine"></b></i><small>${esc(label)}</small></div>`).join("");
+  return `<figure class="scene scene-${esc(name)}" role="img" aria-label="${esc(scene.label)}"><div class="scene-stage">${cups}</div></figure>`;
+}
 function placeMap(p){
   if(!p)return "";
   const d=0.004, bbox=[p.lon-d,p.lat-d/2,p.lon+d,p.lat+d/2].map(n=>n.toFixed(5)).join(",");
@@ -455,6 +472,7 @@ function entryPage(id){
     </header>
     ${e.images?.length>1?gallery(e.images):e.image?`<img class="detail-image" src="${e.image}" alt="${esc(e.imageAlt||"")}"${dims(e.image)}>`:""}
     ${(()=>{const shown=e.images?.length>1?e.images.map(i=>i.src):[e.image];return e.id==="notes/why-i-made-noted"?notedEssay(e,shown):e.recipe?`<div class="detail-body recipe-body">${recipeBody(e)}</div>`:e.plant?`<div class="detail-body plant-body">${plantBody(e,shown)}</div>`:e.view==="cards"&&e.body?cardDeck(e.body,shown,e.id):`<div class="detail-body">${e.body?(e.view==="playlist"?playlistBody(e.body):markdown(e.body,shown,e.id)):`<p>${esc(e.excerpt||"Saved in your Noted archive.")}</p>`}</div>`})()}
+    ${sceneArt(e.art)}
     ${placeMap(e.place)}
     ${(()=>{const back=backlinks(e);return back.length?`<section class="backlinks"><h2 class="section-title">Mentioned in</h2><ul>${back.map(b=>`<li><a href="#entry/${encodeURIComponent(b.id)}">${esc(b.title)}</a><small>${esc(b.type)}${b.occurredAt?` &middot; ${esc(fmtDate(b.occurredAt))}`:""}</small></li>`).join("")}</ul></section>`:""})()}
             ${e.attachments?.length?`<div class="attachment-list"><p class="eyebrow">Attachments</p>${e.attachments.map((a,i)=>`<div>${icon("paperclip")}<span><b>${esc(a.name)}</b><small>${esc(a.kind)} &middot; ${esc(a.size)}</small></span><button type="button" data-view-attachment="${i}" data-entry-id="${e.id}">View</button></div>`).join("")}</div>`:""}
