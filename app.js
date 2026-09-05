@@ -6,7 +6,7 @@ const BASE = window.NOTED_DATA || { topics:{}, entries:[], tasks:[], books:[] };
 const BUILD="__BUILD__";
 const now = new Date(), todayKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`;
 let savedSort="items",savedCalendar="month",savedLibrary="writing";try{savedSort=localStorage.getItem("noted-topic-sort")||"items";savedCalendar=localStorage.getItem("noted-calendar-mode")||(window.matchMedia?.("(max-width:600px)").matches?"agenda":"month");savedLibrary=localStorage.getItem("noted-library-tab")||"writing"}catch(error){/* private mode: fall back to defaults */}
-const state = { route:"today", topicSort:savedSort, calendarMode:savedCalendar, month:new Date(now.getFullYear(),now.getMonth(),1), selectedDate:todayKey, library:savedLibrary, search:"", filter:"all", data:clone(BASE), user:null, booting:NotedBackend.configured };
+const state = { route:"today", topicSort:savedSort, calendarMode:savedCalendar, month:new Date(now.getFullYear(),now.getMonth(),1), selectedDate:todayKey, library:savedLibrary, search:"", searchSpace:"", searchFrom:"", searchTo:"", filter:"all", data:clone(BASE), user:null, booting:NotedBackend.configured };
 function clone(v){return JSON.parse(JSON.stringify(v))}
 function emptyArchive(){return {topics:clone(BASE.topics),entries:[],tasks:[],books:[]}}
 function esc(s=""){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
@@ -239,6 +239,15 @@ function dims(src){
   const d=sizeMap.get(src);
   return d?` width="${d[0]}" height="${d[1]}"`:"";
 }
+function handleImageFailure(img){
+  if(img.tagName!=="IMG")return;
+  const shot=img.closest(".photo-shot");
+  if(shot){const section=shot.closest(".home-photos");shot.remove();if(section&&!section.querySelector(".photo-shot"))section.remove();return}
+  const card=img.closest(".entry"),wrap=img.closest(".thumb-wrap");
+  if(card&&wrap){wrap.remove();card.classList.remove("has-thumb","has-plate");card.classList.add("no-thumb");return}
+  img.hidden=true;img.style.display="none";
+}
+document.addEventListener("error",e=>handleImageFailure(e.target),true);
 function entryCard(e,snippet="",within=""){if(typeof snippet!=="string")snippet="";
   const tagId=(e.topics||[]).find(id=>id!==within&&topic(id).parent!==within),
     t=topic(tagId||e.topics?.[0]),attachment=e.attachments?.[0],age=ageTier(e.occurredAt),date=fmtDate(e.occurredAt||e.createdAt||e.dueAt);
@@ -536,6 +545,12 @@ function homeJourneys(){
     }).join("")}</div>
   </section>`;
 }
+function homeStream(items){
+  let previous="";
+  return items.map((e,i)=>{const date=(e.occurredAt||e.createdAt||"").slice(0,10),heading=date!==previous?`<h3 class="stream-date">${esc(fmtDate(date)||"Undated")}</h3>`:"";previous=date;
+    return `${heading}<a class="stream-entry ${i===0?"stream-feature":""}" href="#entry/${encodeURIComponent(e.id)}" data-entry="${esc(e.id)}"><div class="stream-copy"><span class="stream-topic">${esc(topic(e.topics?.[0]).name)} · ${esc(e.type)}</span><h4>${esc(e.title)}</h4>${e.excerpt?`<p>${esc(e.excerpt)}</p>`:""}</div>${e.image?`<img src="${esc(e.image)}" alt="${esc(e.imageAlt||"")}" loading="${i===0?"eager":"lazy"}">`:""}</a>`;
+  }).join("")+`<a class="stream-more" href="#library">Browse the archive →</a>`;
+}
 function today(){
   // Home is a reading surface, not a log of every object in the archive.
   // Journeys have their progress strip below, tasks have their own list, and
@@ -543,14 +558,14 @@ function today(){
   const recent=state.data.entries
     .filter(e=>["Journal","Note"].includes(e.type)&&!e.plant)
     .sort((a,b)=>(b.occurredAt||b.createdAt||"").localeCompare(a.occurredAt||a.createdAt||""))
-    .slice(0,5);
+    .slice(0,12);
   const waiting=openTasksInOrder(),open=waiting.length;
   const wander=state.data.entries.filter(e=>e.type!=="Task");
   const tasks=waiting.slice(0,HOME_TASKS),more=waiting.slice(HOME_TASKS);
   return `<section class="home-page">
     ${homeEvents()}
     <div class="home-latest-head"><h2 class="section-title">Latest</h2>${open?`<a href="#tasks">${open} thing${open===1?"":"s"} to do &rarr;</a>`:""}</div>
-    <div class="entry-list home-latest-list">${recent.length?recent.map(e=>entryCard(e)).join(""):`<p class="empty">The archive is ready for its first entry.</p>`}</div>
+    <div class="journal-stream">${recent.length?homeStream(recent):`<p class="empty">The archive is ready for its first entry.</p>`}</div>
     ${homePhotos()}
     <div class="home-progress">${homeReading()}${homeJourneys()}</div>
     ${onThisDay()}
@@ -863,39 +878,36 @@ function topics(shelf){
 // archive is for is finding a thing again later, and the words that identify
 // an entry are usually well past the excerpt.
 function searchPool(){return [...state.data.entries,...state.data.tasks.map(t=>({...t,type:"Task",excerpt:t.note||""}))]}
-function haystack(e){return [e.title,e.excerpt,e.author,e.body,...(e.topics||[]).map(x=>topic(x).name)].filter(Boolean).join(" ").toLowerCase()}
+function normalizeSearch(text){return String(text||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[’']/g,"").replace(/[^\p{L}\p{N}]+/gu," ").trim()}
+function searchTerms(q){return [...new Set(normalizeSearch(q).split(/\s+/).filter(Boolean))]}
+function haystack(e){return normalizeSearch([e.title,e.excerpt,e.author,e.body,...(e.topics||[]).map(x=>topic(x).name)].filter(Boolean).join(" "))}
 function searchResults(q){
-  const term=q.trim().toLowerCase();
-  return searchPool().filter(e=>(state.filter==="all"||e.type===state.filter)&&(!term||haystack(e).includes(term)));
+  const terms=searchTerms(q);
+  return searchPool().filter(e=>{
+    const date=(e.occurredAt||e.dueAt||e.createdAt||"").slice(0,10);
+    return (state.filter==="all"||e.type===state.filter)&&
+      (!state.searchSpace||(e.topics||[]).some(id=>id===state.searchSpace||topic(id).parent===state.searchSpace))&&
+      (!state.searchFrom||date>=state.searchFrom)&&(!state.searchTo||(date&&date<=state.searchTo))&&
+      terms.every(term=>haystack(e).includes(term));
+  });
 }
-// Show why a result matched: the line the term appears on, trimmed around it,
-// with the term marked. Falls back to the excerpt when the match is already
-// visible in the title or the excerpt itself.
 function matchSnippet(e,q){
-  const term=q.trim();
-  if(!term)return "";
-  const low=term.toLowerCase();
-  if((e.title||"").toLowerCase().includes(low)||(e.excerpt||"").toLowerCase().includes(low))return "";
-  // strip the markdown so the snippet reads as prose rather than as source
-  const text=String(e.body||"")
-    .replace(/```[\s\S]*?```/g," ")
-    .replace(/^!\[[^\]]*\]\([^)]*\)$/gm," ")
-    .replace(/^#{1,6}\s*/gm,"")
-    .replace(/^\s*[-*]\s+/gm,"")
-    .replace(/\[\[([^\]|]+)\|?[^\]]*\]\]/g,"$1")
-    .replace(/\[([^\]]+)\]\([^)]*\)/g,"$1")
-    .replace(/[*`>]/g,"")
-    .replace(/\s+/g," ").trim();
-  const i=text.toLowerCase().indexOf(low);
-  if(i<0)return "";
-  const from=Math.max(0,i-70),to=Math.min(text.length,i+term.length+90);
-  // start and end on whole words, or the snippet opens mid-word
-  let head=text.slice(from,i); if(from>0)head=head.replace(/^\S*\s+/,"");
-  let tail=text.slice(i+term.length,to); if(to<text.length)tail=tail.replace(/\s+\S*$/,"");
-  const hit=text.slice(i,i+term.length);
-  return `${from>0?"&hellip; ":""}${esc(head)}<mark>${esc(hit)}</mark>${esc(tail)}${to<text.length?" &hellip;":""}`;
+  const terms=searchTerms(q);if(!terms.length)return "";
+  const text=String(e.excerpt||"")+" "+String(e.body||"").replace(/!\[[^\]]*\]\([^)]*\)/g,"").replace(/\[([^\]]+)\]\([^)]*\)/g,"$1").replace(/[#*`>]/g,"").replace(/\s+/g," ");
+  const words=[...text.matchAll(/[\p{L}\p{N}]+(?:[’'][\p{L}\p{N}]+)*/gu)];
+  const hits=words.filter(m=>terms.some(t=>normalizeSearch(m[0]).includes(t)));
+  if(!hits.length)return "";
+  const first=hits[0],from=Math.max(0,first.index-65),to=Math.min(text.length,first.index+150);
+  let cursor=from,result=from?"… ":"";
+  for(const hit of hits){if(hit.index<from||hit.index>=to)continue;result+=esc(text.slice(cursor,hit.index))+"<mark>"+esc(hit[0])+"</mark>";cursor=hit.index+hit[0].length}
+  return result+esc(text.slice(cursor,Math.max(cursor,to)))+(to<text.length?" …":"");
 }
-function search(){const q=state.search,pool=searchPool(),present=new Set(pool.map(x=>x.type)),types=["all",...["Journal","Note","Reading","Quote","Journey","Task","Event"].filter(t=>present.has(t))],items=searchResults(q);return `<section class="search-page"><div class="search-input-wrap"><input class="search-box" type="search" value="${esc(state.search)}" placeholder="Search noted…" aria-label="Search noted" autofocus>${q?`<button type="button" class="search-clear" data-clear-search aria-label="Clear search">Clear</button>`:""}</div><div class="search-filters">${types.map(t=>`<button class="filter ${state.filter===t?"active":""}" data-filter="${t}">${t}</button>`).join("")}</div><div class="entry-list search-results" aria-live="polite">${items.length?items.map(e=>entryCard(e,matchSnippet(e,q))).join(""):`<p class="empty">No matching records.</p>`}</div></section>`}
+function searchResultsMarkup(){const items=searchResults(state.search);return `<p class="search-count">${items.length} ${items.length===1?"record":"records"}</p>${state.searchFrom&&state.searchTo&&state.searchFrom>state.searchTo?`<p class="empty">Choose an end date on or after the start date.</p>`:items.length?items.map(e=>entryCard(e,matchSnippet(e,state.search))).join(""):`<p class="empty">No matching records. Try fewer words or widen your filters.</p>`}`}
+function updateSearchResults(){document.querySelector(".search-results").innerHTML=searchResultsMarkup();const clear=document.querySelector(".search-clear");if(clear)clear.hidden=!state.search}
+function search(){
+  const present=new Set(searchPool().map(x=>x.type)),types=["all",...[...present].sort()];
+  return `<section class="search-page"><div class="search-input-wrap"><input class="search-box" type="search" value="${esc(state.search)}" placeholder="Words you remember…" aria-label="Search noted"><button type="button" class="search-clear" data-clear-search aria-label="Clear search" ${state.search?"":"hidden"}>Clear</button></div><div class="search-filters">${types.map(t=>`<button class="filter ${state.filter===t?"active":""}" aria-pressed="${state.filter===t}" data-filter="${esc(t)}">${esc(t)}</button>`).join("")}</div><div class="search-refinements"><label>Space<select data-search-field="searchSpace"><option value="">All spaces</option>${Object.entries(state.data.topics).sort((a,b)=>a[1].name.localeCompare(b[1].name)).map(([id,t])=>`<option value="${esc(id)}" ${state.searchSpace===id?"selected":""}>${esc(t.name)}</option>`).join("")}</select></label><label>From<input type="date" data-search-field="searchFrom" value="${esc(state.searchFrom)}"></label><label>To<input type="date" data-search-field="searchTo" value="${esc(state.searchTo)}"></label><button type="button" data-reset-search>Reset filters</button></div><div class="entry-list search-results" aria-live="polite">${searchResultsMarkup()}</div></section>`;
+}
 function writing(){
   // Writing is a selection, not a second copy of the archive. An entry joins
   // it by saying so with `writing: true`; publishedAt keeps its own job of
@@ -1499,7 +1511,9 @@ document.addEventListener("click",async e=>{
   const tp=e.target.closest("[data-topic]");if(tp){state.returnTo=location.hash||"#topics";location.hash=`topics/${tp.dataset.topic}`;return}
   if(e.target.closest(".main-nav a"))document.querySelector(".main-nav").classList.remove("open");
 });
-document.addEventListener("input",e=>{if(e.target.matches(".search-box")){state.search=e.target.value;const pos=e.target.selectionStart;document.querySelector(".search-results").innerHTML=(()=>{const items=searchResults(state.search);return items.length?items.map(e=>entryCard(e,matchSnippet(e,state.search))).join(""):`<p class="empty">No matching records.</p>`})();e.target.setSelectionRange(pos,pos)}});
+document.addEventListener("input",e=>{if(e.target.matches(".search-box")){state.search=e.target.value;updateSearchResults()}});
+document.addEventListener("change",e=>{const key=e.target.dataset.searchField;if(["searchSpace","searchFrom","searchTo"].includes(key)){state[key]=e.target.value;updateSearchResults()}});
+document.addEventListener("click",e=>{if(e.target.closest("[data-reset-search]")){state.searchSpace="";state.searchFrom="";state.searchTo="";state.filter="all";render()}});
 document.addEventListener("keydown",e=>{
   if(e.key==="Escape"&&document.body.classList.contains("modal-open")){e.preventDefault();closeModal();return}
   if(e.key!=="/"||e.metaKey||e.ctrlKey||e.altKey||/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName||""))return;

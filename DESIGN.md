@@ -4,7 +4,7 @@
 
 ## World
 
-**Naturalist Field Notebook / Herbarium Archive.** Every entry in Noted is a mounted specimen, not a feed item: a bordered card with mounting-tape corners, a pinned topic tag, an accession number, and a hard rubber-stamp mark for private/published status. Older entries fade like sun-bleached ink (time-depth cue). Direction seed key `df5200b8` (candidate 4, assigned).
+**Naturalist Field Notebook / Herbarium Archive.** Every entry in Noted is a mounted specimen, not a feed item: a bordered card with mounting-tape corners, a pinned topic tag, an accession number, and a hard rubber-stamp mark for private/published status. Older entries retain readable ink; a dashed date underline marks archive age. Direction seed key `df5200b8` (candidate 4, assigned).
 
 The archive has two deliberately different entrances. **Spaces** groups things by subject and gives every room its own material language: kitchen recipe folio, developer console, record cabinet, reading room, field log, road book, family album, and personal dashboard. **Library** is the neutral catalogue, grouping those same records by format. Search remains in the primary navigation because retrieval is a core action rather than another archive category.
 
@@ -27,7 +27,7 @@ Per-topic ink (saturated specimen-label colors, set in `data.js` `topics[id].col
 ## Type
 
 - `--mono: "Space Mono"`: labels, nav, accession numbers, stamps, page titles, buttons, the wordmark. Justification: a naturalist's specimen tags are typewritten, not typeset serif: this is the system's structural voice, used at confident scale (page titles run `clamp(46px,7.4vw,96px)`, lowercase).
-- `--serif: "Spectral"`: body prose: entry titles, excerpts, quotes, form text. Italic used functionally for excerpts/authors/quotes, never as decorative hero treatment.
+- `--serif: "Spectral"`: body prose: entry titles, excerpts, quotes, form text. Italic used functionally for quotations, never as decorative hero treatment.
 
 Both faces load via Google Fonts (`index.html` `<link>`), with system fallbacks.
 
@@ -38,7 +38,7 @@ Both faces load via Google Fonts (`index.html` `<link>`), with system fallbacks.
 - **Mount tag**: the primary topic name, pinned top-left, filled with the topic's ink color, rotated -2°, straightens slightly on hover.
 - **Stamp**: `PRIVATE` rendered as a rotated bordered rubber-stamp mark (`.stamp`), never a soft color fade, but a hard state change. Shown only on an entry held back from the Writing page; everything else carries its date instead.
 - **Postmark date block**: circular double-ringed date badge (`.date-large`) on Today/Calendar, rotated -4°.
-- **Time-depth fade**: `.entry.aged` (30–180 days) and `.entry.archive` (180+ days) reduce opacity/saturation so older specimens visibly recede.
+- **Time-depth**: older entries keep full text opacity and saturation. Archive dates receive a dashed underline.
 - **Pin-in motion**: modals enter with a single authored `pin` keyframe (slight rotate + scale + rise, exponential ease-out, ~220ms), respecting `prefers-reduced-motion`.
 
 ## Layout
@@ -57,3 +57,7 @@ The archive follows the device colour scheme by default. A small sun/half-moon c
 ## Provenance
 
 Topic spaces preferentially use the author's own archive photography and real book covers. Bespoke editorial images in `assets/posts/` were generated locally for records that had no suitable personal image; remote stock-image URLs are not used. Reading, Technology and Music previews on the Spaces index are assembled from existing book covers or drawn entirely in CSS. Fonts remain the two Google Fonts above.
+
+## Mobile journal browsing
+
+Home uses a vertical stream grouped by date, with the newest record featured and subsequent records shown as compact two-line previews with optional thumbnails. Search matches all supplied words across the record, normalizes punctuation and accents, and supports Space and inclusive date filters. Failed card photographs collapse to text; failed photograph-strip items are removed.
