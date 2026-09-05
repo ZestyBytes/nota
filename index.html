@@ -3,8 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#eef0e7" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#14160f" media="(prefers-color-scheme: dark)">
+  <!-- The masthead band is the night palette in both themes, so the status bar
+       matches it rather than the paper below it. Splitting this by scheme left
+       a pale strip above the band on a phone in light mode. -->
+  <meta name="theme-color" content="#14160f">
   <meta name="color-scheme" content="light dark">
   <script>try{for(const k of Object.keys(localStorage))if(k.startsWith("nota-")){const n="noted-"+k.slice(5);if(localStorage.getItem(n)===null)localStorage.setItem(n,localStorage.getItem(k));localStorage.removeItem(k)}}catch(e){}
   try{const t=localStorage.getItem("noted-theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>

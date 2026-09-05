@@ -99,7 +99,7 @@ a{color:inherit;text-decoration:none;}
 input[type="checkbox"]:focus-visible{outline-offset:3px;}
 #app:focus-visible{outline:none;}
 /* ---------- header ---------- */
-.site-header{height:96px;max-width:var(--max);margin:auto;padding:0 28px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;position:relative;}
+.site-header{height:calc(96px + env(safe-area-inset-top,0px));max-width:var(--max);margin:auto;padding:env(safe-area-inset-top,0px) 28px 0;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;position:relative;}
 .wordmark{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:0;border:0;background:transparent;color:inherit;line-height:1;cursor:pointer;text-align:left;}
 .wordmark:hover .wordmark-mark i,.wordmark:focus-visible .wordmark-mark i{transform:scale(1.35);}
 .wordmark-mark{font:700 30px/1 var(--mono);letter-spacing:-.02em;text-transform:lowercase;}
@@ -364,7 +364,7 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px;min-width:0;}
 .user-tools{display:flex;justify-content:flex-end;align-items:center;gap:14px;border-top:1.5px solid var(--ink);margin-top:80px;padding-top:18px;font:11px var(--mono);text-transform:uppercase;letter-spacing:.05em;color:var(--muted);}
 /* ---------- responsive ---------- */
 @media(max-width:800px){
-  .site-header{height:70px;padding:0 18px;display:flex;justify-content:space-between;align-items:center;}
+  .site-header{height:calc(70px + env(safe-area-inset-top,0px));padding:env(safe-area-inset-top,0px) 18px 0;display:flex;justify-content:space-between;align-items:center;}
   /* No burger on a phone: the bottom bar already reaches every route, so
      the space goes to the date instead. */
   .main-nav{display:none;}
