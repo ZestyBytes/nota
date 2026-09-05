@@ -27,3 +27,4 @@ The water flosser is the one thing that seems to help, gently, keeping the
 socket clean when nothing else will reach.
 
 When does this end?
+![[1211ad66-adbe-4911-9a01-c7cf3d63f2cd.jpeg]]
