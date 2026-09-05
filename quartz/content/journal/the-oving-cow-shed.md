@@ -5,7 +5,7 @@ tags: [family, eatingout]
 occurredAt: "2026-09-05"
 createdAt: "2026-09-05"
 publishedAt: "2026-09-05"
-map: "The Oving Cow Shed, Woodhorn Farm, Oving, Chichester, UK"
+map: "50.8333995,-0.7067034"
 mapLabel: "The Oving Cow Shed, Oving"
 publish: true
 ---
