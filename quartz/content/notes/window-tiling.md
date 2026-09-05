@@ -10,15 +10,15 @@ publish: true
 
 ![Paper and translucent panels arranged into a tiled grid](assets/posts/window-tiling.png)
 
-The appeal of tiling is not fitting the maximum number of windows on screen.
-It is reducing the tiny decisions: where a window belongs, how large it should
-be, and what gets hidden when the next thing opens.
+What appeals to me about tiling is having fewer small decisions to make:
+where a window belongs, how big it should be and what disappears when I open
+the next one.
 
-This note can become a practical guide to the layouts, shortcuts and rules
-that make tiling useful without turning the desktop into a hobby of its own.
+I want to keep the layouts and shortcuts that help with that here. The test
+is whether they make an ordinary day at the desktop easier.
 
 ## Questions to answer
 
 - Which layout works best for writing, coding and browsing?
 - What should float rather than tile?
-- Which shortcuts are genuinely worth learning?
+- Which shortcuts do I use often enough to remember?

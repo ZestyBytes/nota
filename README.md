@@ -120,3 +120,14 @@ capture/edit UI in `app.js` to actually use it for writing.
   `private/`, `drafts/`, and `templates/`, which are never scanned).
 - Don't put genuinely sensitive writing in this repository at all, even with
   `publish: false`; it's still in Git history to anyone with repo access.
+
+## Lightweight production build
+
+The Pages workflow runs `quartz/scripts/optimize-site.mjs dist` after assembling
+the app and building content. It uses the existing Sharp and esbuild dependencies
+to produce WebP images and minified JS/CSS. Repository originals are preserved.
+Library's **Save for offline reading** loads `offline.js` only on request.
+
+Checks: `node tests/smoke.mjs`, `node tests/offline.mjs` and
+`node quartz/scripts/validate-content.mjs`. Set `NOTED_BUILD_DIR=dist` when
+running smoke checks to exercise the compiled app with published content.

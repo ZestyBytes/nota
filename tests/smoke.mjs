@@ -3,7 +3,7 @@ import fs from "node:fs";
 import vm from "node:vm";
 
 const root = new URL("../", import.meta.url);
-const files = name => fs.readFileSync(new URL(name, root), "utf8");
+const files = name => fs.readFileSync(process.env.NOTED_BUILD_DIR&&["app.js","data.js","backend.js"].includes(name)?new URL(process.env.NOTED_BUILD_DIR+"/"+name,root):new URL(name, root), "utf8");
 const elements = new Map();
 function element(id) {
   if (!elements.has(id)) elements.set(id, { id, innerHTML:"", textContent:"", classList:{add(){},remove(){},toggle(){}}, focus(){}, querySelector(){return null} });
@@ -72,3 +72,8 @@ run(`
   if(!shotRemoved||!sectionRemoved)throw Error('Empty photo strip remains');
 `);
 console.log('Journal stream, search and image fallback checks passed');
+
+assert.doesNotMatch(run("librarySpines()"),/vol-spread|aria-hidden="true".*vol-hit/);
+assert.match(run("librarySpines()"),/class="cloth-book"/);
+assert.equal((run("librarySpines()").match(/class="cloth-book"/g)||[]).length,run("Object.keys(state.data.topics).length"));
+console.log('Library spine checks passed');

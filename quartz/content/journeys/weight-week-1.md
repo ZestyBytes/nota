@@ -13,8 +13,8 @@ metric: 108
 publish: true
 ---
 
-108kg. The heaviest I have been, written down rather than avoided, because a
-journey that starts from a flattering number is not a journey.
+108kg. The heaviest I've been. I don't much like writing it down, but that's
+where I'm starting.
 
 90kg is the target. It is where I felt best and it is far enough away to be
 worth the effort. 100kg is the milestone I am going to actually celebrate,

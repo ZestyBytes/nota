@@ -10,17 +10,16 @@ publish: true
 
 ![Two contrasting developer workbenches side by side](assets/posts/codex-vs-claude.png)
 
-Not a synthetic benchmark, just a running comparison based on the work I
-actually ask them to do. The useful question is less “which is smartest?” and
-more “which one helps me finish this kind of task with the least friction?”
+I want to compare Codex and Claude on the work I actually ask them to do.
+Which helps me finish a task with less explaining, correcting and starting
+again? That's what I want to keep track of here.
 
-## Comparison notes
+## What I'll compare
 
-| Task | Codex | Claude |
-| --- | --- | --- |
-| Working across a repository | Add notes here | Add notes here |
-| Explaining an unfamiliar codebase | Add notes here | Add notes here |
-| UI iteration and visual judgement | Add notes here | Add notes here |
-| Quick questions and writing | Add notes here | Add notes here |
+- Working across a repository
+- Explaining code I haven't seen before
+- Making and refining an interface
+- Quick questions and help with writing
 
-I will update this after using both on the same real projects for a few weeks.
+I haven't written up the results yet. I'll add specific examples as I use
+both on the same projects.

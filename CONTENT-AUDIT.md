@@ -114,3 +114,40 @@ Every one of these is a generated or stock placeholder unless proven otherwise.
       if you would rather it sat in its own sub-topic.
 - [ ] `ED742637-A240-41B9-B6DB-876BA58FAC41.jpeg` sits loose in the repo root.
 - [ ] `attachments/IMG_5936` exists as both `.jpeg` and `.png`.
+
+## Editorial pass, 5 September 2026
+
+Reviewed all 55 non-template, non-draft content files (53 published), plus the
+unpublished working-note fixture, retaining publication flags, dates,
+measurements, task completion and quote text. This is a voice and consistency
+review, not factual verification of the historical entries or source material.
+
+Voice: British English, first person where the author is speaking, concrete
+observations, short paragraphs, and contractions where they sound natural.
+Keep unfinished notes recognisably unfinished. Do not manufacture memories,
+conclusions, favourite things or reasons for reading a book. Keep the humour
+and specific details in the school, Mini and exhaust stories.
+
+| Area | Result |
+| --- | --- |
+| Journal: 7 posts | Edited Barcelona, School starts and the garden opening. Preserved the four other stories and technical log. |
+| Notes: 11 posts | Edited seven: Codex/Claude, Hyprland, window tiling, side projects, work, interests, Why I made Noted. The Omarchy note, playlists and habits cards already have an identifiable voice. |
+| Journeys: 8 files | Lightly edited piano, reading and weight openings. Kept the activity, sleep and plants records. Two unpublished layout examples remain unpublished. |
+| Books: 4 | Kept authors, reading notes, statuses, progress and linked quotations. No invented reactions to books. |
+| Quotes: 4 | Verbatim text and attribution unchanged. Existing attribution checks remain open. |
+| Plants: 8 | Reviewed descriptions and the office-light note. Care advice and actual growing conditions need a separate factual check; no new advice added. |
+| Tasks: 11 | Kept the practical voice, completion state and dates. |
+| Recipe: 1; event: 1 | Kept ingredients, method and event details. |
+| Unpublished working note | Kept the publication-guard fixture unchanged. |
+
+### Personal detail still needed
+
+- Barcelona: accommodation, favourite meal, walks and particular moments. The photographs now have a natural introduction, but these memories still need the author.
+- Codex vs Claude: real comparison results. Removed the empty comparison table and kept a clear list of what to compare.
+- Hyprland and window tiling: actual shortcuts, settings and examples.
+- Work that fits: answers to the questions, rather than an invented career narrative.
+- Interests: specific builds and other favourites, when ready.
+- Side projects: removed the empty “Next project” and “Experiment” slots. Noted remains the named project.
+
+Earlier questions about image provenance and reading progress remain open.
+This pass does not silently resolve them.

@@ -61,3 +61,13 @@ Topic spaces preferentially use the author's own archive photography and real bo
 ## Mobile journal browsing
 
 Home uses a vertical stream grouped by date, with the newest record featured and subsequent records shown as compact two-line previews with optional thumbnails. Search matches all supplied words across the record, normalizes punctuation and accents, and supports Space and inclusive date filters. Failed card photographs collapse to text; failed photograph-strip items are removed.
+
+## Lightweight Library shelf
+
+Library Spaces are now a single row of clothbound spine links. Titles remain upright along the spine, with a small imprint and record count. Widths are generous enough to tap, heights vary slightly, and the topic colour belongs to the book. A tap opens the Space directly. The shelf scrolls by hand and does not clone books, open a 3D spread, or animate at rest. The Books tab keeps its existing reading records and cover art.
+
+## Delivery and offline reading
+
+Deployment generates smaller WebP images, capped at 1600 pixels on their longest edge, and minifies JavaScript and CSS. Source images and editable code remain unchanged in the repository. Generated image names include a content hash so replacing a photograph refreshes its cached version.
+
+Library offers an optional offline download for a month or journey. The download contains the app shell, archive text and that selection's local photographs. Downloads are limited to two simultaneous requests, support cancellation and report completion only after all files are saved. Packs survive app updates; removing a pack deletes its dedicated saved copy. Browser storage can still be evicted. Videos and remote embeds remain online-only.

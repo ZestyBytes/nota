@@ -13,8 +13,8 @@ metric: 0
 publish: true
 ---
 
-One book a week for a year. Fifty-two is a lot written down and entirely
-ordinary spread across seven days at a time.
+One book a week for a year. Fifty-two looks like a lot written down, so I'll
+start with the book already on the go.
 
 The Library is the record, not this journey. A book gets its own entry there
 with its status and its cover, and the weekly check-in here just says what I
@@ -24,5 +24,4 @@ I am quietly counting short books.
 On the go now: The Anxious Generation, Jonathan Haidt. Next up from
 want-to-read: Tomorrow, and Tomorrow, and Tomorrow, Gabrielle Zevin.
 
-The bar counts books finished. Zero so far, which is the correct number for
-week one.
+The bar counts books finished. Zero so far. This is the starting point.

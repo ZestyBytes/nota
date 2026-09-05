@@ -13,8 +13,7 @@ metric: 0
 publish: true
 ---
 
-Zero hours. I cannot play a note and I cannot read music, so this is a genuine
-start rather than a restart.
+Zero hours. I can't play a note or read music. I'm starting from the beginning.
 
 The week is split two ways. Study is the theory: reading the notation, learning
 what the marks on the page are asking for, so that eventually the page is

@@ -13,11 +13,11 @@ publish: true
 ![[IMG_5496.jpeg]]
 ![[IMG_5405.jpeg]]
 
-A place to collect the Barcelona trip properly: the moments we keep retelling,
-the places we would return to, what the children noticed, and the photographs
-that would otherwise disappear into the camera roll.
+I've kept the photographs here while I put the Barcelona trip into words.
+I want to remember what the children noticed, the moments we keep retelling
+and the places we'd go back to.
 
-## Still to add
+## What I still want to write down
 
 - Where we stayed and the walks we took most often
 - Favourite meal and best accidental discovery

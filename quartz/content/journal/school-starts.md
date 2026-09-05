@@ -1,5 +1,5 @@
 ---
-title: School Starts
+title: School starts
 type: journal
 tags:
   - family
@@ -14,7 +14,7 @@ big room at nursery.
 
 ![[IMG_5839.jpeg]]
 
-Still not feeling great post surgery, as the throbbing face ache continues.
+Still not feeling great after surgery. The throbbing face ache continues.
 
 Memory assessment with the GP this morning, which I forgot about until the
 calendar alert came through. Dropped the kids off as part of the usual battle,

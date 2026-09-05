@@ -10,11 +10,11 @@ publish: true
 
 ![An abstract tiled Linux desktop](assets/posts/hyprland.png)
 
-Hyprland makes the desktop feel less like a pile of windows and more like a
-workspace with a rhythm. This is a placeholder for what felt good, what needed
-taming, and the configuration I want to keep when the novelty wears off.
+I like the rhythm of moving between windows in Hyprland. I still need to
+write down what felt useful, what needed taming and which settings I want
+to keep once the novelty wears off.
 
-## To add
+## Still to write up
 
 - The setup I started with
 - Key bindings that became muscle memory

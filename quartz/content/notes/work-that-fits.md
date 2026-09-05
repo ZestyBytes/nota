@@ -10,14 +10,13 @@ publish: true
 
 ![A calm morning workspace beside the window](assets/posts/work-that-fits.png)
 
-A holding page for thinking about work without turning Noted into LinkedIn.
-What kinds of problems are satisfying, what drains energy, and what a good
-week looks like when the job supports the rest of life rather than swallowing
-it.
+I want somewhere to think honestly about work: the problems I enjoy, the
+things that drain me and what a good week would look like. I haven't worked
+through all of that yet.
 
-## Prompts
+## Questions I'm keeping
 
-- Work I am proud of
-- Skills I want to become known for
-- Conditions that help me do good work
-- Things I no longer want to optimise for
+- What work am I proud of?
+- Which skills do I want to spend more time using?
+- What helps me do good work?
+- What am I happy to stop chasing?

@@ -23,7 +23,7 @@ were never written down at all.
 
 Nothing was truly lost, but everything was fragmented. Each app was good at
 holding one kind of thing and poor at helping me see the whole of it again.
-The cost was not storage. It was return.
+I could usually find something if I went looking. I rarely went looking.
 
 | The thing | Where it tended to vanish |
 |---|---|
@@ -116,8 +116,7 @@ Keeping the published site static made several decisions easier:
 - **No lock-in:** the archive survives even if the interface changes.
 - **Private by default:** only a deliberate publish flag crosses the boundary.
 
-Those constraints are not missing features. They are what let Noted stay small
-enough to understand and personal enough to trust.
+That keeps Noted small enough for me to understand and look after.
 
 ## Still becoming itself
 

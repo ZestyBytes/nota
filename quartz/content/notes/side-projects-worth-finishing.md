@@ -10,15 +10,14 @@ publish: true
 
 ![A side project taking shape on the kitchen table](assets/posts/side-projects.png)
 
-Not every idea needs to become a product. This is a small register of the
-projects that are still interesting after the first burst of enthusiasm, and
-the next concrete step for each one.
+I want to keep track of the projects that still interest me after the first
+burst of enthusiasm. For each one, just the next thing I can actually do.
 
 ## Current shortlist
 
 - **Noted**: keep making the archive easier and more enjoyable to revisit.
-- **Next project**: describe the smallest version that would still be useful.
-- **Experiment**: something deliberately disposable, built only to learn.
 
-The rule: one visible next step, and permission to archive anything that no
-longer feels worth finishing.
+I'll add another project when I have one worth putting beside it.
+
+One next step is enough. If a project stops being interesting, I can put it
+away without turning finishing it into another job.

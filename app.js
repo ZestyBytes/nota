@@ -712,8 +712,12 @@ function libraryBody(){
   }
   return body;
 }
+function librarySpines(){
+  const spaces=Object.entries(state.data.topics).map(([id,t])=>({id,t,count:topicCount(id)})).sort((a,b)=>a.t.name.localeCompare(b.t.name));
+  return `<div class="spine-heading"><h2>Spaces</h2><span>Slide the shelf · tap to enter</span></div><nav class="cloth-shelf" aria-label="Browse spaces">${spaces.map(({id,t,count},i)=>`<a class="cloth-book" href="#topics/${encodeURIComponent(id)}" style="--cloth:${t.color};--trim:${164+(i%3)*12}px" aria-label="${esc(t.name)}, ${count} things kept"><span class="cloth-series" aria-hidden="true">noted.</span><strong>${esc(t.name)}</strong><span class="cloth-count">${count}<span class="sr-only"> things kept</span></span></a>`).join("")}</nav>`;
+}
 function library(){
-  return `<section class="library-index">${pageHead("Browse by format","Library","Highlights are a small selection chosen to share. Notes gathers notes, journals and quotes; journeys, books, photographs and plants keep their useful shapes.")}<div class="library-space-filter">${topics(true)}</div><div class="library-tabs">${Object.entries(libraryTabs).map(([x,label])=>`<button class="filter ${state.library===x?"active":""}" data-library="${x}">${label}</button>`).join("")}</div><div class="library-body">${libraryBody()}</div></section>`;
+  return `<section class="library-index">${pageHead("Browse by format","Library","Highlights are a small selection chosen to share. Notes gathers notes, journals and quotes; journeys, books, photographs and plants keep their useful shapes.")}<div class="library-space-filter">${librarySpines()}</div><div class="library-tabs">${Object.entries(libraryTabs).map(([x,label])=>`<button class="filter ${state.library===x?"active":""}" data-library="${x}">${label}</button>`).join("")}</div><div class="library-body">${libraryBody()}</div><section class="offline-tools"><button type="button" data-offline-open>Save for offline reading</button><div id="offline-panel"></div></section></section>`;
 }
 // Switching filter swaps only the list. Re-rendering the whole page rebuilt the
 // shelf of topics above it, which threw its drift back to the start every time.
@@ -769,86 +773,6 @@ function spacePreview(id,photo){
   if(id==="gardening")return `<span class="space-garden-preview" aria-hidden="true"><i></i><i></i><i></i><b>grow · tend · note</b></span>`;
   return photo?`<img class="topic-photo" src="${esc(photo.src)}" alt="" decoding="async" fetchpriority="high" onload="this.dataset.ready=1" onerror="this.closest('.topic-card').classList.remove('has-photo');this.nextElementSibling?.remove();this.remove()"><span class="topic-shade" aria-hidden="true"></span>`:"";
 }
-// What is printed inside a volume when its cover swings open: the space's
-// own bookplate on the verso, and the three most recent things filed under
-// it on the recto. All of it is already in the archive; nothing new is kept
-// for the shelf.
-// The right page is whatever the space actually keeps. A space of quotations
-// sets one as a quotation; a space that is really one long journey climbs its
-// steps; everything else lists what was filed last, which is also the fallback
-// when a space holds too little to choose from. Nothing is configured: the
-// page is picked by counting, the way a spine's thickness already is.
-function volumeRecto(id,all){
-  const shortDate=iso=>fmtDate(iso).replace(/ \d{4}$/,"");
-  const quotes=all.filter(e=>e.type==="Quote");
-  if(quotes.length&&quotes.length*3>=all.length){
-    const q=quotes[0],book=state.data.books.find(b=>b.status==="reading"&&inTopic(b,id));
-    return `<span class="vol-leaf recto recto-quote">
-      <h4>From the commonplace book</h4>
-      <blockquote>&ldquo;${esc(q.title)}&rdquo;</blockquote>
-      <cite>${esc(q.author||"")}</cite>
-      ${book?`<span class="vol-reading">Reading · ${esc(book.title)} · ${book.progress}%</span>`:""}
-    </span>`;
-  }
-  // A journey is a run of dated steps under one name, so the longest run in
-  // the space is the one worth setting out.
-  const runs={};
-  for(const e of all)if(e.journey)(runs[e.journey]=runs[e.journey]||[]).push(e);
-  const run=Object.entries(runs).sort((a,b)=>b[1].length-a[1].length)[0];
-  // A parent space inherits its children's entries, so a run only earns the
-  // page when it is at least half of what the space holds: Fitness climbs its
-  // ladder, Life, which merely contains Fitness, does not.
-  if(run&&run[1].length>=2&&run[1].length*2>=all.length){
-    const [name,steps]=run;
-    return `<span class="vol-leaf recto recto-journey">
-      <h4>Journey · ${esc(name)}<i>${steps.length} steps</i></h4>
-      <ol class="vol-ladder">${steps.slice(0,3).map((e,i)=>{
-        const cut=e.title.indexOf(": "),step=cut>0?e.title.slice(0,cut):shortDate(e.occurredAt||e.createdAt),
-              rest=cut>0?e.title.slice(cut+2):e.title;
-        return `<li${i?"":' class="now"'}><em>${esc(step)}</em><b>${esc(rest)}</b></li>`;
-      }).join("")}</ol>
-    </span>`;
-  }
-  const rows=all.slice(0,3),rest=all.length-rows.length;
-  return `<span class="vol-leaf recto"><h4>Latest in the space</h4>${rows.length
-    ? `<ul>${rows.map(e=>`<li><em>${esc(e.type)}<i>${esc(shortDate(e.occurredAt||e.createdAt))}</i></em><b>${esc(e.title)}</b></li>`).join("")}</ul>${rest>0?`<span class="vol-more">and ${rest} more inside</span>`:""}`
-    : `<span class="vol-none">Nothing filed here yet.</span>`}</span>`;
-}
-// A shelf holds a dozen spines, and the drift lays the row end to end a dozen
-// times over, so printing every volume's leaves up front is a few thousand
-// nodes nobody has asked to read. A volume is set the first time it opens.
-function volumeLeaves(id){
-  const t=state.data.topics[id];if(!t)return "";
-  const count=topicCount(id);
-  const all=state.data.entries.filter(e=>inTopic(e,id))
-    .sort((a,b)=>(b.occurredAt||b.createdAt||"").localeCompare(a.occurredAt||a.createdAt||""));
-  const shortDate=iso=>fmtDate(iso).replace(/ \d{4}$/,"");
-  const filed=topicLatest(id);
-  return `<span class="vol-leaf verso">
-      <span class="vol-mark">${esc(id.slice(0,3).toUpperCase())} · ${esc(accNo(id).slice(-2))}</span>
-      <span class="vol-plate"><span>Noted · space</span><b>${esc(t.name)}</b><i>${esc(t.description)}</i></span>
-      ${filed?`<span class="vol-filed">Last filed ${esc(shortDate(filed))}</span>`:""}
-      <span class="vol-tally"><b>${count}</b>things kept</span>
-    </span>
-    ${volumeRecto(id,all)}`;
-}
-// On the Library shelf the card is the case rather than the cloth: the cloth
-// rides on a cover hinged to its left edge, which swings away from the leaves
-// when the volume opens. Only the button at the foot of the open page carries
-// data-topic, so resting on a book reads it and never navigates.
-function volumeCard({id,t,count,spineW,spine}){
-  return `<div class="topic-card space-card vol space-${id} ${spineW>=50?"spine-titled":""}" data-space="${id}" data-count="${count}" style="${spine}--topic:${t.color};--soft:${t.soft}">
-    <button class="vol-hit" type="button" aria-expanded="false" aria-label="${esc(t.name)}, ${count} things kept. Open the volume."></button>
-    <span class="vol-book">
-      <span class="vol-spread" aria-hidden="true"></span>
-      <span class="vol-cover" aria-hidden="true">
-        <span class="vol-face out"><h2>${esc(t.name)}</h2><span class="vol-count">${count}</span></span>
-        <span class="vol-face in"><span class="vol-ex"><span>Ex libris</span><b>${esc(t.name)}</b><i>No. ${accNo(id)}</i></span></span>
-      </span>
-    </span>
-    <button class="vol-go" type="button" data-topic="${id}" tabindex="-1">View the space &rarr;</button>
-  </div>`;
-}
 function spaceCard({id,t,count,latest,kids,most},shelf){
   const photo=topicPhoto(id),special=["reading","technology","music","life","gardening"].includes(id),visual=spacePreview(id,photo);
   // On the Library shelf a spine's thickness is how much the space holds, and
@@ -863,7 +787,7 @@ function spaceCard({id,t,count,latest,kids,most},shelf){
   const TRIMS=[228,210,196,180];
   let trim=0;for(const c of id)trim=(trim*31+c.charCodeAt(0))>>>0;
   const spine=`--spine-w:${spineW}px;--spine-h:${TRIMS[trim%TRIMS.length]}px;`;
-  if(shelf)return volumeCard({id,t,count,spineW,spine});
+
   return `<button class="topic-card space-card space-${id} ${spineW>=50?"spine-titled":""} ground-${t.ground||"plain"} ${photo&&!special?"has-photo":""} ${special?"has-space-preview":""}" data-topic="${id}" data-count="${count}" style="${spine}--topic:${t.color};--soft:${t.soft}">${visual}${!visual&&t.ground==="wedge"?`<span class="topic-flag" aria-hidden="true"></span>`:""}<h2>${esc(t.name)}</h2><p>${esc(t.description)}</p>${kids.length?`<span class="topic-kids">${kids.map(k=>`<span class="kid" data-topic="${k}" style="--topic:${state.data.topics[k].color}">${esc(state.data.topics[k].name)}</span>`).join("")}</span>`:""}</button>`;
 }
 function topics(shelf){
@@ -880,7 +804,8 @@ function topics(shelf){
 function searchPool(){return [...state.data.entries,...state.data.tasks.map(t=>({...t,type:"Task",excerpt:t.note||""}))]}
 function normalizeSearch(text){return String(text||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[’']/g,"").replace(/[^\p{L}\p{N}]+/gu," ").trim()}
 function searchTerms(q){return [...new Set(normalizeSearch(q).split(/\s+/).filter(Boolean))]}
-function haystack(e){return normalizeSearch([e.title,e.excerpt,e.author,e.body,...(e.topics||[]).map(x=>topic(x).name)].filter(Boolean).join(" "))}
+const searchIndex=new WeakMap();
+function haystack(e){if(searchIndex.has(e))return searchIndex.get(e);const text=normalizeSearch([e.title,e.excerpt,e.author,e.body,...(e.topics||[]).map(x=>topic(x).name)].filter(Boolean).join(" "));searchIndex.set(e,text);return text}
 function searchResults(q){
   const terms=searchTerms(q);
   return searchPool().filter(e=>{
@@ -1157,7 +1082,6 @@ function afterRender(route){
   lastHash=hash;
   swipeable(".deck",".deck-dots i");
   swipeable(".gallery",".gallery-dots i",".gallery-caption");
-  setupSpaceShelfMotion(route);
   setupMemoryKeypads();
   setupClawGames();
   syncReadingProgress();
@@ -1224,192 +1148,8 @@ function setupClawGames(){
     button.addEventListener("keydown",ev=>{if(ev.key===" "||ev.key==="Enter"){ev.preventDefault();if(!ev.repeat)start(ev)}});button.addEventListener("keyup",ev=>{if(ev.key===" "||ev.key==="Enter"){ev.preventDefault();drop()}});draw();
   });
 }
-let spaceShelfTimer=null,shelfDriftFrame=null,volumeCleanup=null;
-function setupSpaceShelfMotion(route){
-  if(spaceShelfTimer){clearInterval(spaceShelfTimer);spaceShelfTimer=null}
-  if(shelfDriftFrame){cancelAnimationFrame(shelfDriftFrame);shelfDriftFrame=null}
-  if(volumeCleanup){volumeCleanup();volumeCleanup=null}
-  if(route==="library"){openVolumes();return driftLibraryShelf()}
-  if(route!=="topics"||location.hash.split("/").length>1||window.matchMedia?.("(prefers-reduced-motion: reduce)").matches)return;
-  const rails=[...document.querySelectorAll(".space-shelf-rail")];if(!rails.length)return;
-  const paused=new WeakSet();
-  rails.forEach(rail=>["pointerenter","focusin","touchstart"].forEach(ev=>rail.addEventListener(ev,()=>paused.add(rail),{passive:true})));
-  spaceShelfTimer=setInterval(()=>rails.forEach((rail,i)=>{if(paused.has(rail))return;const max=rail.scrollWidth-rail.clientWidth;if(max<4)return;const dir=i%2===0?1:-1;const next=rail.scrollLeft+dir*.18;if(next<=0||next>=max){rail.scrollLeft=dir>0?0:max}else rail.scrollLeft=next}),80);
-}
-// Resting on a spine opens it: the cover swings off the leaves, the space's
-// own page is printed inside, and the rest of the shelf frosts back behind
-// it. Nothing opens on a pass along the row, and only the button at the foot
-// of the open page leaves the shelf.
-function openVolumes(){
-  const rail=document.querySelector(".library-space-filter .space-shelf-rail");
-  if(!rail)return;
-  const coarse=window.matchMedia?.("(hover:none)").matches;
-  let current=null,opening=null,closing=null,settling=0;
-  // Where the open page needs room, the shelf gives it. Widening happens to
-  // the right, so a book near the end of the row would open off the edge:
-  // the shelf slides just far enough to bring the whole page back in view.
-  // A cover swung right back needs nearly its own width to the LEFT of its
-  // hinge as well, and that room cannot always be found on a shelf that is
-  // drifting, so the angle is cut to whatever the spine actually has: a book
-  // at the left edge opens towards the reader instead of off the side.
-  const place=vol=>{
-    const rr=rail.getBoundingClientRect(),vr=vol.getBoundingClientRect(),
-          openW=window.matchMedia?.("(max-width:800px)").matches?Math.min(286,window.innerWidth*.78):300,
-          over=vr.left+openW-(rr.right-8);
-    let room=vr.left-rr.left;
-    if(over>0){
-      room-=over;
-      // The shelf moving under a resting pointer must not hand the next book
-      // along an open cover of its own.
-      settling=Date.now()+340;
-      slide(over);
-    }
-    // The cover reaches openW * |cos(angle)| to the left of its hinge, so the
-    // widest swing that still fits the room is 180 minus that angle back.
-    const fit=180-Math.acos(Math.max(0,Math.min(1,room/openW)))*180/Math.PI;
-    vol.style.setProperty("--deg",String(Math.round(Math.max(92,Math.min(155,fit)))));
-  };
-  // Written frame by frame rather than handed to scrollBy: a smooth scroll
-  // requested on this rail does nothing at all, and the shelf has its own
-  // drift writing scrollLeft, so the slide has to be ours to keep in step.
-  const slide=by=>{
-    const from=rail.scrollLeft,start=performance.now(),ms=180;
-    const step=now=>{
-      const k=Math.min(1,(now-start)/ms);
-      rail.scrollLeft=from+by*(1-Math.pow(1-k,3));
-      if(k<1)requestAnimationFrame(step);
-    };
-    if(window.matchMedia?.("(prefers-reduced-motion: reduce)").matches)rail.scrollLeft=from+by;
-    else requestAnimationFrame(step);
-  };
-  const show=vol=>{
-    if(current===vol)return;
-    if(current){
-      current.classList.remove("is-open");
-      current.querySelector(".vol-hit").setAttribute("aria-expanded","false");
-      current.querySelector(".vol-go").tabIndex=-1;
-    }
-    current=vol;
-    if(vol)rail.dataset.holdOpen="1";else delete rail.dataset.holdOpen;
-    if(vol){
-      const spread=vol.querySelector(".vol-spread");
-      if(!spread.childElementCount)spread.innerHTML=volumeLeaves(vol.dataset.space);
-      vol.classList.add("is-open");
-      vol.querySelector(".vol-hit").setAttribute("aria-expanded","true");
-      // The drift's copies are hidden from assistive technology, so nothing
-      // inside one of them belongs in the tab order.
-      if(vol.getAttribute("aria-hidden")!=="true")vol.querySelector(".vol-go").tabIndex=0;
-      place(vol);
-    }
-  };
-  // Held for a moment before anything moves, so running the pointer along the
-  // shelf leaves every book shut, and a slower close, so crossing the gap
-  // between two spines does not slam the first one.
-  const enter=e=>{
-    const vol=e.target.closest(".vol");if(!vol||coarse||Date.now()<settling)return;
-    clearTimeout(closing);clearTimeout(opening);opening=setTimeout(()=>show(vol),90);
-  };
-  const leave=e=>{
-    if(coarse||!e.target.closest(".vol"))return;
-    clearTimeout(opening);
-    closing=setTimeout(()=>{if(!rail.matches(":hover"))show(null)},180);
-  };
-  const focus=e=>{const vol=e.target.closest(".vol");if(vol)show(vol)};
-  const tap=e=>{if(!e.target.closest(".vol-go")){const vol=e.target.closest(".vol");if(vol)show(vol)}};
-  const away=e=>{if(!e.target.closest(".library-space-filter"))show(null)};
-  const key=e=>{if(e.key==="Escape"&&current){current.querySelector(".vol-hit").blur();show(null)}};
-  rail.addEventListener("pointerenter",enter,true);
-  rail.addEventListener("pointerleave",leave,true);
-  rail.addEventListener("focusin",focus);
-  rail.addEventListener("click",tap);
-  document.addEventListener("pointerdown",away);
-  document.addEventListener("keydown",key);
-  volumeCleanup=()=>{
-    clearTimeout(opening);clearTimeout(closing);
-    document.removeEventListener("pointerdown",away);
-    document.removeEventListener("keydown",key);
-  };
-}
-// The library's spines pass by as one long shelf. The row is laid end to end
-// until there is a spare run either side of the visible one, so the shelf
-// drifts on its own from the moment the page opens and a drag runs on for
-// ever in either direction, never reaching an end to bump against.
-function driftLibraryShelf(){
-  const rail=document.querySelector(".library-space-filter .space-shelf-rail");
-  if(!rail||window.matchMedia?.("(prefers-reduced-motion: reduce)").matches)return;
-  let loop=Number(rail.dataset.loop||0);
-  if(!loop){
-    const spines=[...rail.children];
-    if(!spines.length)return;
-    // Measure the run itself, never scrollWidth: a rail wider than its books
-    // reports scrollWidth as its own width, so the run came out as zero and
-    // the fold below span for ever on it.
-    const run=()=>{const last=rail.lastElementChild;return last?last.offsetLeft+last.offsetWidth:0};
-    if(run()<4)return;
-    let copies=0;
-    do{
-      for(const spine of spines){
-        const copy=spine.cloneNode(true);
-        copy.setAttribute("aria-hidden","true");copy.tabIndex=-1;
-        // A dozen runs of the same shelf must not be a dozen tab stops.
-        copy.querySelectorAll("button").forEach(button=>{button.tabIndex=-1});
-        rail.append(copy);
-      }
-      copies++;
-      // The distance from a spine to its own clone is the loop, gaps included.
-      if(copies===1)loop=rail.children[spines.length].offsetLeft-spines[0].offsetLeft;
-    }while(copies<12&&loop>0&&run()<rail.clientWidth+2*loop);
-    rail.dataset.loop=String(loop);rail.classList.add("shelf-drift");
-  }
-  // Nothing below can run without a positive loop to fold against.
-  if(!(loop>0))return;
-  // Every position is folded back into the middle run, so wherever the shelf
-  // is pushed there is always a whole run of spines waiting on either side.
-  const fold=x=>{let v=x;while(v<loop)v+=loop;while(v>=2*loop)v-=loop;return v};
-  // The position is kept here rather than read back from the rail: a fraction
-  // of a pixel written to scrollLeft comes back rounded, so a drift this slow
-  // would be rounded away to a standstill every frame.
-  let pos=loop,held=false,last=0,written=-1,quietUntil=0;
-  // A scroll event arrives a frame after the write that caused it, so the
-  // shelf's own writes are recognised by their value rather than by a flag
-  // that is long since back down by the time the event lands. The reading
-  // comes back rounded, hence the tolerance.
-  const put=v=>{written=v;rail.scrollLeft=v};
-  put(pos);
-  // A shelf that writes its own position every frame would fight a hand,
-  // killing a flick before its momentum has run out. Any push from the reader
-  // stands the drift down for a few seconds and it picks up from wherever
-  // they left the shelf, so scrolling it yourself always wins.
-  const HANDS_OFF=2600;
-  const yield_=()=>{quietUntil=performance.now()+HANDS_OFF;pos=rail.scrollLeft};
-  ["wheel","touchstart","touchmove","pointerdown","keydown"].forEach(ev=>rail.addEventListener(ev,yield_,{passive:true}));
-  rail.addEventListener("scroll",()=>{
-    if(Math.abs(rail.scrollLeft-written)<=1)return;
-    yield_();
-    // Only rewrap at the very ends. Folding a hand-moved shelf back to the
-    // middle on every scroll event wrote scrollLeft mid-gesture, which stops
-    // a flick dead, so in the middle of the run the hand is left alone.
-    const max=rail.scrollWidth-rail.clientWidth;
-    if(rail.scrollLeft<=2)put(pos=rail.scrollLeft+loop);
-    else if(rail.scrollLeft>=max-2)put(pos=rail.scrollLeft-loop);
-  },{passive:true});
-  const hold=on=>()=>{held=on;if(!on)pos=fold(rail.scrollLeft)};
-  ["pointerenter","focusin"].forEach(ev=>rail.addEventListener(ev,hold(true),{passive:true}));
-  ["pointerleave","focusout"].forEach(ev=>rail.addEventListener(ev,hold(false),{passive:true}));
-  const step=now=>{
-    if(!rail.isConnected)return;
-    const dt=last?Math.min(now-last,100):0;last=now;
-    if(held||rail.dataset.holdOpen||now<quietUntil)pos=rail.scrollLeft;
-    else{
-      // Rightwards along the shelf, at reading pace rather than carousel pace.
-      pos=fold(pos-dt*.014);
-      put(pos);
-    }
-    shelfDriftFrame=requestAnimationFrame(step);
-  };
-  shelfDriftFrame=requestAnimationFrame(step);
-}
 function syncReadingProgress(){
+  if(state.route!=="entry")return;
   const bar=document.querySelector(".reading-progress i"),page=document.querySelector(".entry-page");
   if(!bar||!page)return;
   const top=page.offsetTop,end=top+page.offsetHeight-innerHeight;
@@ -1452,6 +1192,14 @@ let installEvent=null;
 const installBanner=document.createElement("aside");installBanner.className="install-banner";installBanner.innerHTML=`<span><b>Keep Noted close</b><small>Add it to your home screen for a quicker launch.</small></span><button type="button" data-install>Install</button><button type="button" data-dismiss-install aria-label="Dismiss install prompt">×</button>`;document.body.appendChild(installBanner);
 window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();installEvent=e;if(!localStorage.getItem("noted-install-dismissed"))installBanner.classList.add("show")});
 window.addEventListener("appinstalled",()=>{installEvent=null;installBanner.classList.remove("show")});
+document.addEventListener("click",async e=>{
+  const button=e.target.closest("[data-offline-open]");if(!button)return;
+  if(NotedBackend.configured){toast("Offline packs are available for the published archive.");return}
+  button.disabled=true;
+  try{const offline=await import("./offline.js?v=light");await offline.openOffline(document.getElementById("offline-panel"),state.data)}
+  catch(error){toast("Offline saving is unavailable. Please try again when connected.")}
+  finally{button.disabled=false}
+});
 document.addEventListener("click",async e=>{
   // Back should retrace the route actually taken, not guess at one. The
   // browser already recorded it, one entry per hash move, so use that whenever
@@ -1511,7 +1259,8 @@ document.addEventListener("click",async e=>{
   const tp=e.target.closest("[data-topic]");if(tp){state.returnTo=location.hash||"#topics";location.hash=`topics/${tp.dataset.topic}`;return}
   if(e.target.closest(".main-nav a"))document.querySelector(".main-nav").classList.remove("open");
 });
-document.addEventListener("input",e=>{if(e.target.matches(".search-box")){state.search=e.target.value;updateSearchResults()}});
+let searchTimer;
+document.addEventListener("input",e=>{if(e.target.matches(".search-box")){state.search=e.target.value;clearTimeout(searchTimer);searchTimer=setTimeout(()=>{if(state.route==="search")updateSearchResults()},90)}});
 document.addEventListener("change",e=>{const key=e.target.dataset.searchField;if(["searchSpace","searchFrom","searchTo"].includes(key)){state[key]=e.target.value;updateSearchResults()}});
 document.addEventListener("click",e=>{if(e.target.closest("[data-reset-search]")){state.searchSpace="";state.searchFrom="";state.searchTo="";state.filter="all";render()}});
 document.addEventListener("keydown",e=>{
@@ -1589,7 +1338,7 @@ if("serviceWorker" in navigator){
 // foreground instead.
 let lastRefresh=Date.now();
 function reloadData(){return new Promise((resolve,reject)=>{const s=document.createElement("script");s.src=`data.js?t=${Date.now()}`;s.onload=()=>{s.remove();resolve()};s.onerror=()=>{s.remove();reject(new Error("data.js unreachable"))};document.head.appendChild(s)})}
-async function refreshArchive(){if(document.hidden||state.booting||Date.now()-lastRefresh<15000)return;if(document.getElementById("modal-root").innerHTML)return;lastRefresh=Date.now();try{if(NotedBackend.configured&&state.user)await loadRemoteArchive();else{await reloadData();state.data=clone(window.NOTED_DATA)}render()}catch(error){/* offline, or the fetch failed: keep showing what we already have */}}
+async function refreshArchive(){if(document.hidden||state.booting||Date.now()-lastRefresh<60000)return;if(document.getElementById("modal-root").innerHTML)return;lastRefresh=Date.now();try{if(NotedBackend.configured&&state.user)await loadRemoteArchive();else{await reloadData();state.data=clone(window.NOTED_DATA)}render()}catch(error){/* offline, or the fetch failed: keep showing what we already have */}}
 document.addEventListener("visibilitychange",refreshArchive);
 window.addEventListener("pageshow",refreshArchive);
 // Back on a signal after a spell offline: pick up whatever was published

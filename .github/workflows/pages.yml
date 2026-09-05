@@ -31,7 +31,7 @@ jobs:
       - name: Assemble the Noted app for deploy
         run: |
           mkdir -p dist
-          cp index.html app.js styles.css shelf-fix.css config.js backend.js manifest.webmanifest icon.svg sw.js dist/
+          cp index.html app.js offline.js styles.css shelf-fix.css config.js backend.js manifest.webmanifest icon.svg sw.js dist/
           cp -r assets dist/
           sed -i "s/__BUILD__/${GITHUB_SHA::7}/" dist/sw.js dist/app.js
           printf '{"build":"%s"}' "${GITHUB_SHA::7}" > dist/version.json
@@ -39,6 +39,8 @@ jobs:
         run: node quartz/scripts/validate-content.mjs
       - name: Build data.js from Obsidian content
         run: node quartz/scripts/build-data.mjs --out dist/data.js
+      - name: Optimise images and minify the published app
+        run: node quartz/scripts/optimize-site.mjs dist
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

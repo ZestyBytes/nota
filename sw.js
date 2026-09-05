@@ -2,7 +2,7 @@ const CACHE="noted-shell-__BUILD__";
 // Remote images live in their own cache, deliberately not stamped with the
 // build: a deploy replaces the shell, but the covers should survive it.
 const MEDIA="noted-media";
-const SHELL=["./","index.html","styles.css?v=event-rail","shelf-fix.css?v=journal-stream","config.js","backend.js","app.js?v=journal-stream","data.js","manifest.webmanifest","icon.svg"];
+const SHELL=["./","index.html","styles.css?v=event-rail","shelf-fix.css?v=light","config.js","backend.js","app.js?v=light","data.js","manifest.webmanifest","icon.svg"];
 
 self.addEventListener("install",event=>{
   self.skipWaiting();
@@ -12,7 +12,7 @@ self.addEventListener("install",event=>{
 });
 self.addEventListener("activate",event=>{
   event.waitUntil(Promise.all([
-    caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE&&key!==MEDIA).map(key=>caches.delete(key)))),
+    caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE&&key!==MEDIA&&!key.startsWith("noted-pack-")).map(key=>caches.delete(key)))),
     self.clients.claim()
   ]));
 });
@@ -20,15 +20,15 @@ self.addEventListener("activate",event=>{
 // key lets a cache-busted request (data.js?t=…) update the one plain entry
 // instead of piling up a copy per timestamp.
 function fresh(request,cache,key){
-  return fetch(request,{cache:"no-store"}).then(response=>{
-    if(response.ok)cache.put(key||request,response.clone());
+  return fetch(request,{cache:"no-store"}).then(async response=>{
+    if(response.ok)await cache.put(key||request,response.clone());
     return response;
   });
 }
 
 self.addEventListener("fetch",event=>{
   const request=event.request;
-  if(request.method!=="GET")return;
+  if(request.method!=="GET"||request.cache==="reload")return;
   const url=new URL(request.url);
   // Every picture, wherever it comes from, lives in the media cache. This used
   // to apply to remote images only, so the archive's own photographs went into
@@ -38,12 +38,12 @@ self.addEventListener("fetch",event=>{
   // when the code does.
   if(request.destination==="image"){
     event.respondWith(caches.open(MEDIA).then(cache=>
-      cache.match(request).then(hit=>hit||fetch(request).then(response=>{
+      cache.match(request).then(async hit=>hit||await packMatch(request)||fetch(request).then(async response=>{
         // an image may load no-cors, so its response is opaque: status 0,
         // still perfectly cacheable
-        if(response.ok||response.type==="opaque")cache.put(request,response.clone());
+        if(response.ok||response.type==="opaque")await cache.put(request,response.clone());
         return response;
-      }).catch(()=>hit))
+      }).catch(()=>Response.error()))
     ));
     return;
   }
@@ -62,7 +62,7 @@ self.addEventListener("fetch",event=>{
   if(url.pathname.endsWith("/data.js")){
     const key=url.origin+url.pathname;
     event.respondWith(caches.open(CACHE).then(cache=>
-      fresh(request,cache,key).catch(()=>cache.match(key))
+      fresh(request,cache,key).catch(async()=>await cache.match(key)||await packMatch(key)||Response.error())
     ));
     return;
   }
@@ -72,12 +72,16 @@ self.addEventListener("fetch",event=>{
   // with range requests, which a stored full response answers badly.
   if(request.destination==="video"||/\.(mp4|mov|m4v|webm)$/i.test(url.pathname))return;
 
-  // Everything else: serve from cache immediately, refresh it in the
-  // background. The app paints from disk and never waits on the network.
-  event.respondWith(caches.open(CACHE).then(cache=>
-    cache.match(request,{ignoreSearch:true}).then(cached=>{
-      const network=fresh(request,cache).catch(()=>cached||caches.match("index.html"));
-      return cached||network;
-    })
-  ));
+  // Versioned shell files belong to this installed build. Serve them from
+  // disk; a new worker installs the next build without repeat background fetches.
+  event.respondWith(caches.open(CACHE).then(async cache=>{
+    const hit=await cache.match(request,{ignoreSearch:true});
+    if(hit)return hit;
+    try{return await fresh(request,cache)}catch{
+      return await packMatch(request)|| (request.mode==="navigate"?await cache.match("index.html")||await packMatch(new URL("index.html",self.registration.scope).href):null)||Response.error();
+    }
+  }));
 });
+async function packMatch(request){
+  for(const name of (await caches.keys()).filter(n=>n.startsWith("noted-pack-"))){const cache=await caches.open(name);if(!await cache.match(new URL("offline-pack.json",self.registration.scope).href))continue;const hit=await cache.match(request,{ignoreSearch:true});if(hit)return hit}
+}
