@@ -326,6 +326,15 @@ async function locate(query) {
   return null;
 }
 
+// A what3words address, for a place with no street address. Three words is
+// the whole format, so anything else is dropped rather than passed on: the
+// value ends up inside a link, and only a shape this narrow is safe to build
+// a URL from.
+function words(value) {
+  const w = String(value || "").trim().replace(/^\/+/, "").toLowerCase();
+  return /^\p{L}+\.\p{L}+\.\p{L}+$/u.test(w) ? w : "";
+}
+
 // A place, for entries that are about somewhere. Accepts a bare "lat,lon" or
 // anything carrying an @lat,lon, which is what a Google Maps URL looks like
 // once it has been opened, so a pasted link works without a lookup.
@@ -485,8 +494,9 @@ for (const file of files) {
       if (!raw) return null;
       const c = coords(raw);
       const label = data.mapLabel || "";
+      const w3w = words(data.what3words);
       // coordinates resolve here; a name is looked up after the walk
-      return c ? { ...c, label } : { query: raw, label };
+      return c ? { ...c, label, w3w } : { query: raw, label, w3w };
     })(),
     image, imageAlt, imageW, imageH, images: allImages(body), attachments: []
   };
@@ -547,7 +557,7 @@ mkdirSync(dirname(OUT_PATH), { recursive: true });
 for (const entry of entries) {
   if (!entry.place || !entry.place.query) continue;
   const found = await locate(entry.place.query);
-  entry.place = found ? { lat: found.lat, lon: found.lon, label: entry.place.label || entry.place.query } : null;
+  entry.place = found ? { lat: found.lat, lon: found.lon, label: entry.place.label || entry.place.query, w3w: entry.place.w3w } : null;
 }
 if (placeCacheDirty) writeFileSync(GEO_CACHE, JSON.stringify(placeCache, null, 2) + "\n");
 

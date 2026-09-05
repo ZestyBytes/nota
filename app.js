@@ -402,7 +402,11 @@ function placeMap(p){
   const d=0.004, bbox=[p.lon-d,p.lat-d/2,p.lon+d,p.lat+d/2].map(n=>n.toFixed(5)).join(",");
   const src=`https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${p.lat},${p.lon}`;
   const out=`https://www.openstreetmap.org/?mlat=${p.lat}&mlon=${p.lon}#map=16/${p.lat}/${p.lon}`;
-  return `<figure class="place-map"><iframe src="${esc(src)}" title="Map of ${esc(p.label||"this place")}" loading="lazy" referrerpolicy="no-referrer"></iframe><figcaption>${p.label?`${esc(p.label)} &middot; `:""}<a href="${esc(out)}" target="_blank" rel="noopener noreferrer">Open the map</a></figcaption></figure>`;
+  // Three words beats a postcode for somewhere like a shed in a field, so it
+  // sits in the caption when the entry carries one. The build has already
+  // checked the shape, so nothing arbitrary reaches the link.
+  const w3w=p.w3w?`<a class="w3w" href="https://what3words.com/${esc(p.w3w)}" target="_blank" rel="noopener noreferrer"><span>///</span>${esc(p.w3w)}</a> &middot; `:"";
+  return `<figure class="place-map"><iframe src="${esc(src)}" title="Map of ${esc(p.label||"this place")}" loading="lazy" referrerpolicy="no-referrer"></iframe><figcaption>${p.label?`${esc(p.label)} &middot; `:""}${w3w}<a href="${esc(out)}" target="_blank" rel="noopener noreferrer">Open the map</a></figcaption></figure>`;
 }
 function backlinks(e){
   const title=(e.title||"").trim().toLowerCase();

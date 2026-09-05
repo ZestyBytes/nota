@@ -554,6 +554,10 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px;min-width:0;}
 .place-map iframe{display:block;width:100%;height:260px;border:1px solid var(--line);background:var(--paper-alt);}
 .place-map figcaption{margin-top:9px;font:10px var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--muted);}
 .place-map figcaption a{color:var(--topic,var(--ink));border-bottom:1px solid currentColor;}
+/* what3words writes its addresses with red slashes, and the mark is the
+   quickest way to read the caption as an address rather than a link. */
+.place-map figcaption .w3w{text-transform:none;letter-spacing:.04em;}
+.place-map figcaption .w3w span{color:#e11f26;font-weight:700;letter-spacing:0;}
 .build-stamp{margin:34px 0 0;text-align:center;font:9px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--faint);opacity:.55;}
 .pull-hint{position:fixed;z-index:9;top:0;left:0;right:0;display:grid;place-items:center;padding-top:env(safe-area-inset-top,0px);height:0;overflow:hidden;color:#949a85;font:10px var(--mono);text-transform:uppercase;letter-spacing:.14em;background:#14160f;transition:height .18s ease;}
 .pull-hint.on{height:calc(38px + env(safe-area-inset-top,0px));}
