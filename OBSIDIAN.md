@@ -164,6 +164,11 @@ Body: a `## Reading notes` section's first paragraph becomes the book's one
 note. Quotes come from separate quote files linked with `book:` (above),
 not written inline here.
 
+Every book lives in the Library, which is the whole collection. Which shelf
+it also stands on is separate: a book joins the reading room once its
+`status` is `reading` or `finished`, whatever it is tagged, so a wedding
+present that gets picked up appears in both without being retagged.
+
 A book given as a wedding present takes two extra fields, and `tags:
 [wedding]` puts it on the wedding shelf rather than the reading one:
 ```yaml

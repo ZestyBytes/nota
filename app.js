@@ -806,7 +806,17 @@ function topicFamily(id){return [id,...childTopics(id)]}
 function inTopic(item,id){const fam=topicFamily(id);return item.topics?.some(t=>fam.includes(t))}
 // counts tasks too: a topic reaches this page if anything at all uses it,
 // so leaving tasks out showed a live topic as holding nothing
-function topicCount(id){return state.data.entries.filter(e=>inTopic(e,id)).length+state.data.books.filter(b=>inTopic(b,id)).length+state.data.tasks.filter(t=>inTopic(t,id)).length}
+// Every book owned lives in the Library. Which shelf it stands on is a
+// separate question: a book belongs to the reading room once it has actually
+// been picked up, whatever else it is filed under, so a wedding present that
+// gets read appears in both without being tagged twice by hand.
+function booksIn(id){
+  const all=state.data.books;
+  return id==="reading"
+    ? all.filter(b=>inTopic(b,"reading")||b.status==="reading"||b.status==="finished")
+    : all.filter(b=>inTopic(b,id));
+}
+function topicCount(id){return state.data.entries.filter(e=>inTopic(e,id)).length+booksIn(id).length+state.data.tasks.filter(t=>inTopic(t,id)).length}
 function topicLatest(id){return state.data.entries.filter(e=>inTopic(e,id)).map(e=>e.occurredAt||e.createdAt||"").sort().pop()||""}
 // A topic can carry the most recent photograph taken under it, so Motoring
 // shows the Mini and Self care shows the bag of peas. Real pictures from the
@@ -1148,7 +1158,7 @@ function motoringSpace(items){const rows=ordered(items),photos=rows.flatMap(e=>(
 function familySpace(items){const rows=ordered(items);return `<div class="family-space"><header><p>Our shared archive</p><h1>family album</h1><span>Ordinary days are the ones worth keeping.</span></header><div class="album-grid">${rows.map((e,i)=>`<article class="album-photo album-tilt-${i%4}" data-entry="${esc(e.id)}">${e.image?`<img src="${esc(e.image)}" alt="${esc(e.imageAlt||"")}">`:entryPlate(e)}<div><time>${fmtDate(e.occurredAt||e.createdAt)}</time><h2>${esc(e.title)}</h2><p>${esc(e.excerpt)}</p></div></article>`).join("")}</div></div>`}
 function lifeSpace(items,kids){const rows=ordered(items);return `<div class="life-space"><header><p>Personal dashboard · ${fmtDate(todayKey)}</p><h1>life, lately</h1><blockquote>A place for the ordinary machinery<br>and the things underneath it.</blockquote></header><nav>${kids.map((k,i)=>`<button data-topic="${k}" style="--topic:${topic(k).color}"><i>${String(i+1).padStart(2,"0")}</i><b>${esc(topic(k).name)}</b><span>${topicCount(k)} kept</span></button>`).join("")}</nav><section><div class="life-now"><span>Recently filed</span><b>${rows.length}</b></div>${rows.map(e=>`<article data-entry="${esc(e.id)}">${e.image?`<img src="${esc(e.image)}" alt="">`:entryPlate(e)}<div><time>${fmtDate(e.occurredAt||e.createdAt)}</time><h2>${esc(e.title)}</h2><p>${esc(e.excerpt)}</p></div></article>`).join("")}</section></div>`}
 function bespokeTopic(id,items,books,kids){return id==="technology"?technologySpace(items):id==="music"?musicSpace(items):id==="reading"?readingSpace(items,books):id==="wedding"?weddingSpace(items,books):id==="gardening"?gardeningSpace(items):id==="motoring"?motoringSpace(items):id==="family"?familySpace(items):id==="life"?lifeSpace(items,kids):""}
-function topicView(id){const t=topic(id),kids=childTopics(id),items=state.data.entries.filter(e=>inTopic(e,id)),books=state.data.books.filter(b=>inTopic(b,id));let body=`<div class="entry-list">${items.map(e=>entryCard(e,"",id)).join("")||(books.length?"":`<p class="empty">Nothing in this topic yet.</p>`)}</div>`;if(t.mode==="listen"){
+function topicView(id){const t=topic(id),kids=childTopics(id),items=state.data.entries.filter(e=>inTopic(e,id)),books=booksIn(id);let body=`<div class="entry-list">${items.map(e=>entryCard(e,"",id)).join("")||(books.length?"":`<p class="empty">Nothing in this topic yet.</p>`)}</div>`;if(t.mode==="listen"){
     const groups=items.map(e=>({e,rows:bulletsOf(e.body)})).filter(g=>g.rows.length);
     const rest=items.filter(e=>!bulletsOf(e.body).length);
     body=`<div class="topic-mode listen-mode">${groups.map(({e,rows})=>`<section class="listen-group"><div class="listen-head"><h3><a href="#entry/${encodeURIComponent(e.id)}">${esc(e.title)}</a></h3><span>${rows.length} ${rows.length===1?"entry":"entries"}</span></div><ol class="tracklist">${rows.map(trackRow).join("")}</ol></section>`).join("")||`<p class="empty">Nothing in this topic yet.</p>`}${rest.length?`<div class="entry-list listen-rest">${rest.map(e=>entryCard(e,"",id)).join("")}</div>`:""}</div>`;
