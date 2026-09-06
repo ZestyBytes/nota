@@ -6,6 +6,7 @@ startTime: "08:00"
 tags: [motoring, family, life]
 createdAt: "2026-09-06"
 publishedAt: "2026-09-06"
+fit: contain
 publish: true
 ---
 

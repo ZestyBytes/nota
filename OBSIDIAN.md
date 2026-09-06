@@ -94,6 +94,11 @@ publish: true
 Body: first paragraph becomes the card excerpt everywhere. A leading
 `![alt](url)` image becomes the entry's photo.
 
+Add `fit: contain` to any entry whose lead image is a poster or a product
+shot rather than a photograph. Those carry their own margins and badges, and
+cropping them to fill a frame shows only a corner; `contain` shows the whole
+thing on a plain ground. A photograph wants the default.
+
 Add `writing: true` to a Journal, Note or Journey to put it on the Writing
 page, which is a chosen selection rather than a copy of the whole archive.
 Without it a piece still lives in the archive, it simply is not featured.

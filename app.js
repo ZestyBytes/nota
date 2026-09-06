@@ -483,7 +483,7 @@ function entryPage(id){
       ${e.author?`<p class="entry-page-author">${esc(e.author)}</p>`:""}
       <div class="entry-context">${chips(e.topics?.slice(1))}${e.journey?(()=>{const rows=journeyEntries(e.journey),n=rows.findIndex(r=>r.id===e.id)+1;return `<p class="journey-of"><a href="#journey/${encodeURIComponent(e.journey)}">${esc(e.journey)}</a><span>${n} of ${rows.length}</span></p>`})():""}<a class="entry-space-link" href="#topics/${encodeURIComponent(spaceId)}" data-topic="${esc(spaceId)}">${esc(space.name)} space &rarr;</a></div>
     </header>
-    ${e.images?.length>1?gallery(e.images):e.image?`<img class="detail-image" src="${e.image}" alt="${esc(e.imageAlt||"")}"${dims(e.image)}>`:""}
+    ${e.images?.length>1?gallery(e.images):e.image?`<img class="detail-image${e.imageFit==="contain"?" fit-contain":""}" src="${e.image}" alt="${esc(e.imageAlt||"")}"${dims(e.image)}>`:""}
     ${(()=>{const shown=e.images?.length>1?e.images.map(i=>i.src):[e.image];return e.id==="notes/why-i-made-noted"?notedEssay(e,shown):e.recipe?`<div class="detail-body recipe-body">${recipeBody(e)}</div>`:e.plant?`<div class="detail-body plant-body">${plantBody(e,shown)}</div>`:e.view==="cards"&&e.body?cardDeck(e.body,shown,e.id):`<div class="detail-body">${e.body?(e.view==="playlist"?playlistBody(e.body):markdown(e.body,shown,e.id)):`<p>${esc(e.excerpt||"Saved in your Noted archive.")}</p>`}</div>`})()}
     ${sceneArt(e.art)}
     ${placeMap(e.place)}
@@ -565,7 +565,7 @@ function homeEvents(){
         <h2>${esc(event.title)}</h2>
         ${event.excerpt?`<span>${esc(event.excerpt)}</span>`:""}
       </div>
-      ${event.image?`<img src="${esc(event.image)}" alt="${esc(event.imageAlt||"")}" loading="lazy">`:""}
+      ${event.image?`<img class="${event.imageFit==="contain"?"fit-contain":""}" src="${esc(event.image)}" alt="${esc(event.imageAlt||"")}" loading="lazy">`:""}
     </article>
   </section>`;
 }

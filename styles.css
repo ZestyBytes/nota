@@ -696,6 +696,10 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px;min-width:0;}
 .event-row .eyebrow{margin:0;}
 .event-row-note{margin:6px 0 0;font:italic 13px/1.45 var(--serif);color:var(--muted);}
 .event-when{flex:none;font:700 9px var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--topic,var(--muted));}
+/* Shown whole rather than cropped to fill, for a poster or a product shot
+   whose own margins are part of it. */
+.dashboard-event>img.fit-contain{object-fit:contain;background:var(--paper-alt);padding:10px;}
+.detail-image.fit-contain{object-fit:contain;background:var(--paper-alt);height:auto;max-height:520px;}
 .build-stamp{margin:34px 0 0;text-align:center;font:9px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--faint);opacity:.55;}
 .pull-hint{position:fixed;z-index:9;top:0;left:0;right:0;display:grid;place-items:center;padding-top:env(safe-area-inset-top,0px);height:0;overflow:hidden;color:#949a85;font:10px var(--mono);text-transform:uppercase;letter-spacing:.14em;background:#14160f;transition:height .18s ease;}
 .pull-hint.on{height:calc(38px + env(safe-area-inset-top,0px));}

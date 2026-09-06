@@ -512,6 +512,10 @@ for (const file of files) {
       // coordinates resolve here; a name is looked up after the walk
       return c ? { ...c, label, w3w } : { query: raw, label, w3w };
     })(),
+    // A photograph fills its frame; a product shot or a poster has margins and
+    // badges of its own, and cropping it to fill only shows a corner of it.
+    // "fit: contain" says show the whole thing.
+    imageFit: String(data.fit || "").trim().toLowerCase() === "contain" ? "contain" : "",
     image, imageAlt, imageW, imageH, images: allImages(body), attachments: []
   };
   // A plant note is a record of a living thing rather than a piece of writing:
