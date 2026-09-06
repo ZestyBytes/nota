@@ -10,7 +10,7 @@ fit: contain
 publish: true
 ---
 
-![[IMG_6062.jpeg|The Octopus tethered charger and cable]]
+![[octopus-charger.png|The Octopus tethered charger and its cable]]
 
 Octopus Charge, tethered, going in on the wall.
 
@@ -18,3 +18,5 @@ Octopus Charge, tethered, going in on the wall.
 - 4G, Wi-Fi and Bluetooth, for easy set up
 - Suitable for a Type 2 charging socket
 - Installation and support included, and it works with any energy supplier
+
+![[IMG_6062.jpeg|The charger and cable as ordered]]
