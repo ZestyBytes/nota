@@ -589,15 +589,38 @@ async function isbnHasScan(url) {
   return res.ok;
 }
 
+// A search always returns its best guess, and for a title like "Marriage" or
+// "Love Poems" the best guess is some other book entirely. A wrong cover under
+// a friend's name is worse than no cover, so a result has to earn its place:
+// the titles must match, and where we know the author, the match must be by
+// them too. Anything short of that is refused and the book keeps its plate.
+const normTitle = s => String(s || "").toLowerCase().normalize("NFKD")
+  .replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim().replace(/^(the|a|an) /, "");
+const surnameOf = name => normTitle(name).split(" ").filter(Boolean).pop() || "";
+
+function coverIsTrustworthy(ours, theirs) {
+  const mine = normTitle(ours.title), found = normTitle(theirs.title);
+  if (!mine || !found) return false;
+  const exact = mine === found;
+  if (!exact && !found.includes(mine) && !mine.includes(found)) return false;
+  // No author to check against means only an exact title is safe: "Poems" is
+  // not "Love Poems", however close the search thought it was.
+  if (!ours.author) return exact;
+  const theirAuthor = normTitle(theirs.author);
+  return (theirAuthor && theirAuthor.includes(surnameOf(ours.author)))
+      || found.includes(normTitle(ours.author));
+}
+
 async function coverByWork(title, author) {
   const query = [title, author].filter(Boolean).join(" ");
   const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&fields=cover_i,title,author_name&limit=1`;
   const res = await fetch(url, { headers: OL_UA });
   if (!res.ok) throw new Error(String(res.status));
   const [hit] = (await res.json()).docs || [];
-  return hit && hit.cover_i
-    ? { url: `https://covers.openlibrary.org/b/id/${hit.cover_i}-L.jpg`, title: hit.title, author: (hit.author_name || [])[0] || "" }
-    : null;
+  if (!hit || !hit.cover_i) return null;
+  const match = { title: hit.title, author: (hit.author_name || [])[0] || "" };
+  if (!coverIsTrustworthy({ title, author }, match)) return { rejected: match };
+  return { url: `https://covers.openlibrary.org/b/id/${hit.cover_i}-L.jpg`, ...match };
 }
 
 for (const book of books) {
@@ -605,7 +628,9 @@ for (const book of books) {
   try {
     if (book.cover && await isbnHasScan(book.cover)) continue;
     const found = await coverByWork(book.title, book.author);
-    if (found) {
+    if (found && found.rejected) {
+      console.log(`  refused a cover for "${book.title}": the search offered "${found.rejected.title}"${found.rejected.author ? ` by ${found.rejected.author}` : ""}`);
+    } else if (found) {
       book.cover = found.url;
       console.log(`  cover for "${book.title}" -> ${found.url}   (matched "${found.title}"${found.author ? ` by ${found.author}` : ""})`);
     } else {
