@@ -582,12 +582,7 @@ if (placeCacheDirty) writeFileSync(GEO_CACHE, JSON.stringify(placeCache, null, 2
 // is used instead. Runs on the deploy runner, which has network; in a sandbox
 // without one every lookup fails and every cover is left exactly as it was.
 const OL_UA = { "User-Agent": "noted-personal-archive (github.com/ZestyBytes)" };
-const isIsbnCover = url => /covers\.openlibrary\.org\/b\/isbn\//.test(url || "");
-
-async function isbnHasScan(url) {
-  const res = await fetch(url.includes("?") ? url : url + "?default=false", { method: "HEAD", headers: OL_UA });
-  return res.ok;
-}
+const isbnOf = url => (String(url || "").match(/\/b\/isbn\/(\d+)/) || [])[1] || "";
 
 // A search always returns its best guess, and for a title like "Marriage" or
 // "Love Poems" the best guess is some other book entirely. A wrong cover under
@@ -611,30 +606,55 @@ function coverIsTrustworthy(ours, theirs) {
       || found.includes(normTitle(ours.author));
 }
 
-async function coverByWork(title, author) {
-  const query = [title, author].filter(Boolean).join(" ");
-  const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&fields=cover_i,title,author_name&limit=1`;
+async function olDocs(params, limit) {
+  const url = `https://openlibrary.org/search.json?${params}&fields=cover_i,title,author_name&limit=${limit}`;
   const res = await fetch(url, { headers: OL_UA });
   if (!res.ok) throw new Error(String(res.status));
-  const [hit] = (await res.json()).docs || [];
-  if (!hit || !hit.cover_i) return null;
-  const match = { title: hit.title, author: (hit.author_name || [])[0] || "" };
-  if (!coverIsTrustworthy({ title, author }, match)) return { rejected: match };
-  return { url: `https://covers.openlibrary.org/b/id/${hit.cover_i}-L.jpg`, ...match };
+  return ((await res.json()).docs || [])
+    .map(d => ({ coverId: d.cover_i, title: d.title, author: (d.author_name || [])[0] || "" }));
+}
+
+// Two things can be wrong with a cover fetched by ISBN. The edition may never
+// have been scanned, which is the common case and leaves a blank. Or the ISBN
+// can name a different book altogether, which is how How to Build a Treehouse
+// came to be showing Einstein's Fridge. So the ISBN is checked against the
+// book it claims to be before its cover is trusted, and if it does not hold
+// up, the book is looked for by name instead. Several results are considered
+// rather than only the first, because the closest match by relevance is often
+// an edition with no scan while the next one along has one.
+async function findCover(book) {
+  const isbn = isbnOf(book.cover);
+  const want = { title: book.title, author: book.author };
+  if (isbn) {
+    const [doc] = await olDocs(`isbn=${isbn}`, 1);
+    if (doc && !coverIsTrustworthy(want, doc)) {
+      console.log(`  ISBN ${isbn} on "${book.title}" is "${doc.title}"${doc.author ? ` by ${doc.author}` : ""}, not this book`);
+    } else if (doc && doc.coverId) {
+      return { url: `https://covers.openlibrary.org/b/id/${doc.coverId}-L.jpg`, ...doc, via: `ISBN ${isbn}` };
+    }
+  }
+  const query = `q=${encodeURIComponent([book.title, book.author].filter(Boolean).join(" "))}`;
+  const docs = await olDocs(query, 8);
+  const match = docs.find(d => d.coverId && coverIsTrustworthy(want, d));
+  if (match) return { url: `https://covers.openlibrary.org/b/id/${match.coverId}-L.jpg`, ...match, via: "search" };
+  const near = docs.find(d => d.coverId);
+  return { rejected: near || null };
 }
 
 for (const book of books) {
-  if (book.cover && !isIsbnCover(book.cover)) continue;
+  // a cover photographed and committed to the repo is already right
+  if (book.cover && !/covers\.openlibrary\.org/.test(book.cover)) continue;
   try {
-    if (book.cover && await isbnHasScan(book.cover)) continue;
-    const found = await coverByWork(book.title, book.author);
-    if (found && found.rejected) {
-      console.log(`  refused a cover for "${book.title}": the search offered "${found.rejected.title}"${found.rejected.author ? ` by ${found.rejected.author}` : ""}`);
-    } else if (found) {
+    const found = await findCover(book);
+    if (found.url) {
+      const changed = found.url !== book.cover;
       book.cover = found.url;
-      console.log(`  cover for "${book.title}" -> ${found.url}   (matched "${found.title}"${found.author ? ` by ${found.author}` : ""})`);
+      if (changed) console.log(`  cover for "${book.title}" via ${found.via} -> matched "${found.title}"${found.author ? ` by ${found.author}` : ""}`);
     } else {
-      console.log(`  no cover found for "${book.title}"${book.author ? ` by ${book.author}` : ""}`);
+      book.cover = "";
+      console.log(found.rejected
+        ? `  refused a cover for "${book.title}": the search offered "${found.rejected.title}"${found.rejected.author ? ` by ${found.rejected.author}` : ""}`
+        : `  no cover found for "${book.title}"${book.author ? ` by ${book.author}` : ""}`);
     }
   } catch (error) {
     console.log(`  cover lookup failed for "${book.title}": ${error.message}`);
