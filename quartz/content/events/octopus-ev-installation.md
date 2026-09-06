@@ -18,5 +18,3 @@ Octopus Charge, tethered, going in on the wall.
 - 4G, Wi-Fi and Bluetooth, for easy set up
 - Suitable for a Type 2 charging socket
 - Installation and support included, and it works with any energy supplier
-
-![[IMG_6062.jpeg|The charger and cable as ordered]]

@@ -822,8 +822,20 @@ function setupClothShelf(){
     const run=end.offsetLeft+end.offsetWidth-start.offsetLeft;
     if(run<=rail.clientWidth){rail.scrollLeft=0;return}
     const copy=book=>{const c=book.cloneNode(true);c.setAttribute("aria-hidden","true");c.tabIndex=-1;c.dataset.shelfCopy="true";clones.push(c);return c};
-    rail.prepend(...originals.map(copy));rail.append(...originals.map(copy));
-    period=originals[0].offsetLeft-clones[0].offsetLeft;origin=originals[0].offsetLeft;
+    // One copy either side meant a hard flick could out-run the clones and
+    // stop dead at the seam, waiting for the gesture to settle before the
+    // shelf could rebase. Rebasing mid-flick is not the answer, since setting
+    // scrollLeft during momentum kills the momentum on iOS. So there is
+    // simply more shelf than a flick can cross: enough copies to cover
+    // several screens on each side, and the rebase happens unseen while the
+    // shelf is standing still.
+    const sets=Math.max(1,Math.ceil(rail.clientWidth*3/run));
+    const before=[],after=[];
+    for(let n=0;n<sets;n++){before.push(...originals.map(copy));after.push(...originals.map(copy))}
+    rail.prepend(...before);rail.append(...after);
+    // the nearest copy of the first book is the head of the last prepended set
+    period=originals[0].offsetLeft-before[(sets-1)*originals.length].offsetLeft;
+    origin=originals[0].offsetLeft;
     rail.classList.add("is-looping");rail.scrollLeft=origin+offset;fitTitles();
   };
   const settle=()=>{clearTimeout(timer);if(held||!period||rail.contains(document.activeElement))return;const next=wrapShelfPosition(rail.scrollLeft,origin,period);if(Math.abs(next-rail.scrollLeft)>1)rail.scrollLeft=next};
@@ -968,7 +980,7 @@ function search(){
   const set=[state.filter!=="all",!!state.searchSpace,!!state.searchFrom,!!state.searchTo].filter(Boolean).length;
   const open=state.searchTools||set>0;
   return `<section class="search-page">`+
-    `<div class="search-input-wrap"><input class="search-box" type="search" value="${esc(state.search)}" placeholder="Words you remember…" aria-label="Search noted"><button type="button" class="search-clear" data-clear-search aria-label="Clear search" ${state.search?"":"hidden"}>Clear</button></div>`+
+    `<div class="search-input-wrap"><input class="search-box" type="search" value="${esc(state.search)}" placeholder="Words you remember…" data-typewriter aria-label="Search noted"><button type="button" class="search-clear" data-clear-search aria-label="Clear search" ${state.search?"":"hidden"}>Clear</button></div>`+
     `<div class="search-toolbar"><button type="button" class="search-filter-toggle${open?" open":""}" data-toggle-filters aria-expanded="${open}">Filters${set?`<i>${set}</i>`:""}</button>${set?`<button type="button" class="search-filter-reset" data-reset-search>Clear filters</button>`:""}</div>`+
     `<div class="search-tools"${open?"":" hidden"}>`+
       `<div class="search-filters">${types.map(t=>`<button class="filter ${state.filter===t?"active":""}" aria-pressed="${state.filter===t}" data-filter="${esc(t)}">${esc(t)}</button>`).join("")}</div>`+
@@ -1244,6 +1256,35 @@ function render(){try{return renderUnsafe()}catch(error){console.error("Noted re
 // you have not read yet is more disorienting than losing your old place.
 // Re-renders that stay on the same page leave the scroll alone.
 let lastHash=null;
+// The search box asks for "words you remember", which is easier to act on
+// when it shows you the kind of thing it means. It types a few out and
+// deletes them, and stops for good at the first keystroke. It deliberately
+// keeps going while the box is focused and empty, which is exactly when you
+// are deciding what to type: the search page focuses the box on arrival, so
+// stopping on focus would have meant never seeing it at all. Anyone who has
+// asked for less motion gets a plain placeholder.
+const SEARCH_HINTS=["Trip to Barcelona","House plant watering","Birthday party","New car day","Banana bread","A quote from Meditations","The Oving Cow Shed"];
+let typerStop=null;
+function typePlaceholder(box){
+  if(typerStop){typerStop();typerStop=null}
+  if(!box||window.matchMedia?.("(prefers-reduced-motion: reduce)").matches)return;
+  let phrase=Math.floor(Math.random()*SEARCH_HINTS.length),at=0,erasing=false,timer=0,stopped=false;
+  const stop=()=>{if(stopped)return;stopped=true;clearTimeout(timer);box.placeholder="Words you remember…";
+    box.removeEventListener("input",stop)};
+  const tick=()=>{
+    if(stopped||!box.isConnected||box.value)return stop();
+    const word=SEARCH_HINTS[phrase];
+    at+=erasing?-1:1;
+    box.placeholder=word.slice(0,at)+(at<word.length||erasing?"▍":"");
+    let wait=erasing?34:74;
+    if(!erasing&&at>=word.length){erasing=true;wait=1500}
+    else if(erasing&&at<=0){erasing=false;phrase=(phrase+1)%SEARCH_HINTS.length;wait=320}
+    timer=setTimeout(tick,wait);
+  };
+  box.addEventListener("input",stop);
+  timer=setTimeout(tick,420);
+  typerStop=stop;
+}
 function afterRender(route){
   const hash=location.hash||"#today";
   if(lastHash!==null&&hash!==lastHash)window.scrollTo(0,0);
@@ -1251,6 +1292,7 @@ function afterRender(route){
   swipeable(".deck",".deck-dots i");
   swipeable(".gallery",".gallery-dots i",".gallery-caption");
   setupClothShelf();
+  typePlaceholder(document.querySelector(".search-box[data-typewriter]"));
   setupMemoryKeypads();
   setupClawGames();
   syncReadingProgress();
