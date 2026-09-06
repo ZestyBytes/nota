@@ -6,7 +6,7 @@ const BASE = window.NOTED_DATA || { topics:{}, entries:[], tasks:[], books:[] };
 const BUILD="__BUILD__";
 const now = new Date(), todayKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`;
 let savedSort="items",savedCalendar="month",savedLibrary="writing";try{savedSort=localStorage.getItem("noted-topic-sort")||"items";savedCalendar=localStorage.getItem("noted-calendar-mode")||(window.matchMedia?.("(max-width:600px)").matches?"agenda":"month");savedLibrary=localStorage.getItem("noted-library-tab")||"writing"}catch(error){/* private mode: fall back to defaults */}
-const state = { route:"today", topicSort:savedSort, calendarMode:savedCalendar, month:new Date(now.getFullYear(),now.getMonth(),1), selectedDate:todayKey, library:savedLibrary, search:"", searchSpace:"", searchFrom:"", searchTo:"", filter:"all", data:clone(BASE), user:null, booting:NotedBackend.configured };
+const state = { route:"today", searchTools:false, topicSort:savedSort, calendarMode:savedCalendar, month:new Date(now.getFullYear(),now.getMonth(),1), selectedDate:todayKey, library:savedLibrary, search:"", searchSpace:"", searchFrom:"", searchTo:"", filter:"all", data:clone(BASE), user:null, booting:NotedBackend.configured };
 function clone(v){return JSON.parse(JSON.stringify(v))}
 function emptyArchive(){return {topics:clone(BASE.topics),entries:[],tasks:[],books:[]}}
 function esc(s=""){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
@@ -549,9 +549,11 @@ function homeEvents(){
     .sort((a,b)=>(a.eventAt||a.occurredAt).localeCompare(b.eventAt||b.occurredAt))[0];
   if(!event)return "";
   const date=event.eventAt||event.occurredAt,days=daysFromToday(date);
-  const soon=days===0?"Today":days===1?"Tomorrow":days;
+  // "Tomorrow" set at the size a two digit number wants is wider than the
+  // column it sits in, so a word and a number are typeset differently.
+  const soon=days===0?"Today":days===1?"Tomorrow":days,isWord=days<=1;
   return `<section class="home-dashboard">
-    <article class="dashboard-event${event.image?" has-image":""}" data-entry="${esc(event.id)}">
+    <article class="dashboard-event${event.image?" has-image":""}${isWord?" is-soon":""}" data-entry="${esc(event.id)}">
       <div class="dashboard-count"><b>${soon}</b>${days>1?`<span>days to go</span>`:""}</div>
       <div class="dashboard-event-copy">
         <p>Next event &middot; ${esc(fmtDate(date))}${event.startTime?` &middot; ${esc(event.startTime)}`:""}</p>
@@ -929,7 +931,19 @@ function searchResultsMarkup(){const items=searchResults(state.search);return `<
 function updateSearchResults(){document.querySelector(".search-results").innerHTML=searchResultsMarkup();const clear=document.querySelector(".search-clear");if(clear)clear.hidden=!state.search}
 function search(){
   const present=new Set(searchPool().map(x=>x.type)),types=["all",...[...present].sort()];
-  return `<section class="search-page"><div class="search-input-wrap"><input class="search-box" type="search" value="${esc(state.search)}" placeholder="Words you remember…" aria-label="Search noted"><button type="button" class="search-clear" data-clear-search aria-label="Clear search" ${state.search?"":"hidden"}>Clear</button></div><div class="search-filters">${types.map(t=>`<button class="filter ${state.filter===t?"active":""}" aria-pressed="${state.filter===t}" data-filter="${esc(t)}">${esc(t)}</button>`).join("")}</div><div class="search-refinements"><label>Space<select data-search-field="searchSpace"><option value="">All spaces</option>${Object.entries(state.data.topics).sort((a,b)=>a[1].name.localeCompare(b[1].name)).map(([id,t])=>`<option value="${esc(id)}" ${state.searchSpace===id?"selected":""}>${esc(t.name)}</option>`).join("")}</select></label><label>From<input type="date" data-search-field="searchFrom" value="${esc(state.searchFrom)}"></label><label>To<input type="date" data-search-field="searchTo" value="${esc(state.searchTo)}"></label><button type="button" data-reset-search>Reset filters</button></div><div class="entry-list search-results" aria-live="polite">${searchResultsMarkup()}</div></section>`;
+  // The filters were four controls of chrome above every search, for something
+  // most searches never touch. They fold behind one button, which says how
+  // many are set so a narrowed search can never look like an empty archive.
+  const set=[state.filter!=="all",!!state.searchSpace,!!state.searchFrom,!!state.searchTo].filter(Boolean).length;
+  const open=state.searchTools||set>0;
+  return `<section class="search-page">`+
+    `<div class="search-input-wrap"><input class="search-box" type="search" value="${esc(state.search)}" placeholder="Words you remember…" aria-label="Search noted"><button type="button" class="search-clear" data-clear-search aria-label="Clear search" ${state.search?"":"hidden"}>Clear</button></div>`+
+    `<div class="search-toolbar"><button type="button" class="search-filter-toggle${open?" open":""}" data-toggle-filters aria-expanded="${open}">Filters${set?`<i>${set}</i>`:""}</button>${set?`<button type="button" class="search-filter-reset" data-reset-search>Clear filters</button>`:""}</div>`+
+    `<div class="search-tools"${open?"":" hidden"}>`+
+      `<div class="search-filters">${types.map(t=>`<button class="filter ${state.filter===t?"active":""}" aria-pressed="${state.filter===t}" data-filter="${esc(t)}">${esc(t)}</button>`).join("")}</div>`+
+      `<div class="search-refinements"><label>Space<select data-search-field="searchSpace"><option value="">All spaces</option>${Object.entries(state.data.topics).sort((a,b)=>a[1].name.localeCompare(b[1].name)).map(([id,t])=>`<option value="${esc(id)}" ${state.searchSpace===id?"selected":""}>${esc(t.name)}</option>`).join("")}</select></label><label>From<input type="date" data-search-field="searchFrom" value="${esc(state.searchFrom)}"></label><label>To<input type="date" data-search-field="searchTo" value="${esc(state.searchTo)}"></label></div>`+
+    `</div>`+
+    `<div class="entry-list search-results" aria-live="polite">${searchResultsMarkup()}</div></section>`;
 }
 function writing(){
   // Writing is a selection, not a second copy of the archive. An entry joins
@@ -1389,7 +1403,7 @@ document.addEventListener("input",e=>{if(e.target.matches(".search-box")){state.
 document.addEventListener("change",e=>{if(e.target.matches("[data-calendar-month]")&&selectCalendarMonth(e.target.value)){render();document.querySelector("[data-calendar-month]")?.focus({preventScroll:true})}});
 document.addEventListener("keydown",e=>{if(!e.target.matches("[data-date]"))return;const date=calendarKeyDate(e.target.dataset.date,e.key);if(!date)return;e.preventDefault();state.selectedDate=date;const [y,m]=date.split("-").map(Number);state.month=new Date(y,m-1,1);render();focusCalendarDate()});
 document.addEventListener("change",e=>{const key=e.target.dataset.searchField;if(["searchSpace","searchFrom","searchTo"].includes(key)){state[key]=e.target.value;updateSearchResults()}});
-document.addEventListener("click",e=>{if(e.target.closest("[data-reset-search]")){state.searchSpace="";state.searchFrom="";state.searchTo="";state.filter="all";render()}});
+document.addEventListener("click",e=>{if(e.target.closest("[data-toggle-filters]")){state.searchTools=!state.searchTools;render();return}if(e.target.closest("[data-reset-search]")){state.searchSpace="";state.searchFrom="";state.searchTo="";state.filter="all";state.searchTools=false;render()}});
 document.addEventListener("keydown",e=>{
   if(e.key==="Escape"&&document.body.classList.contains("modal-open")){e.preventDefault();closeModal();return}
   if(e.key!=="/"||e.metaKey||e.ctrlKey||e.altKey||/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName||""))return;

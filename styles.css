@@ -303,7 +303,7 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px;min-width:0;}
 .recipe-card h3{font:11px var(--mono);text-transform:uppercase;letter-spacing:.14em;margin-top:32px;color:var(--muted);}
 .recipe-facts{flex-wrap:wrap;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:12px 0;margin-bottom:24px;font:11px var(--mono);text-transform:uppercase;letter-spacing:.05em;}
 /* ---------- search ---------- */
-.search-box{width:100%;font:700 clamp(28px,5vw,52px) var(--mono);text-transform:lowercase;background:transparent;border:0;border-bottom:2px solid var(--ink);padding:16px 0;outline:0;}
+.search-box{width:100%;font:700 clamp(21px,5vw,52px) var(--mono);text-transform:lowercase;background:transparent;border:0;border-bottom:2px solid var(--ink);padding:16px 0;outline:0;}
 .search-box::placeholder{color:var(--faint);}
 .empty{color:var(--muted);padding:40px 0;font:14px var(--mono);font-style:italic;}
 .empty.small{padding:18px 0;}
@@ -1888,17 +1888,23 @@ aside .section-title{display:flex;align-items:baseline;}
 .event-countdown>i{align-self:center;padding:18px;color:var(--event);font:700 18px var(--mono);font-style:normal;}
 .home-dashboard{margin:0 0 44px;}
 .dashboard-event{display:grid;grid-template-columns:minmax(0,1fr);align-items:stretch;overflow:hidden;border:1px solid var(--line);background:var(--surface);cursor:pointer;transition:border-color .16s ease,background .16s ease;}
-.dashboard-event.has-image{grid-template-columns:126px minmax(0,1fr) 232px;}
-.dashboard-event:not(.has-image){grid-template-columns:126px minmax(0,1fr);}
+.dashboard-event{--count:126px;--shot:232px;}
+.dashboard-event.has-image{grid-template-columns:var(--count) minmax(0,1fr) var(--shot);}
+.dashboard-event:not(.has-image){grid-template-columns:var(--count) minmax(0,1fr);}
 .dashboard-event:hover{border-color:var(--ink);background:var(--paper-alt);}
 .dashboard-count{display:grid;place-content:center;gap:9px;padding:18px 12px;border-right:1px solid var(--line);text-align:center;}
 .dashboard-count b{font:700 46px/.9 var(--mono);letter-spacing:-.05em;}
+/* A number can be huge; a word cannot. "Tomorrow" set at 46px was three times
+   the width of the column it sits in, which is what pushed it across the
+   title. Words get their own size and their own room. */
+.dashboard-event.is-soon .dashboard-count b{font:700 clamp(15px,3.4vw,24px)/1.15 var(--mono);letter-spacing:.04em;text-transform:uppercase;}
+.dashboard-event.is-soon{--count:116px;}
 .dashboard-count span{color:var(--muted);font:700 8px var(--mono);letter-spacing:.13em;text-transform:uppercase;}
 .dashboard-event-copy{display:flex;min-width:0;flex-direction:column;justify-content:center;gap:7px;padding:22px 26px;}
 .dashboard-event-copy p{margin:0;color:var(--muted);font:700 9px var(--mono);text-transform:uppercase;letter-spacing:.11em;}
 .dashboard-event-copy h2{margin:0;font:600 clamp(21px,2.4vw,27px)/1.12 var(--serif);}
 .dashboard-event-copy>span{color:var(--muted);font:italic 13px/1.45 var(--serif);}
-.dashboard-event>img{width:232px;height:100%;min-height:172px;object-fit:cover;}
+.dashboard-event>img{width:var(--shot);height:100%;min-height:172px;object-fit:cover;}
 .on-this-day{display:grid;grid-template-columns:180px 1fr;gap:28px;margin:42px 0;padding:24px;border:1px solid var(--line);background:color-mix(in srgb,var(--stamp-red) 4%,var(--surface));}
 .on-this-day h2{font:600 22px var(--serif);margin:8px 0;}
 .on-this-day>div:last-child{border-top:1px solid var(--line);}
@@ -1921,9 +1927,9 @@ aside .section-title{display:flex;align-items:baseline;}
   .event-copy{padding:12px 14px;}
   .event-copy h3{font-size:18px;}
   .event-copy>span,.event-countdown>i{display:none;}
-  .dashboard-event.has-image{grid-template-columns:104px minmax(0,1fr) 150px;}
-  .dashboard-event:not(.has-image){grid-template-columns:104px minmax(0,1fr);}
-  .dashboard-event>img{width:150px;min-height:150px;}
+  .dashboard-event{--count:104px;--shot:150px;}
+  .dashboard-event.is-soon{--count:104px;}
+  .dashboard-event>img{min-height:150px;}
   .dashboard-count b{font-size:38px;}
   .dashboard-event-copy{padding:18px 20px;}
 }
@@ -1948,9 +1954,9 @@ aside .section-title{display:flex;align-items:baseline;}
   .day{min-height:48px;padding:5px;gap:4px;}
   .day-more{font-size:7px;border:0;padding:0;}
   .home-dashboard{margin-bottom:32px;}
-  .dashboard-event.has-image{grid-template-columns:78px minmax(0,1fr) 98px;}
-  .dashboard-event:not(.has-image){grid-template-columns:78px minmax(0,1fr);}
-  .dashboard-event>img{width:98px;min-height:126px;}
+  .dashboard-event{--count:78px;--shot:98px;}
+  .dashboard-event.is-soon{--count:97px;}
+  .dashboard-event>img{min-height:126px;}
   .dashboard-count{padding:14px 8px;gap:7px;}
   .dashboard-count b{font-size:30px;}
   .dashboard-event-copy{padding:14px 15px;gap:5px;}
@@ -2331,6 +2337,20 @@ aside .section-title{display:flex;align-items:baseline;}
 .entry>.acc-no{font-size:9px;letter-spacing:0;color:var(--muted);}
 .entry.no-thumb>.acc-no{color:var(--muted);text-shadow:none;}
 .search-refinements{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px;margin:20px 0;}
+/* One button in place of four controls. The count is the important part: a
+   search narrowed by a filter you have forgotten looks like an empty archive
+   otherwise. */
+.search-toolbar{display:flex;gap:10px;align-items:center;margin:18px 0 0;}
+.search-filter-toggle,.search-filter-reset{display:inline-flex;align-items:center;gap:7px;min-height:38px;padding:0 15px;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;
+  font:700 10px var(--mono);text-transform:uppercase;letter-spacing:.12em;}
+.search-filter-toggle:hover,.search-filter-reset:hover{border-color:var(--ink);}
+.search-filter-toggle.open{border-color:var(--ink);background:var(--paper-alt);}
+.search-filter-toggle i{display:grid;place-items:center;min-width:17px;height:17px;padding:0 4px;
+  border-radius:9px;background:var(--ink);color:var(--surface);font:700 9px/1 var(--mono);font-style:normal;}
+.search-filter-reset{color:var(--muted);}
+.search-tools .search-filters{margin-top:16px;}
+.search-tools .search-refinements{margin-bottom:0;}
 .search-refinements label{display:flex;flex-direction:column;gap:6px;min-width:0;font:11px var(--mono);color:var(--muted);}
 .search-refinements input,.search-refinements select,.search-refinements button{box-sizing:border-box;min-width:0;max-width:100%;min-height:44px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:10px;font:14px var(--mono);border-radius:0;}
 .search-refinements button{justify-self:start;font-size:11px;cursor:pointer;}
