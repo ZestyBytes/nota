@@ -575,5 +575,47 @@ for (const entry of entries) {
 }
 if (placeCacheDirty) writeFileSync(GEO_CACHE, JSON.stringify(placeCache, null, 2) + "\n");
 
+// A cover fetched by ISBN only exists if that exact edition was scanned, which
+// is why well known books were coming back blank: the work is in Open Library,
+// the printing on our shelf is not. So an ISBN that has no scan is looked up
+// again by title and author, and the cover of whichever edition does have one
+// is used instead. Runs on the deploy runner, which has network; in a sandbox
+// without one every lookup fails and every cover is left exactly as it was.
+const OL_UA = { "User-Agent": "noted-personal-archive (github.com/ZestyBytes)" };
+const isIsbnCover = url => /covers\.openlibrary\.org\/b\/isbn\//.test(url || "");
+
+async function isbnHasScan(url) {
+  const res = await fetch(url.includes("?") ? url : url + "?default=false", { method: "HEAD", headers: OL_UA });
+  return res.ok;
+}
+
+async function coverByWork(title, author) {
+  const query = [title, author].filter(Boolean).join(" ");
+  const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&fields=cover_i,title,author_name&limit=1`;
+  const res = await fetch(url, { headers: OL_UA });
+  if (!res.ok) throw new Error(String(res.status));
+  const [hit] = (await res.json()).docs || [];
+  return hit && hit.cover_i
+    ? { url: `https://covers.openlibrary.org/b/id/${hit.cover_i}-L.jpg`, title: hit.title, author: (hit.author_name || [])[0] || "" }
+    : null;
+}
+
+for (const book of books) {
+  if (book.cover && !isIsbnCover(book.cover)) continue;
+  try {
+    if (book.cover && await isbnHasScan(book.cover)) continue;
+    const found = await coverByWork(book.title, book.author);
+    if (found) {
+      book.cover = found.url;
+      console.log(`  cover for "${book.title}" -> ${found.url}   (matched "${found.title}"${found.author ? ` by ${found.author}` : ""})`);
+    } else {
+      console.log(`  no cover found for "${book.title}"${book.author ? ` by ${book.author}` : ""}`);
+    }
+  } catch (error) {
+    console.log(`  cover lookup failed for "${book.title}": ${error.message}`);
+  }
+}
+
+
 writeFileSync(OUT_PATH, `window.NOTED_DATA = ${JSON.stringify(payload, null, 2)};\n`);
 console.log(`Wrote ${entries.length} entries, ${tasks.length} tasks, ${books.length} books, ${Object.keys(payload.topics).length} topics -> ${OUT_PATH}`);
