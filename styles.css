@@ -659,6 +659,23 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px;min-width:0;}
    status. */
 .wedding-space{--reading-accent:#8f3f52;}
 .wedding-space .reading-mast h1{color:#8f3f52;}
+/* 86 books is a very long sideways swipe, so the wedding shelf wraps into a
+   bookcase instead of one endless shelf. The plank is drawn under each book
+   rather than under the row, because the number of rows depends on the width
+   and CSS cannot know it; grid rows are equal height, so the planks meet and
+   read as one continuous shelf. */
+.wedding-space .shelf-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));
+  gap:30px 24px;overflow:visible;background:none;padding:22px 36px 10px;}
+.wedding-space .shelf-book{flex:none;position:relative;padding-bottom:30px;}
+.wedding-space .shelf-book>img,.wedding-space .shelf-book>.book-plate{
+  width:100%;height:auto;aspect-ratio:2/3;object-fit:cover;}
+.wedding-space .shelf-book:after{content:"";position:absolute;left:-12px;right:-12px;bottom:0;height:9px;
+  background:linear-gradient(#694926 0 5px,#3e2a18 5px 9px);}
+@media(max-width:800px){
+  .wedding-space .shelf-row{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:26px 18px;padding:20px 20px 10px;}
+  .wedding-space .shelf-book:after{left:-9px;right:-9px;}
+  .wedding-space .shelf-book b{font-size:15px;}
+}
 .wedding-space .shelf-book .from{font-style:italic;text-transform:none;letter-spacing:.01em;color:#8f3f52;}
 @media(prefers-color-scheme:dark){
   :root:not([data-theme="light"]) .wedding-space{--reading-accent:#d98ba0;}
