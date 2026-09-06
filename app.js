@@ -545,24 +545,55 @@ function daysFromToday(iso){
 // countdown and its picture. The tiles that sat beside it repeated what the
 // rest of the page already says.
 function homeEvents(){
-  const event=state.data.entries.filter(e=>e.type==="Event"&&(e.eventAt||e.occurredAt)>=todayKey)
-    .sort((a,b)=>(a.eventAt||a.occurredAt).localeCompare(b.eventAt||b.occurredAt))[0];
+  const events=state.data.entries.filter(e=>e.type==="Event"),
+        event=events.filter(e=>(e.eventAt||e.occurredAt)>=todayKey)
+          .sort((a,b)=>(a.eventAt||a.occurredAt).localeCompare(b.eventAt||b.occurredAt))[0];
   if(!event)return "";
   const date=event.eventAt||event.occurredAt,days=daysFromToday(date);
   // "Tomorrow" set at the size a two digit number wants is wider than the
-  // column it sits in, so a word and a number are typeset differently.
+  // column it sits in, so a word and a number are typeset differently. On a
+  // phone the column goes altogether and the countdown joins the date line,
+  // which leaves the title and the photograph the room they were short of.
   const soon=days===0?"Today":days===1?"Tomorrow":days,isWord=days<=1;
+  const phrase=days===0?"Today":days===1?"Tomorrow":`In ${days} days`;
   return `<section class="home-dashboard">
+    <div class="home-latest-head"><h2 class="section-title">Coming up</h2><a href="#events">All events &rarr;</a></div>
     <article class="dashboard-event${event.image?" has-image":""}${isWord?" is-soon":""}" data-entry="${esc(event.id)}">
       <div class="dashboard-count"><b>${soon}</b>${days>1?`<span>days to go</span>`:""}</div>
       <div class="dashboard-event-copy">
-        <p>Next event &middot; ${esc(fmtDate(date))}${event.startTime?` &middot; ${esc(event.startTime)}`:""}</p>
+        <p><span class="dashboard-when">${esc(phrase)} &middot; </span>${esc(fmtDate(date))}${event.startTime?` &middot; ${esc(event.startTime)}`:""}</p>
         <h2>${esc(event.title)}</h2>
         ${event.excerpt?`<span>${esc(event.excerpt)}</span>`:""}
       </div>
       ${event.image?`<img src="${esc(event.image)}" alt="${esc(event.imageAlt||"")}" loading="lazy">`:""}
     </article>
   </section>`;
+}
+// Everything scheduled, ahead and behind. The Calendar answers "what is on
+// this month"; this answers "when is that thing" and "when was that", which
+// the month grid can only do by paging through it.
+function eventsPage(){
+  const all=state.data.entries.filter(e=>e.type==="Event"),
+        key=e=>e.eventAt||e.occurredAt||"",
+        ahead=all.filter(e=>key(e)>=todayKey).sort((a,b)=>key(a).localeCompare(key(b))),
+        past=all.filter(e=>key(e)<todayKey).sort((a,b)=>key(b).localeCompare(key(a)));
+  const row=e=>{
+    const date=key(e),days=daysFromToday(date),t=topic(e.topics?.[0]);
+    const when=days===0?"Today":days===1?"Tomorrow":days>1?`In ${days} days`:fmtDate(date);
+    return `<li class="event-row" data-entry="${esc(e.id)}" style="--topic:${t.color}">
+      <div><p class="eyebrow">${esc(fmtDate(date))}${e.startTime?` &middot; ${esc(e.startTime)}`:""}</p>
+      <h3>${esc(e.title)}</h3>${e.excerpt?`<p class="event-row-note">${esc(e.excerpt)}</p>`:""}</div>
+      ${days>=0?`<span class="event-when">${esc(when)}</span>`:""}
+    </li>`;
+  };
+  const list=(rows,title,note)=>rows.length
+    ? `<section class="event-group"><div class="home-latest-head"><h2 class="section-title">${title}</h2><span>${rows.length}</span></div><ol class="event-list">${rows.map(row).join("")}</ol></section>`
+    : `<section class="event-group"><div class="home-latest-head"><h2 class="section-title">${title}</h2></div><p class="empty">${note}</p></section>`;
+  return `<section class="events-page"><p class="back-link"><a href="${backHref("#today")}" data-back>Back</a></p>`+
+    pageHead("Everything with a date on it","Events","Ahead first, then what has already happened.")+
+    list(ahead,"Coming up","Nothing scheduled yet.")+
+    list(past,"Already happened","Nothing behind you yet.")+
+  `</section>`;
 }
 // The journey cards are a library treatment: eyebrow, title, last entry,
 // meta and a bar each. On Home one line per journey is enough, with the
@@ -1207,7 +1238,7 @@ function authScreen(){return `<section class="auth-shell"><div class="auth-intro
 // is otherwise only diagnosable by reading pixels out of a screenshot.
 function buildStamp(){return `<p class="build-stamp">build ${BUILD.startsWith("__")?"local":esc(BUILD)}</p>`}
 function userTools(){return (state.user?`<footer class="user-tools"><button data-action="logout">Sign out</button></footer>`:"")+buildStamp()}
-function renderUnsafe(){const app=document.getElementById("app"),hash=location.hash.slice(1)||"today",[route,arg]=hash.split("/"),isPublic=route==="writing";document.body.classList.toggle("auth-view",NotedBackend.configured&&!state.user&&!isPublic);if(state.booting){app.innerHTML=skeletonPage();return}if(NotedBackend.configured&&!state.user&&!isPublic){app.innerHTML=authScreen();return}state.route=route;document.querySelectorAll(".main-nav a,.mobile-nav a").forEach(a=>a.classList.toggle("active",a.getAttribute("href")===`#${route}`));const page=route==="calendar"?calendar():route==="library"?library():route==="entry"?entryPage(decodeURIComponent(arg||"")):route==="topics"?(arg?topicView(arg):topics()):route==="writing"?writing():route==="journey"?journeyPage(arg||""):route==="tasks"?taskPage():route==="health"?healthPage():route==="search"?search():today();app.innerHTML=page+userTools();app.focus({preventScroll:true});afterRender(route)}
+function renderUnsafe(){const app=document.getElementById("app"),hash=location.hash.slice(1)||"today",[route,arg]=hash.split("/"),isPublic=route==="writing";document.body.classList.toggle("auth-view",NotedBackend.configured&&!state.user&&!isPublic);if(state.booting){app.innerHTML=skeletonPage();return}if(NotedBackend.configured&&!state.user&&!isPublic){app.innerHTML=authScreen();return}state.route=route;document.querySelectorAll(".main-nav a,.mobile-nav a").forEach(a=>a.classList.toggle("active",a.getAttribute("href")===`#${route}`));const page=route==="calendar"?calendar():route==="library"?library():route==="entry"?entryPage(decodeURIComponent(arg||"")):route==="topics"?(arg?topicView(arg):topics()):route==="writing"?writing():route==="journey"?journeyPage(arg||""):route==="tasks"?taskPage():route==="health"?healthPage():route==="events"?eventsPage():route==="search"?search():today();app.innerHTML=page+userTools();app.focus({preventScroll:true});afterRender(route)}
 function render(){try{return renderUnsafe()}catch(error){console.error("Noted render failed",error);const app=document.getElementById("app");if(app)app.innerHTML=`<section class="render-error"><p class="eyebrow">Archive check</p><h1 class="page-title">This page needs a little repair.</h1><p class="lede">One of the saved records could not be displayed. Your notes are still safe: try returning home or refreshing.</p><p><a class="back-link" href="#today">Return home</a></p></section>`}}
 // Every page opens at its top, forwards or back: arriving halfway down a page
 // you have not read yet is more disorienting than losing your old place.

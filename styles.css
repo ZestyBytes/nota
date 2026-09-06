@@ -685,6 +685,17 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px;min-width:0;}
 :root[data-theme="dark"] .wedding-space{--reading-accent:#d98ba0;}
 :root[data-theme="dark"] .wedding-space .reading-mast h1,
 :root[data-theme="dark"] .wedding-space .shelf-book .from{color:#d98ba0;}
+/* ---------- everything with a date on it ---------- */
+.events-page .event-group{margin:0 0 38px;}
+.events-page .home-latest-head>span{font:9px var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--muted);}
+.event-list{list-style:none;margin:0;padding:0;border-top:1px solid var(--line);}
+.event-row{display:flex;gap:16px;align-items:baseline;justify-content:space-between;
+  padding:16px 0 16px 14px;border-bottom:1px solid var(--line);border-left:3px solid var(--topic,var(--line));cursor:pointer;}
+.event-row:hover{background:var(--paper-alt);}
+.event-row h3{margin:4px 0 0;font:600 19px/1.25 var(--serif);}
+.event-row .eyebrow{margin:0;}
+.event-row-note{margin:6px 0 0;font:italic 13px/1.45 var(--serif);color:var(--muted);}
+.event-when{flex:none;font:700 9px var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--topic,var(--muted));}
 .build-stamp{margin:34px 0 0;text-align:center;font:9px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--faint);opacity:.55;}
 .pull-hint{position:fixed;z-index:9;top:0;left:0;right:0;display:grid;place-items:center;padding-top:env(safe-area-inset-top,0px);height:0;overflow:hidden;color:#949a85;font:10px var(--mono);text-transform:uppercase;letter-spacing:.14em;background:#14160f;transition:height .18s ease;}
 .pull-hint.on{height:calc(38px + env(safe-area-inset-top,0px));}
@@ -1899,6 +1910,7 @@ aside .section-title{display:flex;align-items:baseline;}
    title. Words get their own size and their own room. */
 .dashboard-event.is-soon .dashboard-count b{font:700 clamp(15px,3.4vw,24px)/1.15 var(--mono);letter-spacing:.04em;text-transform:uppercase;}
 .dashboard-event.is-soon{--count:116px;}
+.dashboard-when{display:none;}
 .dashboard-count span{color:var(--muted);font:700 8px var(--mono);letter-spacing:.13em;text-transform:uppercase;}
 .dashboard-event-copy{display:flex;min-width:0;flex-direction:column;justify-content:center;gap:7px;padding:22px 26px;}
 .dashboard-event-copy p{margin:0;color:var(--muted);font:700 9px var(--mono);text-transform:uppercase;letter-spacing:.11em;}
@@ -1954,8 +1966,14 @@ aside .section-title{display:flex;align-items:baseline;}
   .day{min-height:48px;padding:5px;gap:4px;}
   .day-more{font-size:7px;border:0;padding:0;}
   .home-dashboard{margin-bottom:32px;}
-  .dashboard-event{--count:78px;--shot:98px;}
-  .dashboard-event.is-soon{--count:97px;}
+  /* One column of countdown, one of writing and one of photograph is three
+     columns too many at 390px. The countdown becomes part of the date line
+     and its column goes, which gives the title and the picture room. */
+  .dashboard-count{display:none;}
+  .dashboard-when{display:inline;}
+  .dashboard-event{--shot:104px;}
+  .dashboard-event.has-image{grid-template-columns:minmax(0,1fr) var(--shot);}
+  .dashboard-event:not(.has-image){grid-template-columns:minmax(0,1fr);}
   .dashboard-event>img{min-height:126px;}
   .dashboard-count{padding:14px 8px;gap:7px;}
   .dashboard-count b{font-size:30px;}
@@ -2401,6 +2419,14 @@ aside .section-title{display:flex;align-items:baseline;}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
 /* Home: bounded horizontal reading, visible goals and compact task rows. */
 .latest-rail{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x proximity;scroll-padding:1px;overscroll-behavior-x:contain;padding:2px 1px 14px;margin-bottom:24px;scrollbar-width:thin;}
+/* A card and a sliver of the next one is a hint that there is more, which is
+   right on a wide screen where several fit. On a phone only one fits, so the
+   sliver is just a cropped card: full width, and mandatory snapping so a
+   swipe lands on the next one square rather than halfway. */
+@media(max-width:700px){
+  .latest-rail{scroll-snap-type:x mandatory;gap:14px;}
+  .latest-rail .latest-card{flex:0 0 100%;scroll-snap-align:center;scroll-snap-stop:always;}
+}
 .latest-card{box-sizing:border-box;flex:0 0 min(84%,360px);display:flex;gap:14px;align-items:start;min-width:0;padding:18px;border:1px solid var(--line);border-top:2px solid var(--stamp-red);background:var(--surface);text-decoration:none;color:var(--ink);scroll-snap-align:start;}
 .latest-copy{min-width:0;flex:1;display:flex;flex-direction:column;min-height:174px;}
 .latest-meta{font:10px/1.5 var(--mono);color:var(--muted);}
