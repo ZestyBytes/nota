@@ -1,7 +1,7 @@
 ---
-title: "Christ, Faith, Creator"
+title: "The Little Book of Life Hacks"
 type: reading
-givenBy: "Grandad"
+givenBy: "Dan and Georgia"
 status: want-to-read
 tags: [wedding]
 publish: true

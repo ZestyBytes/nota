@@ -1,7 +1,7 @@
 ---
-title: "Persian Recipes"
+title: "The Case for Christ"
 type: reading
-givenBy: "Cat and Lloyd"
+givenBy: "Grandad"
 status: want-to-read
 tags: [wedding]
 publish: true

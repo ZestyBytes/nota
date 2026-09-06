@@ -1,7 +1,8 @@
 ---
-title: "Lonely Planet"
+title: "Persiana"
 type: reading
-givenBy: "Laura and Lewis"
+author: "Sabrina Ghayour"
+givenBy: "Cat and Lloyd"
 status: want-to-read
 tags: [wedding]
 publish: true

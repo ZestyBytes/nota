@@ -1,5 +1,5 @@
 ---
-title: "California Living and Eating"
+title: "California: Living and Eating"
 type: reading
 givenBy: "Kelvin and Anne"
 status: want-to-read

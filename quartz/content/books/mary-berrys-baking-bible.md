@@ -1,7 +1,8 @@
 ---
-title: "Cocktail and Shaker"
+title: "Mary Berry's Baking Bible"
 type: reading
-givenBy: "Claire and Cristie"
+author: "Mary Berry"
+givenBy: "Carol"
 status: want-to-read
 tags: [wedding]
 publish: true

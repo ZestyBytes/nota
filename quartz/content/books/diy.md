@@ -1,7 +1,8 @@
 ---
-title: "Cookbook for Couples"
+title: "DIY"
 type: reading
-givenBy: "Hanna and Matt"
+author: "Collins"
+givenBy: "Pete and Angie"
 status: want-to-read
 tags: [wedding]
 publish: true
