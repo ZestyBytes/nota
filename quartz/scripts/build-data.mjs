@@ -589,21 +589,41 @@ const isbnOf = url => (String(url || "").match(/\/b\/isbn\/(\d+)/) || [])[1] || 
 // a friend's name is worse than no cover, so a result has to earn its place:
 // the titles must match, and where we know the author, the match must be by
 // them too. Anything short of that is refused and the book keeps its plate.
+// "The Five Love Languages" and "The 5 Love Languages" are the same book, and
+// the first run rejected the correct ISBN over exactly that, then settled for
+// a summary of the book instead. Numbers are spelled either way on covers.
+const NUMBERS = { one:1, two:2, three:3, four:4, five:5, six:6, seven:7, eight:8,
+  nine:9, ten:10, eleven:11, twelve:12, hundred:100 };
 const normTitle = s => String(s || "").toLowerCase().normalize("NFKD")
-  .replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim().replace(/^(the|a|an) /, "");
+  .replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim().replace(/^(the|a|an) /, "")
+  .split(" ").map(w => (w in NUMBERS ? String(NUMBERS[w]) : w)).join(" ");
 const surnameOf = name => normTitle(name).split(" ").filter(Boolean).pop() || "";
 
-function coverIsTrustworthy(ours, theirs) {
+// An ISBN was written down by a person about a book they are holding, so it is
+// evidence; a search result is a guess. The ISBN is therefore allowed a looser
+// title match, which is how Legend keeps the Gemmell the number names instead
+// of the Marie Lu the search preferred.
+// Books about books: a summary, a study guide or a workbook carries the real
+// title inside its own and would otherwise pass every check.
+const DERIVATIVE = /^(summary|study guide|workbook|analysis|conversation starters)\b|\b(summary|study guide|workbook) of\b/;
+
+function coverIsTrustworthy(ours, theirs, fromIsbn) {
   const mine = normTitle(ours.title), found = normTitle(theirs.title);
   if (!mine || !found) return false;
+  if (DERIVATIVE.test(found) && !DERIVATIVE.test(mine)) return false;
   const exact = mine === found;
-  if (!exact && !found.includes(mine) && !mine.includes(found)) return false;
-  // No author to check against means only an exact title is safe: "Poems" is
-  // not "Love Poems", however close the search thought it was.
-  if (!ours.author) return exact;
-  const theirAuthor = normTitle(theirs.author);
-  return (theirAuthor && theirAuthor.includes(surnameOf(ours.author)))
-      || found.includes(normTitle(ours.author));
+  const close = exact || found.includes(mine) || mine.includes(found);
+  if (!close) return false;
+  if (ours.author) {
+    const theirAuthor = normTitle(theirs.author);
+    return (theirAuthor && theirAuthor.includes(surnameOf(ours.author)))
+        || found.includes(normTitle(ours.author))
+        || (fromIsbn && !theirAuthor);
+  }
+  // With no author to check against, an exact title is always safe. A longer
+  // title is distinctive enough to trust on its own: "One Question a Day" can
+  // only be one book, where "Marriage" or "Poems" could be any of thousands.
+  return exact || fromIsbn || mine.split(" ").length >= 4;
 }
 
 async function olDocs(params, limit) {
@@ -627,7 +647,7 @@ async function findCover(book) {
   const want = { title: book.title, author: book.author };
   if (isbn) {
     const [doc] = await olDocs(`isbn=${isbn}`, 1);
-    if (doc && !coverIsTrustworthy(want, doc)) {
+    if (doc && !coverIsTrustworthy(want, doc, true)) {
       console.log(`  ISBN ${isbn} on "${book.title}" is "${doc.title}"${doc.author ? ` by ${doc.author}` : ""}, not this book`);
     } else if (doc && doc.coverId) {
       return { url: `https://covers.openlibrary.org/b/id/${doc.coverId}-L.jpg`, ...doc, via: `ISBN ${isbn}` };
@@ -642,7 +662,10 @@ async function findCover(book) {
 }
 
 for (const book of books) {
-  // a cover photographed and committed to the repo is already right
+  // a cover photographed and committed to the repo is already right, and
+  // "none" marks a thing with no cover to find: Happily Ever After is a
+  // wedding photo album, so every search for it can only be a wrong book
+  if (book.cover === "none") { book.cover = ""; continue; }
   if (book.cover && !/covers\.openlibrary\.org/.test(book.cover)) continue;
   try {
     const found = await findCover(book);
