@@ -114,9 +114,13 @@ run(`
   rail.children=Array.from({length:5},book);
   document.querySelector=s=>s==='.cloth-shelf'?rail:null;
   setupClothShelf();
-  if(rail.children.length!==15)throw Error('Loop must have exactly three runs');
+  // Whole runs either side, and enough of them that a flick cannot reach the
+  // seam: the run here is 338px against a 240px viewport, so three copies.
+  const copies=(rail.children.length-5)/2;
+  if(!Number.isInteger(copies/5)||copies<5)throw Error('Loop must be whole runs either side');
+  if(copies*69<rail.clientWidth*3-338)throw Error('Loop must outrun a flick on each side');
   if(rail.children.filter(b=>b.tabIndex===0).length!==5)throw Error('Copies must not duplicate tab stops');
-  if(rail.children.filter(b=>b.attributes['aria-hidden']==='true').length!==10)throw Error('Copies must be hidden from screen readers');
+  if(rail.children.filter(b=>b.attributes['aria-hidden']==='true').length!==copies*2)throw Error('Copies must be hidden from screen readers');
   const initial=rail.scrollLeft;rail.scrollLeft=initial-70;events.scrollend();
   if(rail.scrollLeft!==initial+275)throw Error('Loop did not preserve the visible offset');
   shelfCleanup();shelfCleanup=null;
