@@ -3,7 +3,7 @@ title: "Haven't They Grown"
 type: reading
 author: "Sophie Hannah"
 givenBy: "Hannah"
-cover: "https://covers.openlibrary.org/b/isbn/9781501170068-L.jpg"
+cover: "https://covers.openlibrary.org/b/isbn/9781501170068-L.jpg?default=false"
 status: want-to-read
 tags: [wedding]
 publish: true

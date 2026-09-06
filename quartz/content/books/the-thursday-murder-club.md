@@ -3,7 +3,7 @@ title: "The Thursday Murder Club"
 type: reading
 author: "Richard Osman"
 givenBy: "Rosie and Ben"
-cover: "https://covers.openlibrary.org/b/isbn/9781984880123-L.jpg"
+cover: "https://covers.openlibrary.org/b/isbn/9781984880123-L.jpg?default=false"
 status: want-to-read
 tags: [wedding]
 publish: true

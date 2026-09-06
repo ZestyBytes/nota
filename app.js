@@ -686,15 +686,24 @@ function calendar(){
     ${state.calendarMode==="month"?`<div class="calendar-shell"><div><div class="week" aria-hidden="true">${["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map(day=>`<span>${day}</span>`).join("")}</div><p id="calendar-keys" class="sr-only">Use arrow keys to move by day or week, Home and End for the week edges, and Page Up or Page Down to change month.</p><div class="calendar-grid" aria-labelledby="calendar-heading" aria-describedby="calendar-keys">${cells.join("")}</div><p class="calendar-hint">Select a day to read below. Swipe to change month.</p>${!monthCount?empty:""}</div><aside class="selected-day" aria-live="polite"><p class="eyebrow">${state.selectedDate===todayKey?"Today":"Selected day"}</p><h3>${label}</h3>${selected.length?calendarDayContents(selected):`<p class="empty">Nothing recorded on this day.</p>`}</aside></div>`:`${monthCount?`<ol class="calendar-days">${monthDates.map(date=>`<li><h3><time datetime="${date}">${new Date(date+"T12:00:00").toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"long"})}${date===todayKey?" · Today":""}</time><span>${index.get(date).length} ${index.get(date).length===1?"item":"items"}</span></h3>${calendarDayContents(index.get(date))}</li>`).join("")}</ol>`:empty}`}
   </section>`;
 }
-// Half the wedding covers are fetched from Open Library by ISBN, and an ISBN
-// that names an edition without a scan returns nothing. A cover that fails to
-// load is swapped for the drawn plate, so a shelf of presents never shows a
-// broken image. Errors do not bubble, so this listens on the way down.
-document.addEventListener("error",event=>{
-  const img=event.target;
-  if(!img||img.tagName!=="IMG"||!img.dataset.cover)return;
+// Most wedding covers are fetched from Open Library by ISBN, and an ISBN that
+// names an edition with no scan has two ways of saying so: a 404, or, worse,
+// a 1x1 blank image served with a success status. The blank one loads without
+// error and paints an empty rectangle, so a cover is judged missing by what
+// arrived rather than by whether the request succeeded. Either way the drawn
+// plate takes its place, and a shelf of presents never shows an empty slot.
+// Neither load nor error bubbles, so both are caught on the way down.
+function plateFor(img){
   const book=state.data.books.find(b=>b.id===img.dataset.cover);
   if(book)img.outerHTML=coverPlate({...book,cover:""});
+}
+document.addEventListener("error",event=>{
+  const img=event.target;
+  if(img?.tagName==="IMG"&&img.dataset.cover)plateFor(img);
+},true);
+document.addEventListener("load",event=>{
+  const img=event.target;
+  if(img?.tagName==="IMG"&&img.dataset.cover&&img.naturalWidth<=1)plateFor(img);
 },true);
 function coverPlate(b){
   const t=topic(b.topics?.[0]);
