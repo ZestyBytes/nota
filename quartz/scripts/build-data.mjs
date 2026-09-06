@@ -51,6 +51,7 @@ const TOPICS = {
   playlist:   { name: "Playlist", parent: "music", mode: "listen", icon: "disc", color: "#6b6a2e", soft: "#e9e8d3", ground: "dots", photo: "", description: "Records, podcasts and things worth listening to" },
   practice:   { name: "Practice", parent: "music", icon: "music", color: "#8a4438", soft: "#f0e3e0", ground: "hatch", photo: "", description: "The instrument, and the hours it asks for" },
   reading:    { name: "Reading", icon: "book", color: "#8a5a12", soft: "#ece0cb", ground: "ruled", photo: "", description: "Books, marginalia and ideas worth keeping" },
+  wedding:    { name: "Wedding", icon: "heart", color: "#8f3f52", soft: "#f0dee4", ground: "ruled", photo: "", description: "The books our guests gave us, and who each one came from" },
   food:       { name: "Food", mode: "kitchen", icon: "fork", color: "#8a4a1a", soft: "#ecddcb", ground: "coarse", photo: "assets/posts/slow-roast-tomato-focaccia.jpg", description: "Recipes, experiments and things made for the table" },
   recipes:    { name: "Recipes", parent: "food", mode: "recipes", icon: "fork", color: "#a25a1e", soft: "#f0e2d2", ground: "duo", photo: "", description: "Things made at home, and how they were made" },
   eatingout:  { name: "Eating out", parent: "food", icon: "cup", color: "#7a5a2e", soft: "#ece1d0", ground: "plain", photo: "", description: "Meals out worth remembering" },
@@ -465,6 +466,10 @@ for (const file of files) {
       id: slug, title: data.title, author: data.author || "",
       status: data.status || "want-to-read", progress: Number(data.progress || 0),
       cover: data.cover || firstImage(body).image, topics: topics.length ? topics : ["books"],
+      // Who gave the book, for a shelf that is a record of people as much as
+      // of reading. Empty on an ordinary book, which changes nothing.
+      givenBy: String(data.givenBy || "").trim(),
+      inscription: String(data.inscription || "").trim(),
       notes: (() => {
         const n = firstParagraph(body.slice(body.toLowerCase().indexOf("## reading notes")));
         return n && body.toLowerCase().includes("## reading notes") ? [{ id: `${slug}-n1`, text: n, createdAt: data.startedAt || "" }] : [];

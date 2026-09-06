@@ -70,6 +70,7 @@ life          selfcare, adhd, habits
 music         playlist, practice
 reading
 food          recipes, eatingout
+wedding
 technology
 motoring
 gardening      houseplants
@@ -162,6 +163,13 @@ the title instead, so a book never looks broken for want of a picture.
 Body: a `## Reading notes` section's first paragraph becomes the book's one
 note. Quotes come from separate quote files linked with `book:` (above),
 not written inline here.
+
+A book given as a wedding present takes two extra fields, and `tags:
+[wedding]` puts it on the wedding shelf rather than the reading one:
+```yaml
+givenBy: "Aunt Jean"          # shown on the shelf in place of a status
+inscription: "For the years ahead"   # optional, what they wrote inside
+```
 
 **Recipe**: a Note with `view: recipe` and extra fields:
 ```yaml
