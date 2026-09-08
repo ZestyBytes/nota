@@ -677,11 +677,6 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px;min-width:0;}
   .wedding-space .shelf-book b{font-size:15px;}
 }
 .wedding-space .shelf-book .from{font-style:italic;text-transform:none;letter-spacing:.01em;color:#8f3f52;}
-@media(prefers-color-scheme:dark){
-  :root:not([data-theme="light"]) .wedding-space{--reading-accent:#d98ba0;}
-  :root:not([data-theme="light"]) .wedding-space .reading-mast h1,
-  :root:not([data-theme="light"]) .wedding-space .shelf-book .from{color:#d98ba0;}
-}
 :root[data-theme="dark"] .wedding-space{--reading-accent:#d98ba0;}
 :root[data-theme="dark"] .wedding-space .reading-mast h1,
 :root[data-theme="dark"] .wedding-space .shelf-book .from{color:#d98ba0;}
@@ -953,21 +948,28 @@ body.modal-open{position:fixed;left:0;right:0;width:100%;overflow:hidden;}
    topic inks lift enough to stay legible, and the paper texture
    becomes a dim board rather than a bright sheet.
    ============================================================ */
-@media(prefers-color-scheme:dark){
-  :root{--paper:#14160f;--paper-alt:#1c1f16;--surface:#1a1d14;--ink:#e6e9dc;--ink-soft:#c7cbba;--muted:#949a85;--faint:#6f7563;--line:#333a2b;--line-strong:#e6e9dc;--stamp-red:#d4705f;--stamp-green:#84b168;--tape:rgba(214,180,110,.13);}
-  /* shadows read as depth on paper and as murk on a dark ground */
-  .entry:hover,.book:hover,.topic-card:hover,.shot:hover{box-shadow:0 10px 22px -12px rgba(0,0,0,.7);}
-  .modal-backdrop{background:rgba(0,0,0,.66);}
-  .mount-tag{box-shadow:0 3px 6px -2px rgba(0,0,0,.6);}
-  .book .acc-no{color:var(--muted);text-shadow:none;}
-  .thumb-count,.gallery-no,.shot-count{background:rgba(0,0,0,.7);}
-  /* photographs are lit for daylight; take the glare off after dark */
-  .entry-thumb,.book-cover,.detail-image,.gallery-shot img,.shot img,.body-figure img{filter:saturate(.82) brightness(.86);}
-  .detail-body pre.code{background:#0d0f09;color:#d4d8c8;}
-  .detail-body code{background:var(--paper-alt);}
-  .detail-actions .danger:hover{color:#14160f;}
-  .entry p.snippet mark{background:color-mix(in srgb,var(--stamp-red) 34%,transparent);}
-}
+/* shadows read as depth on paper and as murk on a dark ground */
+:root[data-theme="dark"] .entry:hover,
+:root[data-theme="dark"] .book:hover,
+:root[data-theme="dark"] .topic-card:hover,
+:root[data-theme="dark"] .shot:hover{box-shadow:0 10px 22px -12px rgba(0,0,0,.7);}
+:root[data-theme="dark"] .modal-backdrop{background:rgba(0,0,0,.66);}
+:root[data-theme="dark"] .mount-tag{box-shadow:0 3px 6px -2px rgba(0,0,0,.6);}
+:root[data-theme="dark"] .book .acc-no{color:var(--muted);text-shadow:none;}
+:root[data-theme="dark"] .thumb-count,
+:root[data-theme="dark"] .gallery-no,
+:root[data-theme="dark"] .shot-count{background:rgba(0,0,0,.7);}
+/* photographs are lit for daylight; take the glare off after dark */
+:root[data-theme="dark"] .entry-thumb,
+:root[data-theme="dark"] .book-cover,
+:root[data-theme="dark"] .detail-image,
+:root[data-theme="dark"] .gallery-shot img,
+:root[data-theme="dark"] .shot img,
+:root[data-theme="dark"] .body-figure img{filter:saturate(.82) brightness(.86);}
+:root[data-theme="dark"] .detail-body pre.code{background:#0d0f09;color:#d4d8c8;}
+:root[data-theme="dark"] .detail-body code{background:var(--paper-alt);}
+:root[data-theme="dark"] .detail-actions .danger:hover{color:#14160f;}
+:root[data-theme="dark"] .entry p.snippet mark{background:color-mix(in srgb,var(--stamp-red) 34%,transparent);}
 /* ---------- calendar ---------- */
 .month-count{margin:14px 0 18px;font:11px var(--mono);color:var(--muted);}
 .linkish{border:0;background:none;padding:0;cursor:pointer;font:inherit;color:var(--ink);text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--line);}
@@ -1067,16 +1069,20 @@ body.modal-open{position:fixed;left:0;right:0;width:100%;overflow:hidden;}
 /* A pen has no fixed shape of its own, so give it a tall stage that suits an
    upright cabinet as well as a widget, rather than a video's letterbox. */
 .embed-pen iframe{height:480px;}
-@media(prefers-color-scheme:dark){
-  /* the callout inks are mixed for paper; lift them off a dark ground the
-     same way the topic inks are lifted */
-  .callout-note,.callout-info{--accent:#7fa8b4;}
-  .callout-question,.callout-example,.callout-abstract,.callout-summary{--accent:#b48cb4;}
-  .callout-warning,.callout-caution,.callout-important{--accent:#cfa053;}
-  .callout-bug{--accent:#63b3a7;}
-  .callout-todo{--accent:#7fa5cc;}
-  .embed{background:#0d0f09;}
-}
+/* the callout inks are mixed for paper; lift them off a dark ground the
+   same way the topic inks are lifted */
+:root[data-theme="dark"] .callout-note,
+:root[data-theme="dark"] .callout-info{--accent:#7fa8b4;}
+:root[data-theme="dark"] .callout-question,
+:root[data-theme="dark"] .callout-example,
+:root[data-theme="dark"] .callout-abstract,
+:root[data-theme="dark"] .callout-summary{--accent:#b48cb4;}
+:root[data-theme="dark"] .callout-warning,
+:root[data-theme="dark"] .callout-caution,
+:root[data-theme="dark"] .callout-important{--accent:#cfa053;}
+:root[data-theme="dark"] .callout-bug{--accent:#63b3a7;}
+:root[data-theme="dark"] .callout-todo{--accent:#7fa5cc;}
+:root[data-theme="dark"] .embed{background:#0d0f09;}
 /* ---------- scraps ---------- */
 /* Pinned cards on a board, sat slightly off square, the way real ones do.
    No accession number and no stamp: a scrap is caught, not catalogued. */
@@ -1307,9 +1313,7 @@ aside .section-title{display:flex;align-items:baseline;}
 .has-photo .topic-motif,.has-photo .topic-mark{display:none;}
 /* tape reads as stuck to paper, not to a photograph */
 .has-photo:before,.has-photo:after{display:none;}
-@media(prefers-color-scheme:dark){
-  .topic-photo{filter:saturate(.66) brightness(.8) contrast(1.02);}
-}
+:root[data-theme="dark"] .topic-photo{filter:saturate(.66) brightness(.8) contrast(1.02);}
 /* ---------- Food: the kitchen room ---------- */
 .kitchen-page{--kitchen-cream:#f3ead8;--kitchen-paper:#fffaf0;--kitchen-ink:#442b1d;--kitchen-red:#963c2c;--kitchen-green:#53623d;margin-top:-8px;}
 .kitchen-back{margin-bottom:12px;}
@@ -1379,15 +1383,14 @@ aside .section-title{display:flex;align-items:baseline;}
   .kitchen-recipe h2{font-size:32px;}
   .kitchen-recipe ul{columns:1;}
 }
-@media(prefers-color-scheme:dark){
-  .kitchen-page{--kitchen-cream:#29271f;--kitchen-paper:#343127;--kitchen-ink:#eee2ca;}
-  .kitchen-room{border-color:#5d5543;}
-  .kitchen-notes{border-color:#5d5543;}
-  .kitchen-section-head{border-color:#a89372;}
-  .kitchen-recipe{border-color:#665d49;}
-  .kitchen-recipe-copy>p,.kitchen-note p{color:#c4b69e;}
-  .kitchen-section-head span{color:#b6a588;}
-}
+:root[data-theme="dark"] .kitchen-page{--kitchen-cream:#29271f;--kitchen-paper:#343127;--kitchen-ink:#eee2ca;}
+:root[data-theme="dark"] .kitchen-room{border-color:#5d5543;}
+:root[data-theme="dark"] .kitchen-notes{border-color:#5d5543;}
+:root[data-theme="dark"] .kitchen-section-head{border-color:#a89372;}
+:root[data-theme="dark"] .kitchen-recipe{border-color:#665d49;}
+:root[data-theme="dark"] .kitchen-recipe-copy>p,
+:root[data-theme="dark"] .kitchen-note p{color:#c4b69e;}
+:root[data-theme="dark"] .kitchen-section-head span{color:#b6a588;}
 /* Give each recipe fact its own labelled compartment. */
 .kitchen-recipe .recipe-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:0;padding:0;}
 .kitchen-recipe .recipe-facts>span{padding:12px 14px;border-left:1px solid #d6c4a6;white-space:nowrap;}
@@ -1485,14 +1488,12 @@ aside .section-title{display:flex;align-items:baseline;}
   .room-item b{margin-top:10px;}
   .kitchen-recipe .recipe-facts>span{padding:10px 7px;font-size:9px;}
 }
-@media(prefers-color-scheme:dark){
-  .topic-room{--room-paper:#30332c;}
-  .room-technology{--room-bg:#172724;--room-paper:#243632;--room-ink:#e1ece6;}
-  .room-reading{--room-bg:#29251e;--room-paper:#343028;--room-ink:#eee3cd;}
-  .room-gardening{--room-bg:#1f291c;--room-paper:#2c3526;--room-ink:#e6ecd9;}
-  .room-life{--room-bg:#1d2930;--room-paper:#293840;--room-ink:#e2ebef;}
-  .room-family{--room-bg:#302129;--room-paper:#3b2d34;--room-ink:#f1e4e9;}
-}
+:root[data-theme="dark"] .topic-room{--room-paper:#30332c;}
+:root[data-theme="dark"] .room-technology{--room-bg:#172724;--room-paper:#243632;--room-ink:#e1ece6;}
+:root[data-theme="dark"] .room-reading{--room-bg:#29251e;--room-paper:#343028;--room-ink:#eee3cd;}
+:root[data-theme="dark"] .room-gardening{--room-bg:#1f291c;--room-paper:#2c3526;--room-ink:#e6ecd9;}
+:root[data-theme="dark"] .room-life{--room-bg:#1d2930;--room-paper:#293840;--room-ink:#e2ebef;}
+:root[data-theme="dark"] .room-family{--room-bg:#302129;--room-paper:#3b2d34;--room-ink:#f1e4e9;}
 /* ============================================================
    Bespoke topic spaces: separate information architecture per subject
    ============================================================ */
@@ -1757,13 +1758,9 @@ aside .section-title{display:flex;align-items:baseline;}
 .day-row-copy b{font:600 17px/1.28 var(--serif);color:var(--ink);}
 .day-row-copy small{font-size:13px;line-height:1.45;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
 .day-row-thumb{order:2;width:56px;height:56px;flex:none;object-fit:cover;border:1px solid var(--line);background:var(--paper-alt);}
-@media(prefers-color-scheme:dark){
-  .day-row-thumb{filter:saturate(.82) brightness(.86);}
-}
-@media(prefers-color-scheme:dark){
-  .mobile-nav{background:color-mix(in srgb,var(--surface) 88%,transparent);border-color:color-mix(in srgb,var(--ink) 22%,transparent);box-shadow:0 12px 30px -14px rgba(0,0,0,.8),0 2px 8px -4px rgba(0,0,0,.6);}
-  .mobile-nav a.active{background:color-mix(in srgb,var(--ink) 12%,transparent);}
-}
+:root[data-theme="dark"] .day-row-thumb{filter:saturate(.82) brightness(.86);}
+:root[data-theme="dark"] .mobile-nav{background:color-mix(in srgb,var(--surface) 88%,transparent);border-color:color-mix(in srgb,var(--ink) 22%,transparent);box-shadow:0 12px 30px -14px rgba(0,0,0,.8),0 2px 8px -4px rgba(0,0,0,.6);}
+:root[data-theme="dark"] .mobile-nav a.active{background:color-mix(in srgb,var(--ink) 12%,transparent);}
 /* ---------- a drawn plate where an entry has no photograph ---------- */
 /* Same footprint as the thumbnail, so a list keeps one rhythm whether or not
    a card carries a picture. The ground comes from the entry's id, so two notes
@@ -1785,10 +1782,8 @@ aside .section-title{display:flex;align-items:baseline;}
   .entry-plate .plate-kind{left:6px;top:6px;}
   .entry-plate .plate-number{right:6px;bottom:6px;}
 }
-@media(prefers-color-scheme:dark){
-  .entry-plate{border-color:var(--line);}
-  .entry-plate .plate-motif{opacity:.4;}
-}
+:root[data-theme="dark"] .entry-plate{border-color:var(--line);}
+:root[data-theme="dark"] .entry-plate .plate-motif{opacity:.4;}
 /* ---------- Spaces: every room advertises its own material ---------- */
 .spaces-index .page-lede{max-width:670px;}
 .space-card{min-height:300px;padding-top:150px;transition:transform .22s ease,box-shadow .22s ease;overflow:hidden;}
@@ -2294,9 +2289,7 @@ aside .section-title{display:flex;align-items:baseline;}
   .plant-chips li{font-size:10px;}
   .plant-notes{padding:22px 16px;}
 }
-@media(prefers-color-scheme:dark){
-  .shelf-stats{background:rgba(20,26,20,.9);}
-}
+:root[data-theme="dark"] .shelf-stats{background:rgba(20,26,20,.9);}
 /* The house plants band inside the garden room. */
 .garden-plants{padding:26px 34px 6px;}
 .garden-plants-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;border-bottom:2px solid var(--garden,#35582a);padding-bottom:12px;}

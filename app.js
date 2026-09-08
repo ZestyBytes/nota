@@ -1422,7 +1422,7 @@ document.addEventListener("click",async e=>{
 
   const themeButton=e.target.closest("[data-theme-toggle]");
   if(themeButton){
-    const current=document.documentElement.dataset.theme||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");
+    const current=document.documentElement.dataset.theme||"light";
     document.documentElement.dataset.theme=current==="dark"?"light":"dark";
     try{localStorage.setItem("noted-theme",document.documentElement.dataset.theme)}catch(error){}
     syncThemeButton();return;
@@ -1497,7 +1497,7 @@ async function boot(){try{const session=await NotedBackend.init();state.user=ses
 window.addEventListener("hashchange",async()=>{state.steps=(state.steps||0)+1;if(NotedBackend.configured&&!state.user&&location.hash==="#writing")state.data={...emptyArchive(),entries:await NotedBackend.loadPublished()};render()});
 const headerDay=document.querySelector(".hd-day"),headerDate=document.querySelector(".hd-date");
 if(headerDay&&headerDate){headerDay.textContent=now.toLocaleDateString("en-GB",{weekday:"long"});headerDate.textContent=`${now.getDate()} ${now.toLocaleDateString("en-GB",{month:"long"})}`}
-function syncThemeButton(){const dark=(document.documentElement.dataset.theme||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"))==="dark",button=document.querySelector("[data-theme-toggle]");if(button){button.setAttribute("aria-label",dark?"Use light theme":"Use dark theme");button.title=dark?"Use light theme":"Use dark theme"}}
+function syncThemeButton(){const dark=(document.documentElement.dataset.theme||"light")==="dark",button=document.querySelector("[data-theme-toggle]");if(button){button.setAttribute("aria-label",dark?"Use light theme":"Use dark theme");button.title=dark?"Use light theme":"Use dark theme"}}
 syncThemeButton();
 boot();
 // The shell is served cache-first, so a deployed change would otherwise only
