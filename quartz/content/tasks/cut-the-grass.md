@@ -1,7 +1,7 @@
 ---
-title: "Sort and clean the office"
+title: "Cut the grass"
 type: task
-tags: [life]
+tags: [gardening, family]
 dueAt: "2026-09-11"
 completedAt: null
 publish: true

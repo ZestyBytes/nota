@@ -1,8 +1,7 @@
 ---
-title: "Sort and clean the office"
+title: "Put garage bits in the loft"
 type: task
 tags: [life]
-dueAt: "2026-09-11"
 completedAt: null
 publish: true
 ---

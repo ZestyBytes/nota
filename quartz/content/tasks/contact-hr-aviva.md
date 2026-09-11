@@ -2,7 +2,8 @@
 title: "Contact HR about the Aviva health care rejection"
 type: task
 tags: [selfcare]
-completedAt: null
+done: true
+completedAt: "2026-09-11"
 publish: true
 ---
 

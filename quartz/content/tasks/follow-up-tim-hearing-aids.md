@@ -2,6 +2,7 @@
 title: "Follow up with Tim about the hearing aids"
 type: task
 tags: [selfcare]
-completedAt: null
+done: true
+completedAt: "2026-09-11"
 publish: true
 ---
