@@ -19,3 +19,9 @@ Also got the to-do list into better shape today: cleared off the birthday gifts,
 Also got the Mini out of the garage, it needs a proper tidy, and a few garage bits are heading up to the loft.
 
 ![Golden retriever looking out over the field](2026-09-11-dog-2.jpg)
+
+![Golden retriever by the fence, evening light](2026-09-11-dog-3.jpg)
+
+![Golden retriever, dark shot](2026-09-11-dog-4.jpg)
+
+![Golden retriever, inverted black and white](2026-09-11-dog-5.jpg)
