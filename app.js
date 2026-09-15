@@ -637,7 +637,28 @@ function today(){
     ${onThisDay()}
   </section>`;
 }
-function taskRow(t){const tp=topic(t.topics[0]);return `<div class="task ${t.completedAt?"done":""} ${t.note?"has-note":""}" ${t.note?`data-entry="${esc(t.id)}"`:""}><span class="task-mark" aria-hidden="true">${t.completedAt?icon("check"):""}</span><span class="task-copy"><span class="task-title">${esc(t.title)}</span>${t.note?`<small class="task-note">${esc(t.note)}</small>`:""}${t.completedAt?`<small class="task-due">Done ${esc(fmtDate(t.completedAt))}</small>`:t.dueAt?`<small class="task-due${t.dueAt<todayKey?" late":""}">${t.dueAt<todayKey?"Overdue, was due "+esc(fmtDate(t.dueAt)):t.dueAt===todayKey?"Due today":"Due "+esc(fmtDate(t.dueAt))}</small>`:""}</span><span class="chip" style="--topic:${tp.color};--soft:${tp.soft}">${esc(tp.name)}</span></div>`}
+function taskRow(t){const tp=topic(t.topics[0]);return `<div class="task ${t.completedAt?"done":""} ${t.note?"has-note":""}" ${t.note?`data-entry="${esc(t.id)}"`:""}><button type="button" class="task-mark" data-toggle-task="${esc(t.id)}" aria-label="${t.completedAt?"Mark not done":"Mark done"}">${t.completedAt?icon("check"):""}</button><span class="task-copy"><span class="task-title">${esc(t.title)}</span>${t.note?`<small class="task-note">${esc(t.note)}</small>`:""}${t.completedAt?`<small class="task-due">Done ${esc(fmtDate(t.completedAt))}</small>`:t.dueAt?`<small class="task-due${t.dueAt<todayKey?" late":""}">${t.dueAt<todayKey?"Overdue, was due "+esc(fmtDate(t.dueAt)):t.dueAt===todayKey?"Due today":"Due "+esc(fmtDate(t.dueAt))}</small>`:""}</span><span class="chip" style="--topic:${tp.color};--soft:${tp.soft}">${esc(tp.name)}</span></div>`}
+
+async function toggleTask(id,wasDone,mark){
+  mark.disabled=true;
+  const nowDone=!wasDone;
+  mark.innerHTML=nowDone?icon("check"):"";
+  mark.closest(".task")?.classList.toggle("done",nowDone);
+  try{
+    const res=await fetch("/api/tasks/toggle",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id})});
+    if(!res.ok)throw new Error("Could not save");
+    const json=await res.json();
+    const task=state.data?.tasks?.find(x=>x.id===id);
+    if(task)task.completedAt=json.completedAt;
+    toast(json.completedAt?"Marked done":"Marked not done");
+  }catch(error){
+    mark.innerHTML=wasDone?icon("check"):"";
+    mark.closest(".task")?.classList.toggle("done",wasDone);
+    toast("Could not save, try again");
+  }finally{
+    mark.disabled=false;
+  }
+}
 // Everything that carries a date belongs on the calendar, not only entries:
 // a task is due on a day too, and a day with four things should look busier
 // than a day with one.
@@ -1435,6 +1456,8 @@ document.addEventListener("click",async e=>{
   if(nav&&nav.getAttribute("href")===(location.hash||"#today")){e.preventDefault();window.scrollTo({top:0,behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});return}
   const action=e.target.closest("[data-action]")?.dataset.action;
   if(action==="logout"){await NotedBackend.signOut();state.user=null;render()}
+  const taskMark=e.target.closest("[data-toggle-task]");
+  if(taskMark){e.preventDefault();e.stopPropagation();const id=taskMark.dataset.toggleTask,task=state.data?.tasks?.find(x=>x.id===id);toggleTask(id,!!task?.completedAt,taskMark);return}
   const close=e.target.closest("[data-close]");if(close&&e.target===close)closeModal();
   const attachment=e.target.closest("[data-view-attachment]");if(attachment){const item=state.data.entries.find(x=>x.id===attachment.dataset.entryId),file=item?.attachments?.[Number(attachment.dataset.viewAttachment)];if(file?.path){try{open(await NotedBackend.attachmentUrl(file.path),"_blank","noopener")}catch(error){toast(error.message)}}return}
   const book=e.target.closest("[data-book]");if(book){bookDetail(book.dataset.book);return}

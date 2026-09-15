@@ -10,6 +10,11 @@
 // see the WAF rate limiting rule set up alongside this. SITE_USERNAME is
 // no longer used and can be removed if you like. Has no effect on the
 // separate GitHub Pages build.
+//
+// Also handles POST /api/tasks/toggle for tickable to-dos, once signed
+// in: edits the task's frontmatter directly via the GitHub Contents API
+// and commits it, which is what triggers the site's rebuild. Needs a
+// GITHUB_TOKEN secret with write access to this repo's contents.
 
 const COOKIE_NAME = "noted_session";
 const SESSION_DAYS = 180;
@@ -25,6 +30,90 @@ function getCookie(request, name) {
   if (!header) return null;
   const match = header.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
   return match ? match[1] : null;
+}
+
+const GITHUB_OWNER = "ZestyBytes";
+const GITHUB_REPO = "nota";
+const GITHUB_BRANCH = "main";
+
+function b64ToUtf8(b64) {
+  const binary = atob(b64.replace(/\n/g, ""));
+  const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0));
+  return new TextDecoder().decode(bytes);
+}
+
+function utf8ToB64(str) {
+  const bytes = new TextEncoder().encode(str);
+  let binary = "";
+  bytes.forEach((b) => (binary += String.fromCharCode(b)));
+  return btoa(binary);
+}
+
+function todayISO() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+// Toggles a task's completion by editing its frontmatter directly. Keeps
+// this to the fields build-data.mjs actually reads: completedAt as the
+// source of truth, plus a done: true line for a phone-friendly marker.
+function toggleTaskFrontmatter(raw) {
+  const match = raw.match(/^---\n([\s\S]*?)\n---\n?/);
+  if (!match) return null;
+
+  let fm = match[1];
+  const wasDone = /^completedAt:\s*(?!null\s*$)\S.*$/m.test(fm) || /^done:\s*true\s*$/m.test(fm);
+
+  if (wasDone) {
+    fm = fm.replace(/^completedAt:.*$/m, "completedAt: null");
+    fm = fm.replace(/^done:\s*true\s*\n?/m, "");
+  } else {
+    const today = todayISO();
+    fm = /^completedAt:/m.test(fm)
+      ? fm.replace(/^completedAt:.*$/m, `completedAt: "${today}"`)
+      : `${fm}\ncompletedAt: "${today}"`;
+    if (!/^done:/m.test(fm)) fm += "\ndone: true";
+  }
+
+  const body = raw.slice(match[0].length);
+  return { content: `---\n${fm}\n---\n${body}`, nowDone: !wasDone };
+}
+
+async function githubRequest(env, path, options = {}) {
+  const res = await fetch(`https://api.github.com${path}`, {
+    ...options,
+    headers: {
+      Authorization: `Bearer ${env.GITHUB_TOKEN}`,
+      "User-Agent": "noted-worker",
+      Accept: "application/vnd.github+json",
+      ...(options.headers || {}),
+    },
+  });
+  if (!res.ok) throw new Error(`GitHub API ${res.status}: ${await res.text()}`);
+  return res.json();
+}
+
+async function toggleTask(env, id) {
+  const path = `quartz/content/tasks/${id}.md`;
+  const file = await githubRequest(
+    env,
+    `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}?ref=${GITHUB_BRANCH}`
+  );
+
+  const raw = b64ToUtf8(file.content);
+  const result = toggleTaskFrontmatter(raw);
+  if (!result) throw new Error("Could not parse task frontmatter");
+
+  await githubRequest(env, `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}`, {
+    method: "PUT",
+    body: JSON.stringify({
+      message: `Mark "${id}" as ${result.nowDone ? "done" : "not done"}`,
+      content: utf8ToB64(result.content),
+      sha: file.sha,
+      branch: GITHUB_BRANCH,
+    }),
+  });
+
+  return result.nowDone ? todayISO() : null;
 }
 
 function loginPage({ error, redirectTo }) {
@@ -135,6 +224,22 @@ export default {
 
     const cookieToken = getCookie(request, COOKIE_NAME);
     if (cookieToken === expectedToken) {
+      if (request.method === "POST" && url.pathname === "/api/tasks/toggle") {
+        if (!env.GITHUB_TOKEN) {
+          return Response.json({ error: "GITHUB_TOKEN not configured" }, { status: 500 });
+        }
+        try {
+          const { id } = await request.json();
+          if (!id || !/^[a-z0-9-]+$/i.test(id)) {
+            return Response.json({ error: "Invalid task id" }, { status: 400 });
+          }
+          const completedAt = await toggleTask(env, id);
+          return Response.json({ completedAt });
+        } catch (err) {
+          return Response.json({ error: String(err.message || err) }, { status: 500 });
+        }
+      }
+
       return env.ASSETS.fetch(request);
     }
 

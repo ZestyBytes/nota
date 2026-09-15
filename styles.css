@@ -205,7 +205,8 @@ main{max-width:var(--max);margin:auto;padding:56px 28px 120px;min-width:0;}
 .tasks{border-top:1px solid var(--line);}
 .task{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:14px 2px;border-bottom:1px solid var(--line);}
 .task-title{font:14px var(--mono);}
-.task-mark{width:19px;height:19px;border:1.5px solid var(--ink);border-radius:2px;flex:none;display:grid;place-items:center;color:var(--paper);}
+.task-mark{width:19px;height:19px;border:1.5px solid var(--ink);border-radius:2px;flex:none;display:grid;place-items:center;color:var(--paper);background:none;padding:0;font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.task-mark:disabled{opacity:.6;cursor:default;}
 .task-mark .line-icon{width:13px;height:13px;stroke-width:2.4;}
 .task.done .task-mark{background:var(--ink);}
 .task.done .task-title{text-decoration:line-through;color:var(--faint);}
