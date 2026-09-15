@@ -19,7 +19,7 @@ publishedAt: "2026-09-04"
 publish: true
 ---
 
-![The young parlour palm in a matt black pot](plant-parlour-palm.jpg)
+![The young parlour palm in a matt black pot](/media/attachments/plant-parlour-palm.jpg)
 
 A Victorian parlour plant, bred for exactly this: a dim room, a cool corner and not much attention. Still young, with three or four fronds, and it will take years to reach any size. That slowness is the point.
 
