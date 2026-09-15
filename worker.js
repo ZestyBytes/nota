@@ -263,14 +263,14 @@ async function readSiteData(env) {
 function buildMorningMessage(data) {
   const today = todayISO();
   const open = (data.tasks || []).filter((t) => !t.completedAt);
-  if (!open.length) return { title: "noted.", body: "Nothing outstanding today." };
+  if (!open.length) return { title: "noted.", body: "Nothing outstanding today.", url: "#tasks" };
   const overdue = open.filter((t) => t.dueAt && t.dueAt < today).length;
   const dueToday = open.filter((t) => t.dueAt === today).length;
   const bits = [];
   if (overdue) bits.push(`${overdue} overdue`);
   if (dueToday) bits.push(`${dueToday} due today`);
   const detail = bits.length ? bits.join(", ") : `${open.length} waiting`;
-  return { title: "Today's to-do", body: `${detail}. ${open.length} on the list in total.` };
+  return { title: "Today's to-do", body: `${detail}. ${open.length} on the list in total.`, url: "#tasks" };
 }
 
 function buildEveningMessage(data) {
@@ -279,7 +279,7 @@ function buildEveningMessage(data) {
   const body = doneToday.length
     ? `${doneToday.length} ticked off today: ${doneToday.slice(0, 3).map((t) => t.title).join(", ")}${doneToday.length > 3 ? "…" : ""}. Add a journal entry?`
     : "Nothing marked done today. Worth a journal entry about how it went?";
-  return { title: "End of day", body };
+  return { title: "End of day", body, url: doneToday.length ? "#tasks" : "#today" };
 }
 
 async function handleScheduled(env, cron) {
@@ -300,7 +300,6 @@ async function handleScheduled(env, cron) {
   // even if the schedule is nudged later.
   const hour = new Date().getUTCHours();
   const message = hour < 12 ? buildMorningMessage(data) : buildEveningMessage(data);
-  message.url = "/";
 
   try {
     await sendPush(env, subscription, message);
@@ -442,12 +441,14 @@ export default {
         const subRaw = await env.PUSH_KV.get("subscription");
         if (!subRaw) return Response.json({ error: "No subscription saved yet, tap the bell first" }, { status: 400 });
         try {
-          await sendPush(env, JSON.parse(subRaw), {
-            title: "noted.",
-            body: "Test notification, if you see this it works.",
-            url: "/",
-          });
-          return Response.json({ ok: true });
+          const kind = url.searchParams.get("kind");
+          let message = { title: "noted.", body: "Test notification, if you see this it works.", url: "#tasks" };
+          if (kind === "morning" || kind === "evening") {
+            const data = await readSiteData(env);
+            message = kind === "morning" ? buildMorningMessage(data) : buildEveningMessage(data);
+          }
+          await sendPush(env, JSON.parse(subRaw), message);
+          return Response.json({ ok: true, sent: message });
         } catch (err) {
           return Response.json({ error: String(err.message || err) }, { status: 500 });
         }
