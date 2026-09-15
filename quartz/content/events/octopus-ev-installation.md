@@ -10,7 +10,7 @@ fit: contain
 publish: true
 ---
 
-![[octopus-charger.png|The Octopus tethered charger and its cable]]
+![The Octopus tethered charger and its cable](/media/attachments/octopus-charger.png)
 
 Octopus Charge, tethered, going in on the wall.
 
