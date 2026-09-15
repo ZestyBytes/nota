@@ -192,17 +192,20 @@ function buildContentFile(type, fields) {
       };
     }
     case "quote": {
+      const bookLine = fields.book ? `book: "[[${yamlEscape(fields.book)}]]"\n` : "";
+      const pageLine = fields.book && fields.page ? `page: ${Number(fields.page) || 0}\n` : "";
       return {
         folder: "quotes",
-        content: `---\ntitle: "${title}"\ntype: quote\nauthor: "${yamlEscape(fields.author)}"\ntags: ${tags}\ncreatedAt: "${today}"\npublish: true\n---\n\n> ${title}\n`,
+        content: `---\ntitle: "${title}"\ntype: quote\nauthor: "${yamlEscape(fields.author)}"\ntags: ${tags}\n${bookLine}${pageLine}createdAt: "${today}"\npublish: true\n---\n\n> ${title}\n`,
       };
     }
     case "reading": {
       const status = ["reading", "finished", "want-to-read"].includes(fields.status) ? fields.status : "want-to-read";
       const progressLine = status === "reading" && fields.progress ? `progress: ${Number(fields.progress) || 0}\n` : "";
+      const coverLine = fields.imageUrl ? `cover: "${fields.imageUrl}"\n` : "";
       return {
         folder: "books",
-        content: `---\ntitle: "${title}"\ntype: reading\nauthor: "${yamlEscape(fields.author)}"\nstatus: ${status}\n${progressLine}tags: ${tags}\npublish: true\n---\n`,
+        content: `---\ntitle: "${title}"\ntype: reading\nauthor: "${yamlEscape(fields.author)}"\nstatus: ${status}\n${progressLine}${coverLine}tags: ${tags}\npublish: true\n---\n`,
       };
     }
     case "event": {

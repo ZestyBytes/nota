@@ -1570,6 +1570,8 @@ function quickAddFields(type){
     case "quote":
       return `<label>The quote<textarea name="title" rows="3" required autofocus placeholder="Attention is the beginning of devotion"></textarea></label>
         <label>Author<input type="text" name="author"></label>
+        <label class="qa-tag-box">From a book (optional)<input type="text" name="book" placeholder="Start typing a title…" autocomplete="off" data-qa-book><span class="qa-tag-suggest" hidden></span></label>
+        <label class="qa-book-page" hidden>Page<input type="number" name="page" min="0"></label>
         ${common}`;
     case "reading":
       return `<label>Title<input type="text" name="title" required autofocus></label>
@@ -1582,6 +1584,7 @@ function quickAddFields(type){
           </select>
         </label>
         <label class="qa-progress" hidden>Progress %<input type="number" name="progress" min="0" max="100"></label>
+        ${imagePicker.replace("Photo (optional)","Cover (optional)")}
         ${common}`;
     case "event":
       return `<label>Title<input type="text" name="title" required autofocus></label>
@@ -1711,19 +1714,42 @@ quickAddBackdrop.addEventListener("click",e=>{
     input.value=parts.map(p=>p.trim()).filter(Boolean).join(", ")+", ";
     input.dispatchEvent(new Event("input"));
     input.focus();
+    return;
+  }
+
+  const bookPick=e.target.closest("[data-qa-book-pick]");
+  if(bookPick){
+    const input=quickAddBackdrop.querySelector("[data-qa-book]");
+    input.value=bookPick.textContent;
+    input.dispatchEvent(new Event("input"));
+    input.closest(".qa-tag-box").querySelector(".qa-tag-suggest").hidden=true;
   }
 });
 
 quickAddBackdrop.addEventListener("input",e=>{
-  if(!e.target.matches("[data-qa-tags]"))return;
-  const box=e.target.closest(".qa-tag-box"),suggest=box.querySelector(".qa-tag-suggest");
-  const frag=e.target.value.split(",").pop().trim().toLowerCase();
-  if(!frag){suggest.hidden=true;return}
-  const already=new Set(e.target.value.split(",").map(t=>t.trim().toLowerCase()));
-  const matches=knownTags().filter(t=>t.startsWith(frag)&&!already.has(t)).slice(0,6);
-  if(!matches.length){suggest.hidden=true;return}
-  suggest.innerHTML=matches.map(t=>`<button type="button" data-qa-tag-pick>${t}</button>`).join("");
-  suggest.hidden=false;
+  if(e.target.matches("[data-qa-tags]")){
+    const box=e.target.closest(".qa-tag-box"),suggest=box.querySelector(".qa-tag-suggest");
+    const frag=e.target.value.split(",").pop().trim().toLowerCase();
+    if(!frag){suggest.hidden=true;return}
+    const already=new Set(e.target.value.split(",").map(t=>t.trim().toLowerCase()));
+    const matches=knownTags().filter(t=>t.startsWith(frag)&&!already.has(t)).slice(0,6);
+    if(!matches.length){suggest.hidden=true;return}
+    suggest.innerHTML=matches.map(t=>`<button type="button" data-qa-tag-pick>${t}</button>`).join("");
+    suggest.hidden=false;
+    return;
+  }
+  if(e.target.matches("[data-qa-book]")){
+    const box=e.target.closest(".qa-tag-box"),suggest=box.querySelector(".qa-tag-suggest");
+    const page=quickAddBackdrop.querySelector(".qa-book-page");
+    if(page)page.hidden=!e.target.value.trim();
+    const frag=e.target.value.trim().toLowerCase();
+    if(!frag){suggest.hidden=true;return}
+    const titles=(state.data?.books||[]).map(b=>b.title).filter(Boolean);
+    const matches=[...new Set(titles)].filter(t=>t.toLowerCase().includes(frag)).slice(0,6);
+    if(!matches.length){suggest.hidden=true;return}
+    suggest.innerHTML=matches.map(t=>`<button type="button" data-qa-book-pick>${esc(t)}</button>`).join("");
+    suggest.hidden=false;
+  }
 });
 
 quickAddBackdrop.addEventListener("change",async e=>{
@@ -1783,7 +1809,7 @@ quickAddBackdrop.addEventListener("submit",async e=>{
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&quickAddBackdrop.classList.contains("show"))closeQuickAdd()});
 
 quickAddBackdrop.addEventListener("focusout",e=>{
-  if(!e.target.matches("[data-qa-tags]"))return;
+  if(!e.target.matches("[data-qa-tags],[data-qa-book]"))return;
   const box=e.target.closest(".qa-tag-box");
   setTimeout(()=>{if(!box.contains(document.activeElement))box.querySelector(".qa-tag-suggest").hidden=true},150);
 });
