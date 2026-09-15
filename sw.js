@@ -30,6 +30,12 @@ self.addEventListener("fetch",event=>{
   const request=event.request;
   if(request.method!=="GET"||request.cache==="reload")return;
   const url=new URL(request.url);
+  // Admin and API routes are actions, not pages: never cache them, and
+  // never race them against the 2.5s navigate timeout below. A slow one
+  // (the media migration especially) was finishing successfully on the
+  // server while the browser silently fell back to the stale cached
+  // shell and showed nothing of what actually happened.
+  if(url.pathname.startsWith("/admin/")||url.pathname.startsWith("/api/"))return;
   // Every picture, wherever it comes from, lives in the media cache. This used
   // to apply to remote images only, so the archive's own photographs went into
   // the shell cache instead, which is stamped with the build and thrown away

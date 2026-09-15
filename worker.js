@@ -163,18 +163,19 @@ function escapeRegExp(s) {
 // content-hashed .webp and rewrites every reference to it, data.js
 // included. So the original filename never actually exists in the
 // deployed assets; the real current path has to be read out of data.js.
-async function findCurrentAssetPath(env, name) {
-  const dataRes = await env.ASSETS.fetch(new Request("https://internal/data.js"));
-  if (!dataRes.ok) return null;
-  const text = await dataRes.text();
+// Fetched once per run and reused, not once per file.
+function findCurrentAssetPath(dataText, name) {
   const baseName = name.replace(/\.[^.]+$/, "");
-  const match = text.match(new RegExp(`assets/vault/attachments/${escapeRegExp(baseName)}[^")'\\s]*`));
+  const match = dataText.match(new RegExp(`assets/vault/attachments/${escapeRegExp(baseName)}[^")'\\s]*`));
   return match ? match[0] : null;
 }
 
 async function migrateMedia(env) {
   const report = { uploaded: [], skipped: [], failed: [], filesUpdated: [], fileErrors: [] };
   const succeeded = new Set();
+
+  const dataRes = await env.ASSETS.fetch(new Request("https://internal/data.js"));
+  const dataText = dataRes.ok ? await dataRes.text() : "";
 
   for (const name of MIGRATION_FILES) {
     const r2Key = `attachments/${name}`;
@@ -185,7 +186,7 @@ async function migrateMedia(env) {
         succeeded.add(name);
         continue;
       }
-      const assetPath = await findCurrentAssetPath(env, name);
+      const assetPath = findCurrentAssetPath(dataText, name);
       if (!assetPath) {
         report.failed.push({ name, error: "could not find its current path in data.js" });
         continue;
