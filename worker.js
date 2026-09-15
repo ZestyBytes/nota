@@ -586,6 +586,16 @@ export default {
     const url = new URL(request.url);
     const expectedToken = await sessionToken(env.SITE_PASSWORD);
 
+    // iOS fetches the touch icon (and some browsers the manifest) for
+    // "Add to Home Screen" in a way that doesn't reliably carry the
+    // session cookie, so gating these behind the PIN meant it silently
+    // got the login page instead of the image and fell back to an
+    // auto-generated letter icon. None of this is sensitive content, so
+    // it's exempt from the auth check while everything else stays gated.
+    if (request.method === "GET" && /^\/(icon\.svg|manifest\.webmanifest|assets\/icon-\d+\.png)$/.test(url.pathname)) {
+      return env.ASSETS.fetch(request);
+    }
+
     if (request.method === "POST" && url.pathname === "/__login") {
       const form = await request.formData();
       const password = form.get("password") || "";
