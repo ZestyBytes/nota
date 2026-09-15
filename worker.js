@@ -1,11 +1,15 @@
-// Password-gates the whole site behind a simple, friendly login page
-// instead of the browser's native Basic Auth popup. On success it sets a
+// PIN-gates the whole site behind a simple, friendly login page instead
+// of the browser's native Basic Auth popup. On success it sets a
 // long-lived cookie (180 days) so you aren't asked again on this device
-// until it expires or you clear your browser data.
+// until it expires or you clear your browser data. On mobile the input
+// shows a numeric keypad while still masking the digits.
 //
-// Set SITE_PASSWORD as an encrypted secret on this Worker, not in this
-// repo. SITE_USERNAME is no longer used and can be removed if you like.
-// Has no effect on the separate GitHub Pages build.
+// Set SITE_PASSWORD as an encrypted secret on this Worker to a 6-digit
+// PIN, not in this repo. Six digits, not four: brute-forcing the login
+// endpoint should also be rate limited at the Cloudflare dashboard level,
+// see the WAF rate limiting rule set up alongside this. SITE_USERNAME is
+// no longer used and can be removed if you like. Has no effect on the
+// separate GitHub Pages build.
 
 const COOKIE_NAME = "noted_session";
 const SESSION_DAYS = 180;
@@ -49,7 +53,8 @@ function loginPage({ error, redirectTo }) {
   input[type="password"] {
     width: 100%; box-sizing: border-box; padding: 12px 14px;
     border-radius: 8px; border: 1px solid #3a4144; background: #14181a;
-    color: #f4f1ea; font-size: 16px; margin-bottom: 14px;
+    color: #f4f1ea; font-size: 22px; letter-spacing: 6px; text-align: center;
+    margin-bottom: 14px;
   }
   input[type="password"]:focus { outline: 2px solid #6b8f9e; }
   button {
@@ -64,11 +69,21 @@ function loginPage({ error, redirectTo }) {
 <body>
   <div class="card">
     <div class="brand">noted<span class="dot">.</span></div>
-    <p class="sub">Enter the password to continue.</p>
+    <p class="sub">Enter your PIN to continue.</p>
     <form method="POST" action="/__login">
       <input type="hidden" name="redirectTo" value="${redirectTo.replace(/"/g, "&quot;")}">
-      <input type="password" name="password" placeholder="Password" autofocus required>
-      ${error ? `<div class="error">Wrong password, try again.</div>` : ""}
+      <input
+        type="password"
+        name="password"
+        placeholder="••••••"
+        inputmode="numeric"
+        pattern="[0-9]*"
+        autocomplete="off"
+        maxlength="6"
+        autofocus
+        required
+      >
+      ${error ? `<div class="error">Wrong PIN, try again.</div>` : ""}
       <button type="submit">Sign in</button>
     </form>
   </div>
