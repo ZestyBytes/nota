@@ -32,6 +32,42 @@ function getCookie(request, name) {
   return match ? match[1] : null;
 }
 
+// --- R2 media, hard-capped well under the free tier -------------------
+// These are enforced in code, not just relied on as Cloudflare's own
+// billing backstop: every request that touches R2 goes through /media/
+// or /api/media/upload below, both of which check and reserve budget
+// first and refuse outright once a ceiling is hit. Nothing in this app
+// talks to R2 by any other path, so these are the only doors in.
+const MEDIA_MAX_BYTES = 8 * 1024 * 1024 * 1024; // free tier is 10GB
+const MEDIA_MAX_UPLOAD_BYTES = 5 * 1024 * 1024; // per file
+const R2_CLASS_A_MONTHLY_CAP = 800000; // free tier is 1,000,000/month (writes, lists)
+const R2_CLASS_B_MONTHLY_CAP = 8000000; // free tier is 10,000,000/month (reads)
+
+function monthKey() {
+  const d = new Date();
+  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`;
+}
+
+// Not a distributed lock, just a KV read-then-write. Fine for a single
+// user on a personal site; the point is a hard code-level ceiling, not
+// perfect concurrency control.
+async function reserveBudget(env, key, amount, cap) {
+  const current = Number(await env.PUSH_KV.get(key)) || 0;
+  if (current + amount > cap) return false;
+  await env.PUSH_KV.put(key, String(current + amount));
+  return true;
+}
+
+async function reserveClassA(env, n = 1) {
+  return reserveBudget(env, `r2usage:classA:${monthKey()}`, n, R2_CLASS_A_MONTHLY_CAP);
+}
+async function reserveClassB(env, n = 1) {
+  return reserveBudget(env, `r2usage:classB:${monthKey()}`, n, R2_CLASS_B_MONTHLY_CAP);
+}
+async function reserveStorage(env, addBytes) {
+  return reserveBudget(env, "r2usage:storage_bytes", addBytes, MEDIA_MAX_BYTES);
+}
+
 const GITHUB_OWNER = "ZestyBytes";
 const GITHUB_REPO = "nota";
 const GITHUB_BRANCH = "main";
@@ -433,6 +469,43 @@ export default {
       if (request.method === "POST" && url.pathname === "/api/push/unsubscribe") {
         await env.PUSH_KV.delete("subscription");
         return Response.json({ ok: true });
+      }
+
+      if (request.method === "GET" && url.pathname.startsWith("/media/")) {
+        const key = decodeURIComponent(url.pathname.slice("/media/".length));
+        if (!key) return new Response("Not found", { status: 404 });
+        if (!(await reserveClassB(env, 1))) {
+          return new Response("Media read budget reached for this month, capped well under the free tier on purpose", { status: 503 });
+        }
+        const object = await env.MEDIA_BUCKET.get(key);
+        if (!object) return new Response("Not found", { status: 404 });
+        const headers = new Headers();
+        object.writeHttpMetadata(headers);
+        headers.set("etag", object.httpEtag);
+        headers.set("Cache-Control", "public, max-age=31536000, immutable");
+        return new Response(object.body, { headers });
+      }
+
+      if (request.method === "POST" && url.pathname === "/api/media/upload") {
+        const filename = request.headers.get("X-Filename") || "";
+        if (!filename || !/^[a-z0-9._-]+$/i.test(filename)) {
+          return Response.json({ error: "Invalid or missing X-Filename header" }, { status: 400 });
+        }
+        const bytes = await request.arrayBuffer();
+        if (bytes.byteLength === 0) return Response.json({ error: "Empty file" }, { status: 400 });
+        if (bytes.byteLength > MEDIA_MAX_UPLOAD_BYTES) {
+          return Response.json({ error: `File too large, ${MEDIA_MAX_UPLOAD_BYTES / (1024 * 1024)}MB max per photo` }, { status: 413 });
+        }
+        if (!(await reserveStorage(env, bytes.byteLength))) {
+          return Response.json({ error: "Media storage limit reached, uploads paused on purpose to stay clear of the free tier" }, { status: 507 });
+        }
+        if (!(await reserveClassA(env, 1))) {
+          return Response.json({ error: "Media write budget reached for this month, uploads paused" }, { status: 503 });
+        }
+        const key = `${Date.now()}-${filename}`;
+        const contentType = request.headers.get("X-Content-Type") || request.headers.get("Content-Type") || "application/octet-stream";
+        await env.MEDIA_BUCKET.put(key, bytes, { httpMetadata: { contentType } });
+        return Response.json({ ok: true, key, url: `/media/${encodeURIComponent(key)}` });
       }
 
       // Visit this URL in a signed-in browser to fire a push immediately,

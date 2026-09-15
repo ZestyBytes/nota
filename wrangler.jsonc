@@ -15,5 +15,8 @@
   },
   "kv_namespaces": [
     { "binding": "PUSH_KV", "id": "cad276b2afb74b84a9cdfa77c9dda845" }
+  ],
+  "r2_buckets": [
+    { "binding": "MEDIA_BUCKET", "bucket_name": "nota-media" }
   ]
 }
