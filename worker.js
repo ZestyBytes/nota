@@ -316,6 +316,129 @@ async function githubRequest(env, path, options = {}) {
   return res.json();
 }
 
+async function githubRequestOrNull(env, path, options = {}) {
+  const res = await fetch(`https://api.github.com${path}`, {
+    ...options,
+    headers: {
+      Authorization: `Bearer ${env.GITHUB_TOKEN}`,
+      "User-Agent": "noted-worker",
+      Accept: "application/vnd.github+json",
+      ...(options.headers || {}),
+    },
+  });
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`GitHub API ${res.status}: ${await res.text()}`);
+  return res.json();
+}
+
+function slugify(title) {
+  return (title || "")
+    .toLowerCase()
+    .replace(/'/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80) || "untitled";
+}
+
+function yamlEscape(s) {
+  return String(s || "").replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+}
+
+function tagsYaml(tags) {
+  const list = (tags || "")
+    .split(",")
+    .map((t) => t.trim().toLowerCase().replace(/[^a-z0-9-]+/g, "-").replace(/^-+|-+$/g, ""))
+    .filter(Boolean);
+  return `[${list.join(", ")}]`;
+}
+
+// Builds the { folder, content } for a new piece of content, matching the
+// frontmatter shapes documented in OBSIDIAN.md. Keeps to the fields quick
+// add actually collects; anything else (journey labels, book covers,
+// view: cards, and so on) is still fine to add by hand afterwards.
+function buildContentFile(type, fields) {
+  const title = yamlEscape(fields.title);
+  const tags = tagsYaml(fields.tags);
+  const today = todayISO();
+  const image = fields.imageUrl ? `![${yamlEscape(fields.imageAlt || "")}](${fields.imageUrl})\n\n` : "";
+  const body = (fields.body || "").trim();
+
+  switch (type) {
+    case "journal":
+    case "note": {
+      const occurredAt = fields.date || today;
+      return {
+        folder: type === "journal" ? "journal" : "notes",
+        content: `---\ntitle: "${title}"\ntype: ${type}\ntags: ${tags}\noccurredAt: "${occurredAt}"\ncreatedAt: "${today}"\npublishedAt: "${occurredAt}"\npublish: true\n---\n\n${image}${body}\n`,
+      };
+    }
+    case "task": {
+      const dueLine = fields.dueAt ? `dueAt: "${fields.dueAt}"\n` : "";
+      return {
+        folder: "tasks",
+        content: `---\ntitle: "${title}"\ntype: task\ntags: ${tags}\n${dueLine}completedAt: null\npublish: true\n---\n\n${body}\n`,
+      };
+    }
+    case "quote": {
+      return {
+        folder: "quotes",
+        content: `---\ntitle: "${title}"\ntype: quote\nauthor: "${yamlEscape(fields.author)}"\ntags: ${tags}\ncreatedAt: "${today}"\npublish: true\n---\n\n> ${title}\n`,
+      };
+    }
+    case "reading": {
+      const status = ["reading", "finished", "want-to-read"].includes(fields.status) ? fields.status : "want-to-read";
+      const progressLine = status === "reading" && fields.progress ? `progress: ${Number(fields.progress) || 0}\n` : "";
+      return {
+        folder: "books",
+        content: `---\ntitle: "${title}"\ntype: reading\nauthor: "${yamlEscape(fields.author)}"\nstatus: ${status}\n${progressLine}tags: ${tags}\npublish: true\n---\n`,
+      };
+    }
+    case "event": {
+      return {
+        folder: "events",
+        content: `---\ntitle: "${title}"\ntype: event\neventAt: "${fields.date || today}"\nstartTime: "${yamlEscape(fields.startTime)}"\ntags: ${tags}\ncreatedAt: "${today}"\npublish: true\n---\n\n${image}${body}\n`,
+      };
+    }
+    case "recipe": {
+      const ingredients = (fields.ingredients || "")
+        .split("\n").map((l) => l.trim()).filter(Boolean).map((l) => `- ${l}`).join("\n");
+      const method = (fields.method || "")
+        .split("\n").map((l) => l.trim()).filter(Boolean).map((l, i) => `${i + 1}. ${l}`).join("\n");
+      return {
+        folder: "recipes",
+        content: `---\ntitle: "${title}"\ntype: note\nview: recipe\ntime: "${yamlEscape(fields.time)}"\nserves: "${yamlEscape(fields.serves)}"\ndifficulty: "${yamlEscape(fields.difficulty)}"\ntags: ${tags}\npublish: true\n---\n\n${image}## You'll need\n${ingredients}\n\n## Method\n${method}\n`,
+      };
+    }
+    default:
+      return null;
+  }
+}
+
+async function createContent(env, type, fields) {
+  const built = buildContentFile(type, fields);
+  if (!built) throw new Error(`Unknown content type: ${type}`);
+
+  const slug = slugify(fields.title);
+  const path = `quartz/content/${built.folder}/${slug}.md`;
+
+  const existing = await githubRequestOrNull(
+    env,
+    `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}?ref=${GITHUB_BRANCH}`
+  );
+  if (existing) throw new Error(`"${slug}.md" already exists in ${built.folder}/, pick a different title`);
+
+  await githubRequest(env, `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}`, {
+    method: "PUT",
+    body: JSON.stringify({
+      message: `Add ${type}: ${fields.title}`,
+      content: utf8ToB64(built.content),
+      branch: GITHUB_BRANCH,
+    }),
+  });
+
+  return { path, slug };
+}
+
 async function toggleTask(env, id) {
   // id is the task's slug relative to quartz/content, e.g. "tasks/haircut",
   // as built by build-data.mjs; it already includes the folder.
@@ -747,6 +870,22 @@ export default {
           return Response.json({ completedAt });
         } catch (err) {
           return Response.json({ error: String(err.message || err) }, { status: 500 });
+        }
+      }
+
+      if (request.method === "POST" && url.pathname === "/api/content/create") {
+        if (!env.GITHUB_TOKEN) {
+          return Response.json({ error: "GITHUB_TOKEN not configured" }, { status: 500 });
+        }
+        try {
+          const { type, ...fields } = await request.json();
+          if (!fields.title || !fields.title.trim()) {
+            return Response.json({ error: "A title is required" }, { status: 400 });
+          }
+          const result = await createContent(env, type, fields);
+          return Response.json({ ok: true, ...result });
+        } catch (err) {
+          return Response.json({ error: String(err.message || err) }, { status: 400 });
         }
       }
 

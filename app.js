@@ -1514,6 +1514,209 @@ let installEvent=null;
 const installBanner=document.createElement("aside");installBanner.className="install-banner";installBanner.innerHTML=`<span><b>Keep Noted close</b><small>Add it to your home screen for a quicker launch.</small></span><button type="button" data-install>Install</button><button type="button" data-dismiss-install aria-label="Dismiss install prompt">×</button>`;document.body.appendChild(installBanner);
 window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();installEvent=e;if(!localStorage.getItem("noted-install-dismissed"))installBanner.classList.add("show")});
 window.addEventListener("appinstalled",()=>{installEvent=null;installBanner.classList.remove("show")});
+
+// --- Quick add -------------------------------------------------------
+// A single "+" reachable from anywhere, behind the PIN like the rest of
+// the site. Picks a content type, fills in a few fields, submits via the
+// Worker's GitHub API endpoint the same way task toggling does: it
+// writes and commits the file directly, which is what triggers the
+// normal rebuild. A photo, if attached, is resized and re-encoded
+// client-side before upload, well under the server's 5MB cap.
+const QUICK_ADD_TYPES = [
+  { id: "journal", label: "Journal" },
+  { id: "note", label: "Note" },
+  { id: "task", label: "Task" },
+  { id: "quote", label: "Quote" },
+  { id: "reading", label: "Book" },
+  { id: "event", label: "Event" },
+  { id: "recipe", label: "Recipe" },
+];
+
+function quickAddFields(type){
+  const common = `<label>Tags<input type="text" name="tags" placeholder="family, gardening"></label>`;
+  const imagePicker = `<label class="qa-image-label">Photo (optional)<input type="file" name="image" accept="image/*"></label><div class="qa-image-preview" hidden><img alt=""><button type="button" data-qa-remove-image aria-label="Remove photo">×</button></div>`;
+  switch(type){
+    case "journal":
+    case "note":
+      return `<label>Title<input type="text" name="title" required autofocus></label>
+        <label>Date<input type="date" name="date"></label>
+        ${common}
+        ${imagePicker}
+        <label>Write<textarea name="body" rows="6" placeholder="What happened…"></textarea></label>`;
+    case "task":
+      return `<label>Title<input type="text" name="title" required autofocus></label>
+        <label>Due (optional)<input type="date" name="dueAt"></label>
+        ${common}
+        <label>Note (optional)<textarea name="body" rows="3"></textarea></label>`;
+    case "quote":
+      return `<label>The quote<textarea name="title" rows="3" required autofocus placeholder="Attention is the beginning of devotion"></textarea></label>
+        <label>Author<input type="text" name="author"></label>
+        ${common}`;
+    case "reading":
+      return `<label>Title<input type="text" name="title" required autofocus></label>
+        <label>Author<input type="text" name="author"></label>
+        <label>Status
+          <select name="status">
+            <option value="want-to-read">Want to read</option>
+            <option value="reading">Reading</option>
+            <option value="finished">Finished</option>
+          </select>
+        </label>
+        <label class="qa-progress" hidden>Progress %<input type="number" name="progress" min="0" max="100"></label>
+        ${common}`;
+    case "event":
+      return `<label>Title<input type="text" name="title" required autofocus></label>
+        <label>Date<input type="date" name="date"></label>
+        <label>Time / info<input type="text" name="startTime" placeholder="From 1pm"></label>
+        ${common}
+        ${imagePicker}
+        <label>Notes<textarea name="body" rows="4"></textarea></label>`;
+    case "recipe":
+      return `<label>Title<input type="text" name="title" required autofocus></label>
+        <div class="qa-row"><label>Time<input type="text" name="time" placeholder="30 mins"></label><label>Serves<input type="text" name="serves" placeholder="4"></label><label>Difficulty<input type="text" name="difficulty" placeholder="easy"></label></div>
+        ${common}
+        ${imagePicker}
+        <label>You'll need, one per line<textarea name="ingredients" rows="5" placeholder="200g flour"></textarea></label>
+        <label>Method, one step per line<textarea name="method" rows="5"></textarea></label>`;
+    default:
+      return "";
+  }
+}
+
+function quickAddModalHtml(){
+  return `<div class="qa-sheet" role="dialog" aria-modal="true" aria-label="Add to noted">
+    <div class="qa-head"><h2>Add</h2><button type="button" data-qa-close aria-label="Close">×</button></div>
+    <div class="qa-types">${QUICK_ADD_TYPES.map((t,i)=>`<button type="button" class="qa-type${i===0?" active":""}" data-qa-type="${t.id}">${t.label}</button>`).join("")}</div>
+    <form id="qa-form">
+      <div class="qa-fields">${quickAddFields(QUICK_ADD_TYPES[0].id)}</div>
+      <div class="qa-error" hidden></div>
+      <button type="submit" class="qa-submit">Add</button>
+    </form>
+  </div>`;
+}
+
+const quickAddButton=document.createElement("button");
+quickAddButton.type="button";
+quickAddButton.className="quick-add-fab";
+quickAddButton.setAttribute("aria-label","Add to noted");
+quickAddButton.innerHTML=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v16M4 12h16"/></svg>`;
+document.body.appendChild(quickAddButton);
+
+const quickAddBackdrop=document.createElement("div");
+quickAddBackdrop.className="qa-backdrop";
+document.body.appendChild(quickAddBackdrop);
+
+let quickAddType=QUICK_ADD_TYPES[0].id;
+let quickAddImageBlob=null;
+
+function openQuickAdd(){
+  quickAddType=QUICK_ADD_TYPES[0].id;
+  quickAddImageBlob=null;
+  quickAddBackdrop.innerHTML=quickAddModalHtml();
+  quickAddBackdrop.classList.add("show");
+  document.body.classList.add("qa-open");
+  requestAnimationFrame(()=>quickAddBackdrop.querySelector("input,textarea")?.focus());
+}
+function closeQuickAdd(){
+  quickAddBackdrop.classList.remove("show");
+  document.body.classList.remove("qa-open");
+  quickAddBackdrop.innerHTML="";
+}
+
+async function compressImageFile(file, maxDim=2000, maxBytes=4*1024*1024){
+  const bitmap=await createImageBitmap(file);
+  let w=bitmap.width,h=bitmap.height;
+  if(w>maxDim||h>maxDim){
+    if(w>h){h=Math.round(h*maxDim/w);w=maxDim}
+    else{w=Math.round(w*maxDim/h);h=maxDim}
+  }
+  const canvas=document.createElement("canvas");
+  canvas.width=w;canvas.height=h;
+  canvas.getContext("2d").drawImage(bitmap,0,0,w,h);
+  let quality=0.85,blob;
+  for(let i=0;i<6;i++){
+    blob=await new Promise(res=>canvas.toBlob(res,"image/jpeg",quality));
+    if(!blob||blob.size<maxBytes)break;
+    quality-=0.12;
+  }
+  return blob;
+}
+
+quickAddButton.addEventListener("click",openQuickAdd);
+
+quickAddBackdrop.addEventListener("click",e=>{
+  if(e.target===quickAddBackdrop)closeQuickAdd();
+  if(e.target.closest("[data-qa-close]"))closeQuickAdd();
+
+  const typeBtn=e.target.closest("[data-qa-type]");
+  if(typeBtn){
+    quickAddType=typeBtn.dataset.qaType;
+    quickAddImageBlob=null;
+    quickAddBackdrop.querySelectorAll(".qa-type").forEach(b=>b.classList.toggle("active",b===typeBtn));
+    quickAddBackdrop.querySelector(".qa-fields").innerHTML=quickAddFields(quickAddType);
+    return;
+  }
+
+  if(e.target.closest("[data-qa-remove-image]")){
+    quickAddImageBlob=null;
+    const preview=quickAddBackdrop.querySelector(".qa-image-preview");
+    preview.hidden=true;
+    const input=quickAddBackdrop.querySelector('input[name="image"]');
+    if(input)input.value="";
+  }
+});
+
+quickAddBackdrop.addEventListener("change",async e=>{
+  if(e.target.name==="status"){
+    const progress=quickAddBackdrop.querySelector(".qa-progress");
+    if(progress)progress.hidden=e.target.value!=="reading";
+    return;
+  }
+  if(e.target.name==="image"&&e.target.files[0]){
+    const file=e.target.files[0];
+    try{
+      quickAddImageBlob=await compressImageFile(file);
+      const preview=quickAddBackdrop.querySelector(".qa-image-preview");
+      preview.hidden=false;
+      preview.querySelector("img").src=URL.createObjectURL(quickAddImageBlob);
+    }catch(error){toast("Could not read that photo")}
+  }
+});
+
+quickAddBackdrop.addEventListener("submit",async e=>{
+  e.preventDefault();
+  const form=e.target;
+  const submitBtn=form.querySelector(".qa-submit");
+  const errorEl=quickAddBackdrop.querySelector(".qa-error");
+  errorEl.hidden=true;
+  submitBtn.disabled=true;
+  submitBtn.textContent="Adding…";
+  try{
+    const data=Object.fromEntries(new FormData(form).entries());
+    delete data.image;
+    if(quickAddImageBlob){
+      const filename=`quickadd-${Date.now()}.jpg`;
+      const res=await fetch("/api/media/upload",{method:"POST",headers:{"X-Filename":filename,"X-Content-Type":"image/jpeg"},body:quickAddImageBlob});
+      const json=await res.json();
+      if(!res.ok)throw new Error(json.error||"Could not upload the photo");
+      data.imageUrl=json.url;
+      data.imageAlt=data.title||"";
+    }
+    const res=await fetch("/api/content/create",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:quickAddType,...data})});
+    const json=await res.json();
+    if(!res.ok||json.error)throw new Error(json.error||"Could not save that");
+    closeQuickAdd();
+    toast("Added, it'll appear once the site rebuilds");
+  }catch(error){
+    errorEl.textContent=error.message||"Something went wrong";
+    errorEl.hidden=false;
+  }finally{
+    submitBtn.disabled=false;
+    submitBtn.textContent="Add";
+  }
+});
+
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&quickAddBackdrop.classList.contains("show"))closeQuickAdd()});
 document.addEventListener("click",e=>{const link=e.target.closest("[data-open-library]");if(!link)return;state.library=link.dataset.openLibrary;try{localStorage.setItem("noted-library-tab",state.library)}catch{}if(location.hash==="#library")renderLibraryBody()});
 document.addEventListener("click",async e=>{
   const button=e.target.closest("[data-offline-open]");if(!button)return;
