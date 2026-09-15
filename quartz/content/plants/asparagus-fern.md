@@ -19,7 +19,7 @@ publishedAt: "2026-09-04"
 publish: true
 ---
 
-![The asparagus fern spilling out of its blue and white pot](plant-asparagus-fern.jpg)
+![The asparagus fern spilling out of its blue and white pot](/media/attachments/plant-asparagus-fern.jpg)
 
 Not a fern at all, but a relative of the edible asparagus, which is why it grows in long arching sprays rather than fronds. This one has clearly decided that whatever it is standing on belongs to it. The needles are soft, the stems less so: there are small thorns hidden along them.
 
