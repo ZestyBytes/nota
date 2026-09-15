@@ -35,4 +35,4 @@ evening. What I like about both is how little they need to work. No score,
 nothing saved, no reason to come back except that you did not get the bear
 last time. Half the arcades I remember were built on exactly that.
 
-![[IMG_5936.jpeg]]
+![](/media/attachments/IMG_5936.jpeg)
