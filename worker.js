@@ -57,24 +57,26 @@ function loginPage({ error, redirectTo }) {
     margin-bottom: 14px;
   }
   input[type="password"]:focus { outline: 2px solid #6b8f9e; }
-  button {
-    width: 100%; padding: 12px 14px; border-radius: 8px; border: none;
-    background: #f4f1ea; color: #14181a; font-size: 15px; font-weight: 600;
-    cursor: pointer;
+  .error { color: #e5837c; font-size: 13px; margin: -6px 0 0; text-align: center; }
+  @keyframes shake {
+    10%, 90% { transform: translateX(-1px); }
+    20%, 80% { transform: translateX(2px); }
+    30%, 50%, 70% { transform: translateX(-4px); }
+    40%, 60% { transform: translateX(4px); }
   }
-  button:active { transform: translateY(1px); }
-  .error { color: #e5837c; font-size: 13px; margin: -6px 0 14px; }
+  .shake { animation: shake 0.4s; }
 </style>
 </head>
 <body>
   <div class="card">
     <div class="brand">noted<span class="dot">.</span></div>
     <p class="sub">Enter your PIN to continue.</p>
-    <form method="POST" action="/__login">
+    <form method="POST" action="/__login" id="loginForm">
       <input type="hidden" name="redirectTo" value="${redirectTo.replace(/"/g, "&quot;")}">
       <input
         type="password"
         name="password"
+        id="pin"
         placeholder="••••••"
         inputmode="numeric"
         pattern="[0-9]*"
@@ -82,11 +84,20 @@ function loginPage({ error, redirectTo }) {
         maxlength="6"
         autofocus
         required
+        class="${error ? "shake" : ""}"
       >
       ${error ? `<div class="error">Wrong PIN, try again.</div>` : ""}
-      <button type="submit">Sign in</button>
     </form>
   </div>
+  <script>
+    const pin = document.getElementById("pin");
+    const form = document.getElementById("loginForm");
+    pin.focus();
+    if (${error ? "true" : "false"}) pin.select();
+    pin.addEventListener("input", () => {
+      if (pin.value.length === 6) form.submit();
+    });
+  </script>
 </body>
 </html>`;
 }
