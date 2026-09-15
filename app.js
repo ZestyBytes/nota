@@ -1556,7 +1556,7 @@ function qaHeaderRow(imageLabel,titlePlaceholder,multiple){
 }
 
 function quickAddFields(type){
-  const common = `<section class="qa-auto"><span class="qa-tag-label">Automatic tags</span><input type="hidden" name="tags"><div class="qa-auto-tags"></div></section>`;
+  const common = `<section class="qa-auto"><input type="hidden" name="tags"><div class="qa-auto-tags"></div></section>`;
   const counted = (name,label,rows,placeholder) => `<label>${label}<span class="qa-counted"><textarea aria-label="${label||"Entry"}" name="${name}" rows="${rows}" placeholder="${placeholder||""}" data-qa-count></textarea><small class="qa-counter" data-qa-counter-for="${name}">0</small></span></label>`;
   switch(type){
     case "journal":
@@ -1607,6 +1607,9 @@ function quickAddFields(type){
 
 function setupQuickAddFieldExtras(container){
   const fields=container.querySelector(".qa-fields");
+  container.querySelector(".qa-head [name=date]")?.closest("label").remove();
+  const date=fields?.querySelector("[name=date]");
+  if(date){date.setAttribute("form","qa-form");container.querySelector(".qa-head").appendChild(date.closest("label"));}
   const photos=fields?.querySelector(".qa-photo-strip");
   const tags=fields?.querySelector(".qa-auto");
   if(tags)fields.appendChild(tags);
@@ -1625,7 +1628,7 @@ function quickAddModalHtml(){
   return `<div class="qa-sheet" role="dialog" aria-modal="true" aria-label="Add to noted">
     <button type="button" class="qa-handle" data-qa-close aria-label="Dismiss and keep draft"><span></span></button>
     <div class="qa-head">
-      <h2>Add</h2>
+
       <select class="qa-type-select" data-qa-type-select aria-label="What to add">${QUICK_ADD_TYPES.map(t=>`<option value="${t.id}">${t.label}</option>`).join("")}</select>
 
     </div>
@@ -1633,7 +1636,7 @@ function quickAddModalHtml(){
       <div class="qa-fields">${quickAddFields(QUICK_ADD_TYPES[0].id)}</div>
       <div class="qa-error" role="alert" hidden></div>
     </form>
-    <div class="qa-footer"><button type="button" class="qa-later" data-qa-close>Keep for later</button><button type="submit" form="qa-form" class="qa-submit">Add</button></div>
+    <div class="qa-footer"><button type="button" class="qa-later" data-qa-close>Close</button><button type="submit" form="qa-form" class="qa-submit">Add</button></div>
   </div>`;
 }
 
@@ -1647,6 +1650,10 @@ document.body.appendChild(quickAddButton);
 const quickAddBackdrop=document.createElement("div");
 quickAddBackdrop.className="qa-backdrop";
 document.body.appendChild(quickAddBackdrop);
+function fitQuickAddViewport(){const v=window.visualViewport;if(!v)return;quickAddBackdrop.style.height=v.height+'px';quickAddBackdrop.style.top=v.offsetTop+'px';}
+window.visualViewport?.addEventListener('resize',fitQuickAddViewport);
+window.visualViewport?.addEventListener('scroll',fitQuickAddViewport);
+fitQuickAddViewport();
 
 let quickAddType=QUICK_ADD_TYPES[0].id;
 let quickAddImages=[]; // { blob, url } per selected photo, in the order added
@@ -1664,6 +1671,7 @@ function updateQuickAddTags(){
   const text=[...form.querySelectorAll('input[type="text"],textarea')].map(el=>el.value).join(' ');
   const tags=suggestQuickAddTags(text,quickAddType).filter(tag=>!qaExcludedTags.has(tag));
   form.querySelector('[name="tags"]').value=tags.join(', ');
+  form.querySelector('.qa-auto').hidden=tags.length===0;
   form.querySelector('.qa-auto-tags').innerHTML=tags.length?tags.map(tag=>'<button type="button" data-qa-dismiss-tag="'+esc(tag)+'" aria-label="Remove tag '+esc(tag)+'">'+esc(tag)+' <span aria-hidden="true">×</span></button>').join(''):'<span>Tags will appear as you write</span>';
 }
 quickAddBackdrop.addEventListener('pointerdown',e=>{

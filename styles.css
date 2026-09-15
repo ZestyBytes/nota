@@ -2607,3 +2607,16 @@ body.qa-open{overflow:hidden;}
 @media(min-width:640px){.qa-sheet{border-radius:18px;height:min(640px,88dvh);}}
 @media(max-width:480px){.qa-sheet{padding:0 20px calc(16px + env(safe-area-inset-bottom));}.qa-head{margin-bottom:16px;}}
 @media(prefers-reduced-motion:reduce){.qa-backdrop{transition:none;}}
+
+/* Compact capture header and attachment rail. */
+.qa-head{gap:12px;margin-bottom:16px;}
+.qa-head label{min-width:0;}
+.qa-head input[type=date]{box-sizing:border-box;width:156px;max-width:100%;min-height:42px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);font:14px var(--serif);padding:8px 10px;}
+.qa-head input:focus{outline:1px solid var(--muted);outline-offset:1px;}
+.qa-sheet{height:min(610px,100%);max-height:100%;}
+.qa-photo-strip{flex-wrap:nowrap;overflow-x:auto;padding:4px 0;min-height:44px;}
+.qa-image-list{flex-wrap:nowrap;flex:none;}
+.qa-photo-add{flex:none;}
+.qa-auto[hidden]{display:none;}
+.qa-auto-tags{margin-top:0;}
+@media(min-width:640px){.qa-sheet{height:min(610px,94%);}}
