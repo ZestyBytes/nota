@@ -436,6 +436,23 @@ export default {
         return Response.json({ ok: true });
       }
 
+      // Visit this URL in a signed-in browser to fire a push immediately,
+      // rather than waiting for the twice-daily Cron Trigger.
+      if (request.method === "GET" && url.pathname === "/api/push/test") {
+        const subRaw = await env.PUSH_KV.get("subscription");
+        if (!subRaw) return Response.json({ error: "No subscription saved yet, tap the bell first" }, { status: 400 });
+        try {
+          await sendPush(env, JSON.parse(subRaw), {
+            title: "noted.",
+            body: "Test notification, if you see this it works.",
+            url: "/",
+          });
+          return Response.json({ ok: true });
+        } catch (err) {
+          return Response.json({ error: String(err.message || err) }, { status: 500 });
+        }
+      }
+
       if (request.method === "POST" && url.pathname === "/api/tasks/toggle") {
         if (!env.GITHUB_TOKEN) {
           return Response.json({ error: "GITHUB_TOKEN not configured" }, { status: 500 });
