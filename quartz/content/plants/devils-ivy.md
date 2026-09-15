@@ -19,7 +19,7 @@ publishedAt: "2026-09-04"
 publish: true
 ---
 
-![Devil's ivy trailing out of a small woven pot](plant-devils-ivy.jpg)
+![Devil's ivy trailing out of a small woven pot](/media/attachments/plant-devils-ivy.jpg)
 
 Also called golden pothos, and the reason it earned the name is that it is very hard to see off. Heart shaped leaves splashed with yellow, trailing as far as you let them, and it will root from any cutting with a leaf and a node on it.
 
