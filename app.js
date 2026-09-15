@@ -1550,7 +1550,7 @@ function qaHeaderRow(imageLabel,titlePlaceholder,multiple){
   return `<div class="qa-header-row">
 
     <input type="file" name="image" accept="image/*" hidden${multiple?" multiple":""}>
-    <input type="text" name="title" class="qa-header-title" placeholder="Give it a title" aria-label="Title" required>
+    <input type="text" name="title" class="qa-header-title" placeholder="Title" aria-label="Title" required>
   </div>
   <div class="qa-photo-strip"><div class="qa-image-list" hidden></div><button type="button" class="qa-photo-add" data-qa-image-trigger>${icon("photos")}<span>${esc(imageLabel)}</span></button></div>`;
 }
@@ -1563,7 +1563,7 @@ function quickAddFields(type){
     case "note":
       return `${qaHeaderRow("Add photos","Title",true)}
         <label>Date<input type="date" name="date" data-qa-today></label>
-        ${counted("body","",6,type==="note"?"What’s on your mind?":"What would you like to remember?")}
+        ${counted("body","",6,type==="note"?"What’s on your mind?":"What happened…")}
         ${common}`;
     case "task":
       return `<label>Title<input type="text" name="title" required autofocus></label>
@@ -1625,7 +1625,7 @@ function quickAddModalHtml(){
   return `<div class="qa-sheet" role="dialog" aria-modal="true" aria-label="Add to noted">
     <button type="button" class="qa-handle" data-qa-close aria-label="Dismiss and keep draft"><span></span></button>
     <div class="qa-head">
-      <h2>Quick capture</h2>
+      <h2>Add</h2>
       <select class="qa-type-select" data-qa-type-select aria-label="What to add">${QUICK_ADD_TYPES.map(t=>`<option value="${t.id}">${t.label}</option>`).join("")}</select>
 
     </div>
