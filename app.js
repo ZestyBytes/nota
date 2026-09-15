@@ -1562,7 +1562,7 @@ function quickAddFields(type){
     case "journal":
     case "note":
       return `${qaHeaderRow("Add photos","Title",true)}
-        <label>Date<input type="date" name="date" data-qa-today></label>
+        <label><input type="date" name="date" aria-label="Date" data-qa-today></label>
         ${counted("body","",6,type==="note"?"What’s on your mind?":"What happened…")}
         ${common}`;
     case "task":
@@ -1590,7 +1590,7 @@ function quickAddFields(type){
         ${common}`;
     case "event":
       return `${qaHeaderRow("Add photos","Title",true)}
-        <label>Date<input type="date" name="date" data-qa-today></label>
+        <label><input type="date" name="date" aria-label="Date" data-qa-today></label>
         <div class="qa-row"><label>Starts<input type="text" name="startTime" placeholder="From 1pm"></label><label>Ends (optional)<input type="text" name="endTime" placeholder="4pm"></label></div>
         ${common}
         <label>Notes<textarea name="body" rows="4"></textarea></label>`;
