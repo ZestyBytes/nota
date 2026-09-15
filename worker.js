@@ -93,7 +93,9 @@ async function githubRequest(env, path, options = {}) {
 }
 
 async function toggleTask(env, id) {
-  const path = `quartz/content/tasks/${id}.md`;
+  // id is the task's slug relative to quartz/content, e.g. "tasks/haircut",
+  // as built by build-data.mjs; it already includes the folder.
+  const path = `quartz/content/${id}.md`;
   const file = await githubRequest(
     env,
     `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}?ref=${GITHUB_BRANCH}`
@@ -230,7 +232,7 @@ export default {
         }
         try {
           const { id } = await request.json();
-          if (!id || !/^[a-z0-9-]+$/i.test(id)) {
+          if (!id || !/^tasks\/[a-z0-9-]+$/i.test(id)) {
             return Response.json({ error: "Invalid task id" }, { status: 400 });
           }
           const completedAt = await toggleTask(env, id);
