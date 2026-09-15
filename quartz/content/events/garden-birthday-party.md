@@ -9,6 +9,6 @@ publishedAt: "2026-09-04"
 publish: true
 ---
 
-![[garden-birthday-party.png|Jamie's garden birthday party poster]]
+![Jamie's garden birthday party poster](/media/attachments/garden-birthday-party.png)
 
 Drinks, nibbles and live acoustic music in the garden.
