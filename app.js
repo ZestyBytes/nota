@@ -1778,7 +1778,7 @@ quickAddBackdrop.addEventListener("change",async e=>{
 quickAddBackdrop.addEventListener("submit",async e=>{
   e.preventDefault();
   const form=e.target;
-  const submitBtn=form.querySelector(".qa-submit");
+  const submitBtn=quickAddBackdrop.querySelector(".qa-submit");
   const errorEl=quickAddBackdrop.querySelector(".qa-error");
   errorEl.hidden=true;
   submitBtn.disabled=true;
@@ -1806,6 +1806,8 @@ quickAddBackdrop.addEventListener("submit",async e=>{
   }catch(error){
     errorEl.textContent=error.message||"Something went wrong";
     errorEl.hidden=false;
+    errorEl.scrollIntoView({block:"nearest",behavior:"smooth"});
+    toast(errorEl.textContent);
   }finally{
     submitBtn.disabled=false;
     submitBtn.textContent="Add";

@@ -2528,6 +2528,11 @@ body.qa-open{overflow:hidden;}
   outline:none;border-color:var(--stamp-red);box-shadow:0 0 0 2px color-mix(in srgb,var(--stamp-red) 35%,transparent);
 }
 #qa-form textarea{resize:vertical;}
+/* Safari's date control has its own shadow-DOM sizing that otherwise
+   ignores the width given here and overflows its container regardless
+   of any flexbox/min-width fix on the outside; stripping its native
+   appearance is the actual fix. */
+#qa-form input[type="date"]{-webkit-appearance:none;appearance:none;}
 .qa-row{display:flex;gap:10px;min-width:0;}
 .qa-row label{flex:1;min-width:0;}
 
