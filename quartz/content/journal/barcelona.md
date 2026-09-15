@@ -8,10 +8,10 @@ createdAt: 2026-08-22
 publishedAt: 2026-09-03
 publish: true
 ---
-![[IMG_5395.jpeg]]
-![[IMG_5437.jpeg]]
-![[IMG_5496.jpeg]]
-![[IMG_5405.jpeg]]
+![](/media/attachments/IMG_5395.jpeg)
+![](/media/attachments/IMG_5437.jpeg)
+![](/media/attachments/IMG_5496.jpeg)
+![](/media/attachments/IMG_5405.jpeg)
 
 I've kept the photographs here while I put the Barcelona trip into words.
 I want to remember what the children noticed, the moments we keep retelling
