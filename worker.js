@@ -172,7 +172,8 @@ function buildContentFile(type, fields) {
   const title = yamlEscape(fields.title);
   const tags = tagsYaml(fields.tags);
   const today = todayISO();
-  const image = fields.imageUrl ? `![${yamlEscape(fields.imageAlt || "")}](${fields.imageUrl})\n\n` : "";
+  const imageUrls = Array.isArray(fields.imageUrls) && fields.imageUrls.length ? fields.imageUrls : (fields.imageUrl ? [fields.imageUrl] : []);
+  const image = imageUrls.map((url) => `![${yamlEscape(fields.imageAlt || "")}](${url})`).join("\n\n") + (imageUrls.length ? "\n\n" : "");
   const body = (fields.body || "").trim();
 
   switch (type) {

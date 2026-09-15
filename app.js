@@ -1552,13 +1552,13 @@ function knownTags(){
 // below, rather than squeezed into this one: Safari's native date
 // control refuses to shrink to fit a narrow column and just overflows
 // it regardless of what width it's given.
-function qaHeaderRow(imageLabel,titlePlaceholder){
+function qaHeaderRow(imageLabel,titlePlaceholder,multiple){
   return `<div class="qa-header-row">
     <button type="button" class="qa-thumb" data-qa-image-trigger aria-label="${esc(imageLabel)}">${icon("photos")}</button>
-    <input type="file" name="image" accept="image/*" hidden>
+    <input type="file" name="image" accept="image/*" hidden${multiple?" multiple":""}>
     <input type="text" name="title" class="qa-header-title" placeholder="${esc(titlePlaceholder)}" required autofocus>
   </div>
-  <div class="qa-image-preview" hidden><img alt=""><button type="button" data-qa-remove-image aria-label="Remove photo">×</button></div>`;
+  <div class="qa-image-list" hidden></div>`;
 }
 
 function quickAddFields(type){
@@ -1567,7 +1567,7 @@ function quickAddFields(type){
   switch(type){
     case "journal":
     case "note":
-      return `${qaHeaderRow("Add a photo","Title")}
+      return `${qaHeaderRow("Add photos","Title",true)}
         <label>Date<input type="date" name="date" data-qa-today></label>
         ${common}
         ${counted("body","Write",6,"What happened…")}`;
@@ -1595,13 +1595,13 @@ function quickAddFields(type){
         <label class="qa-progress" hidden>Progress %<input type="number" name="progress" min="0" max="100"></label>
         ${common}`;
     case "event":
-      return `${qaHeaderRow("Add a photo","Title")}
+      return `${qaHeaderRow("Add photos","Title",true)}
         <label>Date<input type="date" name="date" data-qa-today></label>
         <div class="qa-row"><label>Starts<input type="text" name="startTime" placeholder="From 1pm"></label><label>Ends (optional)<input type="text" name="endTime" placeholder="4pm"></label></div>
         ${common}
         <label>Notes<textarea name="body" rows="4"></textarea></label>`;
     case "recipe":
-      return `${qaHeaderRow("Add a photo","Title")}
+      return `${qaHeaderRow("Add photos","Title",true)}
         <div class="qa-row"><label>Time<input type="text" name="time" placeholder="30 mins"></label><label>Serves<input type="text" name="serves" placeholder="4"></label><label>Difficulty<input type="text" name="difficulty" placeholder="easy"></label></div>
         ${common}
         <label>You'll need, one per line<textarea name="ingredients" rows="5" placeholder="200g flour"></textarea></label>
@@ -1649,11 +1649,20 @@ quickAddBackdrop.className="qa-backdrop";
 document.body.appendChild(quickAddBackdrop);
 
 let quickAddType=QUICK_ADD_TYPES[0].id;
-let quickAddImageBlob=null;
+let quickAddImages=[]; // { blob, url } per selected photo, in the order added
+
+function renderQuickAddImages(){
+  const list=quickAddBackdrop.querySelector(".qa-image-list");
+  if(!list)return;
+  list.hidden=quickAddImages.length===0;
+  list.innerHTML=quickAddImages.map((img,i)=>
+    `<div class="qa-image-thumb"><img src="${img.url}" alt=""><button type="button" data-qa-remove-image="${i}" aria-label="Remove photo">×</button></div>`
+  ).join("");
+}
 
 function openQuickAdd(){
   quickAddType=QUICK_ADD_TYPES[0].id;
-  quickAddImageBlob=null;
+  quickAddImages=[];
   quickAddBackdrop.innerHTML=quickAddModalHtml();
   setupQuickAddFieldExtras(quickAddBackdrop);
   quickAddBackdrop.classList.add("show");
@@ -1691,12 +1700,10 @@ quickAddBackdrop.addEventListener("click",e=>{
   if(e.target===quickAddBackdrop)closeQuickAdd();
   if(e.target.closest("[data-qa-close]"))closeQuickAdd();
 
-  if(e.target.closest("[data-qa-remove-image]")){
-    quickAddImageBlob=null;
-    const preview=quickAddBackdrop.querySelector(".qa-image-preview");
-    preview.hidden=true;
-    const input=quickAddBackdrop.querySelector('input[name="image"]');
-    if(input)input.value="";
+  const removeBtn=e.target.closest("[data-qa-remove-image]");
+  if(removeBtn){
+    quickAddImages.splice(Number(removeBtn.dataset.qaRemoveImage),1);
+    renderQuickAddImages();
     return;
   }
 
@@ -1754,7 +1761,7 @@ quickAddBackdrop.addEventListener("input",e=>{
 quickAddBackdrop.addEventListener("change",async e=>{
   if(e.target.matches("[data-qa-type-select]")){
     quickAddType=e.target.value;
-    quickAddImageBlob=null;
+    quickAddImages=[];
     quickAddBackdrop.querySelector(".qa-fields").innerHTML=quickAddFields(quickAddType);
     setupQuickAddFieldExtras(quickAddBackdrop);
     return;
@@ -1764,14 +1771,23 @@ quickAddBackdrop.addEventListener("change",async e=>{
     if(progress)progress.hidden=e.target.value!=="reading";
     return;
   }
-  if(e.target.name==="image"&&e.target.files[0]){
-    const file=e.target.files[0];
-    try{
-      quickAddImageBlob=await compressImageFile(file);
-      const preview=quickAddBackdrop.querySelector(".qa-image-preview");
-      preview.hidden=false;
-      preview.querySelector("img").src=URL.createObjectURL(quickAddImageBlob);
-    }catch(error){toast("Could not read that photo")}
+  if(e.target.name==="image"&&e.target.files.length){
+    // A native file input's own file list always replaces, it can't
+    // append, so a second pick (multi-photo types) is merged in here
+    // rather than losing whatever was already chosen.
+    const files=[...e.target.files];
+    const isSingle=!e.target.multiple;
+    if(isSingle)quickAddImages=[];
+    const room=isSingle?1:Math.max(0,6-quickAddImages.length);
+    for(const file of files.slice(0,room)){
+      try{
+        const blob=await compressImageFile(file);
+        quickAddImages.push({blob,url:URL.createObjectURL(blob)});
+      }catch(error){toast("Could not read that photo")}
+    }
+    if(files.length>room)toast("Up to 6 photos at a time");
+    e.target.value="";
+    renderQuickAddImages();
   }
 });
 
@@ -1790,12 +1806,17 @@ quickAddBackdrop.addEventListener("submit",async e=>{
       data.startTime=`${(data.startTime||"").trim()}${data.startTime&&data.startTime.trim()?" – ":""}${data.endTime.trim()}`;
     }
     delete data.endTime;
-    if(quickAddImageBlob){
-      const filename=`quickadd-${Date.now()}.jpg`;
-      const res=await fetch("/api/media/upload",{method:"POST",headers:{"X-Filename":filename,"X-Content-Type":"image/jpeg"},body:quickAddImageBlob});
-      const json=await res.json();
-      if(!res.ok)throw new Error(json.error||"Could not upload the photo");
-      data.imageUrl=json.url;
+    if(quickAddImages.length){
+      const urls=[];
+      for(const img of quickAddImages){
+        const filename=`quickadd-${Date.now()}-${urls.length}.jpg`;
+        const res=await fetch("/api/media/upload",{method:"POST",headers:{"X-Filename":filename,"X-Content-Type":"image/jpeg"},body:img.blob});
+        const json=await res.json();
+        if(!res.ok)throw new Error(json.error||"Could not upload a photo");
+        urls.push(json.url);
+      }
+      data.imageUrls=urls;
+      data.imageUrl=urls[0];
       data.imageAlt=data.title||"";
     }
     const res=await fetch("/api/content/create",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:quickAddType,...data})});
