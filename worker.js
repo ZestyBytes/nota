@@ -118,6 +118,197 @@ async function toggleTask(env, id) {
   return result.nowDone ? todayISO() : null;
 }
 
+// --- Push notifications -----------------------------------------------
+// Public VAPID key, safe to embed: it identifies this Worker to push
+// services, it isn't a secret. Its matching private half is the
+// VAPID_PRIVATE_KEY secret. Both were generated once and are fixed for
+// the life of this site; regenerating them would invalidate any existing
+// subscription.
+const VAPID_PUBLIC_KEY = "BON5WkRoReur3osnR5GEV8R441jg6w3RzDg-Q6ykoMW6XCpdPy8zl5_0SON74j9T_4nPtmWH148KwzgyUmPTIv0";
+const VAPID_SUBJECT = "mailto:jamiebassett@me.com";
+
+function b64urlToBuf(s) {
+  const pad = "=".repeat((4 - (s.length % 4)) % 4);
+  const b64 = (s + pad).replace(/-/g, "+").replace(/_/g, "/");
+  const binary = atob(b64);
+  return Uint8Array.from(binary, (c) => c.charCodeAt(0));
+}
+
+function bufToB64url(buf) {
+  let binary = "";
+  new Uint8Array(buf).forEach((b) => (binary += String.fromCharCode(b)));
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+function concatBytes(...arrs) {
+  const len = arrs.reduce((n, a) => n + a.length, 0);
+  const out = new Uint8Array(len);
+  let offset = 0;
+  for (const a of arrs) {
+    out.set(a, offset);
+    offset += a.length;
+  }
+  return out;
+}
+
+async function hmacSha256(keyBytes, data) {
+  const key = await crypto.subtle.importKey("raw", keyBytes, { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  return new Uint8Array(await crypto.subtle.sign("HMAC", key, data));
+}
+
+// One-block HKDF-Expand, fine here since every length we need (32, 16, 12
+// bytes) fits in a single SHA-256 block.
+async function hkdfExpandOne(prk, info, length) {
+  const t = await hmacSha256(prk, concatBytes(info, new Uint8Array([1])));
+  return t.slice(0, length);
+}
+
+// Implements RFC 8291 (Web Push encryption) + RFC 8188 (aes128gcm), using
+// only Web Crypto so this needs no npm dependency in the Worker.
+async function encryptPushPayload(subscription, payloadBytes) {
+  const uaPublicRaw = b64urlToBuf(subscription.keys.p256dh);
+  const authSecret = b64urlToBuf(subscription.keys.auth);
+
+  const uaPublicKey = await crypto.subtle.importKey(
+    "raw", uaPublicRaw, { name: "ECDH", namedCurve: "P-256" }, true, []
+  );
+  const asKeyPair = await crypto.subtle.generateKey(
+    { name: "ECDH", namedCurve: "P-256" }, true, ["deriveBits"]
+  );
+  const asPublicRaw = new Uint8Array(await crypto.subtle.exportKey("raw", asKeyPair.publicKey));
+
+  const ecdhSecret = new Uint8Array(
+    await crypto.subtle.deriveBits({ name: "ECDH", public: uaPublicKey }, asKeyPair.privateKey, 256)
+  );
+
+  const prkKey = await hmacSha256(authSecret, ecdhSecret);
+  const keyInfo = concatBytes(new TextEncoder().encode("WebPush: info\0"), uaPublicRaw, asPublicRaw);
+  const ikm = await hkdfExpandOne(prkKey, keyInfo, 32);
+
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const prk2 = await hmacSha256(salt, ikm);
+
+  const cek = await hkdfExpandOne(prk2, new TextEncoder().encode("Content-Encoding: aes128gcm\0"), 16);
+  const nonce = await hkdfExpandOne(prk2, new TextEncoder().encode("Content-Encoding: nonce\0"), 12);
+
+  const padded = concatBytes(payloadBytes, new Uint8Array([2])); // last (only) record
+  const cekKey = await crypto.subtle.importKey("raw", cek, { name: "AES-GCM" }, false, ["encrypt"]);
+  const ciphertext = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv: nonce }, cekKey, padded));
+
+  const recordSize = new Uint8Array(4);
+  new DataView(recordSize.buffer).setUint32(0, 4096);
+  const idLen = new Uint8Array([asPublicRaw.length]);
+
+  return concatBytes(salt, recordSize, idLen, asPublicRaw, ciphertext);
+}
+
+async function vapidAuthHeader(env, endpoint) {
+  const aud = new URL(endpoint).origin;
+  const header = { typ: "JWT", alg: "ES256" };
+  const payload = { aud, exp: Math.floor(Date.now() / 1000) + 12 * 60 * 60, sub: VAPID_SUBJECT };
+  const toB64urlJson = (o) => bufToB64url(new TextEncoder().encode(JSON.stringify(o)));
+  const signingInput = `${toB64urlJson(header)}.${toB64urlJson(payload)}`;
+
+  const pubRaw = b64urlToBuf(VAPID_PUBLIC_KEY);
+  const x = bufToB64url(pubRaw.slice(1, 33));
+  const y = bufToB64url(pubRaw.slice(33, 65));
+  const privateKey = await crypto.subtle.importKey(
+    "jwk",
+    { kty: "EC", crv: "P-256", x, y, d: env.VAPID_PRIVATE_KEY, ext: true },
+    { name: "ECDSA", namedCurve: "P-256" },
+    false,
+    ["sign"]
+  );
+  const signature = new Uint8Array(
+    await crypto.subtle.sign({ name: "ECDSA", hash: "SHA-256" }, privateKey, new TextEncoder().encode(signingInput))
+  );
+
+  return `vapid t=${signingInput}.${bufToB64url(signature)}, k=${VAPID_PUBLIC_KEY}`;
+}
+
+async function sendPush(env, subscription, payloadObj) {
+  const payloadBytes = new TextEncoder().encode(JSON.stringify(payloadObj));
+  const body = await encryptPushPayload(subscription, payloadBytes);
+  const authorization = await vapidAuthHeader(env, subscription.endpoint);
+
+  const res = await fetch(subscription.endpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/octet-stream",
+      "Content-Encoding": "aes128gcm",
+      TTL: "86400",
+      Authorization: authorization,
+    },
+    body,
+  });
+
+  if (res.status === 404 || res.status === 410) {
+    // The subscription is gone (unsubscribed elsewhere, expired): stop
+    // trying to use it.
+    await env.PUSH_KV.delete("subscription");
+    return;
+  }
+  if (!res.ok) throw new Error(`Push send failed: ${res.status} ${await res.text().catch(() => "")}`);
+}
+
+async function readSiteData(env) {
+  const res = await env.ASSETS.fetch(new Request("https://internal/data.js"));
+  if (!res.ok) throw new Error("Could not read data.js");
+  const text = await res.text();
+  const match = text.match(/window\.NOTED_DATA\s*=\s*(\{[\s\S]*\});?\s*$/);
+  if (!match) throw new Error("Could not parse data.js");
+  return JSON.parse(match[1]);
+}
+
+function buildMorningMessage(data) {
+  const today = todayISO();
+  const open = (data.tasks || []).filter((t) => !t.completedAt);
+  if (!open.length) return { title: "noted.", body: "Nothing outstanding today." };
+  const overdue = open.filter((t) => t.dueAt && t.dueAt < today).length;
+  const dueToday = open.filter((t) => t.dueAt === today).length;
+  const bits = [];
+  if (overdue) bits.push(`${overdue} overdue`);
+  if (dueToday) bits.push(`${dueToday} due today`);
+  const detail = bits.length ? bits.join(", ") : `${open.length} waiting`;
+  return { title: "Today's to-do", body: `${detail}. ${open.length} on the list in total.` };
+}
+
+function buildEveningMessage(data) {
+  const today = todayISO();
+  const doneToday = (data.tasks || []).filter((t) => t.completedAt === today);
+  const body = doneToday.length
+    ? `${doneToday.length} ticked off today: ${doneToday.slice(0, 3).map((t) => t.title).join(", ")}${doneToday.length > 3 ? "…" : ""}. Add a journal entry?`
+    : "Nothing marked done today. Worth a journal entry about how it went?";
+  return { title: "End of day", body };
+}
+
+async function handleScheduled(env, cron) {
+  const subRaw = await env.PUSH_KV.get("subscription");
+  if (!subRaw) return;
+  const subscription = JSON.parse(subRaw);
+
+  let data;
+  try {
+    data = await readSiteData(env);
+  } catch (err) {
+    console.error("Could not read site data for push:", err);
+    return;
+  }
+
+  // Two crons are configured (morning, evening); tell them apart by hour
+  // rather than by matching the exact cron string, which stays correct
+  // even if the schedule is nudged later.
+  const hour = new Date().getUTCHours();
+  const message = hour < 12 ? buildMorningMessage(data) : buildEveningMessage(data);
+  message.url = "/";
+
+  try {
+    await sendPush(env, subscription, message);
+  } catch (err) {
+    console.error("Push send failed:", err);
+  }
+}
+
 function loginPage({ error, redirectTo }) {
   return `<!doctype html>
 <html>
@@ -226,6 +417,25 @@ export default {
 
     const cookieToken = getCookie(request, COOKIE_NAME);
     if (cookieToken === expectedToken) {
+      if (request.method === "GET" && url.pathname === "/api/push/public-key") {
+        return Response.json({ key: VAPID_PUBLIC_KEY });
+      }
+
+      if (request.method === "POST" && url.pathname === "/api/push/subscribe") {
+        try {
+          const subscription = await request.json();
+          await env.PUSH_KV.put("subscription", JSON.stringify(subscription));
+          return Response.json({ ok: true });
+        } catch (err) {
+          return Response.json({ error: String(err.message || err) }, { status: 400 });
+        }
+      }
+
+      if (request.method === "POST" && url.pathname === "/api/push/unsubscribe") {
+        await env.PUSH_KV.delete("subscription");
+        return Response.json({ ok: true });
+      }
+
       if (request.method === "POST" && url.pathname === "/api/tasks/toggle") {
         if (!env.GITHUB_TOKEN) {
           return Response.json({ error: "GITHUB_TOKEN not configured" }, { status: 500 });
@@ -249,5 +459,9 @@ export default {
       status: 401,
       headers: { "Content-Type": "text/html; charset=utf-8" },
     });
+  },
+
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(handleScheduled(env, event.cron));
   },
 };
