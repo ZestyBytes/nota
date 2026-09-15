@@ -155,8 +155,26 @@ const MIGRATION_REPLACEMENTS = [
   ] },
 ];
 
+function escapeRegExp(s) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+// The deploy pipeline (optimize-site.mjs) converts every jpg/png into a
+// content-hashed .webp and rewrites every reference to it, data.js
+// included. So the original filename never actually exists in the
+// deployed assets; the real current path has to be read out of data.js.
+async function findCurrentAssetPath(env, name) {
+  const dataRes = await env.ASSETS.fetch(new Request("https://internal/data.js"));
+  if (!dataRes.ok) return null;
+  const text = await dataRes.text();
+  const baseName = name.replace(/\.[^.]+$/, "");
+  const match = text.match(new RegExp(`assets/vault/attachments/${escapeRegExp(baseName)}[^")'\\s]*`));
+  return match ? match[0] : null;
+}
+
 async function migrateMedia(env) {
   const report = { uploaded: [], skipped: [], failed: [], filesUpdated: [], fileErrors: [] };
+  const succeeded = new Set();
 
   for (const name of MIGRATION_FILES) {
     const r2Key = `attachments/${name}`;
@@ -164,11 +182,17 @@ async function migrateMedia(env) {
       const already = await env.MEDIA_BUCKET.head(r2Key);
       if (already) {
         report.skipped.push(name);
+        succeeded.add(name);
         continue;
       }
-      const assetRes = await env.ASSETS.fetch(new Request(`https://internal/assets/vault/attachments/${encodeURIComponent(name)}`));
+      const assetPath = await findCurrentAssetPath(env, name);
+      if (!assetPath) {
+        report.failed.push({ name, error: "could not find its current path in data.js" });
+        continue;
+      }
+      const assetRes = await env.ASSETS.fetch(new Request(`https://internal/${assetPath}`));
       if (!assetRes.ok) {
-        report.failed.push({ name, error: `could not read from deployed assets: ${assetRes.status}` });
+        report.failed.push({ name, error: `could not read ${assetPath}: ${assetRes.status}` });
         continue;
       }
       const bytes = await assetRes.arrayBuffer();
@@ -187,6 +211,7 @@ async function migrateMedia(env) {
       const contentType = assetRes.headers.get("Content-Type") || "application/octet-stream";
       await env.MEDIA_BUCKET.put(r2Key, bytes, { httpMetadata: { contentType } });
       report.uploaded.push(name);
+      succeeded.add(name);
     } catch (err) {
       report.failed.push({ name, error: String(err.message || err) });
     }
@@ -201,6 +226,11 @@ async function migrateMedia(env) {
       let raw = b64ToUtf8(file.content);
       let changed = false;
       for (const [oldStr, newStr] of replacements) {
+        // Only rewrite text to point at an R2 object that's actually
+        // there this run; a filename that failed to upload keeps its
+        // original reference so the site never links to nothing.
+        const requiredName = newStr.match(/\/media\/attachments\/([^)"'\s]+)/)?.[1];
+        if (requiredName && !succeeded.has(requiredName)) continue;
         if (raw.includes(oldStr)) {
           raw = raw.split(oldStr).join(newStr);
           changed = true;
