@@ -19,7 +19,7 @@ publishedAt: "2026-09-04"
 publish: true
 ---
 
-![The peace lily in a grey pot, one white spathe up on a tall stem](plant-peace-lily.jpg)
+![The peace lily in a grey pot, one white spathe up on a tall stem](/media/attachments/plant-peace-lily.jpg)
 
 The one that tells you what it wants. It droops dramatically when thirsty and picks itself up within hours of a drink. It flowers in the shade, which few plants will do, and the white spathe fades to green as it ages.
 
