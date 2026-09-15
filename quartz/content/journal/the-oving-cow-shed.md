@@ -12,7 +12,7 @@ art: cowshed
 publish: true
 ---
 
-![[oving-cow-shed-machine.jpg]]
+![](/media/attachments/oving-cow-shed-machine.jpg)
 
 Ten minutes from home, and a family favourite: milkshakes about as fresh as
 they come, out of a vending machine in a shed.
@@ -26,6 +26,6 @@ You can buy a reusable litre bottle if you are stocking up, or take a free
 500ml cup with a lid and a straw, which is what we do. Bench outside, in the
 shade.
 
-![[oving-cow-shed-bench.jpg]]
+![](/media/attachments/oving-cow-shed-bench.jpg)
 
 [The Oving Cow Shed on the map](https://share.google/d4MZdrML8S4V4vu0L)
