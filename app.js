@@ -1546,17 +1546,17 @@ function knownTags(){
 }
 
 // A compact header shared by every type that carries a photo: a square
-// thumbnail/upload button on the left, title (and a second field, date or
-// nothing) stacked to its right. Keeps the modal from opening on a bare
-// title field with the photo buried further down.
-function qaHeaderRow(imageLabel,titlePlaceholder,secondField){
+// thumbnail/upload button on the left, title to its right. Keeps the
+// modal from opening on a bare title field with the photo buried
+// further down. Date (or anything else) goes in its own full-width row
+// below, rather than squeezed into this one: Safari's native date
+// control refuses to shrink to fit a narrow column and just overflows
+// it regardless of what width it's given.
+function qaHeaderRow(imageLabel,titlePlaceholder){
   return `<div class="qa-header-row">
     <button type="button" class="qa-thumb" data-qa-image-trigger aria-label="${esc(imageLabel)}">${icon("photos")}</button>
     <input type="file" name="image" accept="image/*" hidden>
-    <div class="qa-header-fields">
-      <input type="text" name="title" placeholder="${esc(titlePlaceholder)}" required autofocus>
-      ${secondField||""}
-    </div>
+    <input type="text" name="title" class="qa-header-title" placeholder="${esc(titlePlaceholder)}" required autofocus>
   </div>
   <div class="qa-image-preview" hidden><img alt=""><button type="button" data-qa-remove-image aria-label="Remove photo">×</button></div>`;
 }
@@ -1567,7 +1567,8 @@ function quickAddFields(type){
   switch(type){
     case "journal":
     case "note":
-      return `${qaHeaderRow("Add a photo","Title",`<input type="date" name="date" data-qa-today>`)}
+      return `${qaHeaderRow("Add a photo","Title")}
+        <label>Date<input type="date" name="date" data-qa-today></label>
         ${common}
         ${counted("body","Write",6,"What happened…")}`;
     case "task":
@@ -1594,7 +1595,8 @@ function quickAddFields(type){
         <label class="qa-progress" hidden>Progress %<input type="number" name="progress" min="0" max="100"></label>
         ${common}`;
     case "event":
-      return `${qaHeaderRow("Add a photo","Title",`<input type="date" name="date" data-qa-today>`)}
+      return `${qaHeaderRow("Add a photo","Title")}
+        <label>Date<input type="date" name="date" data-qa-today></label>
         <div class="qa-row"><label>Starts<input type="text" name="startTime" placeholder="From 1pm"></label><label>Ends (optional)<input type="text" name="endTime" placeholder="4pm"></label></div>
         ${common}
         <label>Notes<textarea name="body" rows="4"></textarea></label>`;
