@@ -1545,32 +1545,26 @@ function knownTags(){
   return [...new Set([...QUICK_ADD_KNOWN_TAGS, ...fromData])].sort();
 }
 
-// A compact header shared by every type that carries a photo: a square
-// thumbnail/upload button on the left, title to its right. Keeps the
-// modal from opening on a bare title field with the photo buried
-// further down. Date (or anything else) goes in its own full-width row
-// below, rather than squeezed into this one: Safari's native date
-// control refuses to shrink to fit a narrow column and just overflows
-// it regardless of what width it's given.
+// Title and attachments use separate areas of the composer.
 function qaHeaderRow(imageLabel,titlePlaceholder,multiple){
   return `<div class="qa-header-row">
-    <button type="button" class="qa-thumb" data-qa-image-trigger aria-label="${esc(imageLabel)}">${icon("photos")}</button>
+
     <input type="file" name="image" accept="image/*" hidden${multiple?" multiple":""}>
-    <input type="text" name="title" class="qa-header-title" placeholder="${esc(titlePlaceholder)}" required autofocus>
+    <input type="text" name="title" class="qa-header-title" placeholder="Give it a title" aria-label="Title" required>
   </div>
-  <div class="qa-image-list" hidden></div>`;
+  <div class="qa-photo-strip"><div class="qa-image-list" hidden></div><button type="button" class="qa-photo-add" data-qa-image-trigger>${icon("photos")}<span>${esc(imageLabel)}</span></button></div>`;
 }
 
 function quickAddFields(type){
-  const common = `<label>Tags<span class="qa-tag-box"><input type="text" name="tags" placeholder="family, gardening" autocomplete="off" data-qa-tags><span class="qa-tag-suggest" hidden></span></span></label>`;
-  const counted = (name,label,rows,placeholder) => `<label>${label}<span class="qa-counted"><textarea name="${name}" rows="${rows}" placeholder="${placeholder||""}" data-qa-count></textarea><small class="qa-counter" data-qa-counter-for="${name}">0</small></span></label>`;
+  const common = `<section class="qa-auto"><span class="qa-tag-label">Automatic tags</span><input type="hidden" name="tags"><div class="qa-auto-tags"></div></section>`;
+  const counted = (name,label,rows,placeholder) => `<label>${label}<span class="qa-counted"><textarea aria-label="${label||"Entry"}" name="${name}" rows="${rows}" placeholder="${placeholder||""}" data-qa-count></textarea><small class="qa-counter" data-qa-counter-for="${name}">0</small></span></label>`;
   switch(type){
     case "journal":
     case "note":
       return `${qaHeaderRow("Add photos","Title",true)}
         <label>Date<input type="date" name="date" data-qa-today></label>
-        ${common}
-        ${counted("body","Write",6,"What happened…")}`;
+        ${counted("body","",6,type==="note"?"What’s on your mind?":"What would you like to remember?")}
+        ${common}`;
     case "task":
       return `<label>Title<input type="text" name="title" required autofocus></label>
         <label>Due (optional)<input type="date" name="dueAt"></label>
@@ -1612,6 +1606,11 @@ function quickAddFields(type){
 }
 
 function setupQuickAddFieldExtras(container){
+  const fields=container.querySelector(".qa-fields");
+  const photos=fields?.querySelector(".qa-photo-strip");
+  const tags=fields?.querySelector(".qa-auto");
+  if(tags)fields.appendChild(tags);
+  if(photos)fields.insertBefore(photos,tags);
   container.querySelectorAll("[data-qa-today]").forEach(el=>{if(!el.value)el.value=todayKey});
   container.querySelectorAll("[data-qa-count]").forEach(el=>{
     const counter=container.querySelector(`[data-qa-counter-for="${el.name}"]`);
@@ -1624,16 +1623,17 @@ function setupQuickAddFieldExtras(container){
 
 function quickAddModalHtml(){
   return `<div class="qa-sheet" role="dialog" aria-modal="true" aria-label="Add to noted">
+    <button type="button" class="qa-handle" data-qa-close aria-label="Dismiss and keep draft"><span></span></button>
     <div class="qa-head">
-      <h2>Add</h2>
+      <h2>Quick capture</h2>
       <select class="qa-type-select" data-qa-type-select aria-label="What to add">${QUICK_ADD_TYPES.map(t=>`<option value="${t.id}">${t.label}</option>`).join("")}</select>
-      <button type="button" data-qa-close aria-label="Close">×</button>
+
     </div>
     <form id="qa-form">
       <div class="qa-fields">${quickAddFields(QUICK_ADD_TYPES[0].id)}</div>
-      <div class="qa-error" hidden></div>
+      <div class="qa-error" role="alert" hidden></div>
     </form>
-    <button type="submit" form="qa-form" class="qa-submit">Add</button>
+    <div class="qa-footer"><button type="button" class="qa-later" data-qa-close>Keep for later</button><button type="submit" form="qa-form" class="qa-submit">Save entry</button></div>
   </div>`;
 }
 
@@ -1651,28 +1651,77 @@ document.body.appendChild(quickAddBackdrop);
 let quickAddType=QUICK_ADD_TYPES[0].id;
 let quickAddImages=[]; // { blob, url } per selected photo, in the order added
 
+// Local suggestions keep private writing on this device.
+const QA_TAG_WORDS={family:['birthday','daughter','son','mum','dad','family','molly'],gardening:['garden','gardening','planting','lawn','grass'],houseplants:['houseplant','houseplants','monstera'],reading:['book','reading','novel'],food:['cooking','dinner','lunch','food','meal'],motoring:['car','tyre','motoring'],music:['music','guitar','piano','concert'],selfcare:['sleep','rest','meditation'],wedding:['wedding','bride','groom'],technology:['software','coding','computer']};
+let qaExcludedTags=new Set(),qaBusy=false,qaDrag=null;
+function suggestQuickAddTags(text,type){
+  const words=new Set(text.toLowerCase().match(/[a-z0-9]+/g)||[]);
+  return knownTags().filter(tag=>words.has(tag)||(QA_TAG_WORDS[tag]||[]).some(word=>words.has(word))||(type==='reading'&&tag==='reading')||(type==='recipe'&&tag==='recipes')).slice(0,5);
+}
+function updateQuickAddTags(){
+  const form=quickAddBackdrop.querySelector('form');
+  if(!form)return;
+  const text=[...form.querySelectorAll('input[type="text"],textarea')].map(el=>el.value).join(' ');
+  const tags=suggestQuickAddTags(text,quickAddType).filter(tag=>!qaExcludedTags.has(tag));
+  form.querySelector('[name="tags"]').value=tags.join(', ');
+  form.querySelector('.qa-auto-tags').innerHTML=tags.length?tags.map(tag=>'<button type="button" data-qa-dismiss-tag="'+esc(tag)+'" aria-label="Remove tag '+esc(tag)+'">'+esc(tag)+' <span aria-hidden="true">×</span></button>').join(''):'<span>Tags will appear as you write</span>';
+}
+quickAddBackdrop.addEventListener('pointerdown',e=>{
+  if(!e.target.closest('.qa-handle')||qaBusy)return;
+  qaDrag={y:e.clientY};
+  e.target.closest('.qa-handle').setPointerCapture(e.pointerId);
+});
+quickAddBackdrop.addEventListener('pointermove',e=>{
+  if(!qaDrag)return;
+  quickAddBackdrop.querySelector('.qa-sheet').style.transform='translateY('+Math.max(0,e.clientY-qaDrag.y)+'px)';
+});
+function finishQuickAddDrag(e){
+  if(!qaDrag)return;
+  const dismiss=e.type!=='pointercancel'&&e.clientY-qaDrag.y>80;
+  qaDrag=null;
+  quickAddBackdrop.querySelector('.qa-sheet').style.transform='';
+  if(dismiss)closeQuickAdd();
+}
+quickAddBackdrop.addEventListener('pointerup',finishQuickAddDrag);
+quickAddBackdrop.addEventListener('pointercancel',finishQuickAddDrag);
+quickAddBackdrop.addEventListener('keydown',e=>{
+  if(e.key!=='Tab')return;
+  const items=[...quickAddBackdrop.querySelectorAll('button,input,textarea,select,summary')].filter(el=>!el.disabled&&el.getClientRects().length);
+  const first=items[0],last=items[items.length-1];
+  if(e.shiftKey&&document.activeElement===first){e.preventDefault();last?.focus()}
+  else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first?.focus()}
+});
+
 function renderQuickAddImages(){
   const list=quickAddBackdrop.querySelector(".qa-image-list");
   if(!list)return;
   list.hidden=quickAddImages.length===0;
+  const add=quickAddBackdrop.querySelector(".qa-photo-add");
+  const single=!quickAddBackdrop.querySelector('[name="image"]')?.multiple;
+  if(add){add.hidden=!single&&quickAddImages.length>=6;add.querySelector("span").textContent=quickAddImages.length?(single?"Change cover":"Add more"):(single?"Add cover":"Add photos");}
   list.innerHTML=quickAddImages.map((img,i)=>
     `<div class="qa-image-thumb"><img src="${img.url}" alt=""><button type="button" data-qa-remove-image="${i}" aria-label="Remove photo">×</button></div>`
   ).join("");
 }
 
 function openQuickAdd(){
-  quickAddType=QUICK_ADD_TYPES[0].id;
-  quickAddImages=[];
-  quickAddBackdrop.innerHTML=quickAddModalHtml();
-  setupQuickAddFieldExtras(quickAddBackdrop);
+  if(!quickAddBackdrop.querySelector("form")){
+    quickAddType=QUICK_ADD_TYPES[0].id;
+    quickAddImages=[];
+    qaExcludedTags=new Set();
+    quickAddBackdrop.innerHTML=quickAddModalHtml();
+    setupQuickAddFieldExtras(quickAddBackdrop);
+    updateQuickAddTags();
+  }
   quickAddBackdrop.classList.add("show");
   document.body.classList.add("qa-open");
-  requestAnimationFrame(()=>quickAddBackdrop.querySelector("input,textarea")?.focus());
+  requestAnimationFrame(()=>quickAddBackdrop.querySelector('[name="title"]')?.focus());
 }
 function closeQuickAdd(){
+  if(qaBusy)return;
   quickAddBackdrop.classList.remove("show");
   document.body.classList.remove("qa-open");
-  quickAddBackdrop.innerHTML="";
+  quickAddButton.focus();
 }
 
 async function compressImageFile(file, maxDim=2000, maxBytes=4*1024*1024){
@@ -1685,6 +1734,7 @@ async function compressImageFile(file, maxDim=2000, maxBytes=4*1024*1024){
   const canvas=document.createElement("canvas");
   canvas.width=w;canvas.height=h;
   canvas.getContext("2d").drawImage(bitmap,0,0,w,h);
+  bitmap.close();
   let quality=0.85,blob;
   for(let i=0;i<6;i++){
     blob=await new Promise(res=>canvas.toBlob(res,"image/jpeg",quality));
@@ -1697,12 +1747,15 @@ async function compressImageFile(file, maxDim=2000, maxBytes=4*1024*1024){
 quickAddButton.addEventListener("click",openQuickAdd);
 
 quickAddBackdrop.addEventListener("click",e=>{
+  if(qaBusy)return;
+  const tag=e.target.closest("[data-qa-dismiss-tag]");
+  if(tag){qaExcludedTags.add(tag.dataset.qaDismissTag);updateQuickAddTags();return}
   if(e.target===quickAddBackdrop)closeQuickAdd();
   if(e.target.closest("[data-qa-close]"))closeQuickAdd();
 
   const removeBtn=e.target.closest("[data-qa-remove-image]");
   if(removeBtn){
-    quickAddImages.splice(Number(removeBtn.dataset.qaRemoveImage),1);
+    URL.revokeObjectURL(quickAddImages.splice(Number(removeBtn.dataset.qaRemoveImage),1)[0].url);
     renderQuickAddImages();
     return;
   }
@@ -1733,6 +1786,7 @@ quickAddBackdrop.addEventListener("click",e=>{
 });
 
 quickAddBackdrop.addEventListener("input",e=>{
+  updateQuickAddTags();
   if(e.target.matches("[data-qa-tags]")){
     const box=e.target.closest(".qa-tag-box"),suggest=box.querySelector(".qa-tag-suggest");
     const frag=e.target.value.split(",").pop().trim().toLowerCase();
@@ -1761,9 +1815,12 @@ quickAddBackdrop.addEventListener("input",e=>{
 quickAddBackdrop.addEventListener("change",async e=>{
   if(e.target.matches("[data-qa-type-select]")){
     quickAddType=e.target.value;
-    quickAddImages=[];
+    const previous=Object.fromEntries(new FormData(quickAddBackdrop.querySelector("form")));
     quickAddBackdrop.querySelector(".qa-fields").innerHTML=quickAddFields(quickAddType);
+    quickAddBackdrop.querySelectorAll('input[type="text"],textarea,input[type="date"]').forEach(el=>{if(previous[el.name])el.value=previous[el.name]});
     setupQuickAddFieldExtras(quickAddBackdrop);
+    renderQuickAddImages();
+    updateQuickAddTags();
     return;
   }
   if(e.target.name==="status"){
@@ -1775,9 +1832,12 @@ quickAddBackdrop.addEventListener("change",async e=>{
     // A native file input's own file list always replaces, it can't
     // append, so a second pick (multi-photo types) is merged in here
     // rather than losing whatever was already chosen.
+    qaBusy=true;
+    quickAddBackdrop.querySelector(".qa-submit").disabled=true;
+    quickAddBackdrop.querySelector(".qa-type-select").disabled=true;
     const files=[...e.target.files];
     const isSingle=!e.target.multiple;
-    if(isSingle)quickAddImages=[];
+    if(isSingle){quickAddImages.forEach(img=>URL.revokeObjectURL(img.url));quickAddImages=[];}
     const room=isSingle?1:Math.max(0,6-quickAddImages.length);
     for(const file of files.slice(0,room)){
       try{
@@ -1788,25 +1848,32 @@ quickAddBackdrop.addEventListener("change",async e=>{
     if(files.length>room)toast("Up to 6 photos at a time");
     e.target.value="";
     renderQuickAddImages();
+    qaBusy=false;
+    quickAddBackdrop.querySelector(".qa-submit").disabled=false;
+    quickAddBackdrop.querySelector(".qa-type-select").disabled=false;
   }
 });
 
 quickAddBackdrop.addEventListener("submit",async e=>{
   e.preventDefault();
+  if(qaBusy)return;
+  updateQuickAddTags();
+  qaBusy=true;
   const form=e.target;
   const submitBtn=quickAddBackdrop.querySelector(".qa-submit");
   const errorEl=quickAddBackdrop.querySelector(".qa-error");
   errorEl.hidden=true;
   submitBtn.disabled=true;
-  submitBtn.textContent="Adding…";
+  submitBtn.textContent="Saving…";
   try{
     const data=Object.fromEntries(new FormData(form).entries());
     delete data.image;
+    quickAddBackdrop.querySelectorAll("input,textarea,select,button").forEach(el=>el.disabled=true);
     if(data.endTime&&data.endTime.trim()){
       data.startTime=`${(data.startTime||"").trim()}${data.startTime&&data.startTime.trim()?" – ":""}${data.endTime.trim()}`;
     }
     delete data.endTime;
-    if(quickAddImages.length){
+    if(quickAddImages.length&&form.querySelector('[name="image"]')){
       const urls=[];
       for(const img of quickAddImages){
         const filename=`quickadd-${Date.now()}-${urls.length}.jpg`;
@@ -1822,7 +1889,11 @@ quickAddBackdrop.addEventListener("submit",async e=>{
     const res=await fetch("/api/content/create",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:quickAddType,...data})});
     const json=await res.json();
     if(!res.ok||json.error)throw new Error(json.error||"Could not save that");
+    qaBusy=false;
     closeQuickAdd();
+    quickAddImages.forEach(img=>URL.revokeObjectURL(img.url));
+    quickAddImages=[];
+    quickAddBackdrop.innerHTML="";
     toast("Added, it'll appear once the site rebuilds");
   }catch(error){
     errorEl.textContent=error.message||"Something went wrong";
@@ -1830,8 +1901,10 @@ quickAddBackdrop.addEventListener("submit",async e=>{
     errorEl.scrollIntoView({block:"nearest",behavior:"smooth"});
     toast(errorEl.textContent);
   }finally{
+    qaBusy=false;
+    quickAddBackdrop.querySelectorAll("input,textarea,select,button").forEach(el=>el.disabled=false);
     submitBtn.disabled=false;
-    submitBtn.textContent="Add";
+    submitBtn.textContent="Save entry";
   }
 });
 

@@ -6,7 +6,7 @@ const root = new URL("../", import.meta.url);
 const files = name => fs.readFileSync(process.env.NOTED_BUILD_DIR&&["app.js","data.js","backend.js"].includes(name)?new URL(process.env.NOTED_BUILD_DIR+"/"+name,root):new URL(name, root), "utf8");
 const elements = new Map();
 function element(id) {
-  if (!elements.has(id)) elements.set(id, { id, innerHTML:"", textContent:"", classList:{add(){},remove(){},toggle(){}}, focus(){}, querySelector(){return null} });
+  if (!elements.has(id)) elements.set(id, { id, setAttribute(){}, innerHTML:"", textContent:"", classList:{add(){},remove(){},toggle(){},contains(){return false}}, focus(){}, querySelector(){return null} });
   return elements.get(id);
 }
 const document = {
@@ -16,7 +16,7 @@ const document = {
   querySelectorAll(){return []},
   querySelector(){return null},
   addEventListener(){},
-  createElement(){return {click(){},style:{},setAttribute(){},removeAttribute(){},appendChild(){},remove(){},classList:{add(){},remove(){},toggle(){}}}}
+  createElement(){return {addEventListener(){},click(){},style:{},setAttribute(){},removeAttribute(){},appendChild(){},remove(){},classList:{add(){},remove(){},toggle(){}}}}
 };
 const localStorage = { values:new Map(), getItem(key){return this.values.get(key)||null}, setItem(key,value){this.values.set(key,value)} };
 const window = { NOTED_CONFIG:{supabaseUrl:"",supabaseAnonKey:"",allowSignUp:true}, addEventListener(){}, removeEventListener(){}, location:null };
