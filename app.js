@@ -1545,22 +1545,30 @@ function knownTags(){
   return [...new Set([...QUICK_ADD_KNOWN_TAGS, ...fromData])].sort();
 }
 
+// A compact header shared by every type that carries a photo: a square
+// thumbnail/upload button on the left, title (and a second field, date or
+// nothing) stacked to its right. Keeps the modal from opening on a bare
+// title field with the photo buried further down.
+function qaHeaderRow(imageLabel,titlePlaceholder,secondField){
+  return `<div class="qa-header-row">
+    <button type="button" class="qa-thumb" data-qa-image-trigger aria-label="${esc(imageLabel)}">${icon("photos")}</button>
+    <input type="file" name="image" accept="image/*" hidden>
+    <div class="qa-header-fields">
+      <input type="text" name="title" placeholder="${esc(titlePlaceholder)}" required autofocus>
+      ${secondField||""}
+    </div>
+  </div>
+  <div class="qa-image-preview" hidden><img alt=""><button type="button" data-qa-remove-image aria-label="Remove photo">×</button></div>`;
+}
+
 function quickAddFields(type){
   const common = `<label>Tags<span class="qa-tag-box"><input type="text" name="tags" placeholder="family, gardening" autocomplete="off" data-qa-tags><span class="qa-tag-suggest" hidden></span></span></label>`;
-  const imagePicker = `<label class="qa-image-label">Photo (optional)</label>
-    <div class="qa-image-picker">
-      <button type="button" class="qa-image-trigger" data-qa-image-trigger>${icon("photos")}<span>Choose a photo</span></button>
-      <input type="file" name="image" accept="image/*" hidden>
-      <div class="qa-image-preview" hidden><img alt=""><button type="button" data-qa-remove-image aria-label="Remove photo">×</button></div>
-    </div>`;
   const counted = (name,label,rows,placeholder) => `<label>${label}<textarea name="${name}" rows="${rows}" placeholder="${placeholder||""}" data-qa-count></textarea></label><div class="qa-counter" data-qa-counter-for="${name}">0 characters</div>`;
   switch(type){
     case "journal":
     case "note":
-      return `<label>Title<input type="text" name="title" required autofocus></label>
-        <label>Date<input type="date" name="date" data-qa-today></label>
+      return `${qaHeaderRow("Add a photo","Title",`<input type="date" name="date" data-qa-today>`)}
         ${common}
-        ${imagePicker}
         ${counted("body","Write",6,"What happened…")}`;
     case "task":
       return `<label>Title<input type="text" name="title" required autofocus></label>
@@ -1574,7 +1582,7 @@ function quickAddFields(type){
         <label class="qa-book-page" hidden>Page<input type="number" name="page" min="0"></label>
         ${common}`;
     case "reading":
-      return `<label>Title<input type="text" name="title" required autofocus></label>
+      return `${qaHeaderRow("Add a cover","Title")}
         <label>Author<input type="text" name="author"></label>
         <label>Status
           <select name="status">
@@ -1584,20 +1592,16 @@ function quickAddFields(type){
           </select>
         </label>
         <label class="qa-progress" hidden>Progress %<input type="number" name="progress" min="0" max="100"></label>
-        ${imagePicker.replace("Photo (optional)","Cover (optional)")}
         ${common}`;
     case "event":
-      return `<label>Title<input type="text" name="title" required autofocus></label>
-        <label>Date<input type="date" name="date" data-qa-today></label>
+      return `${qaHeaderRow("Add a photo","Title",`<input type="date" name="date" data-qa-today>`)}
         <div class="qa-row"><label>Starts<input type="text" name="startTime" placeholder="From 1pm"></label><label>Ends (optional)<input type="text" name="endTime" placeholder="4pm"></label></div>
         ${common}
-        ${imagePicker}
         <label>Notes<textarea name="body" rows="4"></textarea></label>`;
     case "recipe":
-      return `<label>Title<input type="text" name="title" required autofocus></label>
+      return `${qaHeaderRow("Add a photo","Title")}
         <div class="qa-row"><label>Time<input type="text" name="time" placeholder="30 mins"></label><label>Serves<input type="text" name="serves" placeholder="4"></label><label>Difficulty<input type="text" name="difficulty" placeholder="easy"></label></div>
         ${common}
-        ${imagePicker}
         <label>You'll need, one per line<textarea name="ingredients" rows="5" placeholder="200g flour"></textarea></label>
         <label>Method, one step per line<textarea name="method" rows="5"></textarea></label>`;
     default:
@@ -1618,8 +1622,11 @@ function setupQuickAddFieldExtras(container){
 
 function quickAddModalHtml(){
   return `<div class="qa-sheet" role="dialog" aria-modal="true" aria-label="Add to noted">
-    <div class="qa-head"><h2>Add</h2><button type="button" data-qa-close aria-label="Close">×</button></div>
-    <div class="qa-types">${QUICK_ADD_TYPES.map((t,i)=>`<button type="button" class="qa-type${i===0?" active":""}" data-qa-type="${t.id}">${t.label}</button>`).join("")}</div>
+    <div class="qa-head">
+      <h2>Add</h2>
+      <select class="qa-type-select" data-qa-type-select aria-label="What to add">${QUICK_ADD_TYPES.map(t=>`<option value="${t.id}">${t.label}</option>`).join("")}</select>
+      <button type="button" data-qa-close aria-label="Close">×</button>
+    </div>
     <form id="qa-form">
       <div class="qa-fields">${quickAddFields(QUICK_ADD_TYPES[0].id)}</div>
       <div class="qa-error" hidden></div>
@@ -1682,16 +1689,6 @@ quickAddBackdrop.addEventListener("click",e=>{
   if(e.target===quickAddBackdrop)closeQuickAdd();
   if(e.target.closest("[data-qa-close]"))closeQuickAdd();
 
-  const typeBtn=e.target.closest("[data-qa-type]");
-  if(typeBtn){
-    quickAddType=typeBtn.dataset.qaType;
-    quickAddImageBlob=null;
-    quickAddBackdrop.querySelectorAll(".qa-type").forEach(b=>b.classList.toggle("active",b===typeBtn));
-    quickAddBackdrop.querySelector(".qa-fields").innerHTML=quickAddFields(quickAddType);
-    setupQuickAddFieldExtras(quickAddBackdrop);
-    return;
-  }
-
   if(e.target.closest("[data-qa-remove-image]")){
     quickAddImageBlob=null;
     const preview=quickAddBackdrop.querySelector(".qa-image-preview");
@@ -1753,6 +1750,13 @@ quickAddBackdrop.addEventListener("input",e=>{
 });
 
 quickAddBackdrop.addEventListener("change",async e=>{
+  if(e.target.matches("[data-qa-type-select]")){
+    quickAddType=e.target.value;
+    quickAddImageBlob=null;
+    quickAddBackdrop.querySelector(".qa-fields").innerHTML=quickAddFields(quickAddType);
+    setupQuickAddFieldExtras(quickAddBackdrop);
+    return;
+  }
   if(e.target.name==="status"){
     const progress=quickAddBackdrop.querySelector(".qa-progress");
     if(progress)progress.hidden=e.target.value!=="reading";
