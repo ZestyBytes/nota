@@ -192,7 +192,7 @@ function rootTopic(id){
   }
   return current||"life";
 }
-function icon(name){const paths={leaf:'<path d="M20.4 3.6c-9.4 0-14.8 4.3-14.8 10.5a4.7 4.7 0 0 0 4.7 4.7c6.7 0 10.1-6.5 10.1-15.2Z"/><path d="M4.2 20.4c2.5-5.8 6.7-9.9 12.5-12.6"/>',music:'<path d="M9 18V5l10-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/>',terminal:'<path d="M4.6 5.2h14.8a1.8 1.8 0 0 1 1.8 1.8v10a1.8 1.8 0 0 1-1.8 1.8H4.6a1.8 1.8 0 0 1-1.8-1.8V7a1.8 1.8 0 0 1 1.8-1.8Z"/><path d="M7.4 9.6l2.9 2.4-2.9 2.4M13.2 14.4h4.2"/>',mind:'<path d="M12 21s-8-4.5-8-11a4 4 0 0 1 7-2.6A4 4 0 0 1 20 10c0 6.5-8 11-8 11Z"/><path d="M7 13h3l1.5-3 2 6 1.5-3h3"/>',book:'<path d="M4 5a3 3 0 0 1 3-3h12v18H7a3 3 0 0 1 0-6h12"/>',home:'<path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10M9 20v-6h6v6"/>',fork:'<path d="M7 3v7m-3-7v4a3 3 0 0 0 6 0V3M7 10v11M17 3v18m0-18c3 3 3 8 0 10"/>',paperclip:'<path d="m21 11-8.5 8.5a6 6 0 0 1-8.5-8.5l9-9a4 4 0 0 1 5.7 5.7l-9 9a2 2 0 0 1-2.9-2.9L15 5.6"/>',quote:'<path d="M9 11H5a4 4 0 0 1 4-4v8a4 4 0 0 1-4 4M19 11h-4a4 4 0 0 1 4-4v8a4 4 0 0 1-4 4"/>',note:'<path d="M4 3h16v18H4zM8 8h8M8 12h8M8 16h5"/>',check:'<path d="m5 12 5 5 9-9"/>',photos:'<rect x="7" y="3" width="14" height="14" rx="1.5"/><path d="M17 21H4.5A1.5 1.5 0 0 1 3 19.5V7"/>',car:'<path d="M3.6 15.8v-2.2l1.9-4.5A2.3 2.3 0 0 1 7.6 7.7h8.8a2.3 2.3 0 0 1 2.1 1.4l1.9 4.5v2.2Z"/><path d="M4.4 13.6h15.2M9.5 7.9v5.7M14.5 7.9v5.7"/><path d="M9.1 16.3a2.05 2.05 0 1 1-4.1 0 2.05 2.05 0 0 1 4.1 0ZM19 16.3a2.05 2.05 0 1 1-4.1 0 2.05 2.05 0 0 1 4.1 0Z"/>',disc:'<path d="M20.7 12a8.7 8.7 0 1 1-17.4 0 8.7 8.7 0 0 1 17.4 0ZM14.4 12a2.4 2.4 0 1 1-4.8 0 2.4 2.4 0 0 1 4.8 0Z"/><path d="M17.6 12A5.6 5.6 0 0 0 12 6.4"/>',repeat:'<path d="M4 9.6A4.6 4.6 0 0 1 8.6 5h9"/><path d="m14.8 2.4 2.9 2.6-2.9 2.6"/><path d="M20 14.4A4.6 4.6 0 0 1 15.4 19h-9"/><path d="m9.2 16.4-2.9 2.6 2.9 2.6"/>',heart:'<path d="M12 20.3s-7.6-4.4-7.6-10a4.2 4.2 0 0 1 7.6-2.6 4.2 4.2 0 0 1 7.6 2.6c0 5.6-7.6 10-7.6 10Z"/>',weights:'<path d="M3.4 9.6v4.8M6.6 7.2v9.6M17.4 7.2v9.6M20.6 9.6v4.8M6.6 12h10.8"/>',cup:'<path d="M5 8.4h11v5.8a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4Z"/><path d="M16 9.8h2.2a2.3 2.3 0 0 1 0 4.6H16"/><path d="M7.6 4.4v1.9M11 3.9v2.4M14.4 4.4v1.9"/>',alert:'<path d="M12 3.6 21 19H3Z"/><path d="M12 9.6v4.2"/><path d="M12 16.6h.01"/>',mist:'<path d="M5 6.5h9M16.5 6.5h2.5M5 10.5h4M11 10.5h8"/><path d="M9.2 16.4a2.8 2.8 0 1 1-5.6 0c0-1.7 2.8-4.4 2.8-4.4s2.8 2.7 2.8 4.4Z"/><path d="M20.4 17.6a2.8 2.8 0 1 1-5.6 0c0-1.7 2.8-4.4 2.8-4.4s2.8 2.7 2.8 4.4Z"/>',feed:'<path d="M10 2.8h4v3.4l2.6 3.4v9.6a2 2 0 0 1-2 2H9.4a2 2 0 0 1-2-2V9.6L10 6.2Z"/><path d="M7.4 14h9.2"/>',soil:'<path d="M3.4 13.6h17.2l-1.5 6.2a1.8 1.8 0 0 1-1.8 1.4H6.7a1.8 1.8 0 0 1-1.8-1.4Z"/><path d="M12 13.6V8.4"/><path d="M12 9.2c0-2.6 1.8-4.6 4.6-4.6 0 2.8-2 4.6-4.6 4.6Z"/><path d="M12 10.6C9.7 10.6 8 9 8 6.7c2.3 0 4 1.6 4 3.9Z"/>',paw:'<path d="M12 13.4c2.6 0 4.6 1.7 4.6 3.7 0 1.6-1.2 2.5-2.6 2.5-.9 0-1.4-.4-2-.4s-1.1.4-2 .4c-1.4 0-2.6-.9-2.6-2.5 0-2 2-3.7 4.6-3.7Z"/><ellipse cx="6.6" cy="11" rx="1.8" ry="2.2"/><ellipse cx="17.4" cy="11" rx="1.8" ry="2.2"/><ellipse cx="9.8" cy="6.9" rx="1.7" ry="2.1"/><ellipse cx="14.2" cy="6.9" rx="1.7" ry="2.1"/>',plant:'<path d="M12 21v-8"/><path d="M12 13c0-3.6 2.5-6.4 6.4-6.4 0 3.9-2.8 6.4-6.4 6.4Z"/><path d="M12 15c-3.3 0-5.6-2.3-5.6-5.6C9.7 9.4 12 11.7 12 15Z"/><path d="M7.6 17h8.8l-.9 4H8.5Z"/>',sun:'<circle cx="12" cy="12" r="4.2"/><path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M18.5 5.5l-1.7 1.7M7.2 16.8l-1.7 1.7"/>',drop:'<path d="M12 3.2s6 6.3 6 10.1a6 6 0 0 1-12 0c0-3.8 6-10.1 6-10.1Z"/>',help:'<circle cx="12" cy="12" r="8.6"/><path d="M9.6 9.6a2.5 2.5 0 0 1 4.8.8c0 1.7-2.4 1.9-2.4 3.4"/><path d="M12 17.2h.01"/>'};return `<svg class="line-icon" viewBox="0 0 24 24" aria-hidden="true">${paths[name]||paths.note}</svg>`}
+function icon(name){const paths={leaf:'<path d="M20.4 3.6c-9.4 0-14.8 4.3-14.8 10.5a4.7 4.7 0 0 0 4.7 4.7c6.7 0 10.1-6.5 10.1-15.2Z"/><path d="M4.2 20.4c2.5-5.8 6.7-9.9 12.5-12.6"/>',music:'<path d="M9 18V5l10-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/>',terminal:'<path d="M4.6 5.2h14.8a1.8 1.8 0 0 1 1.8 1.8v10a1.8 1.8 0 0 1-1.8 1.8H4.6a1.8 1.8 0 0 1-1.8-1.8V7a1.8 1.8 0 0 1 1.8-1.8Z"/><path d="M7.4 9.6l2.9 2.4-2.9 2.4M13.2 14.4h4.2"/>',mind:'<path d="M12 21s-8-4.5-8-11a4 4 0 0 1 7-2.6A4 4 0 0 1 20 10c0 6.5-8 11-8 11Z"/><path d="M7 13h3l1.5-3 2 6 1.5-3h3"/>',book:'<path d="M4 5a3 3 0 0 1 3-3h12v18H7a3 3 0 0 1 0-6h12"/>',home:'<path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10M9 20v-6h6v6"/>',fork:'<path d="M7 3v7m-3-7v4a3 3 0 0 0 6 0V3M7 10v11M17 3v18m0-18c3 3 3 8 0 10"/>',paperclip:'<path d="m21 11-8.5 8.5a6 6 0 0 1-8.5-8.5l9-9a4 4 0 0 1 5.7 5.7l-9 9a2 2 0 0 1-2.9-2.9L15 5.6"/>',quote:'<path d="M9 11H5a4 4 0 0 1 4-4v8a4 4 0 0 1-4 4M19 11h-4a4 4 0 0 1 4-4v8a4 4 0 0 1-4 4"/>',note:'<path d="M4 3h16v18H4zM8 8h8M8 12h8M8 16h5"/>',check:'<path d="m5 12 5 5 9-9"/>',photos:'<rect x="7" y="3" width="14" height="14" rx="1.5"/><path d="M17 21H4.5A1.5 1.5 0 0 1 3 19.5V7"/>',car:'<path d="M3.6 15.8v-2.2l1.9-4.5A2.3 2.3 0 0 1 7.6 7.7h8.8a2.3 2.3 0 0 1 2.1 1.4l1.9 4.5v2.2Z"/><path d="M4.4 13.6h15.2M9.5 7.9v5.7M14.5 7.9v5.7"/><path d="M9.1 16.3a2.05 2.05 0 1 1-4.1 0 2.05 2.05 0 0 1 4.1 0ZM19 16.3a2.05 2.05 0 1 1-4.1 0 2.05 2.05 0 0 1 4.1 0Z"/>',disc:'<path d="M20.7 12a8.7 8.7 0 1 1-17.4 0 8.7 8.7 0 0 1 17.4 0ZM14.4 12a2.4 2.4 0 1 1-4.8 0 2.4 2.4 0 0 1 4.8 0Z"/><path d="M17.6 12A5.6 5.6 0 0 0 12 6.4"/>',repeat:'<path d="M4 9.6A4.6 4.6 0 0 1 8.6 5h9"/><path d="m14.8 2.4 2.9 2.6-2.9 2.6"/><path d="M20 14.4A4.6 4.6 0 0 1 15.4 19h-9"/><path d="m9.2 16.4-2.9 2.6 2.9 2.6"/>',heart:'<path d="M12 20.3s-7.6-4.4-7.6-10a4.2 4.2 0 0 1 7.6-2.6 4.2 4.2 0 0 1 7.6 2.6c0 5.6-7.6 10-7.6 10Z"/>',weights:'<path d="M3.4 9.6v4.8M6.6 7.2v9.6M17.4 7.2v9.6M20.6 9.6v4.8M6.6 12h10.8"/>',cup:'<path d="M5 8.4h11v5.8a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4Z"/><path d="M16 9.8h2.2a2.3 2.3 0 0 1 0 4.6H16"/><path d="M7.6 4.4v1.9M11 3.9v2.4M14.4 4.4v1.9"/>',alert:'<path d="M12 3.6 21 19H3Z"/><path d="M12 9.6v4.2"/><path d="M12 16.6h.01"/>',mist:'<path d="M5 6.5h9M16.5 6.5h2.5M5 10.5h4M11 10.5h8"/><path d="M9.2 16.4a2.8 2.8 0 1 1-5.6 0c0-1.7 2.8-4.4 2.8-4.4s2.8 2.7 2.8 4.4Z"/><path d="M20.4 17.6a2.8 2.8 0 1 1-5.6 0c0-1.7 2.8-4.4 2.8-4.4s2.8 2.7 2.8 4.4Z"/>',feed:'<path d="M10 2.8h4v3.4l2.6 3.4v9.6a2 2 0 0 1-2 2H9.4a2 2 0 0 1-2-2V9.6L10 6.2Z"/><path d="M7.4 14h9.2"/>',soil:'<path d="M3.4 13.6h17.2l-1.5 6.2a1.8 1.8 0 0 1-1.8 1.4H6.7a1.8 1.8 0 0 1-1.8-1.4Z"/><path d="M12 13.6V8.4"/><path d="M12 9.2c0-2.6 1.8-4.6 4.6-4.6 0 2.8-2 4.6-4.6 4.6Z"/><path d="M12 10.6C9.7 10.6 8 9 8 6.7c2.3 0 4 1.6 4 3.9Z"/>',paw:'<path d="M12 13.4c2.6 0 4.6 1.7 4.6 3.7 0 1.6-1.2 2.5-2.6 2.5-.9 0-1.4-.4-2-.4s-1.1.4-2 .4c-1.4 0-2.6-.9-2.6-2.5 0-2 2-3.7 4.6-3.7Z"/><ellipse cx="6.6" cy="11" rx="1.8" ry="2.2"/><ellipse cx="17.4" cy="11" rx="1.8" ry="2.2"/><ellipse cx="9.8" cy="6.9" rx="1.7" ry="2.1"/><ellipse cx="14.2" cy="6.9" rx="1.7" ry="2.1"/>',plant:'<path d="M12 21v-8"/><path d="M12 13c0-3.6 2.5-6.4 6.4-6.4 0 3.9-2.8 6.4-6.4 6.4Z"/><path d="M12 15c-3.3 0-5.6-2.3-5.6-5.6C9.7 9.4 12 11.7 12 15Z"/><path d="M7.6 17h8.8l-.9 4H8.5Z"/>',sun:'<circle cx="12" cy="12" r="4.2"/><path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M18.5 5.5l-1.7 1.7M7.2 16.8l-1.7 1.7"/>',drop:'<path d="M12 3.2s6 6.3 6 10.1a6 6 0 0 1-12 0c0-3.8 6-10.1 6-10.1Z"/>',help:'<circle cx="12" cy="12" r="8.6"/><path d="M9.6 9.6a2.5 2.5 0 0 1 4.8.8c0 1.7-2.4 1.9-2.4 3.4"/><path d="M12 17.2h.01"/>',bell:'<path d="M12 3a5 5 0 0 0-5 5v3.2c0 .8-.3 1.6-.9 2.2L5 14.8V16h14v-1.2l-1.1-1.4a3 3 0 0 1-.9-2.2V8a5 5 0 0 0-5-5Z"/><path d="M9.5 18.5a2.5 2.5 0 0 0 5 0"/>'};return `<svg class="line-icon" viewBox="0 0 24 24" aria-hidden="true">${paths[name]||paths.note}</svg>`}
 function chips(ids=[]){return ids.map(id=>{const t=topic(id);return `<span class="chip" style="--topic:${t.color};--soft:${t.soft}">${esc(t.name)}</span>`}).join("")}
 // Specimen-label date: 01 SEP 2026. The card had no date at all before.
 const MONTHS=["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
@@ -617,7 +617,52 @@ function homeLatest(items){
   return `<div class="latest-rail" role="region" aria-label="Latest entries, scroll horizontally" tabindex="0">${items.map((e,i)=>`<a class="latest-card" href="#entry/${encodeURIComponent(e.id)}" data-entry="${esc(e.id)}"><div class="latest-copy"><span class="latest-meta">${esc(fmtDate(e.occurredAt||e.createdAt))} · ${esc(topic(e.topics?.[0]).name)}</span><h3>${esc(e.title)}</h3>${e.excerpt?`<p>${esc(e.excerpt)}</p>`:""}<span class="latest-open">Read entry →</span></div>${e.image?`<img src="${esc(e.image)}" alt="${esc(e.imageAlt||"")}" loading="${i===0?"eager":"lazy"}" decoding="async">`:""}</a>`).join("")}</div>`;
 }
 function homeTaskRow(t){const due=t.dueAt?`${t.dueAt<todayKey?"Overdue · ":t.dueAt===todayKey?"Today · ":"Due · "}${fmtDate(t.dueAt)}`:"No date set";const href=t.note?'#entry/'+encodeURIComponent(t.id):'#tasks';return `<div class="home-task-row ${t.dueAt&&t.dueAt<todayKey?"is-overdue":""}"><button type="button" class="task-mark" data-toggle-task="${esc(t.id)}" aria-label="Mark done">${""}</button><a href="${href}" ${t.note?`data-entry="${esc(t.id)}"`:""}><span><b>${esc(t.title)}</b><small>${esc(due)}</small></span><span aria-hidden="true">→</span></a></div>`}
-function homeTasks(waiting){if(!waiting.length)return "";const shown=waiting.slice(0,10);return `<section class="home-tasks"><div class="home-latest-head"><h2 class="section-title">To-do</h2><a href="#tasks">${waiting.length} waiting →</a></div><div class="home-task-list${shown.length>3?" home-task-scroll":""}" id="home-task-scroll">${shown.map(homeTaskRow).join("")}</div>${waiting.length>shown.length?`<a class="home-more" href="#tasks">${waiting.length-shown.length} more in the list →</a>`:""}</section>`}
+function homeTasks(waiting){if(!waiting.length)return "";const shown=waiting.slice(0,10);return `<section class="home-tasks"><div class="home-latest-head"><h2 class="section-title">To-do</h2><button type="button" class="push-toggle" id="push-toggle" data-action="toggle-push" aria-pressed="false" aria-label="Turn on daily reminders">${icon("bell")}</button><a href="#tasks">${waiting.length} waiting →</a></div><div class="home-task-list${shown.length>3?" home-task-scroll":""}" id="home-task-scroll">${shown.map(homeTaskRow).join("")}</div>${waiting.length>shown.length?`<a class="home-more" href="#tasks">${waiting.length-shown.length} more in the list →</a>`:""}</section>`}
+
+// --- Push notifications --------------------------------------------------
+// Twice-daily summaries sent by the Worker's Cron Trigger. Subscribing is
+// opt-in per device: the browser asks permission, and the subscription
+// (endpoint + keys, no personal data) is handed to the Worker to store.
+function urlBase64ToUint8Array(base64){
+  const padding="=".repeat((4-base64.length%4)%4);
+  const base64Safe=(base64+padding).replace(/-/g,"+").replace(/_/g,"/");
+  const raw=atob(base64Safe);
+  return Uint8Array.from(raw,c=>c.charCodeAt(0));
+}
+async function pushSupported(){return "serviceWorker" in navigator && "PushManager" in window}
+async function currentPushSubscription(){
+  if(!await pushSupported())return null;
+  try{const reg=await navigator.serviceWorker.ready;return await reg.pushManager.getSubscription()}catch{return null}
+}
+async function subscribePush(){
+  if(!await pushSupported()){toast("Notifications are not supported on this device");return false}
+  const permission=await Notification.requestPermission();
+  if(permission!=="granted"){toast("Notifications were blocked");return false}
+  try{
+    const reg=await navigator.serviceWorker.ready;
+    const {key}=await(await fetch("/api/push/public-key")).json();
+    const sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:urlBase64ToUint8Array(key)});
+    await fetch("/api/push/subscribe",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(sub.toJSON())});
+    toast("Daily reminders on");
+    return true;
+  }catch(error){toast("Could not turn on reminders");return false}
+}
+async function unsubscribePush(){
+  try{
+    const sub=await currentPushSubscription();
+    if(sub)await sub.unsubscribe();
+    await fetch("/api/push/unsubscribe",{method:"POST"});
+    toast("Daily reminders off");
+  }catch(error){toast("Could not turn off reminders")}
+}
+async function syncPushButton(){
+  const btn=document.getElementById("push-toggle");
+  if(!btn)return;
+  const sub=await currentPushSubscription();
+  btn.classList.toggle("active",!!sub);
+  btn.setAttribute("aria-pressed",sub?"true":"false");
+  btn.setAttribute("aria-label",sub?"Turn off daily reminders":"Turn on daily reminders");
+}
 function today(){
   // Home is a reading surface, not a log of every object in the archive.
   // Journeys have their progress strip below, tasks have their own list, and
@@ -1344,6 +1389,7 @@ function afterRender(route){
   setupClawGames();
   syncReadingProgress();
   setupHomeTaskScroll();
+  syncPushButton();
   if(route==="search")requestAnimationFrame(()=>document.querySelector(".search-box")?.focus({preventScroll:true}));
 }
 let homeTaskScrollTimer=null;
@@ -1500,6 +1546,7 @@ document.addEventListener("click",async e=>{
   if(nav&&nav.getAttribute("href")===(location.hash||"#today")){e.preventDefault();window.scrollTo({top:0,behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});return}
   const action=e.target.closest("[data-action]")?.dataset.action;
   if(action==="logout"){await NotedBackend.signOut();state.user=null;render()}
+  if(action==="toggle-push"){const sub=await currentPushSubscription();if(sub)await unsubscribePush();else await subscribePush();syncPushButton();return}
   const taskMark=e.target.closest("[data-toggle-task]");
   if(taskMark){e.preventDefault();e.stopPropagation();const id=taskMark.dataset.toggleTask,task=state.data?.tasks?.find(x=>x.id===id);toggleTask(id,!!task?.completedAt,taskMark);return}
   const close=e.target.closest("[data-close]");if(close&&e.target===close)closeModal();

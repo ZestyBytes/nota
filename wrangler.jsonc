@@ -12,10 +12,8 @@
   // either side of the clocks changing (BST/GMT) until nudged manually.
   "triggers": {
     "crons": ["0 7 * * *", "0 19 * * *"]
-  }
-  // PUSH_KV (KV namespace binding, id "nota-push") is currently set only
-  // in the Cloudflare dashboard. Wrangler treats this file as the source
-  // of truth for bindings on each deploy, so until the namespace id is
-  // added here as a "kv_namespaces" entry, a future deploy could drop
-  // that binding. Pending the id from the dashboard.
+  },
+  "kv_namespaces": [
+    { "binding": "PUSH_KV", "id": "cad276b2afb74b84a9cdfa77c9dda845" }
+  ]
 }

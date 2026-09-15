@@ -2452,6 +2452,9 @@ aside .section-title{display:flex;align-items:baseline;}
 .home-task-row.done b{text-decoration:line-through;color:var(--faint);}
 .home-task-row.done small{color:var(--faint);}
 .home-more{display:block;padding:12px 0;font:10px var(--mono);color:var(--muted);}
+.push-toggle{margin-left:auto;margin-right:4px;flex:none;width:30px;height:30px;display:grid;place-items:center;border-radius:50%;border:1px solid var(--line);background:none;color:var(--muted);cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.push-toggle .line-icon{width:15px;height:15px;}
+.push-toggle.active{background:var(--ink);border-color:var(--ink);color:var(--paper);}
 .home-progress{margin:0 0 24px;}
 .journey-line{grid-template-columns:minmax(0,1fr) auto;padding:12px 0 12px 10px;row-gap:6px;}
 .journey-line b{white-space:normal;font-size:16px;}

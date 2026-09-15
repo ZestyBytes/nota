@@ -117,3 +117,25 @@ self.addEventListener("fetch",event=>{
 async function packMatch(request){
   for(const name of (await caches.keys()).filter(n=>n.startsWith("noted-pack-"))){const cache=await caches.open(name);if(!await cache.match(new URL("offline-pack.json",self.registration.scope).href))continue;const hit=await cache.match(request,{ignoreSearch:true});if(hit)return hit}
 }
+
+// Twice-daily summaries pushed by the Worker's Cron Trigger. The payload
+// is plain JSON: { title, body, url }.
+self.addEventListener("push",event=>{
+  let data={title:"noted.",body:"You have an update."};
+  try{if(event.data)data={...data,...event.data.json()}}catch(error){/* keep the fallback */}
+  event.waitUntil(self.registration.showNotification(data.title,{
+    body:data.body,
+    icon:"icon.svg",
+    badge:"icon.svg",
+    data:{url:data.url||"./"}
+  }));
+});
+self.addEventListener("notificationclick",event=>{
+  event.notification.close();
+  const url=new URL(event.notification.data?.url||"./",self.registration.scope).href;
+  event.waitUntil(self.clients.matchAll({type:"window",includeUncontrolled:true}).then(clients=>{
+    const existing=clients.find(c=>c.url===url);
+    if(existing)return existing.focus();
+    return self.clients.openWindow(url);
+  }));
+});
