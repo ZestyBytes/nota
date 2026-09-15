@@ -1633,7 +1633,7 @@ function quickAddModalHtml(){
       <div class="qa-fields">${quickAddFields(QUICK_ADD_TYPES[0].id)}</div>
       <div class="qa-error" role="alert" hidden></div>
     </form>
-    <div class="qa-footer"><button type="button" class="qa-later" data-qa-close>Keep for later</button><button type="submit" form="qa-form" class="qa-submit">Save entry</button></div>
+    <div class="qa-footer"><button type="button" class="qa-later" data-qa-close>Keep for later</button><button type="submit" form="qa-form" class="qa-submit">Add</button></div>
   </div>`;
 }
 
@@ -1904,7 +1904,7 @@ quickAddBackdrop.addEventListener("submit",async e=>{
     qaBusy=false;
     quickAddBackdrop.querySelectorAll("input,textarea,select,button").forEach(el=>el.disabled=false);
     submitBtn.disabled=false;
-    submitBtn.textContent="Save entry";
+    submitBtn.textContent="Add";
   }
 });
 
