@@ -11,7 +11,7 @@ publishedAt: 2026-09-06
 publish: true
 ---
 
-![Banana bread cut into wedges on a board, with a buttered slice alongside](attachments/banana-bread.jpg)
+![Banana bread cut into wedges on a board, with a buttered slice alongside](/media/attachments/banana-bread.jpg)
 
 The one that gets made when the fruit bowl has gone too far. Five bananas is a
 lot, and that is the point: it bakes dense and damp rather than cakey, and it
