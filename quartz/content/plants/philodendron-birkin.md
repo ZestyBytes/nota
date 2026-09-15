@@ -19,7 +19,7 @@ publishedAt: "2026-09-04"
 publish: true
 ---
 
-![The Birkin, cream pinstripes across every leaf](plant-philodendron-birkin.jpg)
+![The Birkin, cream pinstripes across every leaf](/media/attachments/plant-philodendron-birkin.jpg)
 
 The showiest one in the house: dark leaves ruled with fine cream pinstripes, no two marked the same. It is a sport rather than a wild plant, so the variegation drifts, and every so often it throws a leaf that is nearly all cream or nearly all green.
 
