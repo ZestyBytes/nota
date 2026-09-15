@@ -12,7 +12,7 @@ publish: true
 First day back at school for Molly, going into year 4. Ruby moves up into the
 big room at nursery.
 
-![[IMG_5839.jpeg]]
+![](/media/attachments/IMG_5839.jpeg)
 
 Still not feeling great after surgery. The throbbing face ache continues.
 
