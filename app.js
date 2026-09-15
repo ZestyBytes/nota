@@ -1620,8 +1620,8 @@ function quickAddModalHtml(){
     <form id="qa-form">
       <div class="qa-fields">${quickAddFields(QUICK_ADD_TYPES[0].id)}</div>
       <div class="qa-error" hidden></div>
-      <button type="submit" class="qa-submit">Add</button>
     </form>
+    <button type="submit" form="qa-form" class="qa-submit">Add</button>
   </div>`;
 }
 
