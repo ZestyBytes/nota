@@ -8,7 +8,7 @@ publishedAt: "2026-09-04"
 publish: true
 ---
 
-![[plant-peace-lily.jpg]]
+![](/media/attachments/plant-peace-lily.jpg)
 
 All seven live in the office. It has no window: the light comes second hand, through the half glazed door into the utility, and it is daylight rather than sun.
 
