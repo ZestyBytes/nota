@@ -19,7 +19,7 @@ publishedAt: "2026-09-04"
 publish: true
 ---
 
-![The spider plant arching out of a grey pot](plant-spider-plant.jpg)
+![The spider plant arching out of a grey pot](/media/attachments/plant-spider-plant.jpg)
 
 The forgiving one. It will put up with a missed watering, a dark corner and a draught, and still throw out arching striped leaves. When it is happy it sends out long stems with baby plants on the end, which root in a glass of water in a fortnight.
 
