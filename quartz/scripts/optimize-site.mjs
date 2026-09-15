@@ -7,7 +7,10 @@ import {transform} from 'esbuild';
 const root=resolve(process.argv[2]||'dist');
 async function walk(dir){const result=[];for(const e of await readdir(dir,{withFileTypes:true})){const p=join(dir,e.name);result.push(...(e.isDirectory()?await walk(p):[p]))}return result}
 const files=await walk(root),replacements=new Map();let before=0,after=0,count=0;
-for(const path of files.filter(p=>/\.(png|jpe?g)$/i.test(p))){
+// App icons stay untouched: iOS refuses .webp for the home screen icon
+// outright, so even a successful, smaller re-encode here would break it
+// regardless of how correctly the reference gets rewritten below.
+for(const path of files.filter(p=>/\.(png|jpe?g)$/i.test(p)&&!/\/assets\/icon-\d+\.png$/.test(p.split('\\').join('/')))){
   const original=await readFile(path);before+=original.length;
   const encoded=await sharp(original).rotate().resize({width:1600,height:1600,fit:'inside',withoutEnlargement:true}).webp({quality:78,effort:4}).toBuffer();
   if(encoded.length>=original.length){after+=original.length;continue}

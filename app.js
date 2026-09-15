@@ -1532,17 +1532,36 @@ const QUICK_ADD_TYPES = [
   { id: "recipe", label: "Recipe" },
 ];
 
+// The documented topic slugs (see OBSIDIAN.md), plus whatever the site
+// already has entries under, so a tag can be suggested even before
+// anything is filed under it.
+const QUICK_ADD_KNOWN_TAGS = [
+  "family","life","selfcare","adhd","habits","music","playlist","practice",
+  "reading","food","recipes","eatingout","wedding","technology","motoring",
+  "gardening","houseplants",
+];
+function knownTags(){
+  const fromData = Object.keys(state.data?.topics || {});
+  return [...new Set([...QUICK_ADD_KNOWN_TAGS, ...fromData])].sort();
+}
+
 function quickAddFields(type){
-  const common = `<label>Tags<input type="text" name="tags" placeholder="family, gardening"></label>`;
-  const imagePicker = `<label class="qa-image-label">Photo (optional)<input type="file" name="image" accept="image/*"></label><div class="qa-image-preview" hidden><img alt=""><button type="button" data-qa-remove-image aria-label="Remove photo">×</button></div>`;
+  const common = `<label>Tags<span class="qa-tag-box"><input type="text" name="tags" placeholder="family, gardening" autocomplete="off" data-qa-tags><span class="qa-tag-suggest" hidden></span></span></label>`;
+  const imagePicker = `<label class="qa-image-label">Photo (optional)</label>
+    <div class="qa-image-picker">
+      <button type="button" class="qa-image-trigger" data-qa-image-trigger>${icon("photos")}<span>Choose a photo</span></button>
+      <input type="file" name="image" accept="image/*" hidden>
+      <div class="qa-image-preview" hidden><img alt=""><button type="button" data-qa-remove-image aria-label="Remove photo">×</button></div>
+    </div>`;
+  const counted = (name,label,rows,placeholder) => `<label>${label}<textarea name="${name}" rows="${rows}" placeholder="${placeholder||""}" data-qa-count></textarea></label><div class="qa-counter" data-qa-counter-for="${name}">0 characters</div>`;
   switch(type){
     case "journal":
     case "note":
       return `<label>Title<input type="text" name="title" required autofocus></label>
-        <label>Date<input type="date" name="date"></label>
+        <label>Date<input type="date" name="date" data-qa-today></label>
         ${common}
         ${imagePicker}
-        <label>Write<textarea name="body" rows="6" placeholder="What happened…"></textarea></label>`;
+        ${counted("body","Write",6,"What happened…")}`;
     case "task":
       return `<label>Title<input type="text" name="title" required autofocus></label>
         <label>Due (optional)<input type="date" name="dueAt"></label>
@@ -1566,8 +1585,8 @@ function quickAddFields(type){
         ${common}`;
     case "event":
       return `<label>Title<input type="text" name="title" required autofocus></label>
-        <label>Date<input type="date" name="date"></label>
-        <label>Time / info<input type="text" name="startTime" placeholder="From 1pm"></label>
+        <label>Date<input type="date" name="date" data-qa-today></label>
+        <div class="qa-row"><label>Starts<input type="text" name="startTime" placeholder="From 1pm"></label><label>Ends (optional)<input type="text" name="endTime" placeholder="4pm"></label></div>
         ${common}
         ${imagePicker}
         <label>Notes<textarea name="body" rows="4"></textarea></label>`;
@@ -1581,6 +1600,17 @@ function quickAddFields(type){
     default:
       return "";
   }
+}
+
+function setupQuickAddFieldExtras(container){
+  container.querySelectorAll("[data-qa-today]").forEach(el=>{if(!el.value)el.value=todayKey});
+  container.querySelectorAll("[data-qa-count]").forEach(el=>{
+    const counter=container.querySelector(`[data-qa-counter-for="${el.name}"]`);
+    if(!counter)return;
+    const update=()=>counter.textContent=`${el.value.length} character${el.value.length===1?"":"s"}`;
+    el.addEventListener("input",update);
+    update();
+  });
 }
 
 function quickAddModalHtml(){
@@ -1613,6 +1643,7 @@ function openQuickAdd(){
   quickAddType=QUICK_ADD_TYPES[0].id;
   quickAddImageBlob=null;
   quickAddBackdrop.innerHTML=quickAddModalHtml();
+  setupQuickAddFieldExtras(quickAddBackdrop);
   quickAddBackdrop.classList.add("show");
   document.body.classList.add("qa-open");
   requestAnimationFrame(()=>quickAddBackdrop.querySelector("input,textarea")?.focus());
@@ -1654,6 +1685,7 @@ quickAddBackdrop.addEventListener("click",e=>{
     quickAddImageBlob=null;
     quickAddBackdrop.querySelectorAll(".qa-type").forEach(b=>b.classList.toggle("active",b===typeBtn));
     quickAddBackdrop.querySelector(".qa-fields").innerHTML=quickAddFields(quickAddType);
+    setupQuickAddFieldExtras(quickAddBackdrop);
     return;
   }
 
@@ -1663,7 +1695,35 @@ quickAddBackdrop.addEventListener("click",e=>{
     preview.hidden=true;
     const input=quickAddBackdrop.querySelector('input[name="image"]');
     if(input)input.value="";
+    return;
   }
+
+  if(e.target.closest("[data-qa-image-trigger]")){
+    quickAddBackdrop.querySelector('input[name="image"]')?.click();
+    return;
+  }
+
+  const suggestion=e.target.closest("[data-qa-tag-pick]");
+  if(suggestion){
+    const input=quickAddBackdrop.querySelector("[data-qa-tags]");
+    const parts=input.value.split(",");
+    parts[parts.length-1]=` ${suggestion.textContent}`;
+    input.value=parts.map(p=>p.trim()).filter(Boolean).join(", ")+", ";
+    input.dispatchEvent(new Event("input"));
+    input.focus();
+  }
+});
+
+quickAddBackdrop.addEventListener("input",e=>{
+  if(!e.target.matches("[data-qa-tags]"))return;
+  const box=e.target.closest(".qa-tag-box"),suggest=box.querySelector(".qa-tag-suggest");
+  const frag=e.target.value.split(",").pop().trim().toLowerCase();
+  if(!frag){suggest.hidden=true;return}
+  const already=new Set(e.target.value.split(",").map(t=>t.trim().toLowerCase()));
+  const matches=knownTags().filter(t=>t.startsWith(frag)&&!already.has(t)).slice(0,6);
+  if(!matches.length){suggest.hidden=true;return}
+  suggest.innerHTML=matches.map(t=>`<button type="button" data-qa-tag-pick>${t}</button>`).join("");
+  suggest.hidden=false;
 });
 
 quickAddBackdrop.addEventListener("change",async e=>{
@@ -1694,6 +1754,10 @@ quickAddBackdrop.addEventListener("submit",async e=>{
   try{
     const data=Object.fromEntries(new FormData(form).entries());
     delete data.image;
+    if(data.endTime&&data.endTime.trim()){
+      data.startTime=`${(data.startTime||"").trim()}${data.startTime&&data.startTime.trim()?" – ":""}${data.endTime.trim()}`;
+    }
+    delete data.endTime;
     if(quickAddImageBlob){
       const filename=`quickadd-${Date.now()}.jpg`;
       const res=await fetch("/api/media/upload",{method:"POST",headers:{"X-Filename":filename,"X-Content-Type":"image/jpeg"},body:quickAddImageBlob});
@@ -1717,6 +1781,12 @@ quickAddBackdrop.addEventListener("submit",async e=>{
 });
 
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&quickAddBackdrop.classList.contains("show"))closeQuickAdd()});
+
+quickAddBackdrop.addEventListener("focusout",e=>{
+  if(!e.target.matches("[data-qa-tags]"))return;
+  const box=e.target.closest(".qa-tag-box");
+  setTimeout(()=>{if(!box.contains(document.activeElement))box.querySelector(".qa-tag-suggest").hidden=true},150);
+});
 document.addEventListener("click",e=>{const link=e.target.closest("[data-open-library]");if(!link)return;state.library=link.dataset.openLibrary;try{localStorage.setItem("noted-library-tab",state.library)}catch{}if(location.hash==="#library")renderLibraryBody()});
 document.addEventListener("click",async e=>{
   const button=e.target.closest("[data-offline-open]");if(!button)return;
