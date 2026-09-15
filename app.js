@@ -6,7 +6,7 @@ const BASE = window.NOTED_DATA || { topics:{}, entries:[], tasks:[], books:[] };
 const BUILD="__BUILD__";
 const now = new Date(), todayKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`;
 let savedSort="items",savedCalendar="month",savedLibrary="writing";try{savedSort=localStorage.getItem("noted-topic-sort")||"items";savedCalendar=localStorage.getItem("noted-calendar-mode")||(window.matchMedia?.("(max-width:600px)").matches?"agenda":"month");savedLibrary=localStorage.getItem("noted-library-tab")||"writing"}catch(error){/* private mode: fall back to defaults */}
-const state = { route:"today", searchTools:false, topicSort:savedSort, calendarMode:savedCalendar, month:new Date(now.getFullYear(),now.getMonth(),1), selectedDate:todayKey, library:savedLibrary, search:"", searchSpace:"", searchFrom:"", searchTo:"", filter:"all", data:clone(BASE), user:null, booting:NotedBackend.configured };
+const state = { route:"today", searchTools:false, topicSort:savedSort, calendarMode:savedCalendar, month:new Date(now.getFullYear(),now.getMonth(),1), selectedDate:todayKey, library:savedLibrary, search:"", searchSpace:"", searchFrom:"", searchTo:"", filter:"all", data:applyPendingTaskOverrides(clone(BASE)), user:null, booting:NotedBackend.configured };
 function clone(v){return JSON.parse(JSON.stringify(v))}
 function emptyArchive(){return {topics:clone(BASE.topics),entries:[],tasks:[],books:[]}}
 function esc(s=""){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
@@ -616,8 +616,8 @@ function homeJourneys(){
 function homeLatest(items){
   return `<div class="latest-rail" role="region" aria-label="Latest entries, scroll horizontally" tabindex="0">${items.map((e,i)=>`<a class="latest-card" href="#entry/${encodeURIComponent(e.id)}" data-entry="${esc(e.id)}"><div class="latest-copy"><span class="latest-meta">${esc(fmtDate(e.occurredAt||e.createdAt))} · ${esc(topic(e.topics?.[0]).name)}</span><h3>${esc(e.title)}</h3>${e.excerpt?`<p>${esc(e.excerpt)}</p>`:""}<span class="latest-open">Read entry →</span></div>${e.image?`<img src="${esc(e.image)}" alt="${esc(e.imageAlt||"")}" loading="${i===0?"eager":"lazy"}" decoding="async">`:""}</a>`).join("")}</div>`;
 }
-function homeTaskRow(t){const due=t.dueAt?`${t.dueAt<todayKey?"Overdue · ":t.dueAt===todayKey?"Today · ":"Due · "}${fmtDate(t.dueAt)}`:"No date set";return `<a class="home-task-row ${t.dueAt&&t.dueAt<todayKey?"is-overdue":""}" href="${t.note?'#entry/'+encodeURIComponent(t.id):'#tasks'}" ${t.note?`data-entry="${esc(t.id)}"`:""}><span><b>${esc(t.title)}</b><small>${esc(due)}</small></span><span aria-hidden="true">→</span></a>`}
-function homeTasks(waiting){if(!waiting.length)return "";return `<section class="home-tasks"><div class="home-latest-head"><h2 class="section-title">To-do</h2><a href="#tasks">${waiting.length} waiting →</a></div><div class="home-task-list">${waiting.slice(0,3).map(homeTaskRow).join("")}</div>${waiting.length>3?`<a class="home-more" href="#tasks">${waiting.length-3} more in the list →</a>`:""}</section>`}
+function homeTaskRow(t){const due=t.dueAt?`${t.dueAt<todayKey?"Overdue · ":t.dueAt===todayKey?"Today · ":"Due · "}${fmtDate(t.dueAt)}`:"No date set";const href=t.note?'#entry/'+encodeURIComponent(t.id):'#tasks';return `<div class="home-task-row ${t.dueAt&&t.dueAt<todayKey?"is-overdue":""}"><button type="button" class="task-mark" data-toggle-task="${esc(t.id)}" aria-label="Mark done">${""}</button><a href="${href}" ${t.note?`data-entry="${esc(t.id)}"`:""}><span><b>${esc(t.title)}</b><small>${esc(due)}</small></span><span aria-hidden="true">→</span></a></div>`}
+function homeTasks(waiting){if(!waiting.length)return "";const shown=waiting.slice(0,10);return `<section class="home-tasks"><div class="home-latest-head"><h2 class="section-title">To-do</h2><a href="#tasks">${waiting.length} waiting →</a></div><div class="home-task-list${shown.length>3?" home-task-scroll":""}" id="home-task-scroll">${shown.map(homeTaskRow).join("")}</div>${waiting.length>shown.length?`<a class="home-more" href="#tasks">${waiting.length-shown.length} more in the list →</a>`:""}</section>`}
 function today(){
   // Home is a reading surface, not a log of every object in the archive.
   // Journeys have their progress strip below, tasks have their own list, and
@@ -639,21 +639,47 @@ function today(){
 }
 function taskRow(t){const tp=topic(t.topics[0]);return `<div class="task ${t.completedAt?"done":""} ${t.note?"has-note":""}" ${t.note?`data-entry="${esc(t.id)}"`:""}><button type="button" class="task-mark" data-toggle-task="${esc(t.id)}" aria-label="${t.completedAt?"Mark not done":"Mark done"}">${t.completedAt?icon("check"):""}</button><span class="task-copy"><span class="task-title">${esc(t.title)}</span>${t.note?`<small class="task-note">${esc(t.note)}</small>`:""}${t.completedAt?`<small class="task-due">Done ${esc(fmtDate(t.completedAt))}</small>`:t.dueAt?`<small class="task-due${t.dueAt<todayKey?" late":""}">${t.dueAt<todayKey?"Overdue, was due "+esc(fmtDate(t.dueAt)):t.dueAt===todayKey?"Due today":"Due "+esc(fmtDate(t.dueAt))}</small>`:""}</span><span class="chip" style="--topic:${tp.color};--soft:${tp.soft}">${esc(tp.name)}</span></div>`}
 
+// The live commit lands on GitHub instantly, but the static data.js the
+// site actually renders from only catches up once Cloudflare's rebuild
+// finishes (tens of seconds later). Without this, a refresh in that gap
+// would show the old, pre-toggle state, so remember the toggle locally
+// and keep applying it until the rebuilt data agrees, then drop it.
+function pendingTaskOverrides(){try{return JSON.parse(localStorage.getItem("noted-pending-tasks")||"{}")}catch{return {}}}
+function setPendingTaskOverride(id,completedAt){try{const p=pendingTaskOverrides();p[id]={completedAt,at:Date.now()};localStorage.setItem("noted-pending-tasks",JSON.stringify(p))}catch{}}
+function applyPendingTaskOverrides(data){
+  if(!data?.tasks)return data;
+  let pending,changed=false;
+  try{pending=pendingTaskOverrides()}catch{return data}
+  const now=Date.now();
+  for(const id of Object.keys(pending)){
+    // Give up on an override after 15 minutes: the rebuild is long done
+    // by then, and something else must have changed the task instead.
+    if(now-pending[id].at>15*60*1000){delete pending[id];changed=true;continue}
+    const task=data.tasks.find(t=>t.id===id);
+    if(!task)continue;
+    if(task.completedAt===pending[id].completedAt){delete pending[id];changed=true;continue}
+    task.completedAt=pending[id].completedAt;
+  }
+  if(changed)try{localStorage.setItem("noted-pending-tasks",JSON.stringify(pending))}catch{}
+  return data;
+}
+
 async function toggleTask(id,wasDone,mark){
   mark.disabled=true;
   const nowDone=!wasDone;
   mark.innerHTML=nowDone?icon("check"):"";
-  mark.closest(".task")?.classList.toggle("done",nowDone);
+  mark.closest(".task, .home-task-row")?.classList.toggle("done",nowDone);
   try{
     const res=await fetch("/api/tasks/toggle",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id})});
     if(!res.ok)throw new Error("Could not save");
     const json=await res.json();
     const task=state.data?.tasks?.find(x=>x.id===id);
     if(task)task.completedAt=json.completedAt;
+    setPendingTaskOverride(id,json.completedAt);
     toast(json.completedAt?"Marked done":"Marked not done");
   }catch(error){
     mark.innerHTML=wasDone?icon("check"):"";
-    mark.closest(".task")?.classList.toggle("done",wasDone);
+    mark.closest(".task, .home-task-row")?.classList.toggle("done",wasDone);
     toast("Could not save, try again");
   }finally{
     mark.disabled=false;
@@ -1317,7 +1343,25 @@ function afterRender(route){
   setupMemoryKeypads();
   setupClawGames();
   syncReadingProgress();
+  setupHomeTaskScroll();
   if(route==="search")requestAnimationFrame(()=>document.querySelector(".search-box")?.focus({preventScroll:true}));
+}
+let homeTaskScrollTimer=null;
+function setupHomeTaskScroll(){
+  if(homeTaskScrollTimer){clearInterval(homeTaskScrollTimer);homeTaskScrollTimer=null}
+  const el=document.getElementById("home-task-scroll");
+  if(!el||!el.classList.contains("home-task-scroll"))return;
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+  let paused=false,resumeTimer=null;
+  const pause=()=>{paused=true;clearTimeout(resumeTimer);resumeTimer=setTimeout(()=>paused=false,4000)};
+  el.addEventListener("pointerdown",pause);
+  el.addEventListener("wheel",pause,{passive:true});
+  el.addEventListener("touchstart",pause,{passive:true});
+  homeTaskScrollTimer=setInterval(()=>{
+    if(paused||!el.isConnected)return;
+    if(el.scrollTop+el.clientHeight>=el.scrollHeight-1)el.scrollTop=0;
+    else el.scrollTop+=1;
+  },60);
 }
 let keypadKeyHandler=null;
 function setupMemoryKeypads(){
@@ -1575,7 +1619,7 @@ if("serviceWorker" in navigator){
 // foreground instead.
 let lastRefresh=Date.now();
 function reloadData(){return new Promise((resolve,reject)=>{const s=document.createElement("script");s.src=`data.js?t=${Date.now()}`;s.onload=()=>{s.remove();resolve()};s.onerror=()=>{s.remove();reject(new Error("data.js unreachable"))};document.head.appendChild(s)})}
-async function refreshArchive(){if(document.hidden||state.booting||Date.now()-lastRefresh<60000)return;if(document.getElementById("modal-root").innerHTML)return;lastRefresh=Date.now();try{if(NotedBackend.configured&&state.user)await loadRemoteArchive();else{await reloadData();state.data=clone(window.NOTED_DATA)}render()}catch(error){/* offline, or the fetch failed: keep showing what we already have */}}
+async function refreshArchive(){if(document.hidden||state.booting||Date.now()-lastRefresh<60000)return;if(document.getElementById("modal-root").innerHTML)return;lastRefresh=Date.now();try{if(NotedBackend.configured&&state.user)await loadRemoteArchive();else{await reloadData();state.data=applyPendingTaskOverrides(clone(window.NOTED_DATA))}render()}catch(error){/* offline, or the fetch failed: keep showing what we already have */}}
 document.addEventListener("visibilitychange",refreshArchive);
 window.addEventListener("pageshow",refreshArchive);
 // Back on a signal after a spell offline: pick up whatever was published
