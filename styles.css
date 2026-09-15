@@ -142,7 +142,7 @@ input[type="checkbox"]:focus-visible{outline-offset:3px;}
    tidy path, this is the one that cannot be cached into the wrong state by
    an app that was installed before they existed. */
 .site-header:before{content:"";position:absolute;z-index:-1;top:-240px;bottom:0;left:50%;width:100vw;transform:translateX(-50%);background:var(--paper);}
-.site-header:after{content:"";position:absolute;left:50%;bottom:0;width:100vw;height:2px;transform:translateX(-50%);background:var(--stamp-red);opacity:.88;}
+.site-header:after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--stamp-red);opacity:.88;}
 main{max-width:var(--max);margin:auto;padding:56px 28px 120px;min-width:0;}
 /* ---------- headings / page furniture ---------- */
 .eyebrow{margin:0 0 10px;color:var(--muted);font:11px/1 var(--mono);text-transform:uppercase;letter-spacing:.18em;}
