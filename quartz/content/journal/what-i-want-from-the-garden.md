@@ -10,9 +10,9 @@ publish: true
 
 ![A small kitchen garden in late-summer evening light](assets/posts/kitchen-garden.png)
 
-![[IMG_4035.jpeg]]
-![[IMG_4045.jpeg]]
-![[IMG_4051.jpeg]]
+![](/media/attachments/IMG_4035.jpeg)
+![](/media/attachments/IMG_4045.jpeg)
+![](/media/attachments/IMG_4051.jpeg)
 
 I want herbs close to the kitchen, tomatoes that taste of summer and somewhere
 for the children to dig. If I write down what works, I might remember it when
