@@ -1563,7 +1563,7 @@ function qaHeaderRow(imageLabel,titlePlaceholder,secondField){
 
 function quickAddFields(type){
   const common = `<label>Tags<span class="qa-tag-box"><input type="text" name="tags" placeholder="family, gardening" autocomplete="off" data-qa-tags><span class="qa-tag-suggest" hidden></span></span></label>`;
-  const counted = (name,label,rows,placeholder) => `<label>${label}<textarea name="${name}" rows="${rows}" placeholder="${placeholder||""}" data-qa-count></textarea></label><div class="qa-counter" data-qa-counter-for="${name}">0 characters</div>`;
+  const counted = (name,label,rows,placeholder) => `<label>${label}<span class="qa-counted"><textarea name="${name}" rows="${rows}" placeholder="${placeholder||""}" data-qa-count></textarea><small class="qa-counter" data-qa-counter-for="${name}">0</small></span></label>`;
   switch(type){
     case "journal":
     case "note":
@@ -1614,7 +1614,7 @@ function setupQuickAddFieldExtras(container){
   container.querySelectorAll("[data-qa-count]").forEach(el=>{
     const counter=container.querySelector(`[data-qa-counter-for="${el.name}"]`);
     if(!counter)return;
-    const update=()=>counter.textContent=`${el.value.length} character${el.value.length===1?"":"s"}`;
+    const update=()=>counter.textContent=el.value.length;
     el.addEventListener("input",update);
     update();
   });
