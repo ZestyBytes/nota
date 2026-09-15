@@ -43,13 +43,12 @@ function loginPage({ error, redirectTo }) {
     padding: 24px; box-sizing: border-box;
   }
   .card {
-    width: 100%; max-width: 340px;
+    width: 100%; max-width: 340px; text-align: center;
     background: #1d2225; border: 1px solid #2c3336;
     border-radius: 14px; padding: 32px 28px;
   }
-  .brand { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+  .brand { font-size: 26px; font-weight: 700; margin-bottom: 24px; }
   .brand .dot { color: #c1443d; }
-  p.sub { color: #9aa3a6; font-size: 14px; margin: 0 0 24px; }
   input[type="password"] {
     width: 100%; box-sizing: border-box; padding: 12px 14px;
     border-radius: 8px; border: 1px solid #3a4144; background: #14181a;
@@ -70,7 +69,6 @@ function loginPage({ error, redirectTo }) {
 <body>
   <div class="card">
     <div class="brand">noted<span class="dot">.</span></div>
-    <p class="sub">Enter your PIN to continue.</p>
     <form method="POST" action="/__login" id="loginForm">
       <input type="hidden" name="redirectTo" value="${redirectTo.replace(/"/g, "&quot;")}">
       <input
