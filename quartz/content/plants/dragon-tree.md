@@ -19,7 +19,7 @@ publishedAt: "2026-09-04"
 publish: true
 ---
 
-![The dragon tree, thin canes topped with a fountain of narrow leaves](plant-dragon-tree.jpg)
+![The dragon tree, thin canes topped with a fountain of narrow leaves](/media/attachments/plant-dragon-tree.jpg)
 
 Slow, patient and almost impossible to kill by neglect. Thin woody canes with a spray of narrow leaves edged in red, and a habit of leaning towards the light until you turn it.
 
