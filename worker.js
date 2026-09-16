@@ -420,11 +420,7 @@ async function readSiteData(env) {
   const text = await res.text();
   const match = text.match(/window\.NOTED_DATA\s*=\s*(\{[\s\S]*\});?\s*$/);
   if (!match) throw new Error("Could not parse data.js");
-  // Not strict JSON: the deploy pipeline's minifier can drop quotes from
-  // object keys where it's still valid JS, which JSON.parse then rejects.
-  // It's our own generated file, not third-party input, so evaluating it
-  // as the expression it actually is instead of forcing JSON is safe here.
-  return new Function(`return (${match[1]});`)();
+  return JSON.parse(match[1]);
 }
 
 function buildMorningMessage(data) {

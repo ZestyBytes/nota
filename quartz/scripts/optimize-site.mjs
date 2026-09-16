@@ -24,7 +24,11 @@ let codeBefore=0,codeAfter=0;
 for(const path of files.filter(p=>/\.(js|css|html|json|webmanifest)$/.test(p))){
   let text=await readFile(path,'utf8');codeBefore+=Buffer.byteLength(text);
   for(const [old,next] of replacements)text=text.split(old).join(next);
-  if(/\.(js|css)$/.test(path))text=(await transform(text,{loader:path.endsWith('.css')?'css':'js',minify:true,target:'es2020',legalComments:'none'})).code;
+  // data.js is read back as strict JSON by the Worker (for push notification
+  // content), which minification breaks: esbuild drops quotes from object
+  // keys where that's still valid JS but no longer valid JSON. Left alone,
+  // it's already compact (single-line, no source comments).
+  if(/\.(js|css)$/.test(path)&&!path.endsWith('data.js'))text=(await transform(text,{loader:path.endsWith('.css')?'css':'js',minify:true,target:'es2020',legalComments:'none'})).code;
   await writeFile(path,text);codeAfter+=Buffer.byteLength(text);
 }
 console.log(JSON.stringify({imagesConverted:count,imageBytesBefore:before,imageBytesAfter:after,codeBytesBefore:codeBefore,codeBytesAfter:codeAfter},null,2));
