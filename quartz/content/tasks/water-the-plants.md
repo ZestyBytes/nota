@@ -2,8 +2,9 @@
 title: "Water the plants: outdoor daily, indoor weekly"
 type: task
 tags: [gardening]
-completedAt: null
+completedAt: "2026-09-17"
 publish: true
+done: true
 ---
 
 Outdoors every day, the office plants once a week. The watering rota on the
